@@ -57,9 +57,9 @@ class _MyHomePageState extends State<MyHomePage> {
               'Daily challenge:',
               style: Theme.of(context).textTheme.headline1,
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            const Text(
+              'test mmmh',
+              style: TextStyle(fontFamily: "Roboto Condensed", color: AppColors.primary),
             ),
           ],
         ),

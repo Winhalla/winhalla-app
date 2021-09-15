@@ -57,6 +57,16 @@ flutter:
       fonts:
         - asset: assets/fonts/BebasNeue-Regular.ttf
           weight: 400
+
+    - family: Roboto Condensed
+      fonts:
+        - asset: assets/fonts/RobotoCondensed-Bold.ttf
+          weight: 700
+
+        - asset: assets/fonts/RobotoCondensed-BoldItalic.ttf
+          weight: 700
+          style: italic
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
