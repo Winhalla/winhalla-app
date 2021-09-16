@@ -27,11 +27,7 @@ class AppTheme {
 
   AppTheme._();
 
-  static final theme = ThemeData(
-      fontFamily: "Bebas Neue",
-
-      textTheme: const TextTheme(
-        headline1: TextStyle(color: AppColors.text, fontSize: 38)
-      )
+  static const textTheme = TextTheme(
+      headline1: TextStyle(color: AppColors.text, fontSize: 40)
   );
 }

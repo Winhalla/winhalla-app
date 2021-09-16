@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:winhalla_app/widgets/navigation_bar.dart';
 
 import 'config/themes/dark_theme.dart';
 
@@ -13,7 +14,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: AppTheme.theme,
+      theme: ThemeData(
+        fontFamily: "Bebas Neue"
+      ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -55,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
           children: <Widget>[
              Text(
               'Daily challenge:',
-              style: Theme.of(context).textTheme.headline1,
+              style: AppTheme.textTheme.headline1,
             ),
             const Text(
               'test mmmh',
@@ -70,6 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ),
+
+      bottomNavigationBar: const NavigationBar(),
     );
   }
 }
