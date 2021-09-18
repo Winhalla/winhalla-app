@@ -6,32 +6,39 @@ class NavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      backgroundColor: AppColors.background,
+    return Container(
+      color: AppColors.background,
+        padding: const EdgeInsets.fromLTRB(0, 12, 0, 14),
+        child: BottomNavigationBar(
+          elevation: 0,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
 
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
+          iconSize: 35,
 
-      iconSize: 30,
+          unselectedItemColor: AppColors.text95,
+          selectedItemColor: AppColors.primary,
 
-      unselectedItemColor: AppColors.text95,
-      selectedItemColor: AppColors.primary,
+          backgroundColor: AppColors.background,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined),
+                label: 'Home'
 
-      items: const <BottomNavigationBarItem>[
-      BottomNavigationBarItem(
-        icon: Icon(Icons.home),
-        label: 'Play'
+            ),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.check_box_outlined),
+                label: 'Quests'
 
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.check_box_outlined),
-        label: 'Play'
+            ),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.play_circle_outline_outlined),
+                label: 'Play'
 
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.play_circle_outline_outlined),
-        label: 'Play'
-      ),
-    ],);
+            ),
+          ],
+        )
+    );
+
   }
 }
