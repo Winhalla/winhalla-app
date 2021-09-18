@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/widgets/navigation_bar.dart';
-
+import 'package:winhalla_app/screens/quests.dart';
 import 'config/themes/dark_theme.dart';
 
 void main() {
   runApp(const MyApp());
 }
+String page = "quests";
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -13,19 +14,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        fontFamily: "Bebas Neue"
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'Named Routes Demo',
+      // Start the app with the "/" named route. In this case, the app starts
+      // on the FirstScreen widget.
+      initialRoute: '/',
+      routes: {
+        // When navigating to the "/" route, build the FirstScreen widget.
+        '/': (context) => const MyHomePage(),
+        // When navigating to the "/second" route, build the SecondScreen widget.
+        '/quests': (context) => const Quests(),
+      },
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  final String title;
+  const MyHomePage({Key? key}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -36,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _incrementCounter() {
     setState(() {
-      _counter++;
+      page = "home";
     });
   }
 
@@ -45,18 +49,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-
-        title: Text(widget.title),
-        backgroundColor: AppColors.background,
-      ),
       body: Center(
 
         child: Column(
-
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-             Text(
+            Text(
               'Daily challenge:',
               style: AppTheme.textTheme.headline1,
             ),
@@ -67,7 +65,12 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: AppColors.primary,
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: const Icon(Icons.add),
+      ),
       bottomNavigationBar: const NavigationBar(),
     );
   }
