@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 
-class NavigationBar extends StatelessWidget {
+class NavigationBar extends StatefulWidget {
   const NavigationBar({Key? key}) : super(key: key);
 
   @override
@@ -9,7 +9,7 @@ class NavigationBar extends StatelessWidget {
 }
 
 class _NavigationBarState extends State<NavigationBar> {
-  @override
+
   int selectedItem = 0;
   String indexToName(index){
     switch (index){
@@ -18,46 +18,52 @@ class _NavigationBarState extends State<NavigationBar> {
       default: return "/";
     }
   }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
         color: AppColors.background,
         padding: const EdgeInsets.fromLTRB(0, 12, 0, 14),
-    child: BottomNavigationBar(
-    elevation: 0,
-      backgroundColor: AppColors.background,
 
-      showSelectedLabels: false,
-      showUnselectedLabels: false,
-      onTap:(index){
-        setState((){
-          selectedItem = index;
-          Navigator.pop(context);
-          Navigator.pushNamed(context, indexToName(index));
-        });
-      },
+        child: BottomNavigationBar(
+          elevation: 0,
+          backgroundColor: AppColors.background,
 
-      currentIndex: selectedItem,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
 
-      iconSize: 35,
+          onTap: (index) {
+            setState((){
+              selectedItem = index;
+              Navigator.pop(context);
+              Navigator.pushNamed(context, indexToName(index));
+            });
+          },
 
-      unselectedItemColor: AppColors.text95,
-      selectedItemColor: AppColors.primary,
+          currentIndex: selectedItem,
 
-      items: const <BottomNavigationBarItem>[
-      BottomNavigationBarItem(
-        icon: Icon(Icons.home),
-        label: 'Home'
+          iconSize: 35,
 
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.check_box_outlined),
-        label: 'Quests'
+          unselectedItemColor: AppColors.text95,
+          selectedItemColor: AppColors.primary,
 
-      ),
-      BottomNavigationBarItem(
-        icon: Icon(Icons.play_circle_outline_outlined),
-        label: 'Play'
-      ),
-    ],);
+          items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home'
+
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.check_box_outlined),
+            label: 'Quests'
+
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.play_circle_outline_outlined),
+            label: 'Play'
+          ),
+      ],
+    )
+    );
   }
 }
