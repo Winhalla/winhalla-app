@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:winhalla_app/widgets/navigation_bar.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 
@@ -9,10 +8,8 @@ class Quests extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
-    return Scaffold(
-        backgroundColor: AppColors.background,
-        body: FutureBuilder(
+
+    return FutureBuilder(
           future: http.get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1')),
           builder: (dynamic context, dynamic res) {
             return Center(
@@ -21,6 +18,6 @@ class Quests extends StatelessWidget {
                   style: AppTheme.textTheme.headline1,
                 ));
           },
-        ));
+        );
   }
 }
