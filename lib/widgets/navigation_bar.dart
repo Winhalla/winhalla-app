@@ -22,10 +22,47 @@ class _NavigationBarState extends State<NavigationBar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: AppColors.background,
-        padding: const EdgeInsets.fromLTRB(0, 12, 0, 14),
 
-        child: BottomNavigationBar(
+        padding: const EdgeInsets.fromLTRB(32, 19, 32, 28),
+        decoration: const BoxDecoration(
+          color: AppColors.background,
+          /*boxShadow: [
+            BoxShadow(
+              offset: Offset(0, -8),
+              blurRadius: 8,
+              color: Colors.black.withOpacity(0.20)
+            )
+          ]*/
+        ),
+
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <IconButton>[
+            IconButton(
+              icon: const Icon(Icons.home_outlined),
+              color: AppColors.text95,
+              iconSize: 34,
+
+              onPressed: (){},
+            ),
+            IconButton(
+              icon: const Icon(Icons.check_box_outlined),
+              color: AppColors.text95,
+              iconSize: 34,
+
+              onPressed: (){},
+            ),
+            IconButton(
+              icon: const Icon(Icons.play_circle_outline_outlined),
+              color: AppColors.text95,
+              iconSize: 34,
+
+              onPressed: (){},
+            ),
+          ],
+        )
+
+      /*BottomNavigationBar(
           elevation: 0,
           backgroundColor: AppColors.background,
 
@@ -63,7 +100,7 @@ class _NavigationBarState extends State<NavigationBar> {
             label: 'Play'
           ),
       ],
-    )
+    )*/
     );
   }
 }
