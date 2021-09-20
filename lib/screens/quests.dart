@@ -9,12 +9,17 @@ class Quests extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
         backgroundColor: AppColors.background,
         body: FutureBuilder(
           future: http.get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1')),
           builder: (dynamic context, dynamic res) {
-            return Text("test");
+            return Center(
+                child: Text(
+                  'QUESTS',
+                  style: AppTheme.textTheme.headline1,
+                ));
           },
         ));
   }
