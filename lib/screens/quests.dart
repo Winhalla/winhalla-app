@@ -12,12 +12,12 @@ class Quests extends StatelessWidget {
     return FutureBuilder(
           future: http.get(Uri.parse('https://jsonplaceholder.typicode.com/albums/1')),
           builder: (dynamic context, dynamic res) {
-            return Center(
+            return ChangeNotifierProvider(child:Center(
                 child: Text(
                   'QUESTS',
                   style: AppTheme.textTheme.headline1,
                 ));
           },
-        );
+        ));
   }
 }

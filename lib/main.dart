@@ -3,8 +3,10 @@ import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
-
+import 'package:provider/provider.dart';
 import 'config/themes/dark_theme.dart';
+import 'package:winhalla_app/utils/userClass.dart';
+import 'package:http/http.dart' as http;
 
 
 void main() {
@@ -46,7 +48,13 @@ class _MyAppState extends State<MyApp> {
               preferredSize: Size.fromHeight(134),
               child: MyAppBar()
           ),
-          body: MyApp.screenList[_selectedIndex],
+          body: FutureBuilder(future:http.get(Uri.parse('http://192.168.1.33/sampleData')),
+          builder:(context,snapshot){
+            if(!snapshot.hasData) return Center(child:Text("Loading"));
+            return ChangeNotifierProvider(
+            create: (_) => new User(snapshot.data),
+            child:MyApp.screenList[_selectedIndex]
+            );}),
           bottomNavigationBar: Container(
 
               padding: const EdgeInsets.fromLTRB(32, 19, 32, 28),
@@ -105,7 +113,7 @@ class _MyAppState extends State<MyApp> {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => const MyHomePage(),
         // When navigating to the "/second" route, build the SecondScreen widget.
-        '/quests': (context) => const Quests(),
+        '/login': (context) => const Quests(),
       },*/
     );
   }
