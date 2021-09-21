@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
 
       home: SafeArea(
         child: Scaffold(
-          backgroundColor: AppColors.background,
+          backgroundColor: kBackground,
           appBar: const PreferredSize(
               preferredSize: Size.fromHeight(134),
               child: MyAppBar()
@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
 
               padding: const EdgeInsets.fromLTRB(32, 19, 32, 28),
               decoration: const BoxDecoration(
-                color: AppColors.background,
+                color: kBackground,
                 /*boxShadow: [
             BoxShadow(
               offset: Offset(0, -8),
@@ -66,7 +66,7 @@ class _MyAppState extends State<MyApp> {
                 children: <IconButton>[
                   IconButton(
                     icon: const Icon(Icons.home_outlined),
-                    color: AppColors.text95,
+                    color: kText95,
                     iconSize: 34,
 
                     onPressed: (){
@@ -75,7 +75,7 @@ class _MyAppState extends State<MyApp> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.check_box_outlined),
-                    color: AppColors.text95,
+                    color: kText95,
                     iconSize: 34,
 
                     onPressed: (){
@@ -84,7 +84,7 @@ class _MyAppState extends State<MyApp> {
                   ),
                   IconButton(
                     icon: const Icon(Icons.play_circle_outline_outlined),
-                    color: AppColors.text95,
+                    color: kText95,
                     iconSize: 34,
 
                     onPressed: (){

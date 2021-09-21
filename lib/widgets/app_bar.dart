@@ -8,7 +8,7 @@ class MyAppBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         padding: const EdgeInsets.fromLTRB(28, 32, 38, 19),
-        color: AppColors.background,
+        color: kBackground,
         child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
 
@@ -16,7 +16,7 @@ class MyAppBar extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.search),
 
-                color: AppColors.text95,
+                color: kText95,
                 iconSize: 34,
 
                 onPressed: (){},
@@ -26,7 +26,7 @@ class MyAppBar extends StatelessWidget {
                     IconButton(
                       icon: const Icon(Icons.notifications_none_outlined),
 
-                      color: AppColors.text95,
+                      color: kText95,
                       iconSize: 35,
 
                       onPressed: (){},
@@ -36,7 +36,7 @@ class MyAppBar extends StatelessWidget {
                       width: 55,
                       height: 55,
                       decoration: const BoxDecoration(
-                          color: AppColors.primary,
+                          color: kPrimary,
                           borderRadius: BorderRadius.all(Radius.circular(10))
                       ),
                     )
