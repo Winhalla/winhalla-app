@@ -22,7 +22,7 @@ class _MyHomePageState extends State<MyHomePage> {
           const Text(
             'test mmmh',
             style: TextStyle(
-                fontFamily: "Roboto Condensed", color: AppColors.primary),
+                fontFamily: "Roboto Condensed", color: kPrimary),
           ),
         ],
       ),
