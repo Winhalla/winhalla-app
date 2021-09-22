@@ -65,11 +65,13 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Text("Daily challenge:", style: AppTheme.textTheme.headline1,),
-            Container(
-
-              padding: EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-              decoration: BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(12)),
-              child: Text("?", style: TextStyle(fontFamily: "Roboto Condensed", color: kPrimary, fontSize: 32),),
+            GestureDetector(
+              onTap: () => setState(() {}),
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+                decoration: BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(12)),
+                child: Text("?", style: TextStyle(fontFamily: "Roboto Condensed", color: kPrimary, fontSize: 32),),
+              )
             )
           ],
         )
