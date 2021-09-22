@@ -59,7 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ]
         ),
-        Padding(padding: EdgeInsets.only(top: 65)),
+        const Padding(padding: EdgeInsets.only(top: 65)),
 
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -68,9 +68,9 @@ class _MyHomePageState extends State<MyHomePage> {
             GestureDetector(
               onTap: () => setState(() {}),
               child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                 decoration: BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(12)),
-                child: Text("?", style: TextStyle(fontFamily: "Roboto Condensed", color: kPrimary, fontSize: 32),),
+                child: const Text("?", style: TextStyle(fontFamily: "Roboto Condensed", color: kPrimary, fontSize: 32),),
               )
             )
           ],
