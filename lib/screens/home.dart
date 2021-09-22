@@ -11,21 +11,29 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            'Daily challenge:',
-            style: AppTheme.textTheme.headline1,
-          ),
-          const Text(
-            'test mmmh',
-            style: TextStyle(
-                fontFamily: "Roboto Condensed", color: kPrimary),
-          ),
-        ],
-      ),
+    return Column(
+      children: <Widget>[
+
+        Row(children: [
+          GestureDetector(
+            onTap: () => setState(() {}),
+            child: Container(
+                decoration: BoxDecoration(
+                    color: kBackgroundVariant,
+                    borderRadius: BorderRadius.circular(11)
+                ),
+
+                padding: const EdgeInsets.fromLTRB(18, 9, 18, 6),
+
+                child: Text(
+                  "5896",
+                  style: AppTheme.textTheme.bodyText1?.apply(color: kPrimary),
+                )
+
+            ),
+          )
+        ]),
+      ],
     );
   }
 }
