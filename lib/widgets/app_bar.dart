@@ -12,7 +12,7 @@ class MyAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(28, 32, 38, 19),
+      padding: const EdgeInsets.fromLTRB(21, 32, 38, 19),
       color: kBackground,
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
         IconButton(

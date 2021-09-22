@@ -44,6 +44,7 @@ class _MyAppState extends State<MyApp> {
               if (!snapshot.hasData) {
                 return ChangeNotifierProvider<User>(
                     create: (_) => new User({"isLoaded": false}),
+
                     child: Scaffold(
                       backgroundColor: kBackground,
                       appBar: const PreferredSize(preferredSize: Size.fromHeight(134), child: MyAppBar(true)),
@@ -51,7 +52,8 @@ class _MyAppState extends State<MyApp> {
                           child: Container(
                               padding: EdgeInsets.only(left: 20, right: 10),
                               margin: EdgeInsets.only(top: 20),
-                              child: Column(children: [
+
+                              child: Column(children: const [
                                 Text(
                                   'Loading...',
                                   style: TextStyle(color: kText, fontSize: 50),
@@ -60,7 +62,8 @@ class _MyAppState extends State<MyApp> {
                                   'This might take a moment depending of your internet connection.',
                                   style: TextStyle(color: kText, fontSize: 20),
                                 ),
-                              ]))),
+                              ])
+                            )),
                       bottomNavigationBar: Container(
                           padding: const EdgeInsets.fromLTRB(32, 19, 32, 28),
                           decoration: const BoxDecoration(
@@ -102,18 +105,23 @@ class _MyAppState extends State<MyApp> {
                 child: Scaffold(
                   backgroundColor: kBackground,
                   appBar: const PreferredSize(preferredSize: Size.fromHeight(134), child: MyAppBar(false)),
-                  body: MyApp.screenList[_selectedIndex],
+
+                  body: Padding(
+                    padding: const EdgeInsets.fromLTRB(32, 26, 32, 0), 
+                    child: MyApp.screenList[_selectedIndex],
+                  ),
+                  
                   bottomNavigationBar: Container(
                       padding: const EdgeInsets.fromLTRB(32, 19, 32, 28),
                       decoration: const BoxDecoration(
                         color: kBackground,
                         /*boxShadow: [
-            BoxShadow(
-              offset: Offset(0, -8),
-              blurRadius: 8,
-              color: Colors.black.withOpacity(0.20)
-            )
-          ]*/
+                          BoxShadow(
+                            offset: Offset(0, -8),
+                            blurRadius: 8,
+                            color: Colors.black.withOpacity(0.20)
+                          )
+                        ]*/
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
