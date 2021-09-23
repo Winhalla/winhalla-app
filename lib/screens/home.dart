@@ -30,11 +30,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
                   child: Text(
                     "5896",
-                    style: AppTheme.textTheme.bodyText1?.apply(color: kPrimary),
+                    style: kBodyText1.apply(color: kPrimary),
                   )
 
               ),
             ),
+
             GestureDetector(
               onTap: () => setState(() {}),
               child: Stack(
@@ -46,7 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     padding: const EdgeInsets.fromLTRB(19, 9, 19, 6),
                     child: Text(
                       "Battle Pass",
-                      style: AppTheme.textTheme.bodyText1?.apply(color: kEpic),
+                      style: kBodyText1.apply(color: kEpic),
                     )
                   ),
                   Positioned(
@@ -64,9 +65,10 @@ class _MyHomePageState extends State<MyHomePage> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Daily challenge:", style: AppTheme.textTheme.headline1,),
+            const Text("Daily challenge:", style: kHeadline1,),
             GestureDetector(
               onTap: () => setState(() {}),
+
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                 decoration: BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(12)),
@@ -74,6 +76,24 @@ class _MyHomePageState extends State<MyHomePage> {
               )
             )
           ],
+        ),
+
+        Column(
+          children: [
+            Container(
+              child: Row(
+                children: [
+                  Column(
+                    children: [
+                      Text("Lorem ipsum"),
+                      Text("0/1")
+                    ],
+                  )
+                ],
+              ),
+            )
+          ]
+          
         )
       ],
     );

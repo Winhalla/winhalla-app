@@ -8,10 +8,10 @@ class Quests extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return const Center(
         child: Text(
       'QUESTS',
-      style: AppTheme.textTheme.headline1,
+      style: kHeadline1,
     ));
   }
 }

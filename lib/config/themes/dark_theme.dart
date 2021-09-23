@@ -14,10 +14,16 @@ const Color kText95 = Color(0xFFFCFCFC); // 95% opacity
 const Color kText90 = Color(0xFFFBFBFB); // 90% opacity
 const Color kText80 = Color(0xFFF8F8F8); // 80% opacity
 
-class AppTheme {
-  AppTheme._();
 
-  static const textTheme = TextTheme(
-      headline1: TextStyle(color: kText, fontSize: 40),
-      bodyText1: TextStyle(color: kText95, fontSize: 30));
-}
+const TextStyle kHeadline1 = TextStyle(color: kText, fontSize: 40);
+
+const TextStyle kBodyText1 = TextStyle(color: kText95, fontSize: 30);
+
+const TextStyle kBodyText2 =
+    TextStyle(color: kText95, fontSize: 24, fontFamily: "Roboto Condensed");
+
+const TextStyle kBodyText3 =
+    TextStyle(color: kText90, fontSize: 20, fontFamily: "Roboto Condensed");
+
+const TextStyle kBodyText4 =
+    TextStyle(color: kText, fontSize: 20);

@@ -6,10 +6,11 @@ class Play extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: Text(
-      'PLAY',
-      style: AppTheme.textTheme.headline1,
-    ));
+    return const Center(
+      child: Text(
+        'PLAY',
+        style: kHeadline1,
+      )
+    );
   }
 }
