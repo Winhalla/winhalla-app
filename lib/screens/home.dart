@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/widgets/quest_widget.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key}) : super(key: key);
@@ -78,22 +79,14 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
 
-        Column(
-          children: [
-            Container(
-              child: Row(
-                children: [
-                  Column(
-                    children: [
-                      Text("Lorem ipsum"),
-                      Text("0/1")
-                    ],
-                  )
-                ],
-              ),
-            )
-          ]
-          
+        Padding(
+          padding: const EdgeInsets.only(top: 32),
+          child: Column(
+            children: [
+              QuestWidget(name: "Lorem Ipsum", color: kOrange, progress: 1, goal: 4)
+            ]
+            
+          ),
         )
       ],
     );
