@@ -112,11 +112,11 @@ class PlayerWidget extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.fromLTRB(35, 25, 35, 25),
+          padding: EdgeInsets.fromLTRB(35, isUser?25:18, 35, isUser?25:18),
           child: Row(
             children: [
               SizedBox(
-                width: 80,
+                width: isUser?80:60,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(11),
                   child: Image.network(
@@ -177,7 +177,7 @@ class PlayerWidget extends StatelessWidget {
         ),
         Positioned(
           left: 35,
-          bottom: 115,
+          bottom: isUser?117:83.5,
           child: Text("Philtrom", style: TextStyle(color: kGray, fontSize: 19)),
         ),
       ],
