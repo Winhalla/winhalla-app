@@ -6,10 +6,16 @@ class Play extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text(
-        'PLAY',
-        style: kHeadline1,
+    return Center(
+      child: GestureDetector(
+        child: Text(
+          'PLAY',
+          style: kHeadline1,
+        ),
+        onTap: (){
+          Navigator.pushNamed(context, "/soloMatch");
+          
+        },
       )
     );
   }

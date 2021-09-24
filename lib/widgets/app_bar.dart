@@ -5,10 +5,7 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 
 class MyAppBar extends StatelessWidget {
-  const MyAppBar(this.loading);
-
-  final bool? loading;
-
+  const MyAppBar();
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,7 +33,7 @@ class MyAppBar extends StatelessWidget {
               borderRadius: BorderRadius.circular(8.0),
               child: Consumer<User>(builder: (context, user, _) {
                 print(user.value);
-                if (loading == true) {
+                if (user.value==null) {
                   return Image.asset(
                     "assets/images/logo.png",
                   );
