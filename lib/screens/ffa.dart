@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:winhalla_app/utils/ffaMatchClass.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/getUri.dart';
+import 'package:winhalla_app/utils/userClass.dart';
 
 class SoloMatch extends StatelessWidget {
   const SoloMatch({Key? key}) : super(key: key);
@@ -40,15 +41,19 @@ class SoloMatch extends StatelessWidget {
                             ],
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           ),
-                          SizedBox(height: 35,),
+                          SizedBox(
+                            height: 35,
+                          ),
                           Container(
-                            padding: EdgeInsets.fromLTRB(25, 20, 19, 20),
+                              padding: EdgeInsets.fromLTRB(25, 20, 25, 20),
                               child: Row(
                                 children: [
                                   Row(
                                     children: [
                                       Text("x4", style: TextStyle(color: kGreen, fontSize: 35)),
-                                      SizedBox(width: 6,),
+                                      SizedBox(
+                                        width: 6,
+                                      ),
                                       Text(
                                         "Reward",
                                         style: TextStyle(color: kText, fontSize: 25),
@@ -56,13 +61,65 @@ class SoloMatch extends StatelessWidget {
                                     ],
                                   ),
                                   Container(
-                                      padding:EdgeInsets.fromLTRB(19, 9, 19, 6),
-                                      child: Text("Boost it",style: kBodyText4.apply(color: kBackground),),
+                                      padding: EdgeInsets.fromLTRB(19, 9, 19, 6),
+                                      child: Text(
+                                        "Boost it",
+                                        style: kBodyText4.apply(color: kBackground),
+                                      ),
                                       decoration: BoxDecoration(color: kGreen, borderRadius: BorderRadius.circular(12)))
                                 ],
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               ),
                               decoration: BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(20))),
+                          SizedBox(
+                            height: 60,
+                          ),
+                          Container(
+                            padding: EdgeInsets.fromLTRB(35, 25, 35, 25),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: 80,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(11),
+                                    child: Image.network(
+                                      "https://steamcdn-a.akamaihd.net/steamcommunity/public/images/avatars/da/da77bb66176e79e92a34eae1b2a492b0b6f37e07_full.jpg",
+                                    ),
+                                  ),
+                                ),
+                                Column(children: [
+                                  Row(children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom:1.5),
+                                      child: Text(
+                                        "Games Played",
+                                        style: TextStyle(color: kText, fontSize: 22),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text("3/7",style:TextStyle(color: kPrimary, fontSize: 26),)
+                                  ],crossAxisAlignment: CrossAxisAlignment.end,),
+                                  Row(children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom:1.5),
+                                      child: Text("Games Won", style: TextStyle(color: kText, fontSize: 22)),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text("2/7",style: TextStyle(color: kPrimary, fontSize: 26),)
+                                  ],crossAxisAlignment: CrossAxisAlignment.end,)
+                                ],crossAxisAlignment: CrossAxisAlignment.start,),
+                              ],
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            ),
+                            decoration: BoxDecoration(
+                              color: kBackgroundVariant,
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          )
                         ]));
                   })),
         ),
