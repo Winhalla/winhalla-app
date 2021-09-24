@@ -32,7 +32,6 @@ class MyAppBar extends StatelessWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: Consumer<User>(builder: (context, user, _) {
-                print(user.value);
                 if (user.value==null) {
                   return Image.asset(
                     "assets/images/logo.png",

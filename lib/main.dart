@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'config/themes/dark_theme.dart';
 import 'package:http/http.dart' as http;
 
+
 void main() {
   runApp(const MyApp());
 }
@@ -46,7 +47,7 @@ class _MyAppState extends State<MyApp> {
         // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => SafeArea(
               child: FutureBuilder(
-                  future: http.get(getUri("/account")),
+                  future: http.get(Uri.parse("https://jsonplaceholder.typicode.com/todos/1")),
                   builder: (context, AsyncSnapshot<http.Response> snapshot) {
                     return ChangeNotifierProvider<User>(
                       create: (_) => new User(snapshot.hasData ? jsonDecode(snapshot.data!.body) : null),
