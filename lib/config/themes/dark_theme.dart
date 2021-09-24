@@ -9,7 +9,7 @@ const Color kEpic = Color(0xFFDE54EB);
 const Color kOrange = Color(0xFFFFA946);
 
 const Color kText = Color(0xFFFDFDFD);
-
+const Color kGray = Color(0xFFafafb4);
 const Color kText95 = Color(0xFFFCFCFC); // 95% opacity
 const Color kText90 = Color(0xFFFBFBFB); // 90% opacity
 const Color kText80 = Color(0xFFF8F8F8); // 80% opacity
