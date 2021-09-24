@@ -46,7 +46,7 @@ class QuestWidget extends StatelessWidget {
           ),
           Stack(
             children: [
-              Container(
+              SizedBox(
                 width: 70,
                 height: 70,
                 child: 

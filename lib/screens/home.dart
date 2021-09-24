@@ -60,8 +60,9 @@ class _MyHomePageState extends State<MyHomePage> {
             )
           ]
         ),
-        const Padding(padding: EdgeInsets.only(top: 65)),
-
+        const SizedBox(
+          height: 65,
+        ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
