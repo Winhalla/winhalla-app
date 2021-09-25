@@ -7,6 +7,7 @@ const Color kPrimary = Color(0xFF7172e3);
 const Color kGreen = Color(0xFF3DE488);
 const Color kEpic = Color(0xFFDE54EB);
 const Color kOrange = Color(0xFFFFA946);
+const Color kRed = Color(0xfffc1859);
 
 const Color kText = Color(0xFFFDFDFD);
 const Color kGray = Color(0xFFafafb4);
