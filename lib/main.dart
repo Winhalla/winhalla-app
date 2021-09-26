@@ -7,10 +7,10 @@ import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
+import 'package:winhalla_app/screens/login.dart';
 import 'package:provider/provider.dart';
 import 'config/themes/dark_theme.dart';
 import 'package:http/http.dart' as http;
-
 
 void main() {
   runApp(const MyApp());
@@ -120,6 +120,7 @@ class _MyAppState extends State<MyApp> {
             ),
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/soloMatch': (context) => const SoloMatch(),
+        '/login': (context) => const LoginPage(),
       },
     );
   }

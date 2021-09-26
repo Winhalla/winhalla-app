@@ -31,17 +31,22 @@ class MyAppBar extends StatelessWidget {
             height: 55,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
-              child: Consumer<User>(builder: (context, user, _) {
-                if (user.value==null) {
-                  return Image.asset(
-                    "assets/images/logo.png",
-                  );
-                } else {
-                  return Image.network(
-                    user.value["steam"]["picture"],
-                  );
-                }
-              }),
+              child: GestureDetector(
+                onTap: (){
+                  Navigator.pushNamed(context, "/login");
+                },
+                child: Consumer<User>(builder: (context, user, _) {
+                  if (user.value==null) {
+                    return Image.asset(
+                      "assets/images/logo.png",
+                    );
+                  } else {
+                    return Image.network(
+                      user.value["steam"]["picture"],
+                    );
+                  }
+                }),
+              ),
             ),
           )
         ])

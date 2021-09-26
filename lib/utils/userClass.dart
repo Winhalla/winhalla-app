@@ -1,11 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/getUri.dart';
+import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 class User extends ChangeNotifier{
   dynamic value;
 
   void refresh() async {
-    this.value = await http.get(getUri("/account"));
+    this.value = await http.get(getUri("/account"),headers: {"authorization":await secureStorage.read(key: "authKey") as String});
+    print(this.value.body);
+    this.value = jsonDecode(this.value.body);
     notifyListeners();
   }
 
