@@ -26,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
       child: Scaffold(
         backgroundColor: kBackground,
         body: Padding(
-          padding:const EdgeInsets.fromLTRB(32, 26, 32, 0),
+          padding: const EdgeInsets.fromLTRB(32, 26, 32, 0),
           child: Column(
             children: [
               GestureDetector(
@@ -47,12 +47,14 @@ class _LoginPageState extends State<LoginPage> {
                   var idToken = await http.post(getUri("/auth/createToken"), body: {
                     "token": temp?["auth"].accessToken,
                     "name": temp?['account'].displayName,
-                    "picture": temp?['account'].photoUrl
+                    if(temp?['account'].photoUrl != null) "picture": temp?['account'].photoUrl
                   });
                   secureStorage.write(key: "authKey", value: jsonDecode(idToken.body)["_id"]);
                   setState(() {
                     gAccount = temp;
                   });
+                  Navigator.pushReplacementNamed(context, "/");
+
                 },
               ),
               Text('Google email: ${gAccount?["account"]?.email}', style: kBodyText2.apply(color: kGreen)),
@@ -73,8 +75,6 @@ class GoogleSignInApi {
   static Future<Map<String, dynamic>?> login() async {
     var test = await _googleSignIn.signIn();
     var ggAuth = await test?.authentication;
-    print(ggAuth?.accessToken);
-    print(test);
     return {"account": test, "auth": ggAuth};
   }
 
