@@ -59,6 +59,22 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Text('Google email: ${gAccount?["account"]?.email}', style: kBodyText2.apply(color: kGreen)),
               Text('Google token: ${gAccount?["auth"]?.accessToken}', style: kBodyText4.apply(fontFamily: "Roboto Condensed")),
+              GestureDetector(
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(19, 9, 19, 6),
+                  child: Text(
+                    'Logout',
+                    style: kHeadline1.apply(color: kRed),
+                  ),
+                  decoration: BoxDecoration(
+                    color: kBackgroundVariant,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                onTap: (){
+                  GoogleSignInApi.logout();
+                },
+              )
             ],
             crossAxisAlignment: CrossAxisAlignment.start,
           ),
@@ -78,5 +94,5 @@ class GoogleSignInApi {
     return {"account": test, "auth": ggAuth};
   }
 
-  static Future disconnect() => _googleSignIn.disconnect();
+  static Future logout() => _googleSignIn.disconnect();
 }
