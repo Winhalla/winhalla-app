@@ -23,7 +23,7 @@ class Quests extends StatelessWidget {
             itemBuilder: (context, int index) {
               return Container(
                 margin: EdgeInsets.only(bottom: index != 2 - 1 ? 30.0 : 0),
-                child: QuestWidget(name: "Lorem Ipsum", color:  index==0?kEpic:kPrimary, progress: index + 1, goal: 4),
+                child: QuestWidget(name: "Lorem Ipsum", color:  index==0?kEpic:kPrimary, progress: index + 3, goal: 4),
               );
             },
             itemCount: 2,
@@ -44,7 +44,7 @@ class Quests extends StatelessWidget {
             itemBuilder: (context, int index) {
               return Container(
                 margin: EdgeInsets.only(bottom: index != 2 - 1 ? 30.0 : 0),
-                child: QuestWidget(name: "Lorem Ipsum", color: index==0?kRed:kPrimary, progress: index + 1, goal: 4),
+                child: QuestWidget(name: "Lorem Ipsum", color: index==0?kRed:kPrimary, progress: index + 3, goal: 4),
               );
             },
             itemCount: 2,

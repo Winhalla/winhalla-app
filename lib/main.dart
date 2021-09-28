@@ -42,7 +42,7 @@ class _MyAppState extends State<MyApp> {
             child: FutureBuilder(
                 future: initUser(),
                 builder: (context, AsyncSnapshot<dynamic> snapshot) {
-                  if (snapshot.data == "no data") {
+                  if (snapshot.data == "no data" || snapshot.data?.body == "") {
                     return LoginPage();
                   }
                   if (!snapshot.hasData) return AppCore(isUserDataLoaded: false);
@@ -80,7 +80,6 @@ class _AppCoreState extends State<AppCore> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.isUserDataLoaded);
     return Scaffold(
       backgroundColor: kBackground,
       appBar: PreferredSize(preferredSize: Size.fromHeight(134), child: MyAppBar(widget.isUserDataLoaded)),

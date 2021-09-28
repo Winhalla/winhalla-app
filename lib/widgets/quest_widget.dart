@@ -10,22 +10,17 @@ class QuestWidget extends StatelessWidget {
   int progress;
   int goal;
 
-  QuestWidget(
-      {Key? key,
-      required this.name,
-      required this.color,
-      required this.progress,
-      required this.goal})
-      : super(key: key);
+  QuestWidget({Key? key, required this.name, required this.color, required this.progress, required this.goal}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    bool isQuestFinished = progress >= goal;
+    if (isQuestFinished) color = kGreen;
 
     double percentage = progress / goal * 100;
 
     return Container(
-      decoration: BoxDecoration(
-          color: kBackgroundVariant, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(16)),
       padding: EdgeInsets.fromLTRB(30, 27, 30, 27),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -35,40 +30,38 @@ class QuestWidget extends StatelessWidget {
             children: [
               Text(
                 name,
-                style: kBodyText2,
+                style: isQuestFinished
+                    ? TextStyle(
+                        decoration: TextDecoration.lineThrough,
+                        decorationThickness: 2,
+                        color: kGray,
+                        fontSize: 24,
+                        fontFamily: "Roboto Condensed")
+                    : kBodyText2,
               ),
               const Padding(padding: EdgeInsets.only(top: 10)),
-              Text(
-                "$progress/$goal",
-                style: kBodyText4.apply(color: color),
-              )
+              if (!isQuestFinished)
+                Text(
+                  "$progress/$goal",
+                  style: kBodyText4.apply(color: color),
+                )
             ],
           ),
           Stack(
             children: [
               SizedBox(
-                width: 70,
-                height: 70,
-                child: 
-                  CustomPaint(
-                  foregroundPainter: ProgressPainter(
-                    progressColor: color, 
-                    percentage: percentage, 
-                    width: 9
-                  ),
-                )
-              ),
+                  width: 70,
+                  height: 70,
+                  child: CustomPaint(
+                    foregroundPainter: ProgressPainter(progressColor: color, percentage: percentage, width: 9),
+                  )),
               Positioned.fill(
                   child: Align(
                       alignment: Alignment.center,
                       child: Padding(
-                        padding: const EdgeInsets.only(
-                            top:
-                                2), //add padding to center the font that has default bottom spacing
-                        child: Text("${percentage.round()}%",
-                            style: kBodyText4.apply(color: color)),
+                        padding: const EdgeInsets.only(top: 2), //add padding to center the font that has default bottom spacing
+                        child: Text("${percentage.round()}%", style: kBodyText4.apply(color: color)),
                       ))),
-              
             ],
           )
         ],
@@ -82,14 +75,10 @@ class ProgressPainter extends CustomPainter {
   double percentage;
   double width;
 
-  ProgressPainter(
-      {required this.progressColor,
-      required this.percentage,
-      required this.width});
+  ProgressPainter({required this.progressColor, required this.percentage, required this.width});
 
   @override
   void paint(Canvas canvas, Size size) {
-
     Paint line = Paint()
       ..color = kBackground
       ..strokeCap = StrokeCap.round
@@ -108,8 +97,7 @@ class ProgressPainter extends CustomPainter {
     canvas.drawCircle(center, radius, line);
 
     double arcAngle = 2 * pi * (percentage / 100);
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -pi / 2,
-        arcAngle, false, progress);
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -pi / 2, arcAngle, false, progress);
   }
 
   @override
