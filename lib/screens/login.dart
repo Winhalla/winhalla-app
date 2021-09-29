@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:provider/provider.dart';
 import 'package:steam_login/steam_login.dart';
@@ -19,6 +20,21 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   Map<String, dynamic>? gAccount;
+  final bidTextController = TextEditingController();
+
+  void disposeBid() {
+    // Clean up the controller when the widget is disposed.
+    bidTextController.dispose();
+    super.dispose();
+  }
+
+  final linkTextController = TextEditingController();
+
+  void disposeLink() {
+    // Clean up the controller when the widget is disposed.
+    bidTextController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +49,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Container(
                   padding: EdgeInsets.fromLTRB(19, 9, 19, 6),
                   child: Text(
-                    'Click to Login With google',
+                    'Login With google',
                     style: kHeadline1.apply(color: kRed),
                   ),
                   decoration: BoxDecoration(
@@ -44,21 +60,21 @@ class _LoginPageState extends State<LoginPage> {
                 onTap: () async {
                   var temp = await GoogleSignInApi.login();
                   if (temp?["auth"].accessToken == null) return;
-                  var idToken = await http.post(getUri("/auth/createToken"), body: {
-                    "token": temp?["auth"].accessToken,
-                    "name": temp?['account'].displayName,
-                    if(temp?['account'].photoUrl != null) "picture": temp?['account'].photoUrl
-                  });
-                  secureStorage.write(key: "authKey", value: jsonDecode(idToken.body)["_id"]);
-                  setState(() {
-                    gAccount = temp;
-                  });
-                  Navigator.pushReplacementNamed(context, "/");
+                  dynamic idToken;
+                  try{
+                    idToken = await http.post(getUri("/auth/createToken"), body: {
+                      "token": temp?["auth"].accessToken,
+                      "name": temp?['account'].displayName,
+                      if (temp?['account'].photoUrl != null) "picture": temp?['account'].photoUrl
+                    });
+                  } catch (e){
+                    print(e);
+                  }
 
+                  secureStorage.write(key: "authKey", value: jsonDecode(idToken.body)["_id"]);
+                  Navigator.pushReplacementNamed(context, "/");
                 },
               ),
-              Text('Google email: ${gAccount?["account"]?.email}', style: kBodyText2.apply(color: kGreen)),
-              Text('Google token: ${gAccount?["auth"]?.accessToken}', style: kBodyText4.apply(fontFamily: "Roboto Condensed")),
               GestureDetector(
                 child: Container(
                   padding: EdgeInsets.fromLTRB(19, 9, 19, 6),
@@ -71,10 +87,68 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(20),
                   ),
                 ),
-                onTap: (){
+                onTap: () {
                   GoogleSignInApi.logout();
                 },
-              )
+              ),
+              SizedBox(
+                height: 50,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(width: 1, color: kText, style: BorderStyle.solid),
+                    color: kText),
+                child: TextField(
+                  controller: bidTextController,
+                  style: TextStyle(fontSize: 20),
+                  decoration: InputDecoration(
+                    hintText: 'Brawlhalla ID',
+                    contentPadding: EdgeInsets.all(15),
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(width: 1, color: kText, style: BorderStyle.solid),
+                    color: kText),
+                child: TextField(
+                  controller: linkTextController,
+                  style: TextStyle(fontSize: 20),
+                  decoration: InputDecoration(
+                    hintText: 'Link id',
+                    contentPadding: EdgeInsets.all(15),
+                    border: InputBorder.none,
+                  ),
+                ),
+              ),
+              GestureDetector(
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(19, 9, 19, 6),
+                  child: Text(
+                    'Create winhalla account',
+                    style: kHeadline1.apply(color: kRed),
+                  ),
+                  decoration: BoxDecoration(
+                    color: kBackgroundVariant,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                ),
+                onTap: () async {
+                  final String? secureStorageKey = await secureStorage.read(key: "authKey");
+                  if (secureStorageKey == null) return;
+                  print(secureStorageKey);
+                  var linkId =
+                    await http.post(getUri("/auth/createAccount?linkId=${linkTextController.text}&BID=${bidTextController.text}"),
+                    headers: {"authorization":secureStorageKey},);
+                  print(linkId.body);
+                },
+              ),
             ],
             crossAxisAlignment: CrossAxisAlignment.start,
           ),
@@ -84,13 +158,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-
 class GoogleSignInApi {
   static final _googleSignIn = GoogleSignIn();
 
   static Future<Map<String, dynamic>?> login() async {
     var test = await _googleSignIn.signIn();
     var ggAuth = await test?.authentication;
+
     return {"account": test, "auth": ggAuth};
   }
 
