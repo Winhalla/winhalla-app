@@ -28,16 +28,19 @@ class QuestWidget extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                name,
-                style: isQuestFinished
-                    ? TextStyle(
-                        decoration: TextDecoration.lineThrough,
-                        decorationThickness: 2,
-                        color: kGray,
-                        fontSize: 24,
-                        fontFamily: "Roboto Condensed")
-                    : kBodyText2,
+              SizedBox(
+                width: 175,
+                child: Text(
+                  name,
+                  style: isQuestFinished
+                      ? TextStyle(
+                          decoration: TextDecoration.lineThrough,
+                          decorationThickness: 2,
+                          color: kGray,
+                          fontSize: 24,
+                          fontFamily: "Roboto Condensed")
+                      : kBodyText2,
+                ),
               ),
               const Padding(padding: EdgeInsets.only(top: 10)),
               if (!isQuestFinished)
@@ -60,7 +63,7 @@ class QuestWidget extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Padding(
                         padding: const EdgeInsets.only(top: 2), //add padding to center the font that has default bottom spacing
-                        child: Text("${percentage.round()}%", style: kBodyText4.apply(color: color)),
+                        child: Text("${percentage.ceil()}%", style: kBodyText4.apply(color: color)),
                       ))),
             ],
           )
