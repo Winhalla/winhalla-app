@@ -10,18 +10,26 @@ class User extends ChangeNotifier{
   void refresh() async {
     var storageKey = await secureStorage.read(key: "authKey");
     if(storageKey == null) return ;
-    this.value = await http.get(getUri("/account"),headers: {"authorization":storageKey});
-    this.value = jsonDecode(this.value.body);
+    var accountData = await http.get(getUri("/account"),headers: {"authorization":storageKey});
+    this.value = jsonDecode(accountData.body);
     notifyListeners();
   }
 
-
+  void refreshQuests() async {
+    var storageKey = await secureStorage.read(key: "authKey");
+    if(storageKey == null) return;
+    var accountData = await http.get(getUri("/solo"),headers: {"authorization":storageKey});
+    this.value["user"]["solo"] = jsonDecode(accountData.body)["solo"];
+    print(this.value["user"]["solo"]);
+    notifyListeners();
+  }
 
   User(user){
     this.value = user;
     notifyListeners();
   }
 }
+
 Future<dynamic> initUser() async{
   var storageKey = await secureStorage.read(key: "authKey");
   if(storageKey == null) return Future(()=>"no data");
