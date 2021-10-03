@@ -118,7 +118,7 @@ class _DailyChallengeState extends State<DailyChallenge> {
                       )),*/
                 CustomPaint(
                   painter: TreePainter(
-                      dailyChallengeQuests: dailyChallengeQuests,
+                    dailyChallengeQuests: dailyChallengeQuests,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -217,6 +217,8 @@ class TreePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    final List dailyChallengeQuestsCopy = List.from(dailyChallengeQuests);
+
     Paint line = Paint()
       ..color = kText90
       ..strokeCap = StrokeCap.round
@@ -230,13 +232,15 @@ class TreePainter extends CustomPainter {
     double currentWidth = size.width - 65;
 
     Path path = Path();
-    //path.lineTo(size.width - 65, size.height - 100); //là faut un peu retirer car y'a la courbure, sinon ça dépasse du virage
+
 
     void drawBottomTree() {
       path.moveTo(currentWidth, currentHeight);
-      dailyChallengeQuests.removeAt(0);
+      dailyChallengeQuestsCopy.removeAt(0);
+
       currentHeight = currentHeight + 3;
-      for (var quest in dailyChallengeQuests) {
+
+      for (var quest in dailyChallengeQuestsCopy) {
         path.arcTo(
             Rect.fromLTWH(
                 currentWidth - rectSize - 0.15,
@@ -245,10 +249,12 @@ class TreePainter extends CustomPainter {
                 rectSize),
             degToRad(0),
             degToRad(90),
-            false); //en gros faut toujours enlever la width et la height du rectangle sur les 2 premières props (sa position)
+            false);
 
         path.lineTo(20, currentHeight + rectSize);
         path.moveTo(currentWidth, currentHeight);
+
+        //Go to next position
         currentHeight += quest["lineNumber"] == 1
             ? 73
             : quest["lineNumber"] == 2
@@ -258,10 +264,12 @@ class TreePainter extends CustomPainter {
     }
 
     void drawTopTree() {
-      for (var quest in List.from(dailyChallengeQuests)) {
-        if (!quest["active"]) {
+      for (var quest in List.from(dailyChallengeQuestsCopy)) {
+
+        if (!quest["active"]) { 
           path.moveTo(20, currentHeight);
           path.lineTo(currentWidth - rectSize, currentHeight);
+
           path.arcTo(
               Rect.fromLTWH(
                   currentWidth - rectSize - 0.15,
@@ -272,37 +280,39 @@ class TreePainter extends CustomPainter {
               degToRad(90),
               false);
 
+          //Go to next position
           currentHeight += quest["lineNumber"] == 1
               ? 73
               : quest["lineNumber"] == 2
                   ? 73 + 24
                   : 73 + 46;
+
           path.lineTo(currentWidth - 0.15, currentHeight + rectSize);
-          dailyChallengeQuests.remove(quest);
+
+
+          dailyChallengeQuestsCopy.remove(quest);
+
         } else {
           currentHeight += 100;
           return drawBottomTree();
         }
       }
-      //drawBottomTree();
     }
 
-    if (dailyChallengeQuests.length < 1) {
-      print(dailyChallengeQuests);
-      return;
-    }
-
+    //Decide which part of the tree to paint
     if (dailyChallengeQuests[0]["active"]) {
       drawBottomTree();
     } else {
       currentHeight = 38;
       drawTopTree();
     }
+
+    //Draw the tree
     canvas.drawPath(path, line);
   }
 
   @override
   bool shouldRepaint(covariant TreePainter oldDelegate) {
-    return dailyChallengeQuests != oldDelegate.dailyChallengeQuests;
+    return false;
   }
 }
