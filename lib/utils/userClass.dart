@@ -20,8 +20,30 @@ class User extends ChangeNotifier{
     if(storageKey == null) return;
     var accountData = await http.get(getUri("/solo"),headers: {"authorization":storageKey});
     this.value["user"]["solo"] = jsonDecode(accountData.body)["solo"];
-    print(this.value["user"]["solo"]);
     notifyListeners();
+  }
+
+  Future<String> enterMatch() async {
+    String matchId;
+    try {
+      matchId = this.value["user"]["inGame"].firstWhere((x) => x["isFinished"] == false);
+      print(matchId);
+      print("Old");
+    } catch (e) {
+      // Find new match;
+      matchId = (await http.get(getUri("/lobby"),headers:{"authorization":this.value["authKey"]})).body;
+      print(matchId);
+      print("New");
+    }
+    this.value["user"]["inGame"].add({
+      "id": matchId,
+      "type": "Solo",
+      "isFinished": false,
+      "Date": DateTime.now().millisecondsSinceEpoch,
+      "progress": 0
+    });
+    notifyListeners();
+    return jsonDecode(matchId);
   }
 
   User(user){
@@ -33,6 +55,6 @@ class User extends ChangeNotifier{
 Future<dynamic> initUser() async{
   var storageKey = await secureStorage.read(key: "authKey");
   if(storageKey == null) return Future(()=>"no data");
-  var data = http.get(getUri("/account"),headers: {"authorization":storageKey});
-  return data;
+  var data = await http.get(getUri("/account"),headers: {"authorization":storageKey});
+  return {"data":data,"authKey":storageKey};
 }

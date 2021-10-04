@@ -20,7 +20,7 @@ void main() async {
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  static const List<Widget> screenList = [MyHomePage(), Quests(), Play()];
+  static const List<Widget> screenList = [MyHomePage(), Quests(), PlayPage()];
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -41,19 +41,20 @@ class _MyAppState extends State<MyApp> {
         '/': (context) => SafeArea(
             child: FutureBuilder(
                 future: initUser(),
-                builder: (context, AsyncSnapshot<dynamic> snapshot) {
-                  if (snapshot.data == "no data" || snapshot.data?.body == "") {
+                builder: (context, AsyncSnapshot<dynamic> res) {
+                  if (res.data == "no data" || res.data?["data"].body == "") {
                     return LoginPage();
                   }
-                  if (!snapshot.hasData) return AppCore(isUserDataLoaded: false);
+                  if (!res.hasData) return AppCore(isUserDataLoaded: false);
+                  var providerData = jsonDecode(res.data["data"].body);
+                  providerData["authKey"] = res.data["authKey"];
+
                   return ChangeNotifierProvider<User>(
-                      create: (_) => new User(snapshot.hasData ? jsonDecode(snapshot.data!.body) : null),
+                      create: (_) => new User(providerData),
                       child: AppCore(
                         isUserDataLoaded: true,
                       ));
                 })),
-        // When navigating to the "/second" route, build the SecondScreen widget.
-        '/soloMatch': (context) => const SoloMatch(),
         '/login': (context) => const LoginPage(),
       },
     );
