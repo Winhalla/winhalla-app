@@ -20,49 +20,57 @@ class SoloMatch extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.fromLTRB(40, 50, 40, 0),
             child: Center(
+
                 child: FutureBuilder(
                     future: http.get(Uri.parse("https://jsonplaceholder.typicode.com/todos/1")),
                     builder: (dynamic context, AsyncSnapshot<http.Response> res) {
+
                       return ChangeNotifierProvider<FfaMatch>(
-                          create: (_) => new FfaMatch(res.hasData ? jsonDecode(res.data!.body) : null),
+                          create: (_) => FfaMatch(res.hasData ? jsonDecode(res.data!.body) : null),
                           child: Column(children: [
                             Row(
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 5),
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 5),
                                   child: Text('Solo Match', style: kHeadline1),
                                 ),
                                 Container(
-                                    decoration: BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(11)),
+                                    decoration: BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
                                     padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
-                                    child: Text(
+                                    child: const Text(
                                       "28:36",
                                       style: TextStyle(color: kPrimary, fontSize: 35),
                                     )),
                               ],
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             ),
-                            SizedBox(
+
+                            const SizedBox(
                               height: 35,
                             ),
+                            
                             Container(
-                              padding: EdgeInsets.fromLTRB(25, 20, 25, 20),
+                              padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
                               child: Row(
                                 children: [
                                   Row(
-                                    children: [
-                                      Text("x4", style: TextStyle(color: kGreen, fontSize: 35)),
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: const [
+                                      Text("x4", style: TextStyle(color: kGreen, fontSize: 34)),
                                       SizedBox(
-                                        width: 6,
+                                        width: 9,
                                       ),
-                                      Text(
-                                        "Reward",
-                                        style: TextStyle(color: kText, fontSize: 25),
+                                      Padding(
+                                        padding: EdgeInsets.only(bottom: 3.12),
+                                        child: Text(
+                                          "Reward",
+                                          style: TextStyle(color: kText, fontSize: 25),
+                                        ),
                                       )
                                     ],
                                   ),
                                   Container(
-                                      padding: EdgeInsets.fromLTRB(19, 9, 19, 6),
+                                      padding: EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
                                       child: Text(
                                         "Boost it",
                                         style: kBodyText4.apply(color: kBackground),
@@ -73,18 +81,23 @@ class SoloMatch extends StatelessWidget {
                               ),
                               decoration: BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(20)),
                             ),
-                            SizedBox(
+
+
+                            const SizedBox(
                               height: 60,
                             ),
-                            PlayerWidget(true),
-                            SizedBox(
-                              height: 60,
+
+                            PlayerWidget(true), //PLAYER
+
+                            const SizedBox(
+                              height: 56,
                             ),
+
                             Column(
                               children: [
                                 ListView.builder(
                                   itemBuilder: (context, int index) {
-                                    if(index.isOdd) return SizedBox(height: 30);
+                                    if(index.isOdd) return const SizedBox(height: 39); //Spacing between each player card
                                     return PlayerWidget(false);
                                   },
                                   itemCount: 7*2,
@@ -112,11 +125,12 @@ class PlayerWidget extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.fromLTRB(35, isUser?25:18, 35, isUser?25:18),
+          padding: EdgeInsets.fromLTRB(35,  isUser ? 25 : 18, 35,  isUser ? 25 : 18),
           child: Row(
             children: [
+
               SizedBox(
-                width: isUser?80:60,
+                width: isUser ? 72 : 60,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(11),
                   child: Image.network(
@@ -128,38 +142,40 @@ class PlayerWidget extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 1.5),
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 1.5),
                         child: Text(
-                          "Games Played",
+                          "Games played:",
                           style: TextStyle(color: kText, fontSize: 22),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       Text(
                         "3/7",
-                        style: TextStyle(color: kPrimary, fontSize: 26),
+                        style: TextStyle(color: isUser ? kEpic : kPrimary, fontSize: 26),
                       )
                     ],
                     crossAxisAlignment: CrossAxisAlignment.end,
                   ),
-                  SizedBox(
+
+                  const SizedBox(
                     height: 2.5,
                   ),
+
                   if (isUser == true) Row(
-                    children: [
+                    children: const [
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 1.5),
-                          child: Text("Games Won", style: TextStyle(color: kText, fontSize: 22)),
+                          padding: EdgeInsets.only(bottom: 1.5),
+                          child: Text("Games won:", style: TextStyle(color: kText, fontSize: 22)),
                         ),
                       SizedBox(
                         width: 10,
                       ),
                       Text(
                         "2/7",
-                        style: TextStyle(color: kPrimary, fontSize: 26),
+                        style: TextStyle(color: kEpic, fontSize: 26),
                       )
                     ],
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -177,8 +193,8 @@ class PlayerWidget extends StatelessWidget {
         ),
         Positioned(
           left: 35,
-          bottom: isUser?117:83.5,
-          child: Text("Philtrom", style: TextStyle(color: kGray, fontSize: 19)),
+          bottom: isUser? 110 : 83.5,
+          child: const Text("Philtrom", style: TextStyle(color: kGray, fontSize: 19)),
         ),
       ],
       clipBehavior: Clip.none,

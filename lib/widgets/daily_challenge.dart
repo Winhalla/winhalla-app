@@ -38,27 +38,7 @@ class _DailyChallengeState extends State<DailyChallenge> {
         "completed": false,
         "active": true
       },
-      {
-        "name": "Play 1 Winhalla match",
-        "goal": 1,
-        "progress": 0,
-        "completed": false,
-        "active": false
-      },
-      {
-        "name": "Play 1 Winhalla match",
-        "goal": 1,
-        "progress": 0,
-        "completed": false,
-        "active": false
-      },
-      {
-        "name": "Play 1 Winhalla match",
-        "goal": 1,
-        "progress": 0,
-        "completed": false,
-        "active": false
-      },
+      
     ];
 
     for (var quest in dailyChallengeQuests) {
