@@ -5,11 +5,14 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 
 class MyAppBar extends StatelessWidget {
-  const MyAppBar();
+  final bool isUserDataLoaded;
+
+  const MyAppBar(this.isUserDataLoaded);
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(21, 32, 38, 19),
+      padding: const EdgeInsets.fromLTRB(21, 20, 38, 5),
       color: kBackground,
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
         IconButton(
@@ -31,17 +34,26 @@ class MyAppBar extends StatelessWidget {
             height: 55,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
-              child: Consumer<User>(builder: (context, user, _) {
-                if (user.value==null) {
-                  return Image.asset(
-                    "assets/images/logo.png",
-                  );
-                } else {
-                  return Image.network(
-                    user.value["steam"]["picture"],
-                  );
-                }
-              }),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, "/login");
+                },
+                child: isUserDataLoaded
+                    ? Consumer<User>(builder: (context, user, _) {
+                        if (user.value == null) {
+                          return Image.asset(
+                            "assets/images/logo.png",
+                          );
+                        } else {
+                          return Image.network(
+                            user.value["steam"]["picture"],
+                          );
+                        }
+                      })
+                    : Image.asset(
+                        "assets/images/logo.png",
+                      ),
+              ),
             ),
           )
         ])
