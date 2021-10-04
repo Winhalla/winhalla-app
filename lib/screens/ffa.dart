@@ -143,50 +143,53 @@ class PlayerWidget extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.fromLTRB(35, isUser ? 25 : 18, 35, isUser ? 25 : 18),
+          padding: EdgeInsets.fromLTRB(35,  isUser ? 25 : 18, 35,  isUser ? 25 : 18),
           child: Row(
             children: [
+
               SizedBox(
-                width: isUser ? 80 : 60,
+                width: isUser ? 72 : 60,
                 child: ClipRRect(borderRadius: BorderRadius.circular(11), child: Image.network(avatarUrl)),
               ),
               Column(
                 children: [
                   Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 1.5),
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 1.5),
                         child: Text(
-                          "Games Played",
+                          "Games played:",
                           style: TextStyle(color: kText, fontSize: 22),
                         ),
                       ),
-                      SizedBox(
+                      const SizedBox(
                         width: 10,
                       ),
                       Text(
                         "$games/7",
-                        style: TextStyle(color: kPrimary, fontSize: 26),
+                        style: TextStyle(color: isUser ? kEpic : kPrimary, fontSize: 26),
                       )
                     ],
                     crossAxisAlignment: CrossAxisAlignment.end,
                   ),
-                  SizedBox(
+
+                  const SizedBox(
                     height: 2.5,
                   ),
+
                   if (isUser == true)
                     Row(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 1.5),
-                          child: Text("Games Won", style: TextStyle(color: kText, fontSize: 22)),
+                          padding: EdgeInsets.only(bottom: 1.5),
+                          child: Text("Games won:", style: TextStyle(color: kText, fontSize: 22)),
                         ),
                         SizedBox(
                           width: 10,
                         ),
                         Text(
                           "$wins/7",
-                          style: TextStyle(color: kPrimary, fontSize: 26),
+                          style: TextStyle(color: kEpic, fontSize: 26),
                         )
                       ],
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -204,7 +207,7 @@ class PlayerWidget extends StatelessWidget {
         ),
         Positioned(
           left: 35,
-          bottom: isUser ? 117 : 83.5,
+          bottom: isUser ? 110 : 83.5,
           child: Text(name, style: TextStyle(color: kGray, fontSize: 19)),
         ),
       ],

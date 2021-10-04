@@ -85,10 +85,12 @@ class _AppCoreState extends State<AppCore> {
       backgroundColor: kBackground,
       appBar: PreferredSize(preferredSize: Size.fromHeight(134), child: MyAppBar(widget.isUserDataLoaded)),
       body: widget.isUserDataLoaded
-          ? Padding(
-              padding: const EdgeInsets.fromLTRB(32, 26, 32, 0),
-              child: MyApp.screenList[_selectedIndex],
-            )
+          ? SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(32, 42, 32, 42),
+                child: MyApp.screenList[_selectedIndex],
+              )
+          )
           : Center(
               child: Container(
                   padding: EdgeInsets.only(left: 20, right: 10),
