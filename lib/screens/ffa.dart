@@ -39,7 +39,7 @@ class SoloMatch extends StatelessWidget {
                       ),
                       Container(
                           decoration: BoxDecoration(
-                              color: kBackgroundVariant, borderRadius: BorderRadius.circular(11)),
+                              color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
                           padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
                           child: const Text(
                             "28:36",
@@ -52,23 +52,27 @@ class SoloMatch extends StatelessWidget {
                     height: 35,
                   ),
                   Container(
-                    padding: EdgeInsets.fromLTRB(25, 20, 25, 20),
+                    padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
                     child: Row(
                       children: [
                         Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: const [
-                            Text("x4", style: TextStyle(color: kGreen, fontSize: 35)),
+                            Text("x4", style: TextStyle(color: kGreen, fontSize: 34)),
                             SizedBox(
-                              width: 6,
+                              width: 9,
                             ),
-                            Text(
-                              "Reward",
-                              style: TextStyle(color: kText, fontSize: 25),
+                            Padding(
+                              padding: EdgeInsets.only(bottom: 3.12),
+                              child: Text(
+                                "Reward",
+                                style: TextStyle(color: kText, fontSize: 25),
+                              ),
                             )
                           ],
                         ),
                         Container(
-                            padding: EdgeInsets.fromLTRB(19, 9, 19, 6),
+                            padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
                             child: Text(
                               "Boost it",
                               style: kBodyText4.apply(color: kBackground),
@@ -80,9 +84,12 @@ class SoloMatch extends StatelessWidget {
                     decoration:
                         BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(20)),
                   ),
+
+
                   const SizedBox(
                     height: 60,
                   ),
+
                   Consumer<FfaMatch>(builder: (context, match, _) {
                     final player = match.value["userPlayer"];
                     return PlayerWidget(isUser: true,
@@ -91,17 +98,21 @@ class SoloMatch extends StatelessWidget {
                       wins: player["wins"],
                       name: player["username"],);
                   }),
+
                   const SizedBox(
-                    height: 60,
+                    height: 56,
                   ),
+
                   Column(
                     children: [
                       Consumer<FfaMatch>(builder: (context, match, _) {
                         return ListView.builder(
                           itemBuilder: (context, int index) {
+                            if (index.isOdd) return const SizedBox(height: 39); //Spacing between each player card
+                              
                             final player = match.value["players"][index];
                             return PlayerWidget(
-                              isUser: true,
+                              isUser: false,
                               avatarUrl: player["avatarURL"],
                               games: player["gamesPlayed"],
                               wins: player["wins"],
