@@ -61,9 +61,9 @@ class Quests extends StatelessWidget {
                     },
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-                      child: const Icon(Icons.sync, color: kBackgroundVariant),
-                      decoration:BoxDecoration(
-                        color: kPrimary,
+                      child: const Icon(Icons.sync, color: kGreen),
+                      decoration: BoxDecoration(
+                        color: kBackgroundVariant,
                         borderRadius: BorderRadius.circular(15)
                       ),
                     ),
@@ -116,9 +116,9 @@ class Quests extends StatelessWidget {
 
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-                      child: const Icon(Icons.sync, color: kBackgroundVariant,),
+                      child: const Icon(Icons.sync, color: kGreen,),
                       decoration:BoxDecoration(
-                          color: kPrimary,
+                          color: kBackgroundVariant,
                           borderRadius: BorderRadius.circular(15)
                       ),
                     ),

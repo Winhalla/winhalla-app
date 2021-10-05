@@ -19,35 +19,36 @@ class SoloMatch extends StatelessWidget {
           future: http.get(getUri("/getMatch/$matchId"),
               headers: {"authorization": context.read<User>().value["authKey"]}),
           builder: (dynamic context, AsyncSnapshot<http.Response> res) {
-            if (!res.hasData)
-              return Center(
+            if (!res.hasData) {
+              return const Center(
                 child: Text(
                   "Loading...",
                   style: kHeadline1,
                 ),
               );
+            }
             return ChangeNotifierProvider<FfaMatch>(
-              create: (ctxt) => new FfaMatch(res.hasData ? jsonDecode(res.data!.body) : null,ctxt.read<User>().value["steam"]["id"]),
+              create: (ctxt) => FfaMatch(res.hasData ? jsonDecode(res.data!.body) : null,ctxt.read<User>().value["steam"]["id"]),
               child: ListView(
                 children: [
                   Row(
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 5),
                         child: Text('Solo Match', style: kHeadline1),
                       ),
                       Container(
                           decoration: BoxDecoration(
                               color: kBackgroundVariant, borderRadius: BorderRadius.circular(11)),
                           padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
-                          child: Text(
+                          child: const Text(
                             "28:36",
                             style: TextStyle(color: kPrimary, fontSize: 35),
                           )),
                     ],
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 35,
                   ),
                   Container(
@@ -55,7 +56,7 @@ class SoloMatch extends StatelessWidget {
                     child: Row(
                       children: [
                         Row(
-                          children: [
+                          children: const [
                             Text("x4", style: TextStyle(color: kGreen, fontSize: 35)),
                             SizedBox(
                               width: 6,
@@ -79,7 +80,7 @@ class SoloMatch extends StatelessWidget {
                     decoration:
                         BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(20)),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 60,
                   ),
                   Consumer<FfaMatch>(builder: (context, match, _) {
@@ -90,7 +91,7 @@ class SoloMatch extends StatelessWidget {
                       wins: player["wins"],
                       name: player["username"],);
                   }),
-                  SizedBox(
+                  const SizedBox(
                     height: 60,
                   ),
                   Column(
@@ -180,16 +181,16 @@ class PlayerWidget extends StatelessWidget {
                   if (isUser == true)
                     Row(
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.only(bottom: 1.5),
                           child: Text("Games won:", style: TextStyle(color: kText, fontSize: 22)),
                         ),
-                        SizedBox(
+                        const SizedBox(
                           width: 10,
                         ),
                         Text(
                           "$wins/7",
-                          style: TextStyle(color: kEpic, fontSize: 26),
+                          style: const TextStyle(color: kEpic, fontSize: 26),
                         )
                       ],
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -208,7 +209,7 @@ class PlayerWidget extends StatelessWidget {
         Positioned(
           left: 35,
           bottom: isUser ? 110 : 83.5,
-          child: Text(name, style: TextStyle(color: kGray, fontSize: 19)),
+          child: Text(name, style: const TextStyle(color: kGray, fontSize: 19)),
         ),
       ],
       clipBehavior: Clip.none,
