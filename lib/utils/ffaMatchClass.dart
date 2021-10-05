@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/getUri.dart';
@@ -7,8 +9,12 @@ import 'package:winhalla_app/utils/userClass.dart';
 class FfaMatch extends ChangeNotifier {
   dynamic value;
 
-  void refresh() async {
-    this.value = await http.get(getUri("/getMatch/613e57a522d5937857affe65"));
+  void refresh(String authKey) async {
+    var match = jsonDecode((await http.get(getUri("/getMatch/${this.value["_id"]}"),headers: {"authorization":authKey})).body);
+    var steamId = this.value["userPlayer"]["steamId"];
+    match["userPlayer"] = match["players"].firstWhere((e) => e["steamId"] == steamId);
+    match["players"] = match["players"].where((e)=>e["steamId"]!= steamId).toList();
+    this.value = match;
     notifyListeners();
   }
 
@@ -18,8 +24,7 @@ class FfaMatch extends ChangeNotifier {
     notifyListeners();
   }
 
-  FfaMatch(match, context) {
-    String steamId = context;
+  FfaMatch(match, String steamId) {
     match["userPlayer"] = match["players"].firstWhere((e) => e["steamId"] == steamId);
     match["players"] = match["players"].where((e)=>e["steamId"]!= steamId).toList();
     this.value = match;
@@ -27,7 +32,7 @@ class FfaMatch extends ChangeNotifier {
   }
 }
 
-Future<dynamic> initMatch(matchId, context) async {
+Future<dynamic> initMatch(String matchId, context) async {
   var storageKey = context.read<User>()["authKey"];
   if (storageKey == null) return Future(() => "no data");
   var data = await http.get(getUri("/getMatch/$matchId"), headers: {"authorization": storageKey});

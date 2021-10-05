@@ -4,21 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/getUri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
-class User extends ChangeNotifier{
+
+class User extends ChangeNotifier {
   dynamic value;
 
   void refresh() async {
     var storageKey = await secureStorage.read(key: "authKey");
-    if(storageKey == null) return ;
-    var accountData = await http.get(getUri("/account"),headers: {"authorization":storageKey});
+    if (storageKey == null) return;
+    var accountData = await http.get(getUri("/account"), headers: {"authorization": storageKey});
     this.value = jsonDecode(accountData.body);
     notifyListeners();
   }
 
   void refreshQuests() async {
     var storageKey = await secureStorage.read(key: "authKey");
-    if(storageKey == null) return;
-    var accountData = await http.get(getUri("/solo"),headers: {"authorization":storageKey});
+    if (storageKey == null) return;
+    var accountData = await http.get(getUri("/solo"), headers: {"authorization": storageKey});
     this.value["user"]["solo"] = jsonDecode(accountData.body)["solo"];
     notifyListeners();
   }
@@ -26,12 +27,13 @@ class User extends ChangeNotifier{
   Future<String> enterMatch() async {
     String matchId;
     try {
-      matchId = this.value["user"]["inGame"].firstWhere((x) => x["isFinished"] == false);
+      matchId = this.value["user"]["inGame"].firstWhere((x) => x["isFinished"] == false)["id"];
       print(matchId);
       print("Old");
     } catch (e) {
       // Find new match;
-      matchId = (await http.get(getUri("/lobby"),headers:{"authorization":this.value["authKey"]})).body;
+      print(e);
+      matchId = (await http.get(getUri("/lobby"), headers: {"authorization": this.value["authKey"]})).body;
       print(matchId);
       print("New");
     }
@@ -46,15 +48,15 @@ class User extends ChangeNotifier{
     return jsonDecode(matchId);
   }
 
-  User(user){
+  User(user) {
     this.value = user;
     notifyListeners();
   }
 }
 
-Future<dynamic> initUser() async{
+Future<dynamic> initUser() async {
   var storageKey = await secureStorage.read(key: "authKey");
-  if(storageKey == null) return Future(()=>"no data");
-  var data = await http.get(getUri("/account"),headers: {"authorization":storageKey});
-  return {"data":data,"authKey":storageKey};
+  if (storageKey == null) return Future(() => "no data");
+  var data = await http.get(getUri("/account"), headers: {"authorization": storageKey});
+  return {"data": data, "authKey": storageKey};
 }
