@@ -28,14 +28,9 @@ class User extends ChangeNotifier {
     String matchId;
     try {
       matchId = this.value["user"]["inGame"].firstWhere((x) => x["isFinished"] == false)["id"];
-      print(matchId);
-      print("Old");
     } catch (e) {
       // Find new match;
-      print(e);
-      matchId = (await http.get(getUri("/lobby"), headers: {"authorization": this.value["authKey"]})).body;
-      print(matchId);
-      print("New");
+      matchId = jsonDecode((await http.get(getUri("/lobby"), headers: {"authorization": this.value["authKey"]})).body);
     }
     this.value["user"]["inGame"].add({
       "id": matchId,
@@ -45,7 +40,7 @@ class User extends ChangeNotifier {
       "progress": 0
     });
     notifyListeners();
-    return jsonDecode(matchId);
+    return matchId;
   }
 
   User(user) {

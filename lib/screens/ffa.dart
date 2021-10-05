@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -32,113 +32,114 @@ class SoloMatch extends StatelessWidget {
           return ChangeNotifierProvider<FfaMatch>(
             create: (ctxt) => FfaMatch(
                 res.hasData ? jsonDecode(res.data!.body) : null, ctxt.read<User>().value["steam"]["id"]),
-            child: Builder(
-              builder: (context) {
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    context.read<FfaMatch>().refresh(context.read<User>().value["authKey"]);
-                    return;
-                  },
-                  child: ListView(
-                    children: [
-                      Row(
+            child: Builder(builder: (context) {
+              return RefreshIndicator(
+                onRefresh: () async {
+                  await context.read<FfaMatch>().refresh(context.read<User>().value["authKey"]);
+                  return;
+                },
+                child: ListView(
+                  children: [
+                    Row(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(top: 5),
+                          child: Text('Solo Match', style: kHeadline1),
+                        ),
+                        Container(
+                            decoration: BoxDecoration(
+                                color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
+                            padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
+                            child: Consumer<FfaMatch>(
+                              builder: (context, match,_) {
+                                return TimerWidget(
+                                  numberOfSeconds: (((match.value["Date"]+3600*1000)-DateTime.now().millisecondsSinceEpoch)/1000).round(),
+                                );
+                              }
+                            ))
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    ),
+                    const SizedBox(
+                      height: 35,
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
+                      child: Row(
                         children: [
-                          const Padding(
-                            padding: EdgeInsets.only(top: 5),
-                            child: Text('Solo Match', style: kHeadline1),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: const [
+                              Text("x4", style: TextStyle(color: kGreen, fontSize: 34)),
+                              SizedBox(
+                                width: 9,
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(bottom: 3.12),
+                                child: Text(
+                                  "Reward",
+                                  style: TextStyle(color: kText, fontSize: 25),
+                                ),
+                              )
+                            ],
                           ),
                           Container(
-                              decoration: BoxDecoration(
-                                  color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
-                              padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
-                              child: const Text(
-                                "28:36",
-                                style: TextStyle(color: kPrimary, fontSize: 35),
-                              )),
+                              padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
+                              child: Text(
+                                "Boost it",
+                                style: kBodyText4.apply(color: kBackground),
+                              ),
+                              decoration:
+                                  BoxDecoration(color: kGreen, borderRadius: BorderRadius.circular(12)))
                         ],
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       ),
-                      const SizedBox(
-                        height: 35,
-                      ),
-                      Container(
-                        padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
-                        child: Row(
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: const [
-                                Text("x4", style: TextStyle(color: kGreen, fontSize: 34)),
-                                SizedBox(
-                                  width: 9,
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(bottom: 3.12),
-                                  child: Text(
-                                    "Reward",
-                                    style: TextStyle(color: kText, fontSize: 25),
-                                  ),
-                                )
-                              ],
-                            ),
-                            Container(
-                                padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
-                                child: Text(
-                                  "Boost it",
-                                  style: kBodyText4.apply(color: kBackground),
-                                ),
-                                decoration: BoxDecoration(color: kGreen, borderRadius: BorderRadius.circular(12)))
-                          ],
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        ),
-                        decoration:
-                            BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(20)),
-                      ),
-                      const SizedBox(
-                        height: 60,
-                      ),
-                      Consumer<FfaMatch>(builder: (context, match, _) {
-                        final player = match.value["userPlayer"];
-                        return PlayerWidget(
-                          isUser: true,
-                          avatarUrl: player["avatarURL"],
-                          games: player["gamesPlayed"],
-                          wins: player["wins"],
-                          name: player["username"],
-                        );
-                      }),
-                      const SizedBox(
-                        height: 56,
-                      ),
-                      Column(
-                        children: [
-                          Consumer<FfaMatch>(builder: (context, match, _) {
-                            return ListView.builder(
-                              itemBuilder: (context, int index) {
-                                if (index.isOdd)
-                                  return const SizedBox(height: 39); //Spacing between each player card
+                      decoration:
+                          BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(20)),
+                    ),
+                    const SizedBox(
+                      height: 60,
+                    ),
+                    Consumer<FfaMatch>(builder: (context, match, _) {
+                      final player = match.value["userPlayer"];
+                      return PlayerWidget(
+                        isUser: true,
+                        avatarUrl: player["avatarURL"],
+                        games: player["gamesPlayed"],
+                        wins: player["wins"],
+                        name: player["username"],
+                      );
+                    }),
+                    const SizedBox(
+                      height: 56,
+                    ),
+                    Column(
+                      children: [
+                        Consumer<FfaMatch>(builder: (context, match, _) {
+                          return ListView.builder(
+                            itemBuilder: (context, int index) {
+                              if (index.isOdd)
+                                return const SizedBox(height: 39); //Spacing between each player card
 
-                                final player = match.value["players"][index];
-                                return PlayerWidget(
-                                  isUser: false,
-                                  avatarUrl: player["avatarURL"],
-                                  games: player["gamesPlayed"],
-                                  wins: player["wins"],
-                                  name: player["username"],
-                                );
-                              },
-                              itemCount: match.value["players"].length,
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                            );
-                          })
-                        ],
-                      )
-                    ],
-                  ),
-                );
-              }
-            ),
+                              final player = match.value["players"][index];
+                              return PlayerWidget(
+                                isUser: false,
+                                avatarUrl: player["avatarURL"],
+                                games: player["gamesPlayed"],
+                                name: player["username"],
+                              );
+                            },
+                            itemCount: match.value["players"].length,
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                          );
+                        })
+                      ],
+                    )
+                  ],
+                ),
+              );
+            }),
           );
         },
       ),
@@ -151,14 +152,14 @@ class PlayerWidget extends StatelessWidget {
     required this.isUser,
     required this.avatarUrl,
     required this.games,
-    required this.wins,
+    this.wins,
     required this.name,
   });
 
   final bool isUser;
   final String avatarUrl;
   final int games;
-  final int wins;
+  final int? wins;
   final String name;
 
   @override
@@ -233,5 +234,70 @@ class PlayerWidget extends StatelessWidget {
       ],
       clipBehavior: Clip.none,
     );
+  }
+}
+
+class TimerWidget extends StatefulWidget {
+  final int numberOfSeconds;
+
+  const TimerWidget({Key? key, required this.numberOfSeconds}) : super(key: key);
+
+  @override
+  _TimerWidgetState createState() => _TimerWidgetState();
+}
+
+class _TimerWidgetState extends State<TimerWidget> {
+  String timer = "";
+  bool alreadyBuilt = false;
+  Color color = kPrimary;
+
+  void startTimer() {
+    const oneSec = const Duration(seconds: 1);
+    int minutes = (widget.numberOfSeconds / 60).floor();
+    int seconds = widget.numberOfSeconds % 60;
+    void timerFx(Timer? cancel) {
+      if (seconds == 0 && minutes == 0) {
+        setState(() {
+          timer = "00:00";
+          color = kRed;
+        });
+        if (cancel != null) cancel.cancel();
+        return;
+      } else if (seconds == 0) {
+        seconds = 59;
+        minutes -= 1;
+      } else {
+        seconds -= 1;
+      }
+
+      if (minutes < 10)
+        timer = "0$minutes";
+      else
+        timer = "$minutes";
+
+      if (seconds < 10)
+        timer += ":0$seconds";
+      else
+        timer += ":$seconds";
+
+      setState(() {
+        timer = timer;
+      });
+    }
+    Timer _timer = new Timer.periodic(oneSec, timerFx);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(builder: (BuildContext context) {
+      if (alreadyBuilt == false) {
+        alreadyBuilt = true;
+        startTimer();
+      }
+      return Text(
+        timer==""?"Loading...":timer,
+        style: TextStyle(color: color, fontSize: 35),
+      );
+    });
   }
 }

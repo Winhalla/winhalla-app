@@ -9,7 +9,7 @@ import 'package:winhalla_app/utils/userClass.dart';
 class FfaMatch extends ChangeNotifier {
   dynamic value;
 
-  void refresh(String authKey) async {
+  Future<void> refresh(String authKey) async {
     var match = jsonDecode((await http.get(getUri("/getMatch/${this.value["_id"]}"),headers: {"authorization":authKey})).body);
     var steamId = this.value["userPlayer"]["steamId"];
     match["userPlayer"] = match["players"].firstWhere((e) => e["steamId"] == steamId);
