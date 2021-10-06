@@ -39,12 +39,14 @@ class Quests extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, _) {
-
       var userData = user.value["user"]["solo"];
 
-      return Column(
+      return RefreshIndicator(
+        onRefresh: () async {
+          await user.refreshQuests();
+        },
+        child: ListView(
           children: [
-
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: Row(
@@ -54,51 +56,31 @@ class Quests extends StatelessWidget {
                     padding: EdgeInsets.only(left: 8.0),
                     child: Text('Daily Quests', style: kHeadline1),
                   ),
-
-                  GestureDetector(
-                    onTap: (){
-                      user.refreshQuests();
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-                      child: const Icon(Icons.sync, color: kGreen),
-                      decoration: BoxDecoration(
-                        color: kBackgroundVariant,
-                        borderRadius: BorderRadius.circular(15)
-                      ),
-                    ),
-                  )
+                  Container()
                 ],
               ),
             ),
-
             const SizedBox(
               height: 30,
             ),
-
             ListView.builder(
               itemBuilder: (context, int index) {
-
                 return Container(
                   margin: EdgeInsets.only(bottom: index != 2 - 1 ? 30.0 : 0),
                   child: QuestWidget(
                       name: userData["dailyQuests"][index]["name"],
                       color: _getColorFromPrice(userData["dailyQuests"][index]["reward"], "weekly"),
-
                       progress: userData["dailyQuests"][index]["progress"],
                       goal: userData["dailyQuests"][index]["goal"]),
                 );
               },
-
               itemCount: userData["dailyQuests"].length,
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
             ),
-
             const SizedBox(
               height: 78,
             ),
-
             Padding(
               padding: const EdgeInsets.only(right: 10),
               child: Row(
@@ -108,29 +90,13 @@ class Quests extends StatelessWidget {
                     padding: EdgeInsets.only(left: 8.0),
                     child: Text('Weekly Quests', style: kHeadline1),
                   ),
-
-                  GestureDetector(
-                    onTap: (){
-                      user.refreshQuests();
-                    },
-
-                    child: Container(
-                      padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-                      child: const Icon(Icons.sync, color: kGreen,),
-                      decoration:BoxDecoration(
-                          color: kBackgroundVariant,
-                          borderRadius: BorderRadius.circular(15)
-                      ),
-                    ),
-                  )
+                  Container()
                 ],
               ),
             ),
-
             const SizedBox(
               height: 30,
             ),
-
             ListView.builder(
               itemBuilder: (context, int index) {
                 return Container(
@@ -138,19 +104,16 @@ class Quests extends StatelessWidget {
                   child: QuestWidget(
                       name: userData["weeklyQuests"][index]["name"],
                       color: _getColorFromPrice(userData["weeklyQuests"][index]["reward"], "weekly"),
-                      
                       progress: userData["weeklyQuests"][index]["progress"],
                       goal: userData["weeklyQuests"][index]["goal"]),
                 );
               },
-
               itemCount: userData["weeklyQuests"].length,
               physics: const NeverScrollableScrollPhysics(),
               shrinkWrap: true,
             ),
           ],
-          crossAxisAlignment: CrossAxisAlignment.start,
-        
+        ),
       );
     });
   }

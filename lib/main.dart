@@ -85,7 +85,7 @@ class _AppCoreState extends State<AppCore> {
       backgroundColor: kBackground,
       appBar: PreferredSize(preferredSize: Size.fromHeight(134), child: MyAppBar(widget.isUserDataLoaded)),
       body: widget.isUserDataLoaded
-          ? _selectedIndex == 2 // If the page is a solo match, do not make it scrollable by default, because it's already a ListView
+          ? _selectedIndex == 2 || _selectedIndex == 1 // If the page is a solo match, do not make it scrollable by default, because it's already a ListView
               ? Padding(
                   padding: const EdgeInsets.fromLTRB(32, 10, 32, 42),
                   child: MyApp.screenList[_selectedIndex],

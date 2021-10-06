@@ -16,7 +16,7 @@ class User extends ChangeNotifier {
     notifyListeners();
   }
 
-  void refreshQuests() async {
+  Future<void> refreshQuests() async {
     var storageKey = await secureStorage.read(key: "authKey");
     if (storageKey == null) return;
     var accountData = await http.get(getUri("/solo"), headers: {"authorization": storageKey});
@@ -45,6 +45,7 @@ class User extends ChangeNotifier {
 
   User(user) {
     this.value = user;
+    print(user["user"]["brawlhallaId"]);
     notifyListeners();
   }
 }
