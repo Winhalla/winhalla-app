@@ -12,7 +12,7 @@ class MyAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(21, 34, 38, 24),
+      padding: const EdgeInsets.fromLTRB(21, 30, 38, 24),
       color: kBackground,
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
         IconButton(
@@ -42,7 +42,7 @@ class MyAppBar extends StatelessWidget {
                     ? Consumer<User>(builder: (context, user, _) {
                         if (user.value == null) {
                           return Image.asset(
-                            "assets/images/logo.png",
+                            "assets/images/logoMini.png",
                           );
                         } else {
                           return Image.network(
@@ -51,7 +51,7 @@ class MyAppBar extends StatelessWidget {
                         }
                       })
                     : Image.asset(
-                        "assets/images/logo.png",
+                        "assets/images/logoMini.png",
                       ),
               ),
             ),
