@@ -1,9 +1,8 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/utils/timerWidget.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 import 'package:winhalla_app/widgets/quest_widget.dart';
 
@@ -54,9 +53,18 @@ class Quests extends StatelessWidget {
                 children: [
                   const Padding(
                     padding: EdgeInsets.only(left: 8.0),
-                    child: Text('Daily Quests', style: kHeadline1),
+                    child: Text('Daily', style: kHeadline1),
                   ),
-                  Container()
+                  Container(
+                      decoration:
+                          BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
+                      padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
+                      child: TimerWidget(
+                          showHours:"hours",
+                          numberOfSeconds:
+                              (((userData["lastDaily"] + 86400000) - DateTime.now().millisecondsSinceEpoch) /
+                                      1000)
+                                  .round()))
                 ],
               ),
             ),
@@ -88,9 +96,18 @@ class Quests extends StatelessWidget {
                 children: [
                   const Padding(
                     padding: EdgeInsets.only(left: 8.0),
-                    child: Text('Weekly Quests', style: kHeadline1),
+                    child: Text('Weekly', style: kHeadline1),
                   ),
-                  Container()
+                  Container(
+                      decoration:
+                          BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
+                      padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
+                      child: TimerWidget(
+                          showHours:"days",
+                          numberOfSeconds: (((userData["lastWeekly"] + 86400000*7) -
+                                      DateTime.now().millisecondsSinceEpoch) /
+                                  1000)
+                              .round()))
                 ],
               ),
             ),

@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:winhalla_app/utils/ffaMatchClass.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/getUri.dart';
+import 'package:winhalla_app/utils/timerWidget.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 
 class SoloMatch extends StatelessWidget {
@@ -53,6 +53,7 @@ class SoloMatch extends StatelessWidget {
                             child: Consumer<FfaMatch>(
                               builder: (context, match,_) {
                                 return TimerWidget(
+                                  showHours: "no",
                                   numberOfSeconds: (((match.value["Date"]+3600*1000)-DateTime.now().millisecondsSinceEpoch)/1000).round(),
                                 );
                               }
@@ -237,67 +238,3 @@ class PlayerWidget extends StatelessWidget {
   }
 }
 
-class TimerWidget extends StatefulWidget {
-  final int numberOfSeconds;
-
-  const TimerWidget({Key? key, required this.numberOfSeconds}) : super(key: key);
-
-  @override
-  _TimerWidgetState createState() => _TimerWidgetState();
-}
-
-class _TimerWidgetState extends State<TimerWidget> {
-  String timer = "";
-  bool alreadyBuilt = false;
-  Color color = kPrimary;
-
-  void startTimer() {
-    const oneSec = const Duration(seconds: 1);
-    int minutes = (widget.numberOfSeconds / 60).floor();
-    int seconds = widget.numberOfSeconds % 60;
-    void timerFx(Timer? cancel) {
-      if (seconds == 0 && minutes == 0) {
-        setState(() {
-          timer = "00:00";
-          color = kRed;
-        });
-        if (cancel != null) cancel.cancel();
-        return;
-      } else if (seconds == 0) {
-        seconds = 59;
-        minutes -= 1;
-      } else {
-        seconds -= 1;
-      }
-
-      if (minutes < 10)
-        timer = "0$minutes";
-      else
-        timer = "$minutes";
-
-      if (seconds < 10)
-        timer += ":0$seconds";
-      else
-        timer += ":$seconds";
-
-      setState(() {
-        timer = timer;
-      });
-    }
-    Timer _timer = new Timer.periodic(oneSec, timerFx);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Builder(builder: (BuildContext context) {
-      if (alreadyBuilt == false) {
-        alreadyBuilt = true;
-        startTimer();
-      }
-      return Text(
-        timer==""?"Loading...":timer,
-        style: TextStyle(color: color, fontSize: 35),
-      );
-    });
-  }
-}
