@@ -149,7 +149,124 @@ class GoogleAppleLogin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(45, 90, 30, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            "Welcome to",
+            style: TextStyle(
+              fontSize: 60,
+              color: kText,
+            ),
+          ),
+          Row(
+            children: [
+              const Text(
+                "Winhalla",
+                style: TextStyle(fontSize: 60, color: kPrimary, height: 1),
+              ),
+              const Text(
+                "!",
+                style: TextStyle(fontSize: 60, color: kText, height: 1),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 25,
+          ),
+          Row(
+            children: [
+              const Text(
+                "Play",
+                style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
+              ),
+              const SizedBox(
+                width: 7,
+              ),
+              const Text(
+                "Brawlhalla,",
+                style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
+              ),
+            ],
+          ),
+          Row(
+            children: [
+              const Text(
+                "Earn",
+                style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
+              ),
+              const SizedBox(
+                width: 7,
+              ),
+              const Text(
+                "Rewards,",
+                style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
+              ),
+            ],
+          ),
+          SizedBox(height: 150,),
+          GestureDetector(
+            onTap: ()async{
+              var temp = await GoogleSignInApi.login();
+              if (temp?["auth"].accessToken == null) return;
+              dynamic idToken;
+              try {
+                idToken = await http.post(getUri("/auth/createToken"), body: {
+                  "token": temp?["auth"].accessToken,
+                  "name": temp?['account'].displayName,
+                  if (temp?['account'].photoUrl != null) "picture": temp?['account'].photoUrl
+                });
+              } catch (e) {
+                print(e);
+              }
+              await secureStorage.write(key: "authKey", value: jsonDecode(idToken.body)["_id"]);
+              context.read<LoginPageManager>().next();
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: kBlack,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset("assets/images/google_icon.png",height: 40,width: 40,),
+                  SizedBox(width: 15,),
+                  Text("Sign in with Google",style: kBodyText2,),
+                ],
+
+              ),
+            ),
+          ),
+          SizedBox(height: 30,),
+          GestureDetector(
+            onTap: (){
+              print("apple login");
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: kBlack,
+                borderRadius: BorderRadius.circular(15),
+              ),
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Image.asset("assets/images/apple_icon.png",height: 40,width: 40,),
+                  SizedBox(width: 15,),
+                  Text("Sign in with Google",style: kBodyText2,),
+                ],
+
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+    /*return Center(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
         child: Column(
@@ -209,7 +326,7 @@ class GoogleAppleLogin extends StatelessWidget {
                 ),
               ),
             )
-            /*GestureDetector(
+            */ /*GestureDetector(
               child: Container(
                 padding: EdgeInsets.fromLTRB(19, 9, 19, 6),
                 child: Text(
@@ -224,11 +341,11 @@ class GoogleAppleLogin extends StatelessWidget {
               onTap: () {
                 GoogleSignInApi.logout();
               },
-            ),*/
+            ),*/ /*
           ],
         ),
       ),
-    );
+    );*/
   }
 }
 
