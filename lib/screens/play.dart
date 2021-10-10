@@ -19,22 +19,29 @@ class _PlayPageState extends State<PlayPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: matchInProgressId == null
-          ? GestureDetector(
-              child: Text(
-                "Play",
-                style: kHeadline1,
+    return matchInProgressId == null
+        ? Column(
+            children: [
+              Container(
+                decoration: BoxDecoration(color: kPrimary, borderRadius: BorderRadius.circular(20)),
+                child: GestureDetector(
+                  child: Text(
+                    "Play",
+                    style: kHeadline1,
+                  ),
+                  onTap: () async {
+                    var matchId = await context.read<User>().enterMatch();
+                    setState(() {
+                      matchInProgressId = matchId;
+                    });
+                  },
+                ),
               ),
-              onTap: () async {
-                var matchId = await context.read<User>().enterMatch();
-                setState(() {matchInProgressId = matchId;});
-              },
-            )
-          :
-          // Can't be null bc we check above. Null safety still there.
-          SoloMatch(matchId: matchInProgressId as String),
-    );
+            ],
+          )
+        :
+        // Can't be null bc we check above. Null safety still there.
+        SoloMatch(matchId: matchInProgressId as String);
   }
 }
 

@@ -68,17 +68,12 @@ class _DailyChallengeState extends State<DailyChallenge> {
                 // ignore: avoid_returning_null_for_void
                 onTap: () => null,
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-                  decoration: BoxDecoration(
-                      color: kBackgroundVariant,
-                      borderRadius: BorderRadius.circular(12)),
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
+                  decoration:
+                      BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(12)),
                   child: const Text(
                     "?",
-                    style: TextStyle(
-                        fontFamily: "Roboto Condensed",
-                        color: kPrimary,
-                        fontSize: 32),
+                    style: TextStyle(fontFamily: "Roboto Condensed", color: kPrimary, fontSize: 32),
                   ),
                 ))
           ],
@@ -108,8 +103,7 @@ class _DailyChallengeState extends State<DailyChallenge> {
                       for (var quest in dailyChallengeQuests)
                         quest["completed"] as bool
                             ? Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 11.5),
+                                padding: const EdgeInsets.symmetric(vertical: 11.5),
                                 child: DailyChallengeItem(
                                   name: quest["name"] as String,
                                   completed: quest["completed"] as bool,
@@ -117,16 +111,14 @@ class _DailyChallengeState extends State<DailyChallenge> {
                               )
                             : quest["active"] as bool
                                 ? Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 11.5),
+                                    padding: const EdgeInsets.symmetric(vertical: 11.5),
                                     child: QuestWidget(
                                         name: quest["name"] as String,
                                         color: kOrange,
                                         progress: quest["progress"] as int,
                                         goal: quest["goal"] as int))
                                 : Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 11.5),
+                                    padding: const EdgeInsets.symmetric(vertical: 11.5),
                                     child: DailyChallengeItem(
                                       name: quest["name"] as String,
                                       completed: quest["completed"] as bool,

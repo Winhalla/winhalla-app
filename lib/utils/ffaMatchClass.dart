@@ -8,7 +8,7 @@ import 'package:winhalla_app/utils/userClass.dart';
 
 class FfaMatch extends ChangeNotifier {
   dynamic value;
-
+  bool areOtherPlayersShown = false;
   Future<void> refresh(String authKey) async {
     var match = jsonDecode((await http.get(getUri("/getMatch/${this.value["_id"]}"),headers: {"authorization":authKey})).body);
     var steamId = this.value["userPlayer"]["steamId"];
@@ -23,11 +23,16 @@ class FfaMatch extends ChangeNotifier {
     this.value = "exited";
     notifyListeners();
   }
+  void togglePlayerShown() {
+    this.areOtherPlayersShown = !this.areOtherPlayersShown;
+    notifyListeners();
+  }
 
   FfaMatch(match, String steamId) {
     match["userPlayer"] = match["players"].firstWhere((e) => e["steamId"] == steamId);
     match["players"] = match["players"].where((e)=>e["steamId"]!= steamId).toList();
     this.value = match;
+    this.areOtherPlayersShown = false;
     notifyListeners();
   }
 }

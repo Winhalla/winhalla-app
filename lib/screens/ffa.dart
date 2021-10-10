@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -50,14 +51,15 @@ class SoloMatch extends StatelessWidget {
                             decoration: BoxDecoration(
                                 color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
                             padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
-                            child: Consumer<FfaMatch>(
-                              builder: (context, match,_) {
-                                return TimerWidget(
-                                  showHours: "no",
-                                  numberOfSeconds: (((match.value["Date"]+3600*1000)-DateTime.now().millisecondsSinceEpoch)/1000).round(),
-                                );
-                              }
-                            ))
+                            child: Consumer<FfaMatch>(builder: (context, match, _) {
+                              return TimerWidget(
+                                showHours: "no",
+                                numberOfSeconds: (((match.value["Date"] + 3600 * 1000) -
+                                            DateTime.now().millisecondsSinceEpoch) /
+                                        1000)
+                                    .round(),
+                              );
+                            }))
                       ],
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     ),
@@ -70,8 +72,13 @@ class SoloMatch extends StatelessWidget {
                         children: [
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
-                            children: const [
-                              Text("x4", style: TextStyle(color: kGreen, fontSize: 34)),
+                            children: [
+                              Consumer<FfaMatch>(
+                                builder: (context, match,_) {
+                                  print(match.value["userPlayer"]["multiplier"]);
+                                  return Text("x${(match.value["userPlayer"]["multiplier"]/100).round()}", style: TextStyle(color: kGreen, fontSize: 34));
+                                }
+                              ),
                               SizedBox(
                                 width: 9,
                               ),
@@ -112,12 +119,44 @@ class SoloMatch extends StatelessWidget {
                       );
                     }),
                     const SizedBox(
-                      height: 56,
+                      height: 15,
                     ),
-                    Column(
-                      children: [
-                        Consumer<FfaMatch>(builder: (context, match, _) {
-                          return ListView.builder(
+                    Consumer<FfaMatch>(builder: (context, match, _) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "${match.value["players"].length}",
+                            style: kBodyText3.apply(color: kPrimary),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            "players in this match...",
+                            style: kBodyText3,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          GestureDetector(
+                            child: Text(
+                              match.areOtherPlayersShown ? "HIDE" : "SHOW",
+                              style: kBodyText2.apply(fontFamily: "Bebas Neue", color: kText80),
+                            ),
+                            onTap: () {
+                              match.togglePlayerShown();
+                            },
+                            behavior: HitTestBehavior.translucent,
+                          )
+                        ],
+                      );
+                    }),
+                    Consumer<FfaMatch>(builder: (context, match, _) {
+                      if (match.areOtherPlayersShown && match.value["players"].length > 0)
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 50),
+                          child: ListView.builder(
                             itemBuilder: (context, int index) {
                               if (index.isOdd)
                                 return const SizedBox(height: 39); //Spacing between each player card
@@ -133,9 +172,105 @@ class SoloMatch extends StatelessWidget {
                             itemCount: match.value["players"].length,
                             shrinkWrap: true,
                             physics: NeverScrollableScrollPhysics(),
-                          );
-                        })
-                      ],
+                          ),
+                        );
+                      else
+                        return Container();
+                    }),
+                    SizedBox(
+                      height: 50,
+                    ),
+                    Container(
+                      padding: EdgeInsets.fromLTRB(28, 22, 0, 18),
+                      decoration: BoxDecoration(
+                        color: kBackgroundVariant,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 3.0),
+                                child: Text(
+                                  "You can",
+                                  style: TextStyle(
+                                    color: kText80,
+                                    fontSize: 22,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 20),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 3.0),
+                                      child: Text(
+                                        "TIP",
+                                        style: TextStyle(
+                                          color: kGreen,
+                                          fontSize: 22,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 5,
+                                    ),
+                                    Image.asset(
+                                      "assets/images/lamp.png",
+                                      width: 12,
+                                    ),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              Container(
+                                padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+                                child: CustomPaint(
+                                  size: Size(60, 125),
+                                  painter: TipPainter(color: kText), //3
+                                ),
+                              ),
+                              Column(
+                                children: [
+                                  SizedBox(
+                                    width: 200,
+                                    child: RichText(
+                                      text: TextSpan(style: kBodyText3, children: [
+                                        TextSpan(text: "Start "),
+                                        TextSpan(text: "playing ", style: TextStyle(color: kPrimary)),
+                                        TextSpan(text: "Brawlhalla! (only ranked games)")
+                                      ]),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  SizedBox(
+                                    width: 190,
+                                    child: RichText(
+                                      softWrap: true,
+                                      text: TextSpan(style: kBodyText3, children: [
+                                        TextSpan(text: "Drag down ", style: TextStyle(color: kPrimary)),
+                                        TextSpan(text: "to "),
+                                        TextSpan(text: "sync ", style: TextStyle(color: kPrimary)),
+                                        TextSpan(text: "your stats"),
+                                      ]),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            ],
+                          ),
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -145,6 +280,62 @@ class SoloMatch extends StatelessWidget {
         },
       ),
     );
+  }
+}
+
+class TipPainter extends CustomPainter {
+  TipPainter({required this.color});
+
+  final Color color;
+
+  double degToRad(num deg) => (deg * (pi / 180.0)).toDouble();
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = kText80
+      // ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+    ;
+    double rectSize = 45;
+    double currentHeight = 138;
+    double currentWidth = size.width - 65;
+
+    Path path = Path();
+    path.moveTo(0, 0);
+    currentHeight = currentHeight + 3;
+
+    path.arcTo(
+        Rect.fromLTWH(
+            0,
+            0,
+            40, // -0.15 just for pixel perfect
+            40),
+        degToRad(180),
+        degToRad(-90),
+        false);
+    path.lineTo(40, 40);
+    // path.lineTo(20, currentHeight + rectSize);
+    path.moveTo(0, 20);
+
+    path.arcTo(
+        Rect.fromLTWH(
+            0,
+            65,
+            40, // -0.15 just for pixel perfect
+            40),
+        degToRad(180),
+        degToRad(-90),
+        false);
+    path.lineTo(40, 105);
+    canvas.drawPath(path, paint);
+  }
+
+  //5
+  @override
+  bool shouldRepaint(TipPainter oldDelegate) {
+    return color != oldDelegate.color;
   }
 }
 
@@ -237,4 +428,3 @@ class PlayerWidget extends StatelessWidget {
     );
   }
 }
-
