@@ -220,10 +220,10 @@ class SoloMatch extends StatelessWidget {
                                     SizedBox(
                                       width: 5,
                                     ),
-                                    Image.asset(
-                                      "assets/images/lamp.png",
-                                      width: 12,
-                                    ),
+                                    const Icon(
+                                      Icons.lightbulb_outline_sharp,
+                                      color: kGreen,
+                                    )
                                   ],
                                 ),
                               )

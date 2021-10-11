@@ -21,21 +21,71 @@ class _PlayPageState extends State<PlayPage> {
   Widget build(BuildContext context) {
     return matchInProgressId == null
         ? Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                decoration: BoxDecoration(color: kPrimary, borderRadius: BorderRadius.circular(20)),
-                child: GestureDetector(
-                  child: Text(
-                    "Play",
-                    style: kHeadline1,
-                  ),
-                  onTap: () async {
-                    var matchId = await context.read<User>().enterMatch();
-                    setState(() {
-                      matchInProgressId = matchId;
-                    });
-                  },
+              Padding(
+                padding: const EdgeInsets.only(left: 10.0,top: 10),
+                child: Text(
+                  "Match History",
+                  style: kHeadline1,
                 ),
+              ),
+              SizedBox(height: 35,),
+              ListView(shrinkWrap: true, children: [
+                Container(
+                  decoration: BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(20)),
+                  padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
+                  margin: const EdgeInsets.only(left:10,right: 15),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(children: [
+                        Text("234",style: kBodyText1.apply(color:kPrimary),),
+                        SizedBox(width: 6,),
+                        Image.asset("assets/images/logo.png",width: 34,)
+                      ],),
+                      Text("4/7 wins",style: kBodyText2.apply(color:kGray,fontFamily: "Bebas neue"),),
+                      Text("#2",style: kBodyText1.apply(fontFamily: "Bebas neue"),)
+                    ],
+                  ),
+                ),
+              ]),
+              SizedBox(height: 40,),
+              Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () async {
+                        var matchId = await context.read<User>().enterMatch();
+                        setState(() {
+                          matchInProgressId = matchId;
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.fromLTRB(12, 0, 14, 0),
+                        decoration: BoxDecoration(color: kPrimary, borderRadius: BorderRadius.circular(20)),
+                        padding: const EdgeInsets.fromLTRB(12, 12, 25, 12),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(
+                              Icons.play_arrow_outlined,
+                              color: kText,
+                              size: 50,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 5.0),
+                              child: Text(
+                                "Start a match",
+                                style: kBodyText1,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           )
