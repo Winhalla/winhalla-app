@@ -130,6 +130,7 @@ class SteamLoginWebView extends StatelessWidget {
       if (openId.mode == 'id_res') {
         await _webView.close();
         var result = await openId.validate();
+        // var bId = await http.get(getUri("/getBID/$result"))
         await secureStorage.write(key: "tempSteamId", value: result);
         page.next();
       }

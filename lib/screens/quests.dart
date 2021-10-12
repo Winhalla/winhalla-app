@@ -34,12 +34,13 @@ class Quests extends StatelessWidget {
       }
     }
   }
-
+ 
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, _) {
       var userData = user.value["user"]["solo"];
-
+      userData["dailyQuests"].addAll(userData["finished"]["daily"]);
+      userData["weeklyQuests"].addAll(userData["finished"]["weekly"]);
       return RefreshIndicator(
         onRefresh: () async {
           await user.refreshQuests();
