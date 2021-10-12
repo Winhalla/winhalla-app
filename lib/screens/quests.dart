@@ -34,7 +34,7 @@ class Quests extends StatelessWidget {
       }
     }
   }
- 
+
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, _) {
@@ -57,15 +57,17 @@ class Quests extends StatelessWidget {
                     child: Text('Daily', style: kHeadline1),
                   ),
                   Container(
-                      decoration:
-                          BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
-                      padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
-                      child: TimerWidget(
-                          showHours:"hours",
-                          numberOfSeconds:
-                              (((userData["lastDaily"] + 86400000) - DateTime.now().millisecondsSinceEpoch) /
-                                      1000)
-                                  .round()))
+                    decoration:
+                        BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
+                    padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
+                    child: TimerWidget(
+                      showHours: "hours",
+                      numberOfSeconds:
+                          (((userData["lastDaily"] + 86400000) - DateTime.now().millisecondsSinceEpoch) /
+                                  1000)
+                              .round(),
+                    ),
+                  )
                 ],
               ),
             ),
@@ -75,7 +77,7 @@ class Quests extends StatelessWidget {
             ListView.builder(
               itemBuilder: (context, int index) {
                 return Container(
-                  margin: EdgeInsets.only(bottom: index != 2 - 1 ? 30.0 : 0),
+                  margin: EdgeInsets.only(top: index!=0 ? 30.0 : 0),
                   child: QuestWidget(
                       name: userData["dailyQuests"][index]["name"],
                       color: _getColorFromPrice(userData["dailyQuests"][index]["reward"], "weekly"),
@@ -104,8 +106,8 @@ class Quests extends StatelessWidget {
                           BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
                       padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
                       child: TimerWidget(
-                          showHours:"days",
-                          numberOfSeconds: (((userData["lastWeekly"] + 86400000*7) -
+                          showHours: "days",
+                          numberOfSeconds: (((userData["lastWeekly"] + 86400000 * 7) -
                                       DateTime.now().millisecondsSinceEpoch) /
                                   1000)
                               .round()))
@@ -118,7 +120,7 @@ class Quests extends StatelessWidget {
             ListView.builder(
               itemBuilder: (context, int index) {
                 return Container(
-                  margin: EdgeInsets.only(bottom: index != 2 - 1 ? 30.0 : 0),
+                  margin: EdgeInsets.only(top: index != 0? 30.0 : 0),
                   child: QuestWidget(
                       name: userData["weeklyQuests"][index]["name"],
                       color: _getColorFromPrice(userData["weeklyQuests"][index]["reward"], "weekly"),
