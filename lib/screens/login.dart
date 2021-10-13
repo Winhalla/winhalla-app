@@ -12,6 +12,8 @@ import 'package:winhalla_app/utils/userClass.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:winhalla_app/widgets/popup.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -25,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   List<Widget> screenList = [
     WinhallaPresentation(),
     GoogleAppleLogin(),
-    SteamLogin(),
+    // SteamLogin(),
     WinhallaAccountCreation()
   ];
 
@@ -63,84 +65,51 @@ class _LoginPageState extends State<LoginPage> {
 class WinhallaAccountCreation extends StatelessWidget {
   WinhallaAccountCreation({Key? key}) : super(key: key);
 
-  final bidTextController = TextEditingController();
-
-  final linkTextController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getNonNullSSData("tempSteamId"),
-        builder: (context, AsyncSnapshot<String> key) {
-          if (!key.hasData) return Container();
-          bidTextController.text = key.data == null ? "" : key.data as String;
-          return Column(
-            children: [
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(width: 1, color: kText, style: BorderStyle.solid),
-                    color: kText),
-                child: TextField(
-                  controller: bidTextController,
-                  style: TextStyle(fontSize: 20),
-                  decoration: InputDecoration(
-                    hintText: 'Brawlhalla ID',
-                    contentPadding: EdgeInsets.all(15),
-                    border: InputBorder.none,
-                  ),
-                ),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(32, 70, 32, 0),
+      child: Column(
+        children: [
+          Text(
+            "Link a Brawlhalla account",
+            style: TextStyle(color: kText, fontSize: 50),
+          ),
+          SizedBox(height: 10,),
+          Text(
+            "Link at least one Brawlhalla account",
+            style: TextStyle(color: kText80, fontSize: 26,fontFamily: "Roboto Condensed"),
+          ),
+          SizedBox(height: 50,),
+          GestureDetector(
+            child: Container(
+              padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
+              decoration: BoxDecoration(
+                color: kBackgroundVariant,
+                borderRadius: BorderRadius.circular(20),
               ),
-              SizedBox(
-                height: 10,
-              ),
-              Container(
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    border: Border.all(width: 1, color: kText, style: BorderStyle.solid),
-                    color: kText),
-                child: TextField(
-                  controller: linkTextController,
-                  style: TextStyle(fontSize: 20),
-                  decoration: InputDecoration(
-                    hintText: 'Link id',
-                    contentPadding: EdgeInsets.all(15),
-                    border: InputBorder.none,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.add_circle_outline,
+                    color: kPrimary,
+                    size: 34,
                   ),
-                ),
+                  Text(
+                    "Add an account",
+                    style: kBodyText1.apply(color: kPrimary),
+                  )
+                ],
               ),
-              SizedBox(
-                height: 25,
-              ),
-              GestureDetector(
-                child: Container(
-                  padding: EdgeInsets.fromLTRB(19, 9, 19, 6),
-                  child: Text(
-                    'Create winhalla account',
-                    style: kHeadline1.apply(color: kRed),
-                  ),
-                  decoration: BoxDecoration(
-                    color: kBackgroundVariant,
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                ),
-                onTap: () async {
-                  final String? secureStorageKey = await secureStorage.read(key: "authKey");
-                  if (secureStorageKey == null) return;
-
-                  var linkId = await http.post(
-                    getUri(
-                        "/auth/createAccount?linkId=${linkTextController.text}&BID=${bidTextController.text}"),
-                    headers: {"authorization": secureStorageKey},
-                  );
-                  print(linkId.body);
-                  Navigator.pushReplacementNamed(context, "/");
-                },
-              )
-            ],
-            crossAxisAlignment: CrossAxisAlignment.start,
-          );
-        });
+            ),
+            onTap: ()async {
+              print(await showDialog(context: context, builder: (context) => PopupWidget(context)));
+            },
+          )
+        ],
+      ),
+    );
   }
 }
 
@@ -206,9 +175,11 @@ class GoogleAppleLogin extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 150,),
+          SizedBox(
+            height: 150,
+          ),
           GestureDetector(
-            onTap: ()async{
+            onTap: () async {
               var temp = await GoogleSignInApi.login();
               if (temp?["auth"].accessToken == null) return;
               dynamic idToken;
@@ -233,17 +204,27 @@ class GoogleAppleLogin extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Image.asset("assets/images/google_icon.png",height: 40,width: 40,),
-                  SizedBox(width: 15,),
-                  Text("Sign in with Google",style: kBodyText2,),
+                  Image.asset(
+                    "assets/images/google_icon.png",
+                    height: 40,
+                    width: 40,
+                  ),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Text(
+                    "Sign in with Google",
+                    style: kBodyText2,
+                  ),
                 ],
-
               ),
             ),
           ),
-          SizedBox(height: 30,),
+          SizedBox(
+            height: 30,
+          ),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               print("apple login");
             },
             child: Container(
@@ -255,97 +236,25 @@ class GoogleAppleLogin extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Image.asset("assets/images/apple_icon.png",height: 40,width: 40,),
-                  SizedBox(width: 15,),
-                  Text("Sign in with Google",style: kBodyText2,),
+                  Image.asset(
+                    "assets/images/apple_icon.png",
+                    height: 40,
+                    width: 40,
+                  ),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Text(
+                    "Sign in with Google",
+                    style: kBodyText2,
+                  ),
                 ],
-
               ),
             ),
           )
         ],
       ),
     );
-    /*return Center(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
-        child: Column(
-          children: [
-            SizedBox(
-              width: 300,
-              child: Consumer<LoginPageManager>(builder: (context, page, _) {
-                return GestureDetector(
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(19, 9, 19, 6),
-                    child: Text(
-                      'Login With google',
-                      style: kHeadline1.apply(color: kRed),
-                    ),
-                    decoration: BoxDecoration(
-                      color: kBackgroundVariant,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  onTap: () async {
-                    var temp = await GoogleSignInApi.login();
-                    if (temp?["auth"].accessToken == null) return;
-                    dynamic idToken;
-                    try {
-                      idToken = await http.post(getUri("/auth/createToken"), body: {
-                        "token": temp?["auth"].accessToken,
-                        "name": temp?['account'].displayName,
-                        if (temp?['account'].photoUrl != null) "picture": temp?['account'].photoUrl
-                      });
-                    } catch (e) {
-                      print(e);
-                    }
-                    await secureStorage.write(key: "authKey", value: jsonDecode(idToken.body)["_id"]);
-                    page.next();
-                  },
-                );
-              }),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            SizedBox(
-              width: 300,
-              child: Container(
-                child: GestureDetector(
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(19, 9, 19, 6),
-                    child: Text(
-                      'Login With Apple',
-                      style: kHeadline1.apply(color: kRed),
-                    ),
-                    decoration: BoxDecoration(
-                      color: kBackgroundVariant,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                ),
-              ),
-            )
-            */ /*GestureDetector(
-              child: Container(
-                padding: EdgeInsets.fromLTRB(19, 9, 19, 6),
-                child: Text(
-                  'Logout',
-                  style: kHeadline1.apply(color: kRed),
-                ),
-                decoration: BoxDecoration(
-                  color: kBackgroundVariant,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              onTap: () {
-                GoogleSignInApi.logout();
-              },
-            ),*/ /*
-          ],
-        ),
-      ),
-    );*/
   }
 }
 
