@@ -49,9 +49,11 @@ class _LoginPageState extends State<LoginPage> {
             child: Scaffold(
                 backgroundColor: kBackground,
                 body: ChangeNotifierProvider<LoginPageManager>(
-                    create: (_) =>
-                        LoginPageManager(step.data == "no data" ? 0 : int.parse(step.data as String)),
-                    child: Consumer<LoginPageManager>(builder: (context, page, _) {
+                    create: (_) => LoginPageManager(step.data == "no data"
+                        ? 0
+                        : int.parse(step.data as String)),
+                    child:
+                        Consumer<LoginPageManager>(builder: (context, page, _) {
                       return screenList[page.page == "no data" ? 0 : page.page];
                     })) // Can't be null but the compiler doesn't sees it so bidouillage
                 ),
@@ -79,7 +81,8 @@ class WinhallaAccountCreation extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    border: Border.all(width: 1, color: kText, style: BorderStyle.solid),
+                    border: Border.all(
+                        width: 1, color: kText, style: BorderStyle.solid),
                     color: kText),
                 child: TextField(
                   controller: bidTextController,
@@ -97,7 +100,8 @@ class WinhallaAccountCreation extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
-                    border: Border.all(width: 1, color: kText, style: BorderStyle.solid),
+                    border: Border.all(
+                        width: 1, color: kText, style: BorderStyle.solid),
                     color: kText),
                 child: TextField(
                   controller: linkTextController,
@@ -125,7 +129,8 @@ class WinhallaAccountCreation extends StatelessWidget {
                   ),
                 ),
                 onTap: () async {
-                  final String? secureStorageKey = await secureStorage.read(key: "authKey");
+                  final String? secureStorageKey =
+                      await secureStorage.read(key: "authKey");
                   if (secureStorageKey == null) return;
 
                   var linkId = await http.post(
@@ -150,9 +155,10 @@ class GoogleAppleLogin extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(45, 90, 30, 0),
+      padding: const EdgeInsets.fromLTRB(42.5, 0, 42.5, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Text(
             "Welcome to",
@@ -180,14 +186,16 @@ class GoogleAppleLogin extends StatelessWidget {
             children: [
               const Text(
                 "Play",
-                style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
+                style: TextStyle(
+                    fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
               ),
               const SizedBox(
                 width: 7,
               ),
               const Text(
                 "Brawlhalla,",
-                style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
+                style: TextStyle(
+                    fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
               ),
             ],
           ),
@@ -195,20 +203,24 @@ class GoogleAppleLogin extends StatelessWidget {
             children: [
               const Text(
                 "Earn",
-                style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
+                style: TextStyle(
+                    fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
               ),
               const SizedBox(
                 width: 7,
               ),
               const Text(
-                "Rewards,",
-                style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
+                "Rewards",
+                style: TextStyle(
+                    fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
               ),
             ],
           ),
-          SizedBox(height: 150,),
+          SizedBox(
+            height: 150,
+          ),
           GestureDetector(
-            onTap: ()async{
+            onTap: () async {
               var temp = await GoogleSignInApi.login();
               if (temp?["auth"].accessToken == null) return;
               dynamic idToken;
@@ -216,12 +228,15 @@ class GoogleAppleLogin extends StatelessWidget {
                 idToken = await http.post(getUri("/auth/createToken"), body: {
                   "token": temp?["auth"].accessToken,
                   "name": temp?['account'].displayName,
-                  if (temp?['account'].photoUrl != null) "picture": temp?['account'].photoUrl
+                  if (temp?['account'].photoUrl != null)
+                    "picture": temp?['account'].photoUrl
                 });
               } catch (e) {
                 print(e);
               }
-              await secureStorage.write(key: "authKey", value: jsonDecode(idToken.body)["_id"]);
+              print("ID: $idToken");
+              await secureStorage.write(
+                  key: "authKey", value: jsonDecode(idToken.body)["_id"]);
               context.read<LoginPageManager>().next();
             },
             child: Container(
@@ -229,21 +244,34 @@ class GoogleAppleLogin extends StatelessWidget {
                 color: kBlack,
                 borderRadius: BorderRadius.circular(15),
               ),
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              padding: const EdgeInsets.fromLTRB(26.5, 20, 20, 20),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Image.asset("assets/images/google_icon.png",height: 40,width: 40,),
-                  SizedBox(width: 15,),
-                  Text("Sign in with Google",style: kBodyText2,),
+                  Image.asset(
+                    "assets/images/google_icon.png",
+                    height: 32,
+                    width: 32,
+                  ),
+                  SizedBox(
+                    width: 18,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1.5),
+                    child: Text(
+                      "Sign in with Google",
+                      style: kBodyText2,
+                    ),
+                  ),
                 ],
-
               ),
             ),
           ),
-          SizedBox(height: 30,),
+          SizedBox(
+            height: 30,
+          ),
           GestureDetector(
-            onTap: (){
+            onTap: () {
               print("apple login");
             },
             child: Container(
@@ -251,15 +279,26 @@ class GoogleAppleLogin extends StatelessWidget {
                 color: kBlack,
                 borderRadius: BorderRadius.circular(15),
               ),
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              padding: const EdgeInsets.fromLTRB(25, 20, 20, 20),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Image.asset("assets/images/apple_icon.png",height: 40,width: 40,),
-                  SizedBox(width: 15,),
-                  Text("Sign in with Google",style: kBodyText2,),
+                  Image.asset(
+                    "assets/images/apple_icon.png",
+                    height: 32,
+                    width: 32,
+                    color: kText90,
+                  ),
+                  SizedBox(
+                    width: 18,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 1.5),
+                    child: Text(
+                    "Sign in with Apple",
+                    style: kBodyText2,
+                  ),)
                 ],
-
               ),
             ),
           )
