@@ -26,7 +26,7 @@ class _PlayPageState extends State<PlayPage> {
               Padding(
                 padding: const EdgeInsets.only(left: 10.0, top: 10),
                 child: Text(
-                  "Match History",
+                  "Match History:",
                   style: kHeadline1,
                 ),
               ),

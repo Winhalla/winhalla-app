@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
-import 'package:winhalla_app/utils/timerWidget.dart';
+import 'package:winhalla_app/utils/timer_widget.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 import 'package:winhalla_app/widgets/quest_widget.dart';
 
@@ -46,6 +46,7 @@ class Quests extends StatelessWidget {
           await user.refreshQuests();
         },
         child: ListView(
+          padding: EdgeInsets.only(bottom: 20),
           children: [
             Padding(
               padding: const EdgeInsets.only(right: 10),
@@ -53,13 +54,13 @@ class Quests extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(left: 8.0),
+                    padding: EdgeInsets.fromLTRB(8.0, 3, 0, 0),
                     child: Text('Daily', style: kHeadline1),
                   ),
                   Container(
                     decoration:
                         BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
-                    padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
+                    padding: const EdgeInsets.fromLTRB(25, 9, 25, 7.5),
                     child: TimerWidget(
                       showHours: "hours",
                       numberOfSeconds:
@@ -98,13 +99,13 @@ class Quests extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   const Padding(
-                    padding: EdgeInsets.only(left: 8.0),
+                    padding: EdgeInsets.fromLTRB(8.0, 3.5, 0, 0),
                     child: Text('Weekly', style: kHeadline1),
                   ),
                   Container(
                       decoration:
                           BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
-                      padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
+                      padding: const EdgeInsets.fromLTRB(25, 9, 25, 7.5),
                       child: TimerWidget(
                           showHours: "days",
                           numberOfSeconds: (((userData["lastWeekly"] + 86400000 * 7) -

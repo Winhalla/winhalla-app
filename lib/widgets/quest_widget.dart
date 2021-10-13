@@ -43,9 +43,8 @@ class QuestWidget extends StatelessWidget {
                 ),
               ),
               const Padding(padding: EdgeInsets.only(top: 10)),
-              if (!isQuestFinished)
                 Text(
-                  "$progress/$goal",
+                  !isQuestFinished ? "$progress/$goal" : "Click to collect",
                   style: kBodyText4.apply(color: color),
                 )
             ],
@@ -92,7 +91,7 @@ class ProgressPainter extends CustomPainter {
       ..color = progressColor
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke
-      ..strokeWidth = width;
+      ..strokeWidth = width - 0.9;
 
     Offset center = Offset(size.width / 2, size.height / 2);
     double radius = min(size.width / 2, size.height / 2);
