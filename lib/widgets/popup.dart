@@ -38,7 +38,7 @@ Widget PopupWidget(BuildContext context) {
       ),
       content: step == "platformSelection"
           ? Container(
-              decoration: BoxDecoration(color: kBackground, borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(color: kBackground, borderRadius: BorderRadius.circular(14)),
               // padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
               child: DropdownButton(
                 itemHeight: 50,
@@ -127,7 +127,7 @@ Widget PopupWidget(BuildContext context) {
                     style: TextStyle(fontSize: 18, color: kText80, fontFamily: "Roboto Condensed"),
                     decoration: const InputDecoration(
                         border: InputBorder.none,
-                        hintText: 'Type in your brawlhalla ID',
+                        hintText: 'Type in your Brawlhalla ID',
                         hintStyle: TextStyle(fontSize: 18, color: kText80, fontFamily: "Roboto Condensed")),
                   ),
                 ),

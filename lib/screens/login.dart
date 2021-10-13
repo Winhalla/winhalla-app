@@ -25,7 +25,6 @@ class _LoginPageState extends State<LoginPage> {
   Map<String, dynamic>? gAccount;
 
   List<Widget> screenList = [
-    WinhallaPresentation(),
     GoogleAppleLogin(),
     // SteamLogin(),
     WinhallaAccountCreation()
@@ -77,12 +76,17 @@ class WinhallaAccountCreation extends StatelessWidget {
             "Link a Brawlhalla account",
             style: TextStyle(color: kText, fontSize: 50),
           ),
-          SizedBox(height: 10,),
+          SizedBox(
+            height: 10,
+          ),
           Text(
             "Link at least one Brawlhalla account",
-            style: TextStyle(color: kText80, fontSize: 26,fontFamily: "Roboto Condensed"),
+            style: TextStyle(
+                color: kText80, fontSize: 26, fontFamily: "Roboto Condensed"),
           ),
-          SizedBox(height: 50,),
+          SizedBox(
+            height: 50,
+          ),
           GestureDetector(
             child: Container(
               padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
@@ -105,8 +109,10 @@ class WinhallaAccountCreation extends StatelessWidget {
                 ],
               ),
             ),
-            onTap: ()async {
-              print(await showDialog(context: context, builder: (context) => PopupWidget(context)));
+            onTap: () async {
+              print(await showDialog(
+                  context: context,
+                  builder: (context) => PopupWidget(context)));
             },
           )
         ],
@@ -261,9 +267,10 @@ class GoogleAppleLogin extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.only(top: 1.5),
                     child: Text(
-                    "Sign in with Apple",
-                    style: kBodyText2,
-                  ),)
+                      "Sign in with Apple",
+                      style: kBodyText2,
+                    ),
+                  )
                 ],
               ),
             ),
@@ -336,8 +343,9 @@ class WinhallaPresentation extends StatelessWidget {
       ),
     );
   }
+}*/
 }
-
+}
 class GoogleSignInApi {
   static final _googleSignIn = GoogleSignIn();
 
@@ -350,6 +358,7 @@ class GoogleSignInApi {
 
   static Future logout() => _googleSignIn.disconnect();
 }
+  
 
 class LoginPageManager extends ChangeNotifier {
   int page = 0;
