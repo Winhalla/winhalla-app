@@ -93,7 +93,7 @@ class _TimerWidgetState extends State<TimerWidget> {
       }
       return Text(
         timer == "" ? "Loading..." : timer,
-        style: TextStyle(color: color, fontSize: 35),
+        style: TextStyle(color: color, fontSize: 32),
       );
     });
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
+import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
@@ -38,13 +39,17 @@ class _MyAppState extends State<MyApp> {
             child: FutureBuilder(
                 future: initUser(),
                 builder: (context, AsyncSnapshot<dynamic> res) {
+                  secureStorage
+                      .read(key: "authKey")
+                      .then((value) => print(value));
+
                   if (res.data == "no data" || res.data?["data"].body == "") {
                     return LoginPage();
                   }
                   if (!res.hasData) return AppCore(isUserDataLoaded: false);
                   var providerData = jsonDecode(res.data["data"].body);
                   providerData["authKey"] = res.data["authKey"];
-
+                  print(providerData);
                   return ChangeNotifierProvider<User>(
                       create: (_) => new User(providerData),
                       child: AppCore(
@@ -68,7 +73,6 @@ class AppCore extends StatefulWidget {
 
 class _AppCoreState extends State<AppCore> {
   int _selectedIndex = 0;
-
   switchPage(index) {
     setState(() {
       _selectedIndex = index;
@@ -79,7 +83,9 @@ class _AppCoreState extends State<AppCore> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackground,
-      appBar: PreferredSize(preferredSize: Size.fromHeight(134), child: MyAppBar(widget.isUserDataLoaded)),
+      appBar: PreferredSize(
+          preferredSize: Size.fromHeight(134),
+          child: MyAppBar(widget.isUserDataLoaded)),
       body: widget.isUserDataLoaded
           ? _selectedIndex == 2 ||
                   _selectedIndex ==
@@ -126,7 +132,7 @@ class _AppCoreState extends State<AppCore> {
               Expanded(
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onTap: (){
+                  onTap: () {
                     switchPage(0);
                   },
                   child: SizedBox(
@@ -142,7 +148,7 @@ class _AppCoreState extends State<AppCore> {
               Expanded(
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onTap: (){
+                  onTap: () {
                     switchPage(1);
                   },
                   child: SizedBox(
@@ -158,7 +164,7 @@ class _AppCoreState extends State<AppCore> {
               Expanded(
                 child: GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onTap: (){
+                  onTap: () {
                     switchPage(2);
                   },
                   child: SizedBox(

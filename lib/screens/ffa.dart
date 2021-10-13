@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:winhalla_app/utils/ffaMatchClass.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/getUri.dart';
-import 'package:winhalla_app/utils/timerWidget.dart';
+import 'package:winhalla_app/utils/timer_widget.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 
 class SoloMatch extends StatelessWidget {
