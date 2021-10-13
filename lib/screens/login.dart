@@ -25,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   Map<String, dynamic>? gAccount;
 
   List<Widget> screenList = [
+    WinhallaPresentation(),
     GoogleAppleLogin(),
     // SteamLogin(),
     WinhallaAccountCreation()
@@ -278,37 +279,6 @@ class GoogleAppleLogin extends StatelessWidget {
         ],
       ),
     );
-    /*return Center(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
-        child: Column(
-          children: [
-            SizedBox(
-              width: 300,
-              child: Consumer<LoginPageManager>(builder: (context, page, _) {
-                return GestureDetector(
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(19, 9, 19, 6),
-                    child: Text(
-                      'Login With google',
-                      style: kHeadline1.apply(color: kRed),
-                    ),
-                    decoration: BoxDecoration(
-                      color: kBackgroundVariant,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  Text(
-                    "Sign in with Google",
-                    style: kBodyText2,
-                  ),
-                ],
-              ),
-            ),
-          )
-        ],
-      ),
-    );
   }
 }
 
@@ -343,8 +313,6 @@ class WinhallaPresentation extends StatelessWidget {
       ),
     );
   }
-}*/
-}
 }
 class GoogleSignInApi {
   static final _googleSignIn = GoogleSignIn();
