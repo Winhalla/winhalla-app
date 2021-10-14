@@ -1,18 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:http/http.dart' as http;
+import 'package:winhalla_app/utils/getUri.dart';
 
-Widget PopupWidget(BuildContext context) {
+Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
   final bidTextController = TextEditingController();
-  String _chosenValue = "steam.png";
-  String step = "enterBid";
-  List<Map<String, String>> items = [
-    {'name': "Steam", "file": "steam.png"},
-    {'name': "PS3/4/5", "file": "ps.png"},
-    {'name': "Xbox One/Series", "file": "xbox.png"},
-    {'name': "Nintendo Switch", "file": "switch.png"},
-    {"name": "Mobile", "file": 'phone.png'},
-  ];
+  String _chosenValue = items[0]["file"] as String;
+  String step = "platformSelection";
   return StatefulBuilder(builder: (context, setState) {
     void nextStep() {
       setState(() {
@@ -28,7 +25,8 @@ Widget PopupWidget(BuildContext context) {
     }
 
     void createAccount() async {
-      Navigator.pop(context, bidTextController.text);
+      var accountData = (await http.get(getUri("/auth/isBIDValid/${bidTextController.text}"))).body;
+      Navigator.pop(context, {"bid":bidTextController.text,"name":jsonDecode(accountData)["data"]["name"],"file":_chosenValue});
     }
 
     return AlertDialog(
@@ -39,8 +37,11 @@ Widget PopupWidget(BuildContext context) {
       content: step == "platformSelection"
           ? Container(
               decoration: BoxDecoration(color: kBackground, borderRadius: BorderRadius.circular(14)),
-              // padding: const EdgeInsets.fromLTRB(4, 4, 4, 4),
+              padding: const EdgeInsets.fromLTRB(0, 6, 0, 6),
               child: DropdownButton(
+                iconSize: 40,
+                iconEnabledColor: kText80,
+                iconDisabledColor: kText80,
                 itemHeight: 50,
                 onChanged: (String? value) {
                   print(value);
@@ -58,14 +59,14 @@ Widget PopupWidget(BuildContext context) {
                       value: value["file"],
                       child: Container(
                         height: 51,
-                        padding: const EdgeInsets.fromLTRB(24, 14, 24, 14),
+                        padding: const EdgeInsets.fromLTRB(24, 14, 12, 14),
                         decoration:
                             BoxDecoration(color: kBackground, borderRadius: BorderRadius.circular(20)),
                         child: Row(
                           children: [
                             Image.asset(
-                              "assets/images/${value["file"]}",
-                              height: 25,
+                              "assets/images/icons/${value["file"]}.png",
+                              width: 25,
                             ),
                             SizedBox(
                               width: 10,
@@ -80,24 +81,24 @@ Widget PopupWidget(BuildContext context) {
                     );
                   }).toList();
                 },
-                items: items.map<DropdownMenuItem<String>>((Map<String, String> value) {
+                items: items.map<DropdownMenuItem<String>>((Map<String, String> value,) {
                   return DropdownMenuItem<String>(
                     value: value["file"],
                     child: Container(
-                      height: 51,
+                      height: 52,
                       padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                       decoration: BoxDecoration(
                           color: kBackground,
-                          borderRadius: value["file"] == "steam.png"
+                          borderRadius: value["file"] == items[0]["file"]
                               ? BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15))
-                              : value["file"] == "phone.png"
+                              : value["file"] == items[items.length-1]["file"]
                                   ? BorderRadius.only(
                                       bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15))
                                   : BorderRadius.circular(0)),
                       child: Row(
                         children: [
                           Image.asset(
-                            "assets/images/${value["file"]}",
+                            "assets/images/icons/${value["file"]}.png",
                             height: 25,
                           ),
                           SizedBox(

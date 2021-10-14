@@ -39,9 +39,6 @@ class _MyAppState extends State<MyApp> {
             child: FutureBuilder(
                 future: initUser(),
                 builder: (context, AsyncSnapshot<dynamic> res) {
-                  secureStorage
-                      .read(key: "authKey")
-                      .then((value) => print(value));
 
                   if (res.data == "no data" || res.data?["data"].body == "") {
                     return LoginPage();
@@ -49,7 +46,6 @@ class _MyAppState extends State<MyApp> {
                   if (!res.hasData) return AppCore(isUserDataLoaded: false);
                   var providerData = jsonDecode(res.data["data"].body);
                   providerData["authKey"] = res.data["authKey"];
-                  print(providerData);
                   return ChangeNotifierProvider<User>(
                       create: (_) => new User(providerData),
                       child: AppCore(

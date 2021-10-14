@@ -59,6 +59,8 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/
+    - assets/images/icons/
+    - assets/images/icons/pink/
   fonts:
     - family: Bebas Neue
       fonts:

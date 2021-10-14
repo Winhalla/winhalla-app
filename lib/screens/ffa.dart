@@ -75,7 +75,6 @@ class SoloMatch extends StatelessWidget {
                             children: [
                               Consumer<FfaMatch>(
                                 builder: (context, match,_) {
-                                  print(match.value["userPlayer"]["multiplier"]);
                                   return Text("x${(match.value["userPlayer"]["multiplier"]/100).round()}", style: TextStyle(color: kGreen, fontSize: 34));
                                 }
                               ),

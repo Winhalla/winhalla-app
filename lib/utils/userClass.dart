@@ -45,7 +45,6 @@ class User extends ChangeNotifier {
 
   User(user) {
     this.value = user;
-    print(user["user"]["brawlhallaId"]);
     notifyListeners();
   }
 }

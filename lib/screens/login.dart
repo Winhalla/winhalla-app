@@ -28,7 +28,7 @@ class _LoginPageState extends State<LoginPage> {
     WinhallaPresentation(),
     GoogleAppleLogin(),
     // SteamLogin(),
-    WinhallaAccountCreation()
+    AccountCreation()
   ];
 
   @override
@@ -64,8 +64,25 @@ class _LoginPageState extends State<LoginPage> {
   }
 }
 
-class WinhallaAccountCreation extends StatelessWidget {
-  WinhallaAccountCreation({Key? key}) : super(key: key);
+class AccountCreation extends StatefulWidget {
+ const AccountCreation({Key? key}) : super(key: key);
+
+  @override
+  _AccountCreationState createState() => _AccountCreationState();
+
+}
+class _AccountCreationState extends State<AccountCreation> {
+  Map<String, dynamic>? gAccount;
+
+  List<dynamic> accounts = [];
+
+  List<Map<String, String>> items = [
+    {'name': "Steam (PC)", "file": "steam"},
+    {'name': "PS3/4/5", "file": "ps"},
+    {'name': "Xbox One/Series", "file": "xbox"},
+    {'name': "Nintendo Switch", "file": "switch"},
+    {"name": "Mobile", "file": 'phone'},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -73,24 +90,62 @@ class WinhallaAccountCreation extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(32, 70, 32, 0),
       child: Column(
         children: [
-          Text(
+          const Text(
             "Link a Brawlhalla account",
             style: TextStyle(color: kText, fontSize: 50),
           ),
-          SizedBox(
+          const SizedBox(
             height: 10,
           ),
-          Text(
+          const Text(
             "Link at least one Brawlhalla account",
             style: TextStyle(
                 color: kText80, fontSize: 26, fontFamily: "Roboto Condensed"),
           ),
-          SizedBox(
+          const SizedBox(
             height: 50,
           ),
-          GestureDetector(
+          ListView.builder(
+            itemCount:accounts.length,
+            shrinkWrap:true,
+            physics: NeverScrollableScrollPhysics(),
+            itemBuilder:(BuildContext context,int index){
+              return Container(
+              padding: const EdgeInsets.fromLTRB(25, 20, 25, 20),
+              margin: EdgeInsets.only(top: index == 0?0:20),
+              decoration:  BoxDecoration(
+                border: Border.all(
+                    color: kEpic,
+                    width: 1,
+                  ),
+                color: kBackgroundVariant,
+                borderRadius: BorderRadius.circular(17),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3.0),
+                    child: Image.asset(
+                      "assets/images/icons/pink/${accounts[index]["file"]}Pink.png",
+                      height: 30,
+                    ),
+                  ),
+                  SizedBox(width: 30,),
+                  Text(
+                    accounts[index]["name"],
+                    style: kBodyText1.apply(color: kEpic),
+                  )
+                ],
+              ),
+              );
+            },
+          ),
+          const SizedBox(height:50),
+          if(accounts.length < 3)GestureDetector(
             child: Container(
-              padding: EdgeInsets.fromLTRB(30, 20, 30, 20),
+              padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
               decoration: BoxDecoration(
                 color: kBackgroundVariant,
                 borderRadius: BorderRadius.circular(20),
@@ -98,7 +153,7 @@ class WinhallaAccountCreation extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.add_circle_outline,
                     color: kPrimary,
                     size: 34,
@@ -111,9 +166,14 @@ class WinhallaAccountCreation extends StatelessWidget {
               ),
             ),
             onTap: () async {
-              print(await showDialog(
+              var result = await showDialog(
                   context: context,
-                  builder: (context) => PopupWidget(context)));
+                  builder: (context) => PopupWidget(context,items));
+              if(result != null) 
+                setState((){
+                  accounts.add(result);
+                  items.removeWhere((item)=>item["file"] == result["file"]);
+                });
             },
           )
         ],
@@ -207,7 +267,6 @@ class GoogleAppleLogin extends StatelessWidget {
               } catch (e) {
                 print(e);
               }
-              print("ID: $idToken");
               await secureStorage.write(
                   key: "authKey", value: jsonDecode(idToken.body)["_id"]);
               context.read<LoginPageManager>().next();
