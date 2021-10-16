@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +7,9 @@ import 'package:steam_login/steam_login.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+import 'package:http/http.dart' as http;
+
+import 'getUri.dart';
 
 /*class LoginWithSteam extends StatefulWidget {
   const LoginWithSteam({Key? key}) : super(key: key);
@@ -62,7 +67,7 @@ class _SteamLoginState extends State<SteamLogin> {
   @override
   Widget build(BuildContext context) {
     if(isSteamLoginInProgress ) return Consumer<LoginPageManager>(
-      builder:(context,page,_)=>SteamLoginWebView(page)
+      builder:(context,page,_)=>SteamLoginWebView()
     );
     return SingleChildScrollView(
       child: Padding(
@@ -117,10 +122,8 @@ class _SteamLoginState extends State<SteamLogin> {
 }
 
 class SteamLoginWebView extends StatelessWidget {
-  SteamLoginWebView(this.page);
 
   final _webView = FlutterWebviewPlugin();
-  final LoginPageManager page;
 
   @override
   Widget build(BuildContext context) {
@@ -130,9 +133,8 @@ class SteamLoginWebView extends StatelessWidget {
       if (openId.mode == 'id_res') {
         await _webView.close();
         var result = await openId.validate();
-        // var bId = await http.get(getUri("/getBID/$result"))
-        await secureStorage.write(key: "tempSteamId", value: result);
-        page.next();
+        var accountData = jsonDecode((await http.get(getUri("/auth/getBIDFromSteamId/${result}"))).body);
+        Navigator.pop(context, {"bid":accountData["brawlhalla_id"],"name":accountData["name"],"file":"steam"});
       }
     });
 

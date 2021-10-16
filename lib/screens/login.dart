@@ -51,11 +51,9 @@ class _LoginPageState extends State<LoginPage> {
             child: Scaffold(
                 backgroundColor: kBackground,
                 body: ChangeNotifierProvider<LoginPageManager>(
-                    create: (_) => LoginPageManager(step.data == "no data"
-                        ? 0
-                        : int.parse(step.data as String)),
-                    child:
-                        Consumer<LoginPageManager>(builder: (context, page, _) {
+                    create: (_) =>
+                        LoginPageManager(step.data == "no data" ? 0 : int.parse(step.data as String)),
+                    child: Consumer<LoginPageManager>(builder: (context, page, _) {
                       return screenList[page.page == "no data" ? 0 : page.page];
                     })) // Can't be null but the compiler doesn't sees it so bidouillage
                 ),
@@ -65,12 +63,12 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class AccountCreation extends StatefulWidget {
- const AccountCreation({Key? key}) : super(key: key);
+  const AccountCreation({Key? key}) : super(key: key);
 
   @override
   _AccountCreationState createState() => _AccountCreationState();
-
 }
+
 class _AccountCreationState extends State<AccountCreation> {
   Map<String, dynamic>? gAccount;
 
@@ -99,83 +97,156 @@ class _AccountCreationState extends State<AccountCreation> {
           ),
           const Text(
             "Link at least one Brawlhalla account",
-            style: TextStyle(
-                color: kText80, fontSize: 26, fontFamily: "Roboto Condensed"),
+            style: TextStyle(color: kText80, fontSize: 26, fontFamily: "Roboto Condensed"),
           ),
           const SizedBox(
             height: 50,
           ),
           ListView.builder(
-            itemCount:accounts.length,
-            shrinkWrap:true,
+            itemCount: accounts.length,
+            shrinkWrap: true,
             physics: NeverScrollableScrollPhysics(),
-            itemBuilder:(BuildContext context,int index){
+            itemBuilder: (BuildContext context, int index) {
               return Container(
-              padding: const EdgeInsets.fromLTRB(25, 20, 25, 20),
-              margin: EdgeInsets.only(top: index == 0?0:20),
-              decoration:  BoxDecoration(
-                border: Border.all(
+                padding: const EdgeInsets.fromLTRB(25, 20, 25, 20),
+                margin: EdgeInsets.only(top: index == 0 ? 0 : 20),
+                decoration: BoxDecoration(
+                  border: Border.all(
                     color: kEpic,
                     width: 1,
                   ),
-                color: kBackgroundVariant,
-                borderRadius: BorderRadius.circular(17),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 3.0),
-                    child: Image.asset(
-                      "assets/images/icons/pink/${accounts[index]["file"]}Pink.png",
-                      height: 30,
+                  color: kBackgroundVariant,
+                  borderRadius: BorderRadius.circular(17),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 3.0),
+                      child: Image.asset(
+                        "assets/images/icons/pink/${accounts[index]["file"]}Pink.png",
+                        height: 30,
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 30,),
-                  Text(
-                    accounts[index]["name"],
-                    style: kBodyText1.apply(color: kEpic),
-                  )
-                ],
-              ),
+                    SizedBox(
+                      width: 30,
+                    ),
+                    Text(
+                      accounts[index]["name"],
+                      style: kBodyText1.apply(color: kEpic),
+                    )
+                  ],
+                ),
               );
             },
           ),
-          const SizedBox(height:50),
-          if(accounts.length < 3)GestureDetector(
-            child: Container(
-              padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
-              decoration: BoxDecoration(
-                color: kBackgroundVariant,
-                borderRadius: BorderRadius.circular(20),
+          const SizedBox(height: 50),
+          if (accounts.length < 3)
+            GestureDetector(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
+                decoration: BoxDecoration(
+                  color: kBackgroundVariant,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.add_circle_outline,
+                      color: kPrimary,
+                      size: 34,
+                    ),
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 3),
+                      child: Text(
+                        "Add an account",
+                        style: kBodyText1.apply(color: kPrimary),
+                      ),
+                    )
+                  ],
+                ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.add_circle_outline,
-                    color: kPrimary,
-                    size: 34,
-                  ),
-                  Text(
-                    "Add an account",
-                    style: kBodyText1.apply(color: kPrimary),
-                  )
-                ],
-              ),
+              onTap: () async {
+                var result =
+                    await showDialog(context: context, builder: (context) => PopupWidget(context, items));
+                if (result != null)
+                  setState(() {
+                    accounts.add(result);
+                    items.removeWhere((item) => item["file"] == result["file"]);
+                  });
+              },
             ),
-            onTap: () async {
-              var result = await showDialog(
-                  context: context,
-                  builder: (context) => PopupWidget(context,items));
-              if(result != null) 
-                setState((){
-                  accounts.add(result);
-                  items.removeWhere((item)=>item["file"] == result["file"]);
-                });
-            },
-          )
+          Expanded(
+            child: Text(""),
+          ),
+          if (accounts.length > 0)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Container(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                    margin: const EdgeInsets.only(bottom: 50),
+                    decoration: BoxDecoration(
+                      color: kBackgroundVariant,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: GestureDetector(
+                      onTap: () async {
+                        print("test");
+                        final authKey = await secureStorage.read(key: "authKey");
+                        if (authKey == null) {
+                          Navigator.pushReplacementNamed(context, "/login");
+                          return;
+                        }
+                        ;
+                        var accountData = await http.post(
+                            getUri('/auth/createAccount?linkId=null&BID=${accounts[0]["bid"]}'),
+                            headers: {"authorization": authKey});
+                        try {
+                          if (jsonDecode(accountData.body)["accountExists"] == true) return;
+                          print("etst");
+                        } catch (e) {
+                          // If the response is a string (containing the link ID) bc a string throws an error with jsonDecode()
+                          if (ModalRoute.of(context)?.settings.name == "/") {
+                            Navigator.pop(context, "/");
+                            Navigator.pushNamed(context, "/");
+                          } else {
+                            Navigator.pushReplacementNamed(context, "/");
+                          }
+                        }
+                      },
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(10,6,10,6),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "Finish",
+                              style: kBodyText2.apply(color: kGreen),
+                            ),
+                            const SizedBox(
+                              width: 5,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 5.0),
+                              child: const Icon(
+                                Icons.check,
+                                color: kGreen,
+                                size: 30,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    )),
+              ],
+            )
         ],
       ),
     );
@@ -219,16 +290,14 @@ class GoogleAppleLogin extends StatelessWidget {
             children: [
               const Text(
                 "Play",
-                style: TextStyle(
-                    fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
+                style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
               ),
               const SizedBox(
                 width: 7,
               ),
               const Text(
                 "Brawlhalla,",
-                style: TextStyle(
-                    fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
+                style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
               ),
             ],
           ),
@@ -236,16 +305,14 @@ class GoogleAppleLogin extends StatelessWidget {
             children: [
               const Text(
                 "Earn",
-                style: TextStyle(
-                    fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
+                style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
               ),
               const SizedBox(
                 width: 7,
               ),
               const Text(
                 "Rewards",
-                style: TextStyle(
-                    fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
+                style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
               ),
             ],
           ),
@@ -261,14 +328,12 @@ class GoogleAppleLogin extends StatelessWidget {
                 idToken = await http.post(getUri("/auth/createToken"), body: {
                   "token": temp?["auth"].accessToken,
                   "name": temp?['account'].displayName,
-                  if (temp?['account'].photoUrl != null)
-                    "picture": temp?['account'].photoUrl
+                  if (temp?['account'].photoUrl != null) "picture": temp?['account'].photoUrl
                 });
               } catch (e) {
                 print(e);
               }
-              await secureStorage.write(
-                  key: "authKey", value: jsonDecode(idToken.body)["_id"]);
+              await secureStorage.write(key: "authKey", value: jsonDecode(idToken.body)["_id"]);
               context.read<LoginPageManager>().next();
             },
             child: Container(
@@ -373,6 +438,7 @@ class WinhallaPresentation extends StatelessWidget {
     );
   }
 }
+
 class GoogleSignInApi {
   static final _googleSignIn = GoogleSignIn();
 
@@ -385,7 +451,6 @@ class GoogleSignInApi {
 
   static Future logout() => _googleSignIn.disconnect();
 }
-  
 
 class LoginPageManager extends ChangeNotifier {
   int page = 0;
