@@ -39,6 +39,11 @@ class Quests extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, _) {
       var userData = user.value["user"]["solo"];
+      if (user.value["user"]["solo"]["lastDaily"] == null || user.value["user"]["solo"]["lastWeekly"] == null){
+        user.refreshQuests();
+        return Center(child: CircularProgressIndicator());
+      }
+
       userData["dailyQuests"].addAll(userData["finished"]["daily"]);
       userData["weeklyQuests"].addAll(userData["finished"]["weekly"]);
       return RefreshIndicator(
@@ -78,7 +83,7 @@ class Quests extends StatelessWidget {
             ListView.builder(
               itemBuilder: (context, int index) {
                 return Container(
-                  margin: EdgeInsets.only(top: index!=0 ? 30.0 : 0),
+                  margin: EdgeInsets.only(top: index != 0 ? 30.0 : 0),
                   child: QuestWidget(
                       name: userData["dailyQuests"][index]["name"],
                       color: _getColorFromPrice(userData["dailyQuests"][index]["reward"], "weekly"),
@@ -121,7 +126,7 @@ class Quests extends StatelessWidget {
             ListView.builder(
               itemBuilder: (context, int index) {
                 return Container(
-                  margin: EdgeInsets.only(top: index != 0? 30.0 : 0),
+                  margin: EdgeInsets.only(top: index != 0 ? 30.0 : 0),
                   child: QuestWidget(
                       name: userData["weeklyQuests"][index]["name"],
                       color: _getColorFromPrice(userData["weeklyQuests"][index]["reward"], "weekly"),

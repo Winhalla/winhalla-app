@@ -209,7 +209,6 @@ class _AccountCreationState extends State<AccountCreation> {
                             headers: {"authorization": authKey});
                         try {
                           if (jsonDecode(accountData.body)["accountExists"] == true) return;
-                          print("etst");
                         } catch (e) {
                           // If the response is a string (containing the link ID) bc a string throws an error with jsonDecode()
                           if (ModalRoute.of(context)?.settings.name == "/") {
