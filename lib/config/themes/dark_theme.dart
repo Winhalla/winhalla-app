@@ -16,7 +16,6 @@ const Color kText95 = Color(0xF2FDFDFD); // 95% opacity
 const Color kText90 = Color(0xE6FDFDFD); // 90% opacity
 const Color kText80 = Color(0xCCFDFDFD); // 80% opacity
 
-
 const TextStyle kHeadline1 = TextStyle(color: kText, fontSize: 40);
 
 const TextStyle kBodyText1 = TextStyle(color: kText95, fontSize: 30);

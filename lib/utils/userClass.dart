@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/getUri.dart';
@@ -7,6 +6,7 @@ import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 
 class User extends ChangeNotifier {
   dynamic value;
+  dynamic shop;
 
   void refresh() async {
     var storageKey = await secureStorage.read(key: "authKey");
@@ -30,7 +30,8 @@ class User extends ChangeNotifier {
       matchId = this.value["user"]["inGame"].firstWhere((x) => x["isFinished"] == false)["id"];
     } catch (e) {
       // Find new match;
-      matchId = jsonDecode((await http.get(getUri("/lobby"), headers: {"authorization": this.value["authKey"]})).body);
+      matchId = jsonDecode(
+          (await http.get(getUri("/lobby"), headers: {"authorization": this.value["authKey"]})).body);
     }
     this.value["user"]["inGame"].add({
       "id": matchId,
@@ -46,6 +47,10 @@ class User extends ChangeNotifier {
   User(user) {
     this.value = user;
     notifyListeners();
+  }
+
+  void setShopDataTo(shopData) {
+    this.shop = shopData;
   }
 }
 

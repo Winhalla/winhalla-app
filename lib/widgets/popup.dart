@@ -154,17 +154,23 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
                     controller: bidTextController,
                     style: TextStyle(fontSize: 18, color: kText80, fontFamily: "Roboto Condensed"),
                     decoration: InputDecoration(
-                        suffixIconConstraints: BoxConstraints(maxHeight: 37,maxWidth: 35),
+                        suffixIconConstraints: BoxConstraints(maxHeight: 37, maxWidth: 35),
                         suffixIcon: _loading
                             ? Padding(
-                              padding: const EdgeInsets.fromLTRB(10,6,0,6),
-                              child: CircularProgressIndicator(strokeWidth: 3,),
-                            )
+                                padding: const EdgeInsets.fromLTRB(10, 6, 0, 6),
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 3,
+                                ),
+                              )
                             : _error != null
                                 ? Padding(
-                                  padding: const EdgeInsets.only(left: 4.0),
-                                  child: Icon(Icons.clear_outlined,color: kRed,size: 34,),
-                                )
+                                    padding: const EdgeInsets.only(left: 4.0),
+                                    child: Icon(
+                                      Icons.clear_outlined,
+                                      color: kRed,
+                                      size: 34,
+                                    ),
+                                  )
                                 : null,
                         border: InputBorder.none,
                         hintText: 'Type your Brawlhalla ID here',

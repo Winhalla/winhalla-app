@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
+import 'package:winhalla_app/screens/shop.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
@@ -17,7 +18,7 @@ void main() async {
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  static const List<Widget> screenList = [MyHomePage(), Quests(), PlayPage()];
+  static const List<Widget> screenList = [MyHomePage(), Quests(), PlayPage(),Shop()];
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -168,6 +169,22 @@ class _AppCoreState extends State<AppCore> {
                     child: Icon(
                       Icons.play_circle_outline_outlined,
                       color: _selectedIndex == 2 ? kPrimary : kText95,
+                      size: 34,
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    switchPage(3);
+                  },
+                  child: SizedBox(
+                    height: 90,
+                    child: Icon(
+                      Icons.card_giftcard,
+                      color: _selectedIndex == 3 ? kPrimary : kText95,
                       size: 34,
                     ),
                   ),
