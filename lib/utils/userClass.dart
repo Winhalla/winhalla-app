@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/getUri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+import 'package:winhalla_app/widgets/infoDropdown.dart';
 
 class User extends ChangeNotifier {
   dynamic value;
@@ -16,11 +18,23 @@ class User extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> refreshQuests() async {
+  Future<void> refreshQuests(BuildContext context, {bool showInfo:false}) async {
     var storageKey = await secureStorage.read(key: "authKey");
     if (storageKey == null) return;
     var accountData = await http.get(getUri("/solo"), headers: {"authorization": storageKey});
     this.value["user"]["solo"] = jsonDecode(accountData.body)["solo"];
+    if(showInfo)showInfoDropdown(
+        context,
+        kPrimary,
+        "Data updated",
+        body: Row(
+          children: [
+            Image.asset("assets/images/icons/phone.png",height: 35,),
+            SizedBox(width: 10,),
+            Image.asset("assets/images/icons/steam.png",width: 35,),
+          ],
+        )
+    );
     notifyListeners();
   }
 

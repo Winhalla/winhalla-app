@@ -8,7 +8,6 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/getUri.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 import 'package:http/http.dart' as http;
-import 'package:winhalla_app/widgets/alertPopup.dart';
 import 'package:winhalla_app/widgets/infoDropdown.dart';
 import 'package:winhalla_app/widgets/popupshop.dart';
 

@@ -40,7 +40,7 @@ class Quests extends StatelessWidget {
     return Consumer<User>(builder: (context, user, _) {
       var userData = user.value["user"]["solo"];
       if (user.value["user"]["solo"]["lastDaily"] == null || user.value["user"]["solo"]["lastWeekly"] == null){
-        user.refreshQuests();
+        user.refreshQuests(context,showInfo:false);
         return Center(child: CircularProgressIndicator());
       }
 
@@ -48,7 +48,7 @@ class Quests extends StatelessWidget {
       userData["weeklyQuests"].addAll(userData["finished"]["weekly"]);
       return RefreshIndicator(
         onRefresh: () async {
-          await user.refreshQuests();
+          await user.refreshQuests(context,showInfo: true);
         },
         child: ListView(
           padding: EdgeInsets.only(bottom: 20),
