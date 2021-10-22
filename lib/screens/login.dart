@@ -73,6 +73,7 @@ class _AccountCreationState extends State<AccountCreation> {
   Map<String, dynamic>? gAccount;
 
   List<dynamic> accounts = [];
+  String? steamId;
 
   List<Map<String, String>> items = [
     {'name': "Steam (PC)", "file": "steam"},
@@ -177,6 +178,9 @@ class _AccountCreationState extends State<AccountCreation> {
                 if (result != null)
                   setState(() {
                     accounts.add(result);
+                    if(result["steamId"]!= null){
+                      steamId = result["steamId"];
+                    }
                     items.removeWhere((item) => item["file"] == result["file"]);
                   });
               },
@@ -203,9 +207,8 @@ class _AccountCreationState extends State<AccountCreation> {
                           Navigator.pushReplacementNamed(context, "/login");
                           return;
                         }
-                        ;
                         var accountData = await http.post(
-                            getUri('/auth/createAccount?linkId=null&BID=${accounts[0]["bid"]}'),
+                            getUri('/auth/createAccount?linkId=null&BID=${accounts[0]["bid"]}'+(steamId!=null?"&steamId=$steamId":"")),
                             headers: {"authorization": authKey});
                         try {
                           if (jsonDecode(accountData.body)["accountExists"] == true) return;

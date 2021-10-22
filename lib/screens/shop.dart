@@ -9,6 +9,7 @@ import 'package:winhalla_app/utils/getUri.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/widgets/alertPopup.dart';
+import 'package:winhalla_app/widgets/infoDropdown.dart';
 import 'package:winhalla_app/widgets/popupshop.dart';
 
 Future<dynamic> getShopData(BuildContext context) async {
@@ -85,13 +86,17 @@ class Shop extends StatelessWidget {
                 children: [
                   ShopItem(
                     cost: res.data["featuredItem"]["cost"],
+                    itemId: res.data["featuredItem"]["id"],
                     name: res.data["featuredItem"]["name"],
                     nickname: res.data["featuredItem"]["nickname"],
                   ),
                   const SizedBox(
                     height: 60,
                   ),
-                  PaypalCredit(cost: res.data["paypalData"]["cost"]),
+                  PaypalCredit(
+                      cost: res.data["paypalData"]["cost"],
+                      itemId: res.data["paypalData"]["id"]
+                  ),
                   const SizedBox(
                     height: 60,
                   ),
@@ -103,6 +108,7 @@ class Shop extends StatelessWidget {
                       return Container(
                         margin: EdgeInsets.only(top: index == 0 ? 0 : 40.0),
                         child: ShopItem(
+                          itemId: item["id"],
                           cost: item["cost"],
                           name: item["name"],
                           nickname: item["nickname"],
@@ -121,10 +127,11 @@ class Shop extends StatelessWidget {
 
 class ShopItem extends StatelessWidget {
   final String name;
+  final int itemId;
   final String nickname;
   final int cost;
 
-  const ShopItem({Key? key, required int this.cost, required String this.name, required String this.nickname})
+  const ShopItem({Key? key, required int this.cost, required String this.name, required String this.nickname, required this.itemId})
       : super(key: key);
 
   @override
@@ -167,7 +174,7 @@ class ShopItem extends StatelessWidget {
               SizedBox(
                 width: 20,
               ),
-              Price(cost: cost.toString(),)
+              Price(cost: cost.toString(),itemId: itemId  ,)
             ],
           ),
         ),
@@ -178,8 +185,8 @@ class ShopItem extends StatelessWidget {
 
 class PaypalCredit extends StatefulWidget {
   final int cost;
-
-  const PaypalCredit({Key? key, required this.cost}) : super(key: key);
+  final int itemId;
+  const PaypalCredit({Key? key, required this.cost,required this.itemId}) : super(key: key);
 
   @override
   _PaypalCreditState createState() => _PaypalCreditState();
@@ -237,7 +244,6 @@ class _PaypalCreditState extends State<PaypalCredit> {
                 onTap: () {
                   setState(() {
                     _selectedItem = i;
-                    print(_selectedItem);
                   });
                 },
                 child: Text(
@@ -285,7 +291,10 @@ class _PaypalCreditState extends State<PaypalCredit> {
                       ),
                     ],
                   ),
-                  Price(cost:"${(widget.cost * items[_selectedItem]["amount"]).toInt()}")
+                  Price(
+                    cost:"${(widget.cost * items[_selectedItem]["amount"]).toInt()}",
+                    itemId: widget.itemId,amount: amount.runtimeType == String?null:amount,
+                  ),
                 ],
               )
             : Row(
@@ -321,6 +330,8 @@ class _PaypalCreditState extends State<PaypalCredit> {
                   ),
                   Price(
                     cost:amount.runtimeType == String?"...":"${(widget.cost * amount).toInt()}",
+                    itemId:widget.itemId,
+                    amount:amount.runtimeType == String?null:amount
                   ),
                 ],
               ),
@@ -336,26 +347,38 @@ class _PaypalCreditState extends State<PaypalCredit> {
   }
 }
 
+
 class Price extends StatelessWidget {
   final String cost;
-  const Price({Key? key,required this.cost}) : super(key: key);
+  final int itemId;
+  final int? amount;
+  const Price({Key? key,required this.cost,required this.itemId,this.amount}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () async {
+
         var userInfo = context.read<User>().value["user"];
-        if(userInfo["coins"] < int.parse(cost)) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('A SnackBar has been shown.'),
-            ),
-          );
-          print("snackBarShown");
+        try {
+          if(userInfo["coins"] < int.parse(cost)) {
+            showInfoDropdown(context, kRed, "Not enough coins",);
+            return;
+          }
+        } on FormatException {
           return;
         }
         var result =
-            await showDialog(context: context, builder: (context) => PopupWidget(context,userInfo["email"]));
+            await showDialog(context: context, builder: (context) => PopupWidget(context,userInfo["email"],itemId,amount: amount));
+        if(result == null) return;
+        if(result["success"] == true) {
+          showInfoDropdown(context, kGreen, "Gift sent!",
+              body: Text(
+                "check your mails",
+                style: Theme.of(context).textTheme.bodyText2?.merge(TextStyle(color: kText, fontSize: 24)),
+              ));
+          context.read<User>().addCoins(-int.parse(cost));
+        }
       },
       child: Container(
         decoration: BoxDecoration(color: kPrimary, borderRadius: BorderRadius.circular(14)),

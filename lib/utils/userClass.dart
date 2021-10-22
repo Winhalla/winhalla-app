@@ -52,6 +52,10 @@ class User extends ChangeNotifier {
   void setShopDataTo(shopData) {
     this.shop = shopData;
   }
+  void addCoins(coins){
+    this.value["user"]["coins"] += coins;
+    notifyListeners();
+  }
 }
 
 Future<dynamic> initUser() async {

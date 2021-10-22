@@ -6,22 +6,22 @@ import 'package:flutter/services.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/getUri.dart';
+import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/steam.dart';
 RegExp emailChecker = new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-Widget PopupWidget(BuildContext context,String email) {
+Widget PopupWidget(BuildContext context,String email,int itemId,{int? amount}) {
   final TextEditingController emailTextController = TextEditingController(text:email);
   bool isEmailValid = true;
+  String? _err;
   return StatefulBuilder(builder: (context, setState) {
     emailTextController.addListener(() {
       if(emailChecker.hasMatch(emailTextController.text) && isEmailValid == false){
         setState((){
           isEmailValid = true;
-          print("emailValid");
         });
       } else if(!emailChecker.hasMatch(emailTextController.text) && isEmailValid == true){
         setState((){
           isEmailValid = false;
-          print("emailInvalid");
         });
       }
     });
@@ -65,15 +65,29 @@ Widget PopupWidget(BuildContext context,String email) {
             if(!isEmailValid) Padding(
               padding: const EdgeInsets.fromLTRB(16,6,0,0),
               child: Text("Invalid Email",style: TextStyle(color: kRed,fontFamily: "Roboto Condensed",fontSize: 14),),
+            ),
+            if(_err != null) Padding(
+              padding: const EdgeInsets.fromLTRB(16,6,0,0),
+              child: Text(_err as String,style: TextStyle(color: kRed,fontFamily: "Roboto Condensed",fontSize: 14),),
             )
           ],
         ),
       ),
       actions: [
         GestureDetector(
-          onTap: () {
+          onTap: () async {
             if(!isEmailValid) return;
-            else print("buyItem");
+            else {
+              print(amount);
+              var result = await http.post(getUri("/buy/$itemId?email=${emailTextController.text}"+(amount != null?"&number=$amount":"")),
+                  headers: {"authorization": await getNonNullSSData("authKey")});
+              if(result.body == "OK") Navigator.pop(context,{"success":true});
+              else {
+                setState((){
+                  _err = result.body;
+                });
+              }
+            }
           },
           behavior: HitTestBehavior.translucent,
           child: Padding(
