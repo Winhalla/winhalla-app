@@ -133,9 +133,11 @@ class _AccountCreationState extends State<AccountCreation> {
                     SizedBox(
                       width: 30,
                     ),
-                    Text(
-                      accounts[index]["name"],
-                      style: kBodyText1.apply(color: kEpic),
+                    Expanded(
+                      child: Text(
+                        accounts[index]["name"],
+                        style: kBodyText1.apply(color: kEpic),
+                      ),
                     )
                   ],
                 ),
@@ -189,40 +191,41 @@ class _AccountCreationState extends State<AccountCreation> {
             child: Text(""),
           ),
           if (accounts.length > 0)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Container(
+            GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () async {
+                final authKey = await secureStorage.read(key: "authKey");
+                if (authKey == null) {
+                  Navigator.pushReplacementNamed(context, "/login");
+                  return;
+                }
+                var accountData = await http.post(
+                    getUri('/auth/createAccount'),
+                    body: jsonEncode({"accounts":accounts.map((e)=>{"BID":e["bid"],"name":e["file"],"steamId":e["steamId"]} ).toList()}),
+                    headers: {"authorization": authKey,"Content-Type": "application/json"});
+                try {
+                  if (jsonDecode(accountData.body)["accountExists"] == true) return;
+                } catch (e) {
+                  // If the response is a string (containing the link ID) bc a string throws an error with jsonDecode()
+                  if (ModalRoute.of(context)?.settings.name == "/") {
+                    Navigator.pop(context, "/");
+                    Navigator.pushNamed(context, "/");
+                  } else {
+                    Navigator.pushReplacementNamed(context, "/");
+                  }
+                }
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Container(
                     padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                     margin: const EdgeInsets.only(bottom: 50),
                     decoration: BoxDecoration(
-                      color: kBackgroundVariant,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: GestureDetector(
-                      onTap: () async {
-                        print("test");
-                        final authKey = await secureStorage.read(key: "authKey");
-                        if (authKey == null) {
-                          Navigator.pushReplacementNamed(context, "/login");
-                          return;
-                        }
-                        var accountData = await http.post(
-                            getUri('/auth/createAccount?linkId=null&BID=${accounts[0]["bid"]}'+(steamId!=null?"&steamId=$steamId":"")),
-                            headers: {"authorization": authKey});
-                        try {
-                          if (jsonDecode(accountData.body)["accountExists"] == true) return;
-                        } catch (e) {
-                          // If the response is a string (containing the link ID) bc a string throws an error with jsonDecode()
-                          if (ModalRoute.of(context)?.settings.name == "/") {
-                            Navigator.pop(context, "/");
-                            Navigator.pushNamed(context, "/");
-                          } else {
-                            Navigator.pushReplacementNamed(context, "/");
-                          }
-                        }
-                      },
-                      child: Padding(
+                        color: kBackgroundVariant,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    child: Padding(
                         padding: const EdgeInsets.fromLTRB(10,6,10,6),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -246,8 +249,9 @@ class _AccountCreationState extends State<AccountCreation> {
                           ],
                         ),
                       ),
-                    )),
-              ],
+                  ),
+                ],
+              ),
             )
         ],
       ),

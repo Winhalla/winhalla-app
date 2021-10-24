@@ -40,8 +40,14 @@ class _MyAppState extends State<MyApp> {
             child: FutureBuilder(
                 future: initUser(),
                 builder: (context, AsyncSnapshot<dynamic> res) {
+                  bool hasUserData = true;
+                  try{
+                    hasUserData = jsonDecode(res.data["data"].body)["user"] != null;
+                  }catch(e){
+                    // Do nothing if decode doesn't work, it's handled later
+                  }
 
-                  if (res.data == "no data" || res.data?["data"].body == "") {
+                  if (res.data == "no data" || res.data?["data"].body == "" || !hasUserData) {
                     return LoginPage();
                   }
                   if (!res.hasData) return AppCore(isUserDataLoaded: false);
