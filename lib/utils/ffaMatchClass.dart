@@ -2,19 +2,34 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/getUri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/userClass.dart';
+import 'package:winhalla_app/widgets/infoDropdown.dart';
 
 class FfaMatch extends ChangeNotifier {
   dynamic value;
   bool areOtherPlayersShown = false;
-  Future<void> refresh(String authKey) async {
+  Future<void> refresh(String authKey,BuildContext context,{bool showInfo:false}) async {
     var match = jsonDecode((await http.get(getUri("/getMatch/${this.value["_id"]}"),headers: {"authorization":authKey})).body);
     var steamId = this.value["userPlayer"]["steamId"];
-    match["userPlayer"] = match["players"].firstWhere((e) => e["steamId"] == steamId);
+    match["userPlayer"] = match["players" ].firstWhere((e) => e["steamId"] == steamId);
     match["players"] = match["players"].where((e)=>e["steamId"]!= steamId).toList();
     this.value = match;
+    if(showInfo)showInfoDropdown(
+        context,
+        kPrimary,
+        "Data updated",
+        timeShown:2000,
+        body: Row(
+          children: [
+            Image.asset("assets/images/icons/phone.png",height: 35,),
+            SizedBox(width: 10,),
+            Image.asset("assets/images/icons/steam.png",width: 35,),
+          ],
+        )
+    );
     notifyListeners();
   }
 

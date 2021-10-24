@@ -33,7 +33,6 @@ class _TimerWidgetState extends State<TimerWidget> {
 
     void timerFx(Timer? cancel) {
       if (numberOfSeconds != widget.numberOfSeconds -2) {
-        print('test');
         numberOfSeconds = widget.numberOfSeconds -2;
         days = (numberOfSeconds / 86400).floor();
         hours = (numberOfSeconds / 3600).floor() - days * 24;

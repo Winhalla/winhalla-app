@@ -39,7 +39,6 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
       var accountData =
           (await http.get(getUri("/auth/isBIDValid/${bidTextController.text.replaceAll(' ', '')}"))).body;
       var decodedData = jsonDecode(accountData);
-      print(decodedData);
       if (decodedData["isValid"] == false) {
         _loading = false;
         return setState(() {
@@ -68,7 +67,6 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
                 iconDisabledColor: kText80,
                 itemHeight: 50,
                 onChanged: (String? value) {
-                  print(value);
                   setState(() {
                     if (value != null) _chosenValue = value;
                   });

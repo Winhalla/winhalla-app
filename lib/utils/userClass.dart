@@ -18,55 +18,55 @@ class User extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> refreshQuests(BuildContext context, {bool showInfo:false}) async {
+  Future<void> refreshQuests(BuildContext context, {bool showInfo: false}) async {
     var storageKey = await secureStorage.read(key: "authKey");
     if (storageKey == null) return;
     var accountData = await http.get(getUri("/solo"), headers: {"authorization": storageKey});
     this.value["user"]["solo"] = jsonDecode(accountData.body)["solo"];
-    if(showInfo)showInfoDropdown(
-        context,
-        kPrimary,
-        "Data updated",
-        body: Row(
-          children: [
-            Image.asset("assets/images/icons/phone.png",height: 35,),
-            SizedBox(width: 10,),
-            Image.asset("assets/images/icons/steam.png",width: 35,),
-          ],
-        )
-    );
+    if (showInfo)
+      showInfoDropdown(context, kPrimary, "Data updated",
+          timeShown:2000,
+          body: Row(
+            children: [
+              Image.asset(
+                "assets/images/icons/phone.png",
+                height: 35,
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              Image.asset(
+                "assets/images/icons/steam.png",
+                width: 35,
+              ),
+            ],
+          ));
     notifyListeners();
   }
 
   Future<String> enterMatch() async {
+    print(this.value["authKey"]);
     String matchId;
-    try {
-      matchId = this.value["user"]["inGame"].firstWhere((x) => x["isFinished"] == false)["id"];
-    } catch (e) {
-      // Find new match;
-      matchId = jsonDecode(
-          (await http.get(getUri("/lobby"), headers: {"authorization": this.value["authKey"]})).body);
-    }
-    this.value["user"]["inGame"].add({
-      "id": matchId,
-      "type": "Solo",
-      "isFinished": false,
-      "Date": DateTime.now().millisecondsSinceEpoch,
-      "progress": 0
-    });
-    notifyListeners();
+    // Find new match;
+    matchId = jsonDecode(
+        (await http.get(getUri("/lobby"), headers: {"authorization": this.value["authKey"]})).body);
+    var accountData = await http.get(getUri("/account"), headers: {"authorization": this.value["authKey"]});
+    var accountDataParsed = jsonDecode(accountData.body);
+    this.value["user"] = accountDataParsed["user"];
+    this.value["steam"] = accountDataParsed["steam"];
     return matchId;
   }
 
   User(user) {
+    print(user["authKey"]);
     this.value = user;
-    notifyListeners();
   }
 
   void setShopDataTo(shopData) {
     this.shop = shopData;
   }
-  void addCoins(coins){
+
+  void addCoins(coins) {
     this.value["user"]["coins"] += coins;
     notifyListeners();
   }

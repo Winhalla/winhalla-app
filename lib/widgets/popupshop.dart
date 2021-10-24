@@ -78,7 +78,6 @@ Widget PopupWidget(BuildContext context,String email,int itemId,{int? amount}) {
           onTap: () async {
             if(!isEmailValid) return;
             else {
-              print(amount);
               var result = await http.post(getUri("/buy/$itemId?email=${emailTextController.text}"+(amount != null?"&number=$amount":"")),
                   headers: {"authorization": await getNonNullSSData("authKey")});
               if(result.body == "OK") Navigator.pop(context,{"success":true});

@@ -27,11 +27,11 @@ void showTopSnackBar(
   });
 }
 
-void showInfoDropdown(BuildContext context,Color color,String head, {Widget? body}){
+void showInfoDropdown(BuildContext context,Color color,String head, {Widget? body, int timeShown:5000}){
   showTopSnackBar(
       context,
-      InfoDropdown(color:color,head:head,body:body,displayDuration: 5000,),
-      displayDuration:Duration(milliseconds: 5000),
+      InfoDropdown(color:color,head:head,body:body,displayDuration: timeShown,),
+      displayDuration:Duration(milliseconds: timeShown),
       additionalTopPadding: 32
   );
 }
