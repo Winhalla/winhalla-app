@@ -28,11 +28,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.fromLTRB(22, 9, 22, 6),
                 child: Row(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 3),
-                      child: Image.asset("assets/images/coin.png",height: 30,width: 30,),
-                    ),
-                    SizedBox(width: 10,),
                     Consumer<User>(
                       builder: (context, user,_) {
                         return Text(
@@ -40,6 +35,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           style: kBodyText1.apply(color: kPrimary),
                         );
                       }
+                    ),
+
+                    SizedBox(width: 10,),
+
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 3),
+                      child: Image.asset("assets/images/coin.png",height: 30,width: 30,),
                     ),
                   ],
                 )),

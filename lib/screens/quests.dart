@@ -51,7 +51,7 @@ class Quests extends StatelessWidget {
           await user.refreshQuests(context,showInfo: true);
         },
         child: ListView(
-          padding: EdgeInsets.only(bottom: 20),
+          padding: EdgeInsets.only(bottom: 14),
           children: [
             Padding(
               padding: const EdgeInsets.only(right: 10),
