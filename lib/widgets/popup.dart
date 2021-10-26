@@ -14,7 +14,10 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
   String step = "platformSelection";
   bool _loading = false;
   String? _error;
+
+
   return StatefulBuilder(builder: (context, setState) {
+
     void nextStep() {
       setState(() {
         if (_chosenValue == "steam")
@@ -52,20 +55,29 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
     }
 
     if (step == "steamLogin") return SteamLoginWebView();
+
+
+
     return AlertDialog(
+      titlePadding: EdgeInsets.only(top: 26, left: 30),
       title: Text(
         step == "platformSelection" ? 'Select a platform' : "Brawlhalla Id",
         style: kBodyText1,
       ),
+
+      contentPadding: EdgeInsets.fromLTRB(28, 16, 28, 8),
       content: step == "platformSelection"
           ? Container(
               decoration: BoxDecoration(color: kBackground, borderRadius: BorderRadius.circular(14)),
-              padding: const EdgeInsets.fromLTRB(0, 6, 0, 6),
-              child: DropdownButton(
-                iconSize: 40,
+              padding: const EdgeInsets.fromLTRB(0, 6, 6, 6),
+              child: ButtonTheme(
+                alignedDropdown: true,
+                child: DropdownButton(
+                iconSize: 38,
                 iconEnabledColor: kText80,
                 iconDisabledColor: kText80,
                 itemHeight: 50,
+
                 onChanged: (String? value) {
                   setState(() {
                     if (value != null) _chosenValue = value;
@@ -75,34 +87,8 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
                 // Transparent
                 elevation: 0,
                 value: _chosenValue,
-                selectedItemBuilder: (BuildContext context) {
-                  return items.map<Widget>((Map<String, String> value) {
-                    return DropdownMenuItem<String>(
-                      value: value["file"],
-                      child: Container(
-                        height: 51,
-                        padding: const EdgeInsets.fromLTRB(24, 14, 12, 14),
-                        decoration:
-                            BoxDecoration(color: kBackground, borderRadius: BorderRadius.circular(20)),
-                        child: Row(
-                          children: [
-                            Image.asset(
-                              "assets/images/icons/${value["file"]}.png",
-                              width: 25,
-                            ),
-                            SizedBox(
-                              width: 10,
-                            ),
-                            Text(
-                              value["name"] as String,
-                              style: kBodyText4,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList();
-                },
+
+                
                 items: items.map<DropdownMenuItem<String>>((
                   Map<String, String> value,
                 ) {
@@ -110,9 +96,10 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
                     value: value["file"],
                     child: Container(
                       height: 52,
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                       decoration: BoxDecoration(
                           color: kBackground,
+                          
                           borderRadius: value["file"] == items[0]["file"]
                               ? BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15))
                               : value["file"] == items[items.length - 1]["file"]
@@ -121,16 +108,28 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
                                   : BorderRadius.circular(0)),
                       child: Row(
                         children: [
-                          Image.asset(
-                            "assets/images/icons/${value["file"]}.png",
+                          SizedBox(
+                            width: 25,
                             height: 25,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Image.asset(
+                                  "assets/images/icons/${value["file"]}.png",
+                                  width: 25,
+                                ),
+                              ],
+                            ),
                           ),
                           SizedBox(
                             width: 10,
                           ),
-                          Text(
-                            value["name"] as String,
-                            style: kBodyText4,
+                          Padding(
+                            padding: const EdgeInsets.only(top: 1),
+                            child: Text(
+                              value["name"] as String,
+                              style: kBodyText4,
+                            ),
                           ),
                         ],
                       ),
@@ -139,7 +138,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
                 }).toList(),
                 underline: Container(), // Empty widget to remove underline
               ),
-            )
+          ))
           : Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -150,19 +149,19 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
                   child: TextField(
                     keyboardType: TextInputType.phone,
                     controller: bidTextController,
-                    style: TextStyle(fontSize: 18, color: kText80, fontFamily: "Roboto Condensed"),
+                    style: const TextStyle(fontSize: 18, color: kText80, fontFamily: "Roboto Condensed"),
                     decoration: InputDecoration(
-                        suffixIconConstraints: BoxConstraints(maxHeight: 37, maxWidth: 35),
+                        suffixIconConstraints: const BoxConstraints(maxHeight: 37, maxWidth: 35),
                         suffixIcon: _loading
-                            ? Padding(
-                                padding: const EdgeInsets.fromLTRB(10, 6, 0, 6),
+                            ? const Padding(
+                                padding: EdgeInsets.fromLTRB(10, 6, 0, 6),
                                 child: CircularProgressIndicator(
                                   strokeWidth: 3,
                                 ),
                               )
                             : _error != null
-                                ? Padding(
-                                    padding: const EdgeInsets.only(left: 4.0),
+                                ? const Padding(
+                                    padding: EdgeInsets.only(left: 4.0),
                                     child: Icon(
                                       Icons.clear_outlined,
                                       color: kRed,
@@ -172,7 +171,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
                                 : null,
                         border: InputBorder.none,
                         hintText: 'Type your Brawlhalla ID here',
-                        hintStyle: TextStyle(fontSize: 17, color: kText80, fontFamily: "Roboto Condensed")),
+                        hintStyle: const TextStyle(fontSize: 17, color: kText80, fontFamily: "Roboto Condensed")),
                   ),
                 ),
                 if (_error != null)
@@ -181,17 +180,17 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
                   ),
                 if (_error != null)
                   Padding(
-                    padding: const EdgeInsets.only(left: 15),
+                    padding: const EdgeInsets.only(left: 20),
                     child: Text(
                       _error as String,
-                      style: TextStyle(color: kRed, fontSize: 16, fontFamily: "Roboto Condensed"),
+                      style: const TextStyle(color: kRed, fontSize: 16, fontFamily: "Roboto Condensed"),
                     ),
                   ),
                 SizedBox(
-                  height: _error == null ? 40 : 20,
+                  height: _error == null ? 34 : 20,
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 10, left: 5),
+                const Padding(
+                  padding: EdgeInsets.only(right: 10, left: 0),
                   child: Text(
                     "Find your Brawlhalla ID in the top right corner of your inventory:",
                     style: TextStyle(color: kText80, fontSize: 15, fontFamily: "Roboto Condensed"),
@@ -208,50 +207,60 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
                       )),
                 ),
               ],
-            ),
+          ),
+
+
+      actionsPadding: EdgeInsets.symmetric(horizontal: 13),
       actions: [
-        Row(
+        /*Row(
           children: [],
           mainAxisSize: MainAxisSize.max,
-        ),
-        if (step == "platformSelection")
-          TextButton(
-            onPressed: () {
-              nextStep();
-            },
-            child: Text(
-              "Next",
-              style: kBodyText2.apply(color: kPrimary),
-            ),
-          ),
-        if (step == "enterBid")
-          TextButton(
-            onPressed: () {
-              createAccount();
-            },
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Finish",
-                  style: kBodyText2.apply(color: kGreen),
+        ),*/Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              if (step == "platformSelection")
+              TextButton(
+                onPressed: () {
+                  nextStep();
+                },
+                child: Text(
+                  "Next",
+                  style: kBodyText2.apply(color: kPrimary),
                 ),
-                const SizedBox(
-                  width: 5,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 5.0),
-                  child: const Icon(
-                    Icons.check,
-                    color: kGreen,
-                    size: 30,
+              ),
+              if (step == "enterBid")
+                TextButton(
+                  onPressed: () {
+                    createAccount();
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        "Finish",
+                        style: kBodyText2.apply(color: kGreen),
+                      ),
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 5.0),
+                        child: Icon(
+                          Icons.check,
+                          color: kGreen,
+                          size: 30,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+            ],
           )
+        
+        
       ],
+
       backgroundColor: kBackgroundVariant,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),

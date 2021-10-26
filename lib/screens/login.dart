@@ -131,7 +131,7 @@ class _AccountCreationState extends State<AccountCreation> {
                       ),
                     ),
                     SizedBox(
-                      width: 30,
+                      width: 18,
                     ),
                     Expanded(
                       child: Text(
@@ -226,20 +226,23 @@ class _AccountCreationState extends State<AccountCreation> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     child: Padding(
-                        padding: const EdgeInsets.fromLTRB(10,6,10,6),
+                        padding: const EdgeInsets.fromLTRB(10,6,6,6),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
-                              "Finish",
-                              style: kBodyText2.apply(color: kGreen),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 1.0),
+                              child: Text(
+                                "Finish",
+                                style: kBodyText2.apply(color: kGreen),
+                              ),
                             ),
                             const SizedBox(
-                              width: 5,
+                              width: 6,
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(bottom: 5.0),
+                              padding: const EdgeInsets.only(bottom: 4.75),
                               child: const Icon(
                                 Icons.check,
                                 color: kGreen,
