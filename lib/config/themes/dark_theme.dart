@@ -18,7 +18,7 @@ const Color kText80 = Color(0xCCFDFDFD); // 80% opacity
 
 const TextStyle kHeadline1 = TextStyle(color: kText, fontSize: 40);
 
-const TextStyle kBodyText1 = TextStyle(color: kText95, fontSize: 30);
+const TextStyle kBodyText1 = TextStyle(color: kText95, fontSize: 30, fontFamily: "Bebas Neue");
 
 const TextStyle kBodyText2 =
     TextStyle(color: kText95, fontSize: 24, fontFamily: "Roboto Condensed");
