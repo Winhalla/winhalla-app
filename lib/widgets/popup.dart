@@ -17,7 +17,6 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
 
 
   return StatefulBuilder(builder: (context, setState) {
-
     void nextStep() {
       setState(() {
         if (_chosenValue == "steam")
@@ -59,6 +58,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
 
 
     return AlertDialog(
+
       titlePadding: EdgeInsets.only(top: 26, left: 30),
       title: Text(
         step == "platformSelection" ? 'Select a platform' : "Brawlhalla Id",
