@@ -180,7 +180,7 @@ class SoloMatch extends StatelessWidget {
                       height: 50,
                     ),
                     Container(
-                      padding: EdgeInsets.fromLTRB(28, 22, 0, 18),
+                      padding: EdgeInsets.fromLTRB(28, 22, 0, 24.5),
                       decoration: BoxDecoration(
                         color: kBackgroundVariant,
                         borderRadius: BorderRadius.circular(20),
@@ -205,9 +205,9 @@ class SoloMatch extends StatelessWidget {
                                 padding: const EdgeInsets.only(right: 20),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
+                                  children: const [
                                     Padding(
-                                      padding: const EdgeInsets.only(top: 3.0),
+                                      padding: EdgeInsets.only(top: 3.0),
                                       child: Text(
                                         "TIP",
                                         style: TextStyle(
@@ -219,7 +219,7 @@ class SoloMatch extends StatelessWidget {
                                     SizedBox(
                                       width: 5,
                                     ),
-                                    const Icon(
+                                    Icon(
                                       Icons.lightbulb_outline_sharp,
                                       color: kGreen,
                                     )
@@ -229,42 +229,46 @@ class SoloMatch extends StatelessWidget {
                             ],
                           ),
                           Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                padding: EdgeInsets.fromLTRB(20, 20, 0, 0),
+                                padding: EdgeInsets.fromLTRB(20, 7, 0, 0),
                                 child: CustomPaint(
-                                  size: Size(60, 125),
+                                  size: Size(40, 105),
                                   painter: TipPainter(color: kText), //3
                                 ),
                               ),
-                              Column(
-                                children: [
-                                  SizedBox(
-                                    width: 200,
-                                    child: RichText(
-                                      text: TextSpan(style: kBodyText3, children: [
-                                        TextSpan(text: "Start "),
-                                        TextSpan(text: "playing ", style: TextStyle(color: kPrimary)),
-                                        TextSpan(text: "Brawlhalla! (only ranked games)")
-                                      ]),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 18.0),
+                                child: Column(
+                                  children: [
+                                    SizedBox(
+                                      width: 200,
+                                      child: RichText(
+                                        text: TextSpan(style: kBodyText3, children: const [
+                                          TextSpan(text: "Start "),
+                                          TextSpan(text: "playing ", style: TextStyle(color: kPrimary)),
+                                          TextSpan(text: "Brawlhalla! (only ranked games)")
+                                        ]),
+                                      ),
                                     ),
-                                  ),
-                                  SizedBox(
-                                    height: 20,
-                                  ),
-                                  SizedBox(
-                                    width: 190,
-                                    child: RichText(
-                                      softWrap: true,
-                                      text: TextSpan(style: kBodyText3, children: [
-                                        TextSpan(text: "Drag down ", style: TextStyle(color: kPrimary)),
-                                        TextSpan(text: "to "),
-                                        TextSpan(text: "sync ", style: TextStyle(color: kPrimary)),
-                                        TextSpan(text: "your stats"),
-                                      ]),
+                                    SizedBox(
+                                      height: 19,
                                     ),
-                                  ),
-                                ],
+                                    SizedBox(
+                                      width: 200,
+                                      child: RichText(
+                                        softWrap: true,
+                                        text: TextSpan(style: kBodyText3, children: const [
+                                          TextSpan(text: "Drag down ", style: TextStyle(color: kPrimary)),
+                                          TextSpan(text: "to "),
+                                          TextSpan(text: "sync ", style: TextStyle(color: kPrimary)),
+                                          TextSpan(text: "your stats"),
+                                        ]),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               )
                             ],
                           ),
@@ -296,38 +300,34 @@ class TipPainter extends CustomPainter {
       // ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
-    ;
-    double rectSize = 45;
-    double currentHeight = 138;
-    double currentWidth = size.width - 65;
+    double rectSize = 30;
 
     Path path = Path();
     path.moveTo(0, 0);
-    currentHeight = currentHeight + 3;
 
     path.arcTo(
         Rect.fromLTWH(
             0,
-            0,
-            40, // -0.15 just for pixel perfect
-            40),
+            -7,
+            rectSize,
+            rectSize),
         degToRad(180),
         degToRad(-90),
         false);
-    path.lineTo(40, 40);
+    path.lineTo(23, 23);
     // path.lineTo(20, currentHeight + rectSize);
-    path.moveTo(0, 20);
+    path.moveTo(0, 10);
 
     path.arcTo(
         Rect.fromLTWH(
             0,
-            65,
-            40, // -0.15 just for pixel perfect
-            40),
+            58.5,
+            rectSize, // -0.15 just for pixel perfect
+            rectSize),
         degToRad(180),
         degToRad(-90),
         false);
-    path.lineTo(40, 105);
+    path.lineTo(23, 88.5);
     canvas.drawPath(path, paint);
   }
 
