@@ -22,25 +22,28 @@ class User extends ChangeNotifier {
     var storageKey = await secureStorage.read(key: "authKey");
     if (storageKey == null) return;
     var accountData = await http.get(getUri("/solo"), headers: {"authorization": storageKey});
-    this.value["user"]["solo"] = jsonDecode(accountData.body)["solo"];
-    if (showInfo)
-      showInfoDropdown(context, kPrimary, "Data updated",
-          timeShown:2000,
+    var accountDataDecoded = jsonDecode(accountData.body);
+    this.value["user"]["solo"] = accountDataDecoded["solo"];
+    if (showInfo) {
+      List<Widget> icons = [];
+      for (int i = 0; i < accountDataDecoded["updatedPlatforms"].length;i++){
+        icons.add(
+            Padding(
+              padding: EdgeInsets.only(left: i!=0?12:0),
+              child: Image.asset(
+                "assets/images/icons/pink/${accountDataDecoded["updatedPlatforms"][i]}Pink.png",
+                color: kText80,
+                height: 40,
+              ),
+            ),
+        );
+      }
+      if(icons.length>0) showInfoDropdown(context, kPrimary, "Data updated",
+          timeShown: 4000,
           body: Row(
-            children: [
-              Image.asset(
-                "assets/images/icons/phone.png",
-                height: 35,
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              Image.asset(
-                "assets/images/icons/steam.png",
-                width: 35,
-              ),
-            ],
+            children: icons,
           ));
+    }
     notifyListeners();
   }
 

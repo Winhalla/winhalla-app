@@ -17,19 +17,27 @@ class FfaMatch extends ChangeNotifier {
     match["userPlayer"] = match["players" ].firstWhere((e) => e["steamId"] == steamId);
     match["players"] = match["players"].where((e)=>e["steamId"]!= steamId).toList();
     this.value = match;
-    if(showInfo)showInfoDropdown(
-        context,
-        kPrimary,
-        "Data updated",
-        timeShown:2000,
-        body: Row(
-          children: [
-            Image.asset("assets/images/icons/phone.png",height: 35,),
-            SizedBox(width: 10,),
-            Image.asset("assets/images/icons/steam.png",width: 35,),
-          ],
-        )
-    );
+    if(showInfo) {
+      List<Widget> icons = [];
+      for (int i = 0; i < match["updatedPlatforms"].length;i++){
+        icons.add(
+          Padding(
+            padding: EdgeInsets.only(left: i!=0?12:0),
+            child: Image.asset(
+              "assets/images/icons/pink/${match["updatedPlatforms"][i]}Pink.png",
+              color: kText80,
+              height: 40,
+            ),
+          ),
+        );
+      }
+      showInfoDropdown(context, kPrimary, "Data updated",
+          timeShown: 2000,
+          body: Row(
+            children: icons
+          ),
+      );
+    }
     notifyListeners();
   }
 

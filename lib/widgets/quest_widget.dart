@@ -62,7 +62,7 @@ class QuestWidget extends StatelessWidget {
                       alignment: Alignment.center,
                       child: Padding(
                         padding: const EdgeInsets.only(top: 2), //add padding to center the font that has default bottom spacing
-                        child: Text("${percentage.ceil()}%", style: kBodyText4.apply(color: color)),
+                        child: Text("${isQuestFinished?100:percentage.ceil()}%", style: kBodyText4.apply(color: color)),
                       ))),
             ],
           )

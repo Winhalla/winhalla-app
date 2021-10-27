@@ -201,7 +201,7 @@ class _AccountCreationState extends State<AccountCreation> {
                 }
                 var accountData = await http.post(
                     getUri('/auth/createAccount'),
-                    body: jsonEncode({"accounts":accounts.map((e)=>{"BID":e["bid"],"name":e["file"],"steamId":e["steamId"]} ).toList()}),
+                    body: jsonEncode({"accounts":accounts.map((e)=>{"BID":e["bid"],"name":e["name"],"steamId":e["steamId"],"platformId":e["file"]} ).toList()}),
                     headers: {"authorization": authKey,"Content-Type": "application/json"});
                 try {
                   if (jsonDecode(accountData.body)["accountExists"] == true) return;
