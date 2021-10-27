@@ -39,7 +39,7 @@ class User extends ChangeNotifier {
         );
       }
       if(icons.length>0) showInfoDropdown(context, kPrimary, "Data updated",
-          timeShown: 4000,
+          timeShown: 4500,
           body: Row(
             children: icons,
           ));
@@ -48,7 +48,6 @@ class User extends ChangeNotifier {
   }
 
   Future<String> enterMatch() async {
-    print(this.value["authKey"]);
     String matchId;
     // Find new match;
     matchId = jsonDecode(
@@ -61,7 +60,6 @@ class User extends ChangeNotifier {
   }
 
   User(user) {
-    print(user["authKey"]);
     this.value = user;
   }
 

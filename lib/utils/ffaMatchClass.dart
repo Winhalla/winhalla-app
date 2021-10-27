@@ -32,7 +32,7 @@ class FfaMatch extends ChangeNotifier {
         );
       }
       showInfoDropdown(context, kPrimary, "Data updated",
-          timeShown: 2000,
+          timeShown: 4500,
           body: Row(
             children: icons
           ),
