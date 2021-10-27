@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -275,17 +276,22 @@ class _PaypalCreditState extends State<PaypalCredit> {
                     _selectedItem = i;
                   });
                 },
-                child: Text(
-                  items[i]["displayName"],
+                child: AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 300),
                   style: kBodyText1.apply(
                       color: i == _selectedItem ? kText : kText80),
+                  child: Text(
+                  items[i]["displayName"],
+                  
                 ),
-              ),
+              )),
             );
           }
           return Stack(
             children: [
-              Positioned(
+              AnimatedPositioned(
+                curve: Curves.easeInOut,
+                duration: Duration(milliseconds: 225),
                 bottom: 3,
                 left: _selectedItem == 0 ? 8.75 : _selectedItem == 1 ? 101 : 207,
                 child: Container(
