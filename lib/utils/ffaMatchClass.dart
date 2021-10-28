@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/getUri.dart';
-import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 import 'package:winhalla_app/widgets/infoDropdown.dart';
 
@@ -17,7 +16,7 @@ class FfaMatch extends ChangeNotifier {
     match["userPlayer"] = match["players" ].firstWhere((e) => e["steamId"] == steamId);
     match["players"] = match["players"].where((e)=>e["steamId"]!= steamId).toList();
     this.value = match;
-    if(showInfo) {
+    if(showInfo && match["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < match["updatedPlatforms"].length;i++){
         icons.add(
@@ -42,9 +41,7 @@ class FfaMatch extends ChangeNotifier {
   }
 
   void exit() async {
-    await http.post(getUri("/exitMatch/613e57a522d5937857affe65"));
-    this.value = "exited";
-    notifyListeners();
+    await http.post(getUri("/exitMatch/${this.value["_id"].toString()}"));
   }
   void togglePlayerShown() {
     this.areOtherPlayersShown = !this.areOtherPlayersShown;

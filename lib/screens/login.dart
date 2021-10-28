@@ -1,21 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:provider/provider.dart';
-import 'package:steam_login/steam_login.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:winhalla_app/utils/getUri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
-import 'package:winhalla_app/utils/steam.dart';
-import 'package:winhalla_app/utils/userClass.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-
 import 'package:winhalla_app/widgets/popup.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  final userData;
+  const LoginPage({Key? key,this.userData}) : super(key: key);
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -25,40 +20,33 @@ class _LoginPageState extends State<LoginPage> {
   Map<String, dynamic>? gAccount;
 
   List<Widget> screenList = [
-    WinhallaPresentation(),
+    // WinhallaPresentation(),
     GoogleAppleLogin(),
     // SteamLogin(),
     AccountCreation()
   ];
-
+  int step = 0;
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-        future: getNonNullSSData("loginStep"),
-        builder: (context, AsyncSnapshot<String> step) {
-          if (!step.hasData)
-            return SafeArea(
-              child: Scaffold(
-                  backgroundColor: kBackground,
-                  body: Center(
-                    child: Text(
-                      "Loading...",
-                      style: kHeadline1,
-                    ),
-                  )),
-            );
-          return SafeArea(
-            child: Scaffold(
-                backgroundColor: kBackground,
-                body: ChangeNotifierProvider<LoginPageManager>(
-                    create: (_) =>
-                        LoginPageManager(step.data == "no data" ? 0 : int.parse(step.data as String)),
-                    child: Consumer<LoginPageManager>(builder: (context, page, _) {
-                      return screenList[page.page == "no data" ? 0 : page.page];
-                    })) // Can't be null but the compiler doesn't sees it so bidouillage
-                ),
-          );
-        });
+    try{
+      step = jsonDecode(widget.userData["data"].body)["steam"] == null ? 0:1;
+      print(jsonDecode(widget.userData["data"].body) == null?0:1);
+    } catch(e){
+      print(e);
+    }
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: kBackground,
+        body: ChangeNotifierProvider<LoginPageManager>(
+          create: (_) => LoginPageManager(step),
+          child: Consumer<LoginPageManager>(
+            builder: (context, page, _) {
+              return screenList[page.page];
+            },
+          ),
+        ),
+      ),
+    );
   }
 }
 
@@ -429,9 +417,8 @@ class WinhallaPresentation extends StatelessWidget {
               "Winhalla Presentation here",
               style: kHeadline1,
             ),
-            Consumer<LoginPageManager>(
-              builder: (context, page, _) => TextButton(
-                onPressed: () => page.next(),
+            TextButton(
+                onPressed: () => context.read<LoginPageManager>().next(),
                 child: Text(
                   "Go to next page",
                   style: kBodyText2.apply(
@@ -440,7 +427,6 @@ class WinhallaPresentation extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),

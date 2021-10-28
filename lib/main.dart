@@ -35,7 +35,6 @@ class _MyAppState extends State<MyApp> {
       // on the FirstScreen widget.
       initialRoute: '/',
       routes: {
-        // When navigating to the "/" route, build the FirstScreen widget.
         '/': (context) => SafeArea(
             child: FutureBuilder(
                 future: initUser(),
@@ -48,7 +47,7 @@ class _MyAppState extends State<MyApp> {
                   }
 
                   if (res.data == "no data" || res.data?["data"].body == "" || !hasUserData) {
-                    return LoginPage();
+                    return LoginPage(userData:res.data);
                   }
                   if (!res.hasData) return AppCore(isUserDataLoaded: false);
                   var providerData = jsonDecode(res.data["data"].body);

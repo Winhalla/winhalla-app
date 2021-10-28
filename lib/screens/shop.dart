@@ -26,7 +26,7 @@ Future<dynamic> getShopData(BuildContext context) async {
 
       items.sort((a, b) => a["state"].compareTo(b["state"]) as int);
 
-      userData.setShopDataTo({
+      userData.editShopData({
         "items": items,
         "featuredItem": featuredItem,
         "paypalData": paypalItem

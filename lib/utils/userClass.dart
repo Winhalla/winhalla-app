@@ -9,6 +9,8 @@ import 'package:winhalla_app/widgets/infoDropdown.dart';
 class User extends ChangeNotifier {
   dynamic value;
   dynamic shop;
+  dynamic quests;
+  int lastQuestsRefresh = 0;
 
   void refresh() async {
     var storageKey = await secureStorage.read(key: "authKey");
@@ -22,9 +24,13 @@ class User extends ChangeNotifier {
     var storageKey = await secureStorage.read(key: "authKey");
     if (storageKey == null) return;
     var accountData = await http.get(getUri("/solo"), headers: {"authorization": storageKey});
-    var accountDataDecoded = jsonDecode(accountData.body);
-    this.value["user"]["solo"] = accountDataDecoded["solo"];
-    if (showInfo) {
+    var accountDataDecoded = jsonDecode(accountData.body)["solo"];
+    accountDataDecoded["dailyQuests"].addAll(accountDataDecoded["finished"]["daily"]);
+    accountDataDecoded["weeklyQuests"].addAll(accountDataDecoded["finished"]["weekly"]);
+    this.quests = accountDataDecoded;
+    notifyListeners();
+
+    if (showInfo && accountDataDecoded["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < accountDataDecoded["updatedPlatforms"].length;i++){
         icons.add(
@@ -44,12 +50,10 @@ class User extends ChangeNotifier {
             children: icons,
           ));
     }
-    notifyListeners();
   }
 
   Future<String> enterMatch() async {
     String matchId;
-    // Find new match;
     matchId = jsonDecode(
         (await http.get(getUri("/lobby"), headers: {"authorization": this.value["authKey"]})).body);
     var accountData = await http.get(getUri("/account"), headers: {"authorization": this.value["authKey"]});
@@ -59,11 +63,21 @@ class User extends ChangeNotifier {
     return matchId;
   }
 
-  User(user) {
-    this.value = user;
+  Future getQuestsData() async {
+    if(lastQuestsRefresh + 900 * 1000 > DateTime.now().millisecondsSinceEpoch && this.quests != null) {
+      return this.quests;
+    }
+
+    var questsData = jsonDecode((await http.get(getUri("/solo"), headers: {"authorization": this.value["authKey"]})).body)["solo"];
+    questsData["dailyQuests"].addAll(questsData["finished"]["daily"]);
+    questsData["weeklyQuests"].addAll(questsData["finished"]["weekly"]);
+    this.quests = questsData;
+    this.lastQuestsRefresh = DateTime.now().millisecondsSinceEpoch;
+    notifyListeners();
+    return questsData;
   }
 
-  void setShopDataTo(shopData) {
+  void editShopData(shopData) {
     this.shop = shopData;
   }
 
@@ -71,11 +85,15 @@ class User extends ChangeNotifier {
     this.value["user"]["coins"] += coins;
     notifyListeners();
   }
+
+  User(user) {
+    this.value = user;
+  }
 }
 
 Future<dynamic> initUser() async {
   var storageKey = await secureStorage.read(key: "authKey");
-  if (storageKey == null) return Future(() => "no data");
+  if (storageKey == null) return "no data";
   var data = await http.get(getUri("/account"), headers: {"authorization": storageKey});
   return {"data": data, "authKey": storageKey};
 }
