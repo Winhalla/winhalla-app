@@ -40,7 +40,7 @@ class Quests extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: context.read<User>().getQuestsData(),
+      future: context.read<User>().initQuestsData(),
       builder: (BuildContext context,AsyncSnapshot res)  {
         if(!res.hasData) {
           return Center(

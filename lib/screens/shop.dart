@@ -11,35 +11,10 @@ import 'package:winhalla_app/utils/userClass.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/widgets/infoDropdown.dart';
 import 'package:winhalla_app/widgets/popupshop.dart';
-
+// This is bc we can't use context.read<User>() in the future field of FutureBuilder
 Future<dynamic> getShopData(BuildContext context) async {
   var userData = context.read<User>();
-  if (userData.shop == null) {
-    try {
-      var shopData = jsonDecode((await http.get(getUri("/shop"))).body);
-
-      var featuredItem = shopData.firstWhere((e) => e["state"] == 0);
-      var paypalItem = shopData.firstWhere((e) => e["type"] == "paypal");
-      List<dynamic> items = shopData
-          .where((e) => (e["type"] != "paypal") && (e["state"] != 0))
-          .toList();
-
-      items.sort((a, b) => a["state"].compareTo(b["state"]) as int);
-
-      userData.editShopData({
-        "items": items,
-        "featuredItem": featuredItem,
-        "paypalData": paypalItem
-      });
-      return {
-        "items": items,
-        "featuredItem": featuredItem,
-        "paypalData": paypalItem
-      };
-    } catch (e) {}
-  } else {
-    return userData.shop;
-  }
+  return await userData.initShopData();
 }
 
 class Shop extends StatelessWidget {

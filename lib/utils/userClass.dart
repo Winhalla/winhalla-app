@@ -11,6 +11,7 @@ class User extends ChangeNotifier {
   dynamic shop;
   dynamic quests;
   int lastQuestsRefresh = 0;
+  int lastShopRefresh = 0;
 
   void refresh() async {
     var storageKey = await secureStorage.read(key: "authKey");
@@ -63,7 +64,7 @@ class User extends ChangeNotifier {
     return matchId;
   }
 
-  Future getQuestsData() async {
+  Future<void> initQuestsData() async {
     if(lastQuestsRefresh + 900 * 1000 > DateTime.now().millisecondsSinceEpoch && this.quests != null) {
       return this.quests;
     }
@@ -74,7 +75,36 @@ class User extends ChangeNotifier {
     this.quests = questsData;
     this.lastQuestsRefresh = DateTime.now().millisecondsSinceEpoch;
     notifyListeners();
-    return questsData;
+    return;
+  }
+
+  Future initShopData() async {
+    if (this.shop == null || this.lastShopRefresh + 86400*2 * 1000 < DateTime.now().millisecondsSinceEpoch) {
+      try {
+        print("nonCache");
+        var shopData = jsonDecode((await http.get(getUri("/shop"))).body);
+
+        var featuredItem = shopData.firstWhere((e) => e["state"] == 0);
+        var paypalItem = shopData.firstWhere((e) => e["type"] == "paypal");
+        List<dynamic> items = shopData
+            .where((e) => (e["type"] != "paypal") && (e["state"] != 0))
+            .toList();
+
+        items.sort((a, b) => a["state"].compareTo(b["state"]) as int);
+        var shopDataProcessed = {
+          "items": items,
+          "featuredItem": featuredItem,
+          "paypalData": paypalItem
+        };
+        this.shop = shopDataProcessed;
+        this.lastShopRefresh = DateTime.now().millisecondsSinceEpoch;
+        return shopDataProcessed;
+      } catch (e) {}
+
+    } else {
+      print("cache");
+      return this.shop;
+    }
   }
 
   void editShopData(shopData) {
