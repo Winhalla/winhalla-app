@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 
@@ -20,17 +22,29 @@ void showTopSnackBar(
     },
   );
 
+  // Show the popup
   overlayState?.insert(overlayEntry);
+  // Remove older popup
+  if(_previousEntry != null) {
+    _previousEntry?.remove();
+    _previousEntry = null;
+  }
+
   _previousEntry = overlayEntry;
   Future.delayed(displayDuration, () {
-    _previousEntry?.remove();
+    print("test");
+    // Remove the popup after given time (after animation is finished)
+    if(_previousEntry != null) {
+      _previousEntry?.remove();
+      _previousEntry = null;
+    }
   });
 }
 
-void showInfoDropdown(BuildContext context,Color color,String head, {Widget? body, int timeShown:5000}){
+void showInfoDropdown(BuildContext context,Color color,String head, {Widget? body, int timeShown:5000, double fontSize:32, bool column:true}){
   showTopSnackBar(
       context,
-      InfoDropdown(color:color,head:head,body:body,displayDuration: timeShown,),
+      InfoDropdown(color: color, head: head, body: body, displayDuration: timeShown, fontSize: fontSize,column:column),
       displayDuration:Duration(milliseconds: timeShown),
       additionalTopPadding: 32
   );
@@ -40,7 +54,17 @@ class InfoDropdown extends StatefulWidget {
   final String head;
   final Widget? body;
   final int displayDuration;
-  const InfoDropdown({Key? key,required this.color,required this.head,this.body:const Text(""),this.displayDuration:3000}) : super(key: key);
+  final double fontSize;
+  final bool column;
+  const InfoDropdown({
+    Key? key,
+    required this.fontSize,
+    required this.color,
+    required this.head,
+    required this.column,
+    this.body:const Text(""),
+    this.displayDuration:3000
+  }) : super(key: key);
 
   @override
   _InfoDropdownState createState() => _InfoDropdownState();
@@ -62,7 +86,7 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
   }
 
   void _setupAndStartAnimation() async {
-    topPosition = -95;
+    topPosition = -200;
     topBgPosition = -230;
 
     await Future.delayed(Duration(milliseconds: 1));
@@ -71,9 +95,9 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
       topBgPosition = 0;
     });
 
-    await Future.delayed(Duration(milliseconds:widget.displayDuration-201));
+    await Future.delayed(Duration(milliseconds:widget.displayDuration-352));
     setState(() {
-      topPosition = -95;
+      topPosition = -200;
       topBgPosition = -230;
     });
   }
@@ -97,14 +121,14 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
               ),
               child: SizedBox(height: 230,),
             ),
-            duration: Duration(milliseconds: 200),
+            duration: Duration(milliseconds: 350),
             curve: Curves.linearToEaseOut,
             top: topBgPosition,
             left: 0,
             right: 0,
           ),
           AnimatedPositioned(
-            duration: Duration(milliseconds: 300),
+            duration: Duration(milliseconds: 450),
             curve: Curves.linearToEaseOut,
             top: topPosition,
             left: 25,
@@ -115,22 +139,37 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
                   border: Border.all(color: widget.color),
                   borderRadius: BorderRadius.circular(20)
               ),
-              height: 95,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    widget.head,
-                    style: Theme.of(context).textTheme.bodyText2?.merge(TextStyle(color: widget.color, fontSize: 32)),
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 2,
-                  ),
-                  if(widget.body != null)const SizedBox(width: 20,),
-                  if(widget.body!=null) Padding(
-                    padding: const EdgeInsets.only(top:1.0),
-                    child: widget.body as Widget,
-                  )
+              height: widget.column?null:95,
+              child: widget.column
+                  ? Column(children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8,16,8,0),
+                      child: Text(
+                        widget.head,
+                        style: Theme.of(context).textTheme.bodyText2?.merge(TextStyle(color: widget.color, fontSize:widget.fontSize)),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    if(widget.body != null) const SizedBox(height: 10,),
+                    if(widget.body!=null) Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: widget.body as Widget,
+                    )
+
+                    ],)
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.head,
+                          style: Theme.of(context).textTheme.bodyText2?.merge(TextStyle(color: widget.color, fontSize: 32)),
+                          textAlign: TextAlign.center,
+                        ),
+                        if(widget.body != null)const SizedBox(width: 20,),
+                        if(widget.body!=null) Padding(
+                          padding: const EdgeInsets.only(top:1.0),
+                          child: widget.body as Widget,
+                        )
                 ],
               ),
             ),

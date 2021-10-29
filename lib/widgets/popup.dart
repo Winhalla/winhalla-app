@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,7 +7,7 @@ import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/getUri.dart';
 import 'package:winhalla_app/utils/steam.dart';
 
-Widget PopupWidget(BuildContext context, List<Map<String, String>> items) {
+Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
   final bidTextController = TextEditingController();
   String _chosenValue = items[0]["file"] as String;
   String step = "platformSelection";

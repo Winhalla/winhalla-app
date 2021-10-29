@@ -10,8 +10,10 @@ import 'package:winhalla_app/widgets/infoDropdown.dart';
 class FfaMatch extends ChangeNotifier {
   dynamic value;
   bool areOtherPlayersShown = false;
-  Future<void> refresh(String authKey,BuildContext context,{bool showInfo:false}) async {
-    var match = jsonDecode((await http.get(getUri("/getMatch/${this.value["_id"]}"),headers: {"authorization":authKey})).body);
+  Future<void> refresh(BuildContext context,CallApi callApi,{bool showInfo:false}) async {
+    dynamic match = await callApi.get("/getMatch/${this.value["_id"]}");
+    if(match["successful"] == false) return;
+    match = match["data"];
     var steamId = this.value["userPlayer"]["steamId"];
     match["userPlayer"] = match["players" ].firstWhere((e) => e["steamId"] == steamId);
     match["players"] = match["players"].where((e)=>e["steamId"]!= steamId).toList();

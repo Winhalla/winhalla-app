@@ -12,6 +12,7 @@ class User extends ChangeNotifier {
   dynamic quests;
   int lastQuestsRefresh = 0;
   int lastShopRefresh = 0;
+  late CallApi callApi;
 
   void refresh() async {
     var storageKey = await secureStorage.read(key: "authKey");
@@ -24,13 +25,23 @@ class User extends ChangeNotifier {
   Future<void> refreshQuests(BuildContext context, {bool showInfo: false}) async {
     var storageKey = await secureStorage.read(key: "authKey");
     if (storageKey == null) return;
-    var accountData = await http.get(getUri("/solo"), headers: {"authorization": storageKey});
-    var accountDataDecoded = jsonDecode(accountData.body)["solo"];
+
+    var accountData = await this.callApi.get("/solo");
+    if(accountData["successful"] == false) return;
+    if(showInfo && accountData["data"]["newQuests"] == true){
+      showInfoDropdown(context, kGreen, "New quests available",
+        timeShown: 4500,
+        /*body: Row(
+          children: icons,
+        ),*/
+      );
+
+    }
+    var accountDataDecoded = accountData["data"]["solo"];
     accountDataDecoded["dailyQuests"].addAll(accountDataDecoded["finished"]["daily"]);
     accountDataDecoded["weeklyQuests"].addAll(accountDataDecoded["finished"]["weekly"]);
     this.quests = accountDataDecoded;
     notifyListeners();
-
     if (showInfo && accountDataDecoded["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < accountDataDecoded["updatedPlatforms"].length;i++){
@@ -54,9 +65,9 @@ class User extends ChangeNotifier {
   }
 
   Future<String> enterMatch() async {
-    String matchId;
-    matchId = jsonDecode(
-        (await http.get(getUri("/lobby"), headers: {"authorization": this.value["authKey"]})).body);
+    dynamic matchId = await this.callApi.get("/lobby");
+    if(matchId["successful"] == false) return "err";
+    matchId = matchId["data"];
     var accountData = await http.get(getUri("/account"), headers: {"authorization": this.value["authKey"]});
     var accountDataParsed = jsonDecode(accountData.body);
     this.value["user"] = accountDataParsed["user"];
@@ -64,26 +75,27 @@ class User extends ChangeNotifier {
     return matchId;
   }
 
-  Future<void> initQuestsData() async {
+  Future initQuestsData() async {
     if(lastQuestsRefresh + 900 * 1000 > DateTime.now().millisecondsSinceEpoch && this.quests != null) {
-      return this.quests;
+      return "loaded";
     }
-
-    var questsData = jsonDecode((await http.get(getUri("/solo"), headers: {"authorization": this.value["authKey"]})).body)["solo"];
+    dynamic questsData = await this.callApi.get("/solo");
+    if(questsData["successful"] == false) return;
+    questsData = questsData["data"]["solo"];
     questsData["dailyQuests"].addAll(questsData["finished"]["daily"]);
     questsData["weeklyQuests"].addAll(questsData["finished"]["weekly"]);
     this.quests = questsData;
     this.lastQuestsRefresh = DateTime.now().millisecondsSinceEpoch;
     notifyListeners();
-    return;
+    return "loaded";
   }
 
   Future initShopData() async {
     if (this.shop == null || this.lastShopRefresh + 86400*2 * 1000 < DateTime.now().millisecondsSinceEpoch) {
       try {
-        print("nonCache");
-        var shopData = jsonDecode((await http.get(getUri("/shop"))).body);
-
+        dynamic shopData = await this.callApi.get("/shop");
+        if(shopData["successful"] == false) return;
+        shopData = shopData["data"];
         var featuredItem = shopData.firstWhere((e) => e["state"] == 0);
         var paypalItem = shopData.firstWhere((e) => e["type"] == "paypal");
         List<dynamic> items = shopData
@@ -102,7 +114,6 @@ class User extends ChangeNotifier {
       } catch (e) {}
 
     } else {
-      print("cache");
       return this.shop;
     }
   }
@@ -116,14 +127,33 @@ class User extends ChangeNotifier {
     notifyListeners();
   }
 
-  User(user) {
+  User(user,callApi) {
+    this.callApi = callApi;
     this.value = user;
   }
 }
 
-Future<dynamic> initUser() async {
+Future<dynamic> initUser(context) async {
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
-  var data = await http.get(getUri("/account"), headers: {"authorization": storageKey});
-  return {"data": data, "authKey": storageKey};
+  CallApi caller = new CallApi(authKey: storageKey, context: context);
+  var data = await caller.get("/account",showError:false);
+  if(data["successful"] == false) {
+    showInfoDropdown(
+      context,
+      kRed,
+      "Error:",
+      body: Text(
+        data["data"]+"\nIf error persists, please contact support.",
+        style: Theme.of(context)
+            .textTheme
+            .bodyText2
+            ?.merge(TextStyle(color: kText, fontSize: 20)),
+      ),
+      fontSize:25,
+      column:true,
+    );
+    return null;
+  }
+  return {"data": data["data"], "authKey": storageKey,"callApi":caller};
 }

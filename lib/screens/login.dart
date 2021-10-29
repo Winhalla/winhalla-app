@@ -5,6 +5,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:winhalla_app/utils/getUri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:http/http.dart' as http;
+import 'package:winhalla_app/widgets/infoDropdown.dart';
 import 'dart:convert';
 import 'package:winhalla_app/widgets/popup.dart';
 
@@ -29,11 +30,9 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     try{
-      step = jsonDecode(widget.userData["data"].body)["steam"] == null ? 0:1;
-      print(jsonDecode(widget.userData["data"].body) == null?0:1);
-    } catch(e){
-      print(e);
-    }
+      step = widget.userData["data"]["steam"] == null ? 0:1;
+    }catch(e){}
+
     return SafeArea(
       child: Scaffold(
         backgroundColor: kBackground,
@@ -70,7 +69,7 @@ class _AccountCreationState extends State<AccountCreation> {
     {'name': "Nintendo Switch", "file": "switch"},
     {"name": "Mobile", "file": 'phone'},
   ];
-
+  String? _err;
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -187,28 +186,43 @@ class _AccountCreationState extends State<AccountCreation> {
                   Navigator.pushReplacementNamed(context, "/login");
                   return;
                 }
-                var accountData = await http.post(
-                    getUri('/auth/createAccount'),
-                    body: jsonEncode({"accounts":accounts.map((e)=>{"BID":e["bid"],"name":e["name"],"steamId":e["steamId"],"platformId":e["file"]} ).toList()}),
-                    headers: {"authorization": authKey,"Content-Type": "application/json"});
-                try {
-                  if (jsonDecode(accountData.body)["accountExists"] == true) return;
-                } catch (e) {
-                  // If the response is a string (containing the link ID) bc a string throws an error with jsonDecode()
-                  if (ModalRoute.of(context)?.settings.name == "/") {
-                    Navigator.pop(context, "/");
-                    Navigator.pushNamed(context, "/");
-                  } else {
-                    Navigator.pushReplacementNamed(context, "/");
-                  }
+                CallApi callApi = new CallApi(authKey: authKey , context: context);
+                var accountData = await callApi.post(
+                    '/auth/createAccount',
+                    jsonEncode({"accounts":accounts.map((e)=>{"BID":e["bid"],"name":e["name"],"steamId":e["steamId"],"platformId":e["file"]} ).toList()}),
+                    showErrors:false
+                );
+                if(accountData["successful"] == false) {
+                  setState(() {
+                    _err = accountData["data"];
+                  });
+                  return;
                 }
+                try{
+                  if (accountData["data"]["accountExists"] == true) {
+                    setState(() {
+                      _err =
+                      "You have already created an account using this google/apple account, please contact support at contact@winhalla.app if it was not you";
+                    });
+                    return;
+                  }
+                } catch(e){
+
+                }
+                if (ModalRoute.of(context)?.settings.name == "/") {
+                  Navigator.pop(context, "/");
+                  Navigator.pushNamed(context, "/");
+                } else {
+                  Navigator.pushReplacementNamed(context, "/");
+                }
+
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   Container(
                     padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    margin: const EdgeInsets.only(bottom: 50),
+                    margin: EdgeInsets.only(bottom: _err == null ? 50:10),
                     decoration: BoxDecoration(
                         color: kBackgroundVariant,
                         borderRadius: BorderRadius.circular(16),
@@ -243,6 +257,14 @@ class _AccountCreationState extends State<AccountCreation> {
                   ),
                 ],
               ),
+            ),
+            if(_err != null) Container(
+              margin: const EdgeInsets.only(bottom: 40),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Expanded(child: Text("Error: " + (_err as String), style: kBodyText4.apply(color: kRed),))
+              ],),
             )
         ],
       ),
@@ -250,16 +272,23 @@ class _AccountCreationState extends State<AccountCreation> {
   }
 }
 
-class GoogleAppleLogin extends StatelessWidget {
+class GoogleAppleLogin extends StatefulWidget {
   const GoogleAppleLogin({Key? key}) : super(key: key);
+
+  @override
+  _GoogleAppleLoginState createState() => _GoogleAppleLoginState();
+}
+
+class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
+  String? _err;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(42.5, 0, 42.5, 0),
+      padding: const EdgeInsets.fromLTRB(42.5, 120, 42.5, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           const Text(
             "Welcome to",
@@ -327,10 +356,29 @@ class GoogleAppleLogin extends StatelessWidget {
                   "name": temp?['account'].displayName,
                   if (temp?['account'].photoUrl != null) "picture": temp?['account'].photoUrl
                 });
+                if(idToken.statusCode < 200 || idToken.statusCode > 299){
+                  setState((){
+                    _err = idToken.body;
+                  });
+                  return;
+                }
+                idToken = jsonDecode(idToken.body)["_id"];
               } catch (e) {
-                print(e);
+                setState(() {
+                  _err = e.toString();
+                });
               }
-              await secureStorage.write(key: "authKey", value: jsonDecode(idToken.body)["_id"]);
+              await secureStorage.write(key: "authKey", value: idToken);
+              try{
+                var accountData = jsonDecode((await http.get(getUri("/account"), headers: {"authorization": idToken})).body)["user"];
+                if (accountData != null) {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, "/");
+                  return;
+                }
+              } catch(e){
+
+              }
               context.read<LoginPageManager>().next();
             },
             child: Container(
@@ -396,6 +444,14 @@ class GoogleAppleLogin extends StatelessWidget {
                 ],
               ),
             ),
+          ),
+          if(_err != null) Padding(
+            padding: const EdgeInsets.only(left:15.0,top:10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Expanded(child: Text("Error: " + (_err as String), style: kBodyText4.apply(color: kRed),))
+              ],),
           )
         ],
       ),

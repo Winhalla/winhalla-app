@@ -107,6 +107,7 @@ class _PlayPageState extends State<PlayPage> {
                     child: GestureDetector(
                       onTap: () async {
                         var matchId = await context.read<User>().enterMatch();
+                        if(matchId == "err") return;
                         setState(() {
                           matchInProgressId = matchId;
                         });

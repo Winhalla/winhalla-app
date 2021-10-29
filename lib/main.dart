@@ -37,27 +37,28 @@ class _MyAppState extends State<MyApp> {
       routes: {
         '/': (context) => SafeArea(
             child: FutureBuilder(
-                future: initUser(),
+                future: initUser(context),
                 builder: (context, AsyncSnapshot<dynamic> res) {
-                  bool hasUserData = true;
-                  try{
-                    hasUserData = jsonDecode(res.data["data"].body)["user"] != null;
-                  }catch(e){
-                    // Do nothing if decode doesn't work, it's handled later
-                  }
-
-                  if (res.data == "no data" || res.data?["data"].body == "" || !hasUserData) {
+                  if (!res.hasData) return AppCore(isUserDataLoaded: false);
+                  if (res.data == "no data" || res.data["data"] == "" || res.data["data"] == null) {
                     return LoginPage(userData:res.data);
                   }
-                  if (!res.hasData) return AppCore(isUserDataLoaded: false);
-                  var providerData = jsonDecode(res.data["data"].body);
-                  providerData["authKey"] = res.data["authKey"];
+                  if(res.data["data"]["user"] == null) return LoginPage(userData:res.data);
+                  // Do not edit res.data directly otherwise it calls the build function again for some reason
+                  var newData = res.data as Map<String,dynamic>;
+                  var callApi = res.data["callApi"];
+                  newData["callApi"] = null;
+                  newData["user"] = res.data["data"]["user"];
+                  newData["steam"] = res.data["data"]["steam"];
+                  // newData["data"] = null;
                   return ChangeNotifierProvider<User>(
-                      create: (_) => new User(providerData),
+                      create: (_) => new User(newData,callApi),
                       child: AppCore(
                         isUserDataLoaded: true,
-                      ));
-                })),
+                      ),
+                  );
+                }),
+        ),
         '/login': (context) => const LoginPage(),
       },
     );
