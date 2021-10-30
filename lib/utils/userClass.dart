@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
-import 'package:winhalla_app/utils/getUri.dart';
+import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/widgets/infoDropdown.dart';
 
@@ -150,22 +150,8 @@ Future<dynamic> initUser(context) async {
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
   CallApi caller = new CallApi(authKey: storageKey, context: context);
-  var data = await caller.get("/account",showError:false);
+  var data = await caller.get("/account");
   if(data["successful"] == false) {
-    showInfoDropdown(
-      context,
-      kRed,
-      "Error:",
-      body: Text(
-        data["data"] + data["addText"] != false ? "" : "\nIf error persists, please contact support.",
-        style: Theme.of(context)
-            .textTheme
-            .bodyText2
-            ?.merge(TextStyle(color: kText, fontSize: 20)),
-      ),
-      fontSize:25,
-      column:true,
-    );
     return null;
   }
   return {"data": data["data"], "authKey": storageKey,"callApi":caller};

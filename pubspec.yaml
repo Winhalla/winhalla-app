@@ -39,6 +39,7 @@ dependencies:
   flutter_webview_plugin: ^0.4.0
   steam_login: ^1.1.0
   google_sign_in: ^5.1.0
+  rive: ^0.7.31
 
 dev_dependencies:
   flutter_test:
@@ -59,6 +60,7 @@ dev_dependencies:
 flutter:
   assets:
     - assets/images/
+    - assets/animated/
     - assets/images/icons/
     - assets/images/icons/pink/
     - assets/images/shopItems/

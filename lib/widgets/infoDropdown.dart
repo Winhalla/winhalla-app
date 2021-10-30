@@ -41,7 +41,12 @@ void showTopSnackBar(
   });
 }
 
-void showInfoDropdown(BuildContext context,Color color,String head, {Widget? body, int timeShown:5000, double fontSize:32, bool column:false}){
+void showInfoDropdown(
+    BuildContext context,
+    Color color,
+    String head,
+    {Widget? body, int timeShown:5000, double fontSize:32, bool column:false}
+    ) {
   showTopSnackBar(
       context,
       InfoDropdown(color: color, head: head, body: body, displayDuration: timeShown, fontSize: fontSize,column:column),

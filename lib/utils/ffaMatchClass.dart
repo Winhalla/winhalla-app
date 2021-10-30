@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
-import 'package:winhalla_app/utils/getUri.dart';
+import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 import 'package:winhalla_app/widgets/infoDropdown.dart';
 

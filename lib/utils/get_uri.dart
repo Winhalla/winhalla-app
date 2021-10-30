@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/widgets/infoDropdown.dart';
-final String url = "http://192.168.1.33:4000";
+const String url = "http://192.168.1.33:4000";
 
 Uri getUri (String path,){
   return Uri.parse(url+path); // 192.168.1.33:4000
@@ -13,12 +13,13 @@ class CallApi {
   BuildContext context;
   CallApi({required this.authKey, required this.context});
 
-  Future get(String path,{bool showError:true}) async {
+  Future get(String path,{bool showError =true}) async {
     late http.Response result;
     try{
       result = await http.get(Uri.parse(url+path),headers: {"authorization":authKey});
     }catch(e){
-      if(showError) showInfoDropdown(
+      if(showError) {
+        showInfoDropdown(
         context,
         kRed,
         "Error:",
@@ -27,11 +28,12 @@ class CallApi {
           style: Theme.of(context)
               .textTheme
               .bodyText2
-              ?.merge(TextStyle(color: kText, fontSize: 20)),
+              ?.merge(const TextStyle(color: kText, fontSize: 20)),
         ),
         fontSize:25,
         column:true,
       );
+      }
       return {
         "data":"Winhalla's servers are unreachable, please check your internet connection or try again later",
         "successful":false,
@@ -40,7 +42,8 @@ class CallApi {
     }
 
     if (result.statusCode < 200 || result.statusCode > 299){
-      if(showError) showInfoDropdown(
+      if(showError) {
+        showInfoDropdown(
         context,
         kRed,
         "Error:",
@@ -49,11 +52,12 @@ class CallApi {
           style: Theme.of(context)
               .textTheme
               .bodyText2
-              ?.merge(TextStyle(color: kText, fontSize: 20)),
+              ?.merge(const TextStyle(color: kText, fontSize: 20)),
         ),
         fontSize:25,
         column:true,
       );
+      }
       return {"data":result.body,"successful":false,"statusCode":result.statusCode};
     }
 
@@ -63,7 +67,7 @@ class CallApi {
       return {"data":result.body,"successful":true};
     }
   }
-  Future post(String path, body, {bool showErrors:true}) async {
+  Future post(String path, body, {bool showErrors = true}) async {
     var result = await http.post(
         Uri.parse(url+path),
         headers: {"authorization":authKey,"Content-Type": "application/json"},
@@ -71,7 +75,8 @@ class CallApi {
     );
 
     if (result.statusCode < 200 || result.statusCode > 299){
-      if (showErrors) showInfoDropdown(
+      if (showErrors) {
+        showInfoDropdown(
         context,
         kRed,
         "Error:",
@@ -81,10 +86,11 @@ class CallApi {
           style: Theme.of(context)
               .textTheme
               .bodyText2
-              ?.merge(TextStyle(color: kText, fontSize: 20)),
+              ?.merge(const TextStyle(color: kText, fontSize: 20)),
         ),
         fontSize:25,
       );
+      }
       return {"data":result.body,"successful":false};
     }
 

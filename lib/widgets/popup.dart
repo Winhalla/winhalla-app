@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:http/http.dart' as http;
-import 'package:winhalla_app/utils/getUri.dart';
+import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/steam.dart';
 
 Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
@@ -18,10 +18,11 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
   return StatefulBuilder(builder: (context, setState) {
     void nextStep() {
       setState(() {
-        if (_chosenValue == "steam")
+        if (_chosenValue == "steam") {
           step = "steamLogin";
-        else
+        } else {
           step = "enterBid";
+        }
       });
     }
 
@@ -58,13 +59,13 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
 
     return AlertDialog(
 
-      titlePadding: EdgeInsets.only(top: 26, left: 30),
+      titlePadding: const EdgeInsets.only(top: 26, left: 30),
       title: Text(
         step == "platformSelection" ? 'Select a platform' : "Brawlhalla Id",
         style: kBodyText1,
       ),
 
-      contentPadding: EdgeInsets.fromLTRB(28, 16, 28, 8),
+      contentPadding: const EdgeInsets.fromLTRB(28, 16, 28, 8),
       content: step == "platformSelection"
           ? Container(
               decoration: BoxDecoration(color: kBackground, borderRadius: BorderRadius.circular(14)),
@@ -82,7 +83,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                     if (value != null) _chosenValue = value;
                   });
                 },
-                dropdownColor: Color(0x00000000),
+                dropdownColor: const Color(0x00000000),
                 // Transparent
                 elevation: 0,
                 value: _chosenValue,
@@ -100,9 +101,9 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                           color: kBackground,
                           
                           borderRadius: value["file"] == items[0]["file"]
-                              ? BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15))
+                              ? const BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15))
                               : value["file"] == items[items.length - 1]["file"]
-                                  ? BorderRadius.only(
+                                  ? const BorderRadius.only(
                                       bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15))
                                   : BorderRadius.circular(0)),
                       child: Row(
@@ -120,7 +121,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                               ],
                             ),
                           ),
-                          SizedBox(
+                          const SizedBox(
                             width: 10,
                           ),
                           Padding(
@@ -209,7 +210,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
           ),
 
 
-      actionsPadding: EdgeInsets.symmetric(horizontal: 13),
+      actionsPadding: const EdgeInsets.symmetric(horizontal: 13),
       actions: [
         /*Row(
           children: [],

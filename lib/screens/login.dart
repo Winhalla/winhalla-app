@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:winhalla_app/utils/getUri.dart';
+import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/widgets/infoDropdown.dart';
@@ -206,9 +206,7 @@ class _AccountCreationState extends State<AccountCreation> {
                     });
                     return;
                   }
-                } catch(e){
-
-                }
+                } catch(e){}
                 if (ModalRoute.of(context)?.settings.name == "/") {
                   Navigator.pop(context, "/");
                   Navigator.pushNamed(context, "/");
@@ -243,9 +241,9 @@ class _AccountCreationState extends State<AccountCreation> {
                             const SizedBox(
                               width: 6,
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 4.75),
-                              child: const Icon(
+                            const Padding(
+                              padding: EdgeInsets.only(bottom: 4.75),
+                              child: Icon(
                                 Icons.check,
                                 color: kGreen,
                                 size: 30,
