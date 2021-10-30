@@ -41,7 +41,7 @@ void showTopSnackBar(
   });
 }
 
-void showInfoDropdown(BuildContext context,Color color,String head, {Widget? body, int timeShown:5000, double fontSize:32, bool column:true}){
+void showInfoDropdown(BuildContext context,Color color,String head, {Widget? body, int timeShown:5000, double fontSize:32, bool column:false}){
   showTopSnackBar(
       context,
       InfoDropdown(color: color, head: head, body: body, displayDuration: timeShown, fontSize: fontSize,column:column),
@@ -152,7 +152,7 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
                     ),
                     if(widget.body != null) const SizedBox(height: 10,),
                     if(widget.body!=null) Padding(
-                      padding: const EdgeInsets.only(bottom: 10),
+                      padding: const EdgeInsets.fromLTRB(24,0,24,10),
                       child: widget.body as Widget,
                     )
 
