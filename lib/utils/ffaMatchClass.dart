@@ -58,10 +58,3 @@ class FfaMatch extends ChangeNotifier {
     notifyListeners();
   }
 }
-
-Future<dynamic> initMatch(String matchId, context) async {
-  var storageKey = context.read<User>()["authKey"];
-  if (storageKey == null) return Future(() => "no data");
-  var data = await http.get(getUri("/getMatch/$matchId"), headers: {"authorization": storageKey});
-  return data;
-}

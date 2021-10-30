@@ -19,9 +19,8 @@ class SoloMatch extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: FutureBuilder(
-        future: http.get(getUri("/getMatch/$matchId"),
-            headers: {"authorization": context.read<User>().value["authKey"]}),
-        builder: (dynamic context, AsyncSnapshot<http.Response> res) {
+        future: context.read<User>().callApi.get("/getMatch/$matchId"),
+        builder: (BuildContext context, AsyncSnapshot res) {
           if (!res.hasData) {
             return const Center(
               child: Text(
@@ -30,9 +29,16 @@ class SoloMatch extends StatelessWidget {
               ),
             );
           }
+          if(res.data["successful"] == false){
+            return const Center(
+              child: Text(
+                "Loading...",
+                style: kHeadline1,
+              ),
+            );
+          }
           return ChangeNotifierProvider<FfaMatch>(
-            create: (ctxt) => FfaMatch(
-                res.hasData ? jsonDecode(res.data!.body) : null, ctxt.read<User>().value["steam"]["id"]),
+            create: (context) => FfaMatch(res.data["data"], context.read<User>().value["steam"]["id"]),
             child: Builder(builder: (context) {
               return RefreshIndicator(
                 onRefresh: () async {
