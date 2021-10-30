@@ -1,10 +1,9 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:rive/rive.dart';
 import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
-import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/userClass.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
@@ -39,7 +38,7 @@ class _MyAppState extends State<MyApp> {
             child: FutureBuilder(
                 future: initUser(context),
                 builder: (context, AsyncSnapshot<dynamic> res) {
-                  if (!res.hasData) return AppCore(isUserDataLoaded: false);
+                  if (!res.hasData) return const AppCore(isUserDataLoaded: false);
                   if (res.data == "no data" || res.data["data"] == "" || res.data["data"] == null) {
                     return LoginPage(userData:res.data);
                   }
@@ -52,8 +51,8 @@ class _MyAppState extends State<MyApp> {
                   newData["steam"] = res.data["data"]["steam"];
                   // newData["data"] = null;
                   return ChangeNotifierProvider<User>(
-                      create: (_) => new User(newData,callApi),
-                      child: AppCore(
+                      create: (_) => User(newData,callApi),
+                      child: const AppCore(
                         isUserDataLoaded: true,
                       ),
                   );
@@ -68,7 +67,7 @@ class _MyAppState extends State<MyApp> {
 class AppCore extends StatefulWidget {
   final bool isUserDataLoaded;
 
-  AppCore({Key? key, required this.isUserDataLoaded}) : super(key: key);
+  const AppCore({Key? key, required this.isUserDataLoaded}) : super(key: key);
 
   @override
   _AppCoreState createState() => _AppCoreState();
@@ -76,6 +75,7 @@ class AppCore extends StatefulWidget {
 
 class _AppCoreState extends State<AppCore> {
   int _selectedIndex = 0;
+
   switchPage(index) {
     setState(() {
       _selectedIndex = index;
@@ -85,119 +85,119 @@ class _AppCoreState extends State<AppCore> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackground,
-      appBar: PreferredSize(
-          preferredSize: Size.fromHeight(134),
-          child: MyAppBar(widget.isUserDataLoaded)),
-      body: widget.isUserDataLoaded
-          ? _selectedIndex == 2 ||
-                  _selectedIndex ==
-                      1 // If the page is a solo match, do not make it scrollable by default, because it's already a ListView
-              ? Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 15, 32, 0),
-                  child: MyApp.screenList[_selectedIndex],
-                )
-              : SingleChildScrollView(
-                  child: Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 15, 32, 0),
-                  child: MyApp.screenList[_selectedIndex],
-                ))
-          : Center(
-              child: Container(
-                  padding: EdgeInsets.only(left: 20, right: 10),
-                  margin: EdgeInsets.only(top: 20),
-                  child: Column(children: const [
-                    Text(
-                      'Loading...',
-                      style: TextStyle(color: kText, fontSize: 50),
-                    ),
-                    Text(
-                      'This might take a moment depending of your internet connection.',
-                      style: TextStyle(color: kText, fontSize: 20),
-                    ),
-                  ]))),
-      bottomNavigationBar: Container(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-          decoration: const BoxDecoration(
-            color: kBackground,
-            /*boxShadow: [
-                            BoxShadow(
-                              offset: Offset(0, -8),
-                              blurRadius: 8,
-                              color: Colors.black.withOpacity(0.20)
-                            )
-                          ]*/
-          ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    switchPage(0);
-                  },
+        backgroundColor: kBackground,
+        appBar: !widget.isUserDataLoaded
+            ? null
+            : PreferredSize(
+                preferredSize: const Size.fromHeight(134),
+                child: MyAppBar(widget.isUserDataLoaded)),
+        body: widget.isUserDataLoaded
+            ? _selectedIndex == 2 ||
+                    _selectedIndex ==
+                        1 // If the page is a solo match, do not make it scrollable by default, because it's already a ListView
+                ? Padding(
+                    padding: const EdgeInsets.fromLTRB(32, 15, 32, 0),
+                    child: MyApp.screenList[_selectedIndex],
+                  )
+                : SingleChildScrollView(
+                    child: Padding(
+                    padding: const EdgeInsets.fromLTRB(32, 15, 32, 0),
+                    child: MyApp.screenList[_selectedIndex],
+                  ))
+            : const Padding(
+                padding: EdgeInsets.only(left: 40,right: 40,bottom:40),
+                child: Center(
                   child: SizedBox(
-                    height: 90,
-                    child: Icon(
-                      Icons.home_outlined,
-                      color: _selectedIndex == 0 ? kPrimary : kText95,
-                      size: 34,
+                    child: RiveAnimation.asset(
+                      "assets/animated/loading.riv",
                     ),
                   ),
                 ),
               ),
-              Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    switchPage(1);
-                  },
-                  child: SizedBox(
-                    height: 90,
-                    child: Icon(
-                      Icons.check_box_outlined,
-                      color: _selectedIndex == 1 ? kPrimary : kText95,
-                      size: 34,
-                    ),
-                  ),
+        bottomNavigationBar: !widget.isUserDataLoaded
+            ? null
+            : Container(
+                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                decoration: const BoxDecoration(
+                  color: kBackground,
+                  /*boxShadow: [
+                                BoxShadow(
+                                  offset: Offset(0, -8),
+                                  blurRadius: 8,
+                                  color: Colors.black.withOpacity(0.20)
+                                )
+                              ]*/
                 ),
-              ),
-              Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    switchPage(2);
-                  },
-                  child: SizedBox(
-                    height: 90,
-                    child: Icon(
-                      Icons.play_circle_outline_outlined,
-                      color: _selectedIndex == 2 ? kPrimary : kText95,
-                      size: 34,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          switchPage(0);
+                        },
+                        child: SizedBox(
+                          height: 90,
+                          child: Icon(
+                            Icons.home_outlined,
+                            color: _selectedIndex == 0 ? kPrimary : kText95,
+                            size: 34,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    switchPage(3);
-                  },
-                  child: SizedBox(
-                    height: 90,
-                    child: Icon(
-                      Icons.card_giftcard,
-                      color: _selectedIndex == 3 ? kPrimary : kText95,
-                      size: 34,
+                    Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          switchPage(1);
+                        },
+                        child: SizedBox(
+                          height: 90,
+                          child: Icon(
+                            Icons.check_box_outlined,
+                            color: _selectedIndex == 1 ? kPrimary : kText95,
+                            size: 34,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          switchPage(2);
+                        },
+                        child: SizedBox(
+                          height: 90,
+                          child: Icon(
+                            Icons.play_circle_outline_outlined,
+                            color: _selectedIndex == 2 ? kPrimary : kText95,
+                            size: 34,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          switchPage(3);
+                        },
+                        child: SizedBox(
+                          height: 90,
+                          child: Icon(
+                            Icons.card_giftcard,
+                            color: _selectedIndex == 3 ? kPrimary : kText95,
+                            size: 34,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          )),
-    );
+              ));
   }
 }

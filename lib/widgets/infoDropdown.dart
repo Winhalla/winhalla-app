@@ -32,7 +32,6 @@ void showTopSnackBar(
 
   _previousEntry = overlayEntry;
   Future.delayed(displayDuration, () {
-    print("test");
     // Remove the popup after given time (after animation is finished)
     if(_previousEntry != null) {
       _previousEntry?.remove();
