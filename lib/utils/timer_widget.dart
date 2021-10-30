@@ -5,8 +5,9 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 class TimerWidget extends StatefulWidget {
   final int numberOfSeconds;
   final String showHours;
+  final double fontSize;
 
-  const TimerWidget({Key? key, required this.numberOfSeconds, required this.showHours}) : super(key: key);
+  const TimerWidget({Key? key, required this.numberOfSeconds, required this.showHours, this.fontSize: 32}) : super(key: key);
 
   @override
   _TimerWidgetState createState() => _TimerWidgetState();
@@ -101,7 +102,7 @@ class _TimerWidgetState extends State<TimerWidget> {
       }
       return Text(
         timer == "" ? "Loading..." : timer,
-        style: TextStyle(color: color, fontSize: 32),
+        style: TextStyle(color: color, fontSize: widget.fontSize),
       );
     });
   }

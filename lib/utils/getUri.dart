@@ -14,7 +14,31 @@ class CallApi {
   CallApi({required this.authKey, required this.context});
 
   Future get(String path,{bool showError:true}) async {
-    var result = await http.get(Uri.parse(url+path),headers: {"authorization":authKey});
+    late http.Response result;
+    try{
+      result = await http.get(Uri.parse(url+path),headers: {"authorization":authKey});
+    }catch(e){
+      if(showError) showInfoDropdown(
+        context,
+        kRed,
+        "Error:",
+        body: Text(
+          "Winhalla's servers are unreachable, please check your internet connection or try again later",
+          style: Theme.of(context)
+              .textTheme
+              .bodyText2
+              ?.merge(TextStyle(color: kText, fontSize: 20)),
+        ),
+        fontSize:25,
+        column:true,
+      );
+      return {
+        "data":"Winhalla's servers are unreachable, please check your internet connection or try again later",
+        "successful":false,
+        "addText":false
+        };
+    }
+
     if (result.statusCode < 200 || result.statusCode > 299){
       if(showError) showInfoDropdown(
         context,

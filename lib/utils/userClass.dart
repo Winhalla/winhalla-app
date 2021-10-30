@@ -42,14 +42,14 @@ class User extends ChangeNotifier {
     accountDataDecoded["weeklyQuests"].addAll(accountDataDecoded["finished"]["weekly"]);
     this.quests = accountDataDecoded;
     notifyListeners();
-    if (showInfo && accountDataDecoded["updatedPlatforms"] != null) {
+    if (showInfo && accountData["data"]["updatedPlatforms"] != null) {
       List<Widget> icons = [];
-      for (int i = 0; i < accountDataDecoded["updatedPlatforms"].length;i++){
+      for (int i = 0; i < accountData["data"]["updatedPlatforms"].length;i++){
         icons.add(
             Padding(
               padding: EdgeInsets.only(left: i!=0?12:0),
               child: Image.asset(
-                "assets/images/icons/pink/${accountDataDecoded["updatedPlatforms"][i]}Pink.png",
+                "assets/images/icons/pink/${accountData["data"]["updatedPlatforms"][i]}Pink.png",
                 color: kText80,
                 height: 40,
               ),
@@ -68,10 +68,14 @@ class User extends ChangeNotifier {
     dynamic matchId = await this.callApi.get("/lobby");
     if(matchId["successful"] == false) return "err";
     matchId = matchId["data"];
-    var accountData = await http.get(getUri("/account"), headers: {"authorization": this.value["authKey"]});
-    var accountDataParsed = jsonDecode(accountData.body);
-    this.value["user"] = accountDataParsed["user"];
-    this.value["steam"] = accountDataParsed["steam"];
+
+    dynamic accountData = await this.callApi.get("/account",showError: false);
+    if(accountData["successful"] == false) return matchId;
+
+    accountData = accountData["data"];
+    this.value["user"] = accountData["user"];
+    this.value["steam"] = accountData["steam"];
+
     return matchId;
   }
 
@@ -131,6 +135,15 @@ class User extends ChangeNotifier {
     this.callApi = callApi;
     this.value = user;
   }
+
+  Future<void> collectQuest(int questId, String type, int price) async {
+    var result = await this.callApi.post("/solo/collect?id=$questId&type=$type","{}");
+    if(result["successful"] == false) return;
+    this.quests["${type}Quests"].removeWhere((e)=>e["id"] == questId);
+    this.value["user"]["coins"] += price;
+    notifyListeners();
+  }
+
 }
 
 Future<dynamic> initUser(context) async {
@@ -144,7 +157,7 @@ Future<dynamic> initUser(context) async {
       kRed,
       "Error:",
       body: Text(
-        data["data"]+"\nIf error persists, please contact support.",
+        data["data"] + data["addText"] != false ? "" : "\nIf error persists, please contact support.",
         style: Theme.of(context)
             .textTheme
             .bodyText2
