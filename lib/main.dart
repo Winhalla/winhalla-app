@@ -9,6 +9,7 @@ import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:provider/provider.dart';
 import 'config/themes/dark_theme.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -24,6 +25,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -42,13 +45,14 @@ class _MyAppState extends State<MyApp> {
                   if (res.data == "no data" || res.data["data"] == "" || res.data["data"] == null) {
                     return LoginPage(userData:res.data);
                   }
-                  if(res.data["data"]["user"] == null) return LoginPage(userData:res.data);
+                  if(res.data["data"]["user"] == null) return LoginPage(userData: res.data);
                   // Do not edit res.data directly otherwise it calls the build function again for some reason
                   var newData = res.data as Map<String,dynamic>;
                   var callApi = res.data["callApi"];
                   newData["callApi"] = null;
                   newData["user"] = res.data["data"]["user"];
                   newData["steam"] = res.data["data"]["steam"];
+
                   // newData["data"] = null;
                   return ChangeNotifierProvider<User>(
                       create: (_) => User(newData,callApi),
