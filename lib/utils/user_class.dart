@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
-import 'package:winhalla_app/widgets/infoDropdown.dart';
+import 'package:winhalla_app/widgets/info_dropdown.dart';
 
 class User extends ChangeNotifier {
   dynamic value;

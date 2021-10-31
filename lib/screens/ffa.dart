@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:provider/provider.dart';
-import 'package:winhalla_app/utils/ffaMatchClass.dart';
+import 'package:winhalla_app/utils/ffa_match_class.dart';
 import 'package:winhalla_app/utils/timer_widget.dart';
-import 'package:winhalla_app/utils/userClass.dart';
+import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/ad_launch_button.dart';
 
 class SoloMatch extends StatelessWidget {

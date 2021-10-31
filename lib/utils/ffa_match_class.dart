@@ -4,20 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
-import 'package:winhalla_app/utils/userClass.dart';
-import 'package:winhalla_app/widgets/infoDropdown.dart';
+import 'package:winhalla_app/utils/user_class.dart';
+import 'package:winhalla_app/widgets/info_dropdown.dart';
 
 class FfaMatch extends ChangeNotifier {
   dynamic value;
   bool areOtherPlayersShown = false;
-  Future<void> refresh(BuildContext context,CallApi callApi,{bool showInfo:false}) async {
-    dynamic match = await callApi.get("/getMatch/${this.value["_id"]}");
+  Future<void> refresh(BuildContext context,CallApi callApi,{bool showInfo =false}) async {
+    dynamic match = await callApi.get("/getMatch/${value["_id"]}");
     if(match["successful"] == false) return;
     match = match["data"];
-    var steamId = this.value["userPlayer"]["steamId"];
+    var steamId = value["userPlayer"]["steamId"];
     match["userPlayer"] = match["players" ].firstWhere((e) => e["steamId"] == steamId);
     match["players"] = match["players"].where((e)=>e["steamId"]!= steamId).toList();
-    this.value = match;
+    value = match;
     if(showInfo && match["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < match["updatedPlatforms"].length;i++){
@@ -43,18 +43,18 @@ class FfaMatch extends ChangeNotifier {
   }
 
   void exit() async {
-    await http.post(getUri("/exitMatch/${this.value["_id"].toString()}"));
+    await http.post(getUri("/exitMatch/${value["_id"].toString()}"));
   }
   void togglePlayerShown() {
-    this.areOtherPlayersShown = !this.areOtherPlayersShown;
+    areOtherPlayersShown = !areOtherPlayersShown;
     notifyListeners();
   }
 
   FfaMatch(match, String steamId) {
     match["userPlayer"] = match["players"].firstWhere((e) => e["steamId"] == steamId);
     match["players"] = match["players"].where((e)=>e["steamId"]!= steamId).toList();
-    this.value = match;
-    this.areOtherPlayersShown = false;
+    value = match;
+    areOtherPlayersShown = false;
     notifyListeners();
   }
 }

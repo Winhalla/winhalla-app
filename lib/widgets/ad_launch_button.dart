@@ -2,8 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/src/provider.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
-import 'package:winhalla_app/utils/ffaMatchClass.dart';
-import 'package:winhalla_app/utils/userClass.dart';
+import 'package:winhalla_app/utils/ffa_match_class.dart';
+import 'package:winhalla_app/utils/user_class.dart';
 
 
 

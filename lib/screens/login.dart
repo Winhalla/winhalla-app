@@ -5,7 +5,6 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:http/http.dart' as http;
-import 'package:winhalla_app/widgets/infoDropdown.dart';
 import 'dart:convert';
 import 'package:winhalla_app/widgets/popup.dart';
 

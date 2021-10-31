@@ -7,10 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
-import 'package:winhalla_app/utils/userClass.dart';
+import 'package:winhalla_app/utils/user_class.dart';
 import 'package:http/http.dart' as http;
-import 'package:winhalla_app/widgets/infoDropdown.dart';
-import 'package:winhalla_app/widgets/popupshop.dart';
+import 'package:winhalla_app/widgets/info_dropdown.dart';
+import 'package:winhalla_app/widgets/popup_shop.dart';
 // This is bc we can't use context.read<User>() in the future field of FutureBuilder
 Future<dynamic> getShopData(BuildContext context) async {
   var userData = context.read<User>();
@@ -28,14 +28,14 @@ class Shop extends StatelessWidget {
         children: [
           Row(
             children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 2),
+              const Padding(
+                padding: EdgeInsets.only(top: 2),
                 child: Text(
                   "Balance:",
                   style: kHeadline1,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 width: 20,
               ),
               Container(
@@ -51,7 +51,7 @@ class Shop extends StatelessWidget {
                         style: kBodyText1.apply(color: kPrimary),
                       );
                     }),
-                    SizedBox(
+                    const SizedBox(
                       width: 10,
                     ),
                     Padding(
@@ -73,8 +73,9 @@ class Shop extends StatelessWidget {
           FutureBuilder(
               future: getShopData(context),
               builder: (context, AsyncSnapshot<dynamic> res) {
-                if (!res.hasData)
-                  return Center(child: CircularProgressIndicator());
+                if (!res.hasData) {
+                  return const Center(child: CircularProgressIndicator());
+                }
                 return Column(
                   children: [
                     ShopItem(
@@ -93,7 +94,7 @@ class Shop extends StatelessWidget {
                       height: 60,
                     ),
                     ListView.builder(
-                      physics: NeverScrollableScrollPhysics(),
+                      physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                       itemBuilder: (context, int index) {
                         var item = res.data["items"][index];
@@ -126,9 +127,9 @@ class ShopItem extends StatelessWidget {
 
   const ShopItem(
       {Key? key,
-      required int this.cost,
-      required String this.name,
-      required String this.nickname,
+      required this.cost,
+      required this.name,
+      required this.nickname,
       required this.itemId})
       : super(key: key);
 
@@ -141,7 +142,7 @@ class ShopItem extends StatelessWidget {
           child: Container(
             decoration: BoxDecoration(
                 color: kBackgroundVariant,
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                     topRight: Radius.circular(20),
                     topLeft: Radius.circular(20)),
                 image: DecorationImage(
@@ -150,7 +151,7 @@ class ShopItem extends StatelessWidget {
                     fit: BoxFit.cover)),
             child: Row(
               mainAxisSize: MainAxisSize.max,
-              children: [
+              children: const [
                 SizedBox(
                   height: 200,
                 ),
@@ -160,7 +161,7 @@ class ShopItem extends StatelessWidget {
         ),
         Container(
           padding: const EdgeInsets.all(21),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               color: kBackgroundVariant,
               borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(20),
@@ -173,7 +174,7 @@ class ShopItem extends StatelessWidget {
                 padding: const EdgeInsets.only(top: .9),
                 child: Text(
                   nickname,
-                  style: TextStyle(color: kText, fontSize: 35),
+                  style: const TextStyle(color: kText, fontSize: 35),
                 ),
               ),
               Price(
@@ -266,7 +267,7 @@ class _PaypalCreditState extends State<PaypalCredit> {
             children: [
               AnimatedPositioned(
                 curve: Curves.easeInOut,
-                duration: Duration(milliseconds: 225),
+                duration: const Duration(milliseconds: 225),
                 bottom: 3,
                 left: _selectedItem == 0 ? 8.75 : _selectedItem == 1 ? 101 : 207,
                 child: Container(
@@ -285,7 +286,7 @@ class _PaypalCreditState extends State<PaypalCredit> {
             ],
           );
         }),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: kBlack,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(20),
@@ -426,7 +427,7 @@ class Price extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .bodyText2
-                    ?.merge(TextStyle(color: kText, fontSize: 24)),
+                    ?.merge(const TextStyle(color: kText, fontSize: 24)),
               ));
           context.read<User>().addCoins(-int.parse(cost));
         }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
-import 'package:winhalla_app/utils/userClass.dart';
+import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/DailyChallenge/daily_challenge.dart';
 import 'package:winhalla_app/widgets/quest_widget.dart';
 

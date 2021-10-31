@@ -4,7 +4,7 @@ import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
-import 'package:winhalla_app/utils/userClass.dart';
+import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:provider/provider.dart';

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/screens/ffa.dart';
-import 'package:winhalla_app/utils/userClass.dart';
+import 'package:winhalla_app/utils/user_class.dart';
 
 class PlayPage extends StatefulWidget {
   const PlayPage({Key? key}) : super(key: key);
