@@ -96,6 +96,15 @@ class SoloMatch extends StatelessWidget {
                             ],
                           ),
                           AdButton(
+                            goal: 'earnMoreSoloMatch',
+                            adNotReadyChild:Container(
+                                padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
+                                child: Text(
+                                  "Ad loading...",
+                                  style: kBodyText4.apply(color: kText),
+                                ),
+                                decoration:
+                                BoxDecoration(color: kText60, borderRadius: BorderRadius.circular(12))),
                             child: Container(
                                 padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
                                 child: Text(

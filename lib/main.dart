@@ -108,14 +108,24 @@ class _AppCoreState extends State<AppCore> {
                     padding: const EdgeInsets.fromLTRB(32, 15, 32, 0),
                     child: MyApp.screenList[_selectedIndex],
                   ))
-            : const Padding(
-                padding: EdgeInsets.only(left: 40,right: 40,bottom:40),
-                child: Center(
-                  child: SizedBox(
-                    child: RiveAnimation.asset(
-                      "assets/animated/loading.riv",
+            : Padding(
+                padding: const EdgeInsets.only(left: 40,right: 40,bottom:40),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Expanded(
+                      child: RiveAnimation.asset(
+                        "assets/animated/loading.riv",
+                      ),
                     ),
-                  ),
+                    Text("Loading...",style: kHeadline1,),
+                    SizedBox(height: 15,),
+                    Padding(
+                      padding: EdgeInsets.only(right: 7.0),
+                      child: CircularProgressIndicator(),
+                    )
+                  ],
                 ),
               ),
         bottomNavigationBar: !widget.isUserDataLoaded
