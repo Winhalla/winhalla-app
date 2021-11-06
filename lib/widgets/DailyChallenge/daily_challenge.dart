@@ -24,21 +24,24 @@ class _DailyChallengeState extends State<DailyChallenge> {
         "goal": 3,
         "progress": 1,
         "completed": true,
-        "active": false
+        "active": false,
+        "reward": 20
       },
       {
         "name": "Watch 1 ad or maybe not",
         "goal": 1,
         "progress": 0,
         "completed": true,
-        "active": false
+        "active": false,
+        "reward": 30
       },
       {
         "name": "test",
         "goal": 1,
         "progress": 0,
         "completed": false,
-        "active": true
+        "active": true,
+        "reward": 4
       },
       
     ];
@@ -102,13 +105,37 @@ class _DailyChallengeState extends State<DailyChallenge> {
                     children: [
                       for (var quest in dailyChallengeQuests)
                         quest["completed"] as bool
-                            ? Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 11.5),
-                                child: DailyChallengeItem(
-                                  name: quest["name"] as String,
-                                  completed: quest["completed"] as bool,
-                                ),
-                              )
+                            ? Row(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 11.5),
+                                    child: DailyChallengeItem(
+                                      name: quest["name"] as String,
+                                      completed: quest["completed"] as bool,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 27.0),
+                                    child: Row(
+                                      children: [
+                                        Text(
+                                          quest["reward"].toString(),
+                                          style: kBodyText3,
+                                        ),
+                                        SizedBox(width: 3.25),
+                                        Image.asset(
+                                          "assets/images/coin.png",
+                                          height: 25,
+                                          width: 25,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                              ],
+                            )
                             : quest["active"] as bool
                                 ? Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 11.5),

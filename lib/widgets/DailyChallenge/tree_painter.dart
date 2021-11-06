@@ -17,7 +17,7 @@ class TreePainter extends CustomPainter {
       ..color = kText90
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 5;
+      ..strokeWidth = 4;
 
     double degToRad(num deg) => deg * (pi / 180.0);
 

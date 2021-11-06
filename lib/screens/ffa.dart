@@ -350,6 +350,7 @@ class PlayerWidget extends StatelessWidget {
                   const SizedBox(
                     height: 2.5,
                   ),
+                
                   if (isUser == true)
                     Row(
                       children: [
