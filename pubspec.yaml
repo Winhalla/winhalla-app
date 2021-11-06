@@ -42,6 +42,8 @@ dependencies:
   google_sign_in: ^5.1.0
   rive: ^0.7.31
   google_mobile_ads: ^0.13.5
+  share: ^2.0.4
+
 
 dev_dependencies:
   flutter_test:

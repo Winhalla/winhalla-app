@@ -189,7 +189,7 @@ class _AccountCreationState extends State<AccountCreation> {
                 var accountData = await callApi.post(
                     '/auth/createAccount',
                     jsonEncode({"accounts":accounts.map((e)=>{"BID":e["bid"],"name":e["name"],"steamId":e["steamId"],"platformId":e["file"]} ).toList()}),
-                    showErrors:false
+                    showError:false
                 );
                 if(accountData["successful"] == false) {
                   setState(() {

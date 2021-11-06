@@ -135,53 +135,71 @@ class ShopItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
-        Opacity(
-          opacity: 0.7,
-          child: Container(
-            decoration: BoxDecoration(
-                color: kBackgroundVariant,
-                borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    topLeft: Radius.circular(20)),
-                image: DecorationImage(
-                    image: AssetImage(
-                        "assets/images/shopItems/${name.toLowerCase().replaceAll(" ", "-")}.jpg"),
-                    fit: BoxFit.cover)),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              children: const [
-                SizedBox(
-                  height: 200,
-                ),
-              ],
-            ),
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.all(21),
-          decoration: const BoxDecoration(
-              color: kBackgroundVariant,
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(20),
-                  bottomRight: Radius.circular(20))),
-          child: Row(
-            mainAxisSize: MainAxisSize.max,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: .9),
-                child: Text(
-                  nickname,
-                  style: const TextStyle(color: kText, fontSize: 35),
+        Column(
+          children: [
+            Opacity(
+              opacity: 0.7,
+              child: Container(
+                decoration: BoxDecoration(
+                    color: kBackgroundVariant,
+                    borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        topLeft: Radius.circular(20)),
+                    image: DecorationImage(
+                        image: AssetImage(
+                            "assets/images/shopItems/${name.toLowerCase().replaceAll(" ", "-")}.jpg"),
+                        fit: BoxFit.cover)),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: const [
+                    SizedBox(
+                      height: 200,
+                    ),
+                  ],
                 ),
               ),
-              Price(
-                cost: cost.toString(),
-                itemId: itemId,
-              )
-            ],
+            ),
+            Container(
+              padding: const EdgeInsets.all(21),
+              decoration: const BoxDecoration(
+                  color: kBackgroundVariant,
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(20),
+                      bottomRight: Radius.circular(20))),
+              child: Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: .9),
+                    child: Text(
+                      nickname,
+                      style: const TextStyle(color: kText, fontSize: 35),
+                    ),
+                  ),
+                  Price(
+                    cost: cost.toString(),
+                    itemId: itemId,
+                  )
+                ],
+              ),
+            ),
+          ],
+        ),
+        Positioned(
+          top: 10,
+          right: 20,
+          child: GestureDetector(
+            onTap: (){
+              context.read<User>().setItemGoal(itemId);
+            },
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
+              decoration: BoxDecoration(borderRadius: BorderRadius.circular(14),color: kEpic),
+              child: const Text("Set As Goal",style: kBodyText4,),
+            ),
           ),
         ),
       ],

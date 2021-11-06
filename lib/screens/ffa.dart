@@ -7,6 +7,7 @@ import 'package:winhalla_app/utils/ffa_match_class.dart';
 import 'package:winhalla_app/utils/timer_widget.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/ad_launch_button.dart';
+import 'package:winhalla_app/widgets/tip_painter.dart';
 
 class SoloMatch extends StatelessWidget {
   final String matchId;
@@ -21,18 +22,12 @@ class SoloMatch extends StatelessWidget {
         builder: (BuildContext context, AsyncSnapshot res) {
           if (!res.hasData) {
             return const Center(
-              child: Text(
-                "Loading...",
-                style: kHeadline1,
-              ),
+                child: CircularProgressIndicator()
             );
           }
           if(res.data["successful"] == false){
             return const Center(
-              child: Text(
-                "Loading...",
-                style: kHeadline1,
-              ),
+              child: CircularProgressIndicator()
             );
           }
           return ChangeNotifierProvider<FfaMatch>(
@@ -59,7 +54,7 @@ class SoloMatch extends StatelessWidget {
                             child: Consumer<FfaMatch>(builder: (context, match, _) {
                               return TimerWidget(
                                 showHours: "no",
-                                numberOfSeconds: (((match.value["Date"] + 3600 * 1000) -
+                                numberOfSeconds: (((match.value["userPlayer"]["joinDate"] + 3600 * 1000) -
                                             DateTime.now().millisecondsSinceEpoch) /
                                         1000)
                                     .round(),
@@ -301,58 +296,6 @@ class SoloMatch extends StatelessWidget {
         },
       ),
     );
-  }
-}
-
-class TipPainter extends CustomPainter {
-  TipPainter({required this.color});
-
-  final Color color;
-
-  double degToRad(num deg) => (deg * (pi / 180.0)).toDouble();
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = kText80
-      // ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;
-    double rectSize = 30;
-
-    Path path = Path();
-    path.moveTo(0, 0);
-
-    path.arcTo(
-        Rect.fromLTWH(
-            0,
-            -7,
-            rectSize,
-            rectSize),
-        degToRad(180),
-        degToRad(-90),
-        false);
-    path.lineTo(23, 23);
-    // path.lineTo(20, currentHeight + rectSize);
-    path.moveTo(0, 10);
-
-    path.arcTo(
-        Rect.fromLTWH(
-            0,
-            58.5,
-            rectSize, // -0.15 just for pixel perfect
-            rectSize),
-        degToRad(180),
-        degToRad(-90),
-        false);
-    path.lineTo(23, 88.5);
-    canvas.drawPath(path, paint);
-  }
-
-  //5
-  @override
-  bool shouldRepaint(TipPainter oldDelegate) {
-    return color != oldDelegate.color;
   }
 }
 

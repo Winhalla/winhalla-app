@@ -73,70 +73,70 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
               child: ButtonTheme(
                 alignedDropdown: true,
                 child: DropdownButton(
-                iconSize: 38,
-                iconEnabledColor: kText80,
-                iconDisabledColor: kText80,
-                itemHeight: 50,
+                  iconSize: 38,
+                  iconEnabledColor: kText80,
+                  iconDisabledColor: kText80,
+                  itemHeight: 50,
 
-                onChanged: (String? value) {
-                  setState(() {
-                    if (value != null) _chosenValue = value;
-                  });
-                },
-                dropdownColor: const Color(0x00000000),
-                // Transparent
-                elevation: 0,
-                value: _chosenValue,
+                  onChanged: (String? value) {
+                    setState(() {
+                      if (value != null) _chosenValue = value;
+                    });
+                  },
+                  dropdownColor: const Color(0x00000000),
+                  // Transparent
+                  elevation: 0,
+                  value: _chosenValue,
 
-                
-                items: items.map<DropdownMenuItem<String>>((
-                  Map<String, String> value,
-                ) {
-                  return DropdownMenuItem<String>(
-                    value: value["file"],
-                    child: Container(
-                      height: 52,
-                      padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
-                      decoration: BoxDecoration(
-                          color: kBackground,
-                          
-                          borderRadius: value["file"] == items[0]["file"]
-                              ? const BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15))
-                              : value["file"] == items[items.length - 1]["file"]
-                                  ? const BorderRadius.only(
-                                      bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15))
-                                  : BorderRadius.circular(0)),
-                      child: Row(
-                        children: [
-                          SizedBox(
-                            width: 25,
-                            height: 25,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Image.asset(
-                                  "assets/images/icons/${value["file"]}.png",
-                                  width: 25,
-                                ),
-                              ],
+
+                  items: items.map<DropdownMenuItem<String>>((
+                    Map<String, String> value,
+                  ) {
+                    return DropdownMenuItem<String>(
+                      value: value["file"],
+                      child: Container(
+                        height: 52,
+                        padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+                        decoration: BoxDecoration(
+                            color: kBackground,
+
+                            borderRadius: value["file"] == items[0]["file"]
+                                ? const BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15))
+                                : value["file"] == items[items.length - 1]["file"]
+                                    ? const BorderRadius.only(
+                                        bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15))
+                                    : BorderRadius.circular(0)),
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: 25,
+                              height: 25,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    "assets/images/icons/${value["file"]}.png",
+                                    width: 25,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(top: 1),
-                            child: Text(
-                              value["name"] as String,
-                              style: kBodyText4,
+                            const SizedBox(
+                              width: 10,
                             ),
-                          ),
-                        ],
+                            Padding(
+                              padding: const EdgeInsets.only(top: 1),
+                              child: Text(
+                                value["name"] as String,
+                                style: kBodyText4,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                }).toList(),
-                underline: Container(), // Empty widget to remove underline
+                    );
+                  }).toList(),
+                  underline: Container(), // Empty widget to remove underline
               ),
           ))
           : Column(

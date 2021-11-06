@@ -131,17 +131,21 @@ class User extends ChangeNotifier {
     notifyListeners();
   }
 
-  User(user,callApi) {
-    this.callApi = callApi;
-    this.value = user;
-  }
+  User(this.value,this.callApi);
 
   Future<void> collectQuest(int questId, String type, int price) async {
-    var result = await this.callApi.post("/solo/collect?id=$questId&type=$type","{}");
+    var result = await callApi.post("/solo/collect?id=$questId&type=$type","{}");
     if(result["successful"] == false) return;
-    this.quests["${type}Quests"].removeWhere((e)=>e["id"] == questId);
-    this.value["user"]["coins"] += price;
+    quests["${type}Quests"].removeWhere((e)=>e["id"] == questId);
+    value["user"]["coins"] += price;
     notifyListeners();
+  }
+
+  Future<void> setItemGoal(int itemId) async {
+    var result = await callApi.post("/setGoal",jsonEncode({"itemId":itemId}));
+    if(result["successful"] == false) return;
+    value["user"]["goal"] = result["data"];
+    print(value["user"]["goal"]);
   }
 
 }

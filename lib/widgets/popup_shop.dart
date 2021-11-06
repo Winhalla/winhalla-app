@@ -27,8 +27,8 @@ Widget PopupWidget(BuildContext context,String email,int itemId,{int? amount}) {
     });
     return AlertDialog(
       elevation: 10,
-      title: Padding(
-        padding: const EdgeInsets.fromLTRB(4,0,4,0),
+      title: const Padding(
+        padding: EdgeInsets.fromLTRB(4,0,4,0),
         child: Text(
           "Confirm Purchase",
           style: kBodyText1,
