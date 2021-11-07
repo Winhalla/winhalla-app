@@ -43,7 +43,22 @@ class _DailyChallengeState extends State<DailyChallenge> {
         "active": true,
         "reward": 4
       },
-      
+      {
+        "name": "test",
+        "goal": 1,
+        "progress": 0,
+        "completed": false,
+        "active": false,
+        "reward": 4
+      },
+      {
+        "name": "test mmmh",
+        "goal": 1,
+        "progress": 0,
+        "completed": false,
+        "active": false,
+        "reward": 4
+      },
     ];
 
     for (var quest in dailyChallengeQuests) {
@@ -105,7 +120,23 @@ class _DailyChallengeState extends State<DailyChallenge> {
                     children: [
                       for (var quest in dailyChallengeQuests)
                         quest["completed"] as bool
-                            ? Row(
+                            ? 
+                            Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 11.5),
+                                    child: DailyChallengeItem(
+                                      name: quest["name"] as String,
+                                      completed: quest["completed"] as bool,
+                                    ),
+                                  )
+                            : quest["active"] as bool
+                                ? Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 11.5),
+                                    child: QuestWidget(
+                                        name: quest["name"] as String,
+                                        color: kOrange,
+                                        progress: quest["progress"] as int,
+                                        goal: quest["goal"] as int))
+                                : Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -118,39 +149,23 @@ class _DailyChallengeState extends State<DailyChallenge> {
                                     ),
                                   ),
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 27.0),
+                                    padding: const EdgeInsets.only(top: 21),
                                     child: Row(
                                       children: [
                                         Text(
                                           quest["reward"].toString(),
                                           style: kBodyText3,
                                         ),
-                                        SizedBox(width: 3.25),
+                                        SizedBox(width: 3.40),
                                         Image.asset(
-                                          "assets/images/coin.png",
+                                          "assets/images/CoinText90.png",
                                           height: 25,
                                           width: 25,
                                         )
                                       ],
                                     ),
                                   ),
-                              ],
-                            )
-                            : quest["active"] as bool
-                                ? Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 11.5),
-                                    child: QuestWidget(
-                                        name: quest["name"] as String,
-                                        color: kOrange,
-                                        progress: quest["progress"] as int,
-                                        goal: quest["goal"] as int))
-                                : Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 11.5),
-                                    child: DailyChallengeItem(
-                                      name: quest["name"] as String,
-                                      completed: quest["completed"] as bool,
-                                    ),
-                                  ),
+                              ],)
                     ],
                   ),
                 )
