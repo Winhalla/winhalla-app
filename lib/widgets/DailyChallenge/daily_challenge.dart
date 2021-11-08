@@ -18,7 +18,7 @@ class DailyChallenge extends StatefulWidget {
 class _DailyChallengeState extends State<DailyChallenge> {
   @override
   Widget build(BuildContext context) {
-    final dailyChallengeQuests = [
+    final List<Map<String, dynamic>> dailyChallengeQuests = [
       {
         "name": "Lorem",
         "goal": 3,
@@ -119,23 +119,24 @@ class _DailyChallengeState extends State<DailyChallenge> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       for (var quest in dailyChallengeQuests)
-                        quest["completed"] as bool
+                        quest["completed"]
                             ? 
                             Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 11.5),
                                     child: DailyChallengeItem(
-                                      name: quest["name"] as String,
-                                      completed: quest["completed"] as bool,
+                                      name: quest["name"],
+                                      completed: quest["completed"],
                                     ),
                                   )
-                            : quest["active"] as bool
+                            : quest["active"]
                                 ? Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 11.5),
                                     child: QuestWidget(
-                                        name: quest["name"] as String,
+                                        reward: quest["reward"],
+                                        name: quest["name"] ,
                                         color: kOrange,
-                                        progress: quest["progress"] as int,
-                                        goal: quest["goal"] as int))
+                                        progress: quest["progress"],
+                                        goal: quest["goal"]))
                                 : Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -156,7 +157,7 @@ class _DailyChallengeState extends State<DailyChallenge> {
                                           quest["reward"].toString(),
                                           style: kBodyText3,
                                         ),
-                                        SizedBox(width: 3.40),
+                                        const SizedBox(width: 3.40),
                                         Image.asset(
                                           "assets/images/CoinText90.png",
                                           height: 25,

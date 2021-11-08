@@ -133,6 +133,7 @@ class Quests extends StatelessWidget {
                           child: Container(
                             margin: EdgeInsets.only(top: index != 0 ? 30.0 : 0),
                             child: QuestWidget(
+                                reward:user.quests["dailyQuests"][index]["reward"],
                                 name: user.quests["dailyQuests"][index]["name"],
                                 color: _getColorFromPrice(user.quests["dailyQuests"][index]["reward"], "weekly"),
                                 progress: user.quests["dailyQuests"][index]["progress"],
@@ -221,6 +222,7 @@ class Quests extends StatelessWidget {
                           child: Container(
                             margin: EdgeInsets.only(top: index != 0 ? 30.0 : 0),
                             child: QuestWidget(
+                                reward:user.quests["weeklyQuests"][index]["reward"],
                                 name: user.quests["weeklyQuests"][index]["name"],
                                 color: _getColorFromPrice(user.quests["weeklyQuests"][index]["reward"], "weekly"),
                                 progress: user.quests["weeklyQuests"][index]["progress"],

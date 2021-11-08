@@ -5,12 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 
 class QuestWidget extends StatelessWidget {
-  String name;
+  final String name;
   Color color;
-  int progress;
-  int goal;
+  final int progress;
+  final int goal;
+  final int reward;
 
-  QuestWidget({Key? key, required this.name, required this.color, required this.progress, required this.goal}) : super(key: key);
+  QuestWidget({
+    Key? key,
+    required this.name,
+    required this.color,
+    required this.progress,
+    required this.goal,
+    required this.reward
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +29,7 @@ class QuestWidget extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(16)),
-      padding: EdgeInsets.fromLTRB(30, 27, 30, 27),
+      padding: const EdgeInsets.fromLTRB(30, 27, 30, 27),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -33,7 +41,7 @@ class QuestWidget extends StatelessWidget {
                 child: Text(
                   name,
                   style: isQuestFinished
-                      ? TextStyle(
+                      ? const TextStyle(
                           decoration: TextDecoration.lineThrough,
                           decorationThickness: 2,
                           color: kGray,
