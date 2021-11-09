@@ -6,9 +6,11 @@ import 'package:share/share.dart';
 
 
 Widget LinkInfoWidget(String linkId){
+
   return StatefulBuilder(builder: (context, setState) {
     return AlertDialog(
       elevation: 10,
+
       title: Padding(
         padding: const EdgeInsets.fromLTRB(4,0,4,0),
         child: Row(
@@ -16,36 +18,29 @@ Widget LinkInfoWidget(String linkId){
           children: [
             const Text(
               "Share the app",
-              style: kBodyText1,
+              style: kHeadline2,
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.only(top: 3.0),
-                    child: Text(
-                      "TIP",
-                      style: TextStyle(
-                        color: kGreen,
-                        fontSize: 23,
-                      ),
+            GestureDetector(
+              onTap: () async {
+                Navigator.pop(context);
+              },
+              behavior: HitTestBehavior.translucent,
+              child: const Padding(
+                padding: EdgeInsets.fromLTRB(0, 0, 0, 2),
+                child: Icon(
+                      Icons.close,
+                      color: kGray,
+                      size: 28,
                     ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Icon(
-                    Icons.lightbulb_outline_sharp,
-                    color: kGreen,
-                  )
-                ],
-              ),
+                       
+                ),
+              
             ),
           ],
         ),
       ),
+
+      contentPadding: const EdgeInsets.fromLTRB(24, 5, 24, 30),
       content: Padding(
         padding: const EdgeInsets.fromLTRB(4,0,4,0),
         child: Column(
@@ -55,14 +50,14 @@ Widget LinkInfoWidget(String linkId){
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Container(
-                  padding: const EdgeInsets.fromLTRB(20, 7, 0, 0),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 0, 0),
                   child: CustomPaint(
-                    size: const Size(40, 105),
+                    size: const Size(35, 105),
                     painter: TipPainter(color: kText,height:0), //3
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 18.0),
+                  padding: const EdgeInsets.only(top: 11.0),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -107,10 +102,10 @@ Widget LinkInfoWidget(String linkId){
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const [
                     Icon(Icons.share,color: kText,size: 30,),
-                    SizedBox(width: 10,),
+                    SizedBox(width: 6,),
                     Padding(
                       padding: EdgeInsets.only(top: 2.5),
-                      child: Text("Share",style: kBodyText1,),
+                      child: Text("Share", style: kBodyText1,),
                     )
                 ],)
               )
@@ -118,28 +113,7 @@ Widget LinkInfoWidget(String linkId){
           ],
         ),
       ),
-      contentPadding: const EdgeInsets.fromLTRB(24, 10, 24, 5),
-      actions: [
-        GestureDetector(
-          onTap: () async {
-            Navigator.pop(context);
-          },
-          behavior: HitTestBehavior.translucent,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0,0,10,6),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  "Close",
-                  style: kBodyText3.apply(color: kText80),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+
       backgroundColor: kBackgroundVariant,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),

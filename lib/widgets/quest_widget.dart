@@ -71,7 +71,7 @@ class QuestWidget extends StatelessWidget {
                         width: 70,
                         height: 70,
                         child: CustomPaint(
-                          foregroundPainter: ProgressPainter(progressColor: color, percentage: percentage+.6, width: 9),
+                          foregroundPainter: ProgressPainter(progressColor: color, percentage: percentage + 0.6, width: 9),
                         ),
                     ),
                     Positioned.fill(
@@ -79,27 +79,33 @@ class QuestWidget extends StatelessWidget {
                             alignment: Alignment.center,
                             child: Padding(
                               padding: const EdgeInsets.only(top: 2), //add padding to center the font that has default bottom spacing
-                              child: Text("${isQuestFinished?100:percentage.ceil()}%", style: kBodyText4.apply(color: color)),
+                              child: Text("${isQuestFinished? 100: percentage.ceil()}%", style: kBodyText4.apply(color: color)),
                             ))),
                   ],
                 ),
-                const SizedBox(height: 15,),
-                Row(
-                  children: [
-                    Text(reward.toString() ,style: kBodyText4.apply(color:color),),
-                    const SizedBox(
-                      width: 4,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 1),
-                      child: Image.asset(
-                        "assets/images/coin.png",
-                        height: 20,
-                        width: 20,
-                        color: color,
+                const SizedBox(height: 11.5,),
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 3),
+                  child: Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.only(top: 1),
+                        child: Text(reward.toString() ,style: kBodyText4.apply(color:color),),
                       ),
-                    ),
-                  ],
+                      const SizedBox(
+                        width: 4,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 1),
+                        child: Image.asset(
+                          "assets/images/coin.png",
+                          height: 20,
+                          width: 20,
+                          color: color,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -119,22 +125,22 @@ class ProgressPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    Paint line = Paint()
-      ..color = kBackground
+    /*Paint line = Paint()
+      ..color = kBackgroundVariant
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke
       ..strokeWidth = width;
-
+*/
     Paint progress = Paint()
       ..color = progressColor
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke
-      ..strokeWidth = width - 0.9;
+      ..strokeWidth = width - 1.9;
 
     Offset center = Offset(size.width / 2, size.height / 2);
-    double radius = min(size.width / 2, size.height / 2);
+    double radius = min(size.width / 2.35, size.height / 2.35);
 
-    canvas.drawCircle(center, radius, line);
+    //canvas.drawCircle(center, radius, line);
 
     double arcAngle = 2 * pi * (percentage / 100);
     canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -pi / 2, arcAngle, false, progress);
