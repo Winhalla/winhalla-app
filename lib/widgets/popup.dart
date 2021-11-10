@@ -49,7 +49,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
       }
 
       Navigator.pop(context,
-          {"bid": bidTextController.text, "name": decodedData["data"]["name"], "file": _chosenValue});
+          {"BID": bidTextController.text, "name": decodedData["data"]["name"], "platformId": _chosenValue});
       _loading = false;
     }
 

@@ -18,7 +18,7 @@ class SteamLoginWebView extends StatelessWidget {
         await _webView.close();
         var result = await openId.validate();
         var accountData = jsonDecode((await http.get(getUri("/auth/getBIDFromSteamId/${result}"))).body);
-        Navigator.pop(context, {"bid":accountData["brawlhalla_id"].toString(),"name":accountData["name"],"file":"steam","steamId":result});
+        Navigator.pop(context, {"BID":accountData["brawlhalla_id"].toString(),"name":accountData["name"],"platformId":"steam","steamId":result});
       }
     });
 

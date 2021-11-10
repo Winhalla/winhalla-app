@@ -9,7 +9,6 @@ import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:provider/provider.dart';
 import 'config/themes/dark_theme.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -62,7 +61,7 @@ class _MyAppState extends State<MyApp> {
                   );
                 }),
         ),
-        '/login': (context) => const LoginPage(),
+        '/login': (context) => LoginPage(),
       },
     );
   }

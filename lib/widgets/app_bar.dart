@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/screens/login.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/popup_legal.dart';
@@ -32,7 +33,9 @@ class MyAppBar extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8.0),
                 child: GestureDetector(
                   onTap: () {
-                    var linkId = context.read<User>().value["user"]["linkId"];
+                    var user = context.read<User>().value;
+                    var linkId = user["user"]["linkId"];
+                    var accounts = user["user"]["brawlhallaAccounts"];
                     late OverlayEntry overlayEntry;
                     overlayEntry = OverlayEntry(
                       builder: (context) {
@@ -89,17 +92,29 @@ class MyAppBar extends StatelessWidget {
                                           ),
                                         ),
                                       ),
-                                      Container(
-                                        margin: const EdgeInsets.fromLTRB(24,15,24,15),
-                                        child: Row(
-                                          children: [
-                                            const Icon(Icons.add_circle_outline,color:kPrimary,size: 30,),
-                                            const SizedBox(width: 10,),
-                                            Text("Add Account",style: kBodyText2.apply(fontFamily: "Bebas Neue"),),
-                                          ],
+                                      GestureDetector(
+                                        onTap: (){
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (_)=>LoginPage(accounts: accounts,))
+
+                                          );
+                                          overlayEntry.remove();
+                                        },
+                                        behavior:HitTestBehavior.translucent,
+                                        child: Container(
+                                          margin: const EdgeInsets.fromLTRB(24,15,24,15),
+                                          child: Row(
+                                            children: [
+                                              const Icon(Icons.add_circle_outline,color:kPrimary,size: 30,),
+                                              const SizedBox(width: 10,),
+                                              Text("Add Account",style: kBodyText2.apply(fontFamily: "Bebas Neue"),),
+                                            ],
+                                          ),
                                         ),
                                       ),
                                       GestureDetector(
+                                        behavior:HitTestBehavior.translucent,
                                         onTap: () async {
                                           showDialog(
                                               context: context,

@@ -8,29 +8,26 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:winhalla_app/widgets/popup.dart';
 
-class LoginPage extends StatefulWidget {
+
+class LoginPage extends StatelessWidget {
   final userData;
-  const LoginPage({Key? key,this.userData}) : super(key: key);
+  final accounts;
+  LoginPage({Key? key, this.userData, this.accounts}) : super(key: key);
 
-  @override
-  _LoginPageState createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  Map<String, dynamic>? gAccount;
-
-  List<Widget> screenList = [
-    // WinhallaPresentation(),
-    GoogleAppleLogin(),
-    // SteamLogin(),
-    AccountCreation()
-  ];
   int step = 0;
   @override
   Widget build(BuildContext context) {
-    try{
-      step = widget.userData["data"]["steam"] == null ? 0:1;
-    }catch(e){}
+
+    List<Widget> screenList = [
+      // WinhallaPresentation(),
+      const GoogleAppleLogin(),
+      // SteamLogin(),
+      AccountCreation(accounts: accounts)
+    ];
+
+    if(userData?["data"]?["steam"] != null) step = 1;
+    if(accounts != null) step = 1;
+
 
     return SafeArea(
       child: Scaffold(
@@ -49,18 +46,19 @@ class _LoginPageState extends State<LoginPage> {
 }
 
 class AccountCreation extends StatefulWidget {
-  const AccountCreation({Key? key}) : super(key: key);
+  final accounts;
+  const AccountCreation({Key? key, this.accounts}) : super(key: key);
 
   @override
   _AccountCreationState createState() => _AccountCreationState();
 }
 
 class _AccountCreationState extends State<AccountCreation> {
-  Map<String, dynamic>? gAccount;
-
   List<dynamic> accounts = [];
+  Map<String, dynamic>? gAccount;
   String? steamId;
-
+  bool alreadyCreatedAccount = false;
+  String file = "file";
   List<Map<String, String>> items = [
     {'name': "Steam (PC)", "file": "steam"},
     {'name': "PS3/4/5", "file": "ps"},
@@ -71,6 +69,23 @@ class _AccountCreationState extends State<AccountCreation> {
   String? _err;
   @override
   Widget build(BuildContext context) {
+    if(widget.accounts != null && alreadyCreatedAccount == false) {
+      accounts = widget.accounts;
+      for (int i = 0; i < accounts.length; i++) {
+        for (int ii = 0; ii < items.length; ii++) {
+          var element = items[ii];
+
+          if(element["file"] == accounts[i]["platformId"]){
+            items.removeAt(ii);
+          }
+        }
+      }
+      alreadyCreatedAccount = true;
+    }
+
+    if(accounts.isNotEmpty) {
+      file = accounts[0]["file"] == null ? "platformId" : "file";
+    }
     return Padding(
       padding: const EdgeInsets.fromLTRB(32, 70, 32, 0),
       child: Column(
@@ -92,7 +107,7 @@ class _AccountCreationState extends State<AccountCreation> {
           ListView.builder(
             itemCount: accounts.length,
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             itemBuilder: (BuildContext context, int index) {
               return Container(
                 padding: const EdgeInsets.fromLTRB(25, 20, 25, 20),
@@ -112,11 +127,11 @@ class _AccountCreationState extends State<AccountCreation> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 3.0),
                       child: Image.asset(
-                        "assets/images/icons/pink/${accounts[index]["file"]}Pink.png",
+                        "assets/images/icons/pink/${accounts[index][file]}Pink.png",
                         height: 30,
                       ),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 18,
                     ),
                     Expanded(
@@ -147,7 +162,7 @@ class _AccountCreationState extends State<AccountCreation> {
                       color: kPrimary,
                       size: 34,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
                     Padding(
@@ -163,32 +178,39 @@ class _AccountCreationState extends State<AccountCreation> {
               onTap: () async {
                 var result =
                     await showDialog(context: context, builder: (context) => PopupWidget(context, items));
-                if (result != null)
+                if (result != null) {
                   setState(() {
                     accounts.add(result);
-                    if(result["steamId"]!= null){
+                    if(result["steamId"] != null){
                       steamId = result["steamId"];
                     }
-                    items.removeWhere((item) => item["file"] == result["file"]);
+                    items.removeWhere((item) => item["platformId"] == result["platformId"]);
                   });
+                }
               },
             ),
-          Expanded(
+          const Expanded(
             child: Text(""),
           ),
-          if (accounts.length > 0)
+          if (accounts.isNotEmpty)
             GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () async {
                 final authKey = await secureStorage.read(key: "authKey");
                 if (authKey == null) {
-                  Navigator.pushReplacementNamed(context, "/login");
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, "/login");
                   return;
                 }
-                CallApi callApi = new CallApi(authKey: authKey , context: context);
+                CallApi callApi = CallApi(authKey: authKey , context: context);
+                print(accounts);
                 var accountData = await callApi.post(
-                    '/auth/createAccount',
-                    jsonEncode({"accounts":accounts.map((e)=>{"BID":e["bid"],"name":e["name"],"steamId":e["steamId"],"platformId":e["file"]} ).toList()}),
+                    alreadyCreatedAccount?"/auth/editBrawlhallaAccounts":'/auth/createAccount',
+                    jsonEncode(
+                        {
+                          "accounts": accounts
+                        },
+                    ),
                     showError:false
                 );
                 if(accountData["successful"] == false) {
@@ -295,51 +317,51 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
             ),
           ),
           Row(
-            children: [
-              const Text(
+            children: const [
+              Text(
                 "Winhalla",
                 style: TextStyle(fontSize: 60, color: kPrimary, height: 1),
               ),
-              const Text(
+              Text(
                 "!",
                 style: TextStyle(fontSize: 60, color: kText, height: 1),
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 25,
           ),
           Row(
-            children: [
-              const Text(
+            children: const [
+              Text(
                 "Play",
                 style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
               ),
-              const SizedBox(
+              SizedBox(
                 width: 7,
               ),
-              const Text(
+              Text(
                 "Brawlhalla,",
                 style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
               ),
             ],
           ),
           Row(
-            children: [
-              const Text(
+            children: const [
+              Text(
                 "Earn",
                 style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
               ),
-              const SizedBox(
+              SizedBox(
                 width: 7,
               ),
-              const Text(
+              Text(
                 "Rewards",
                 style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 150,
           ),
           GestureDetector(
@@ -373,9 +395,7 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
                   Navigator.pushNamed(context, "/");
                   return;
                 }
-              } catch(e){
-
-              }
+              } catch(e){}
               context.read<LoginPageManager>().next();
             },
             child: Container(
@@ -392,11 +412,11 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
                     height: 32,
                     width: 32,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 18,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 1.5),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 1.5),
                     child: Text(
                       "Sign in with Google",
                       style: kBodyText2,
@@ -406,7 +426,7 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
               ),
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           GestureDetector(
@@ -428,11 +448,11 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
                     width: 32,
                     color: kText90,
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 18,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 1.5),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 1.5),
                     child: Text(
                       "Sign in with Apple",
                       style: kBodyText2,
@@ -466,7 +486,7 @@ class WinhallaPresentation extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(30, 50, 30, 0),
         child: Column(
           children: [
-            Text(
+            const Text(
               "Winhalla Presentation here",
               style: kHeadline1,
             ),
@@ -513,7 +533,5 @@ class LoginPageManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  LoginPageManager(page) {
-    this.page = page;
-  }
+  LoginPageManager(this.page);
 }
