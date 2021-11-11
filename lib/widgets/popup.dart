@@ -13,44 +13,54 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
   String step = "platformSelection";
   bool _loading = false;
   String? _error;
+  dynamic accountData = {"data":{"level":2}};
 
 
   return StatefulBuilder(builder: (context, setState) {
-    void nextStep() {
-      setState(() {
-        if (_chosenValue == "steam") {
+    void nextStep() async {
+
+      if (_chosenValue == "steam" && step == "platformSelection") {
+        setState((){
           step = "steamLogin";
-        } else {
+        });
+
+      } else if (step == "platformSelection") {
+        setState(() {
           step = "enterBid";
+        });
+      }
+
+      else if(step == "enterBid") {
+        if (_loading == true) return;
+        setState(() {
+          _loading = true;
+        });
+        if (bidTextController.text.replaceAll(' ', '') == "") {
+          setState(() {
+            _loading = false;
+            _error = "Please provide a Brawlhalla ID";
+          });
+          return;
         }
-      });
+        accountData =
+            (await http.get(getUri("/auth/isBIDValid/${bidTextController.text.replaceAll(' ', '')}"))).body;
+        accountData = jsonDecode(accountData);
+        if (accountData["isValid"] == false) {
+          _loading = false;
+          return setState(() {
+            _error = accountData["reason"];
+          });
+        }
+        _loading = false;
+        setState(() {
+          step = "confirmAccount";
+        });
+      }
     }
 
     void createAccount() async {
-      if (_loading == true) return;
-      setState(() {
-        _loading = true;
-      });
-      if (bidTextController.text.replaceAll(' ', '') == "") {
-        setState(() {
-          _loading = false;
-          _error = "Please provide a Brawlhalla ID";
-        });
-        return;
-      }
-      var accountData =
-          (await http.get(getUri("/auth/isBIDValid/${bidTextController.text.replaceAll(' ', '')}"))).body;
-      var decodedData = jsonDecode(accountData);
-      if (decodedData["isValid"] == false) {
-        _loading = false;
-        return setState(() {
-          _error = decodedData["reason"];
-        });
-      }
-
       Navigator.pop(context,
-          {"BID": bidTextController.text, "name": decodedData["data"]["name"], "platformId": _chosenValue});
-      _loading = false;
+          {"BID": bidTextController.text, "name": accountData["data"]["name"], "platformId": _chosenValue});
     }
 
     if (step == "steamLogin") return SteamLoginWebView();
@@ -139,7 +149,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                   underline: Container(), // Empty widget to remove underline
               ),
           ))
-          : Column(
+          : step == "enterBid"? Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -207,7 +217,34 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                       )),
                 ),
               ],
-          ),
+          ):  Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("We found this account:",style: kBodyText3.apply(color: kText80),),
+                  SizedBox(height: 10,),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Row(
+                            children: [
+                              const Text("Name: ",style: kBodyText3,),
+                              Text(accountData["data"]["name"].toString(), style: kBodyText3.apply(color: kPrimary))
+                            ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: Row(
+                            children: [
+                              const Text("Level: ",style: kBodyText3,),
+                              Text(accountData["data"]["level"].toString(), style: kBodyText3.apply(color: kPrimary))
+                            ],
+                    ),
+                  ),
+                  SizedBox(height: 10,),
+                  Text("Is it yours?",style: kBodyText2.apply(color: kPrimary),),
+                ],
+              ),
 
 
       actionsPadding: const EdgeInsets.symmetric(horizontal: 13),
@@ -224,17 +261,18 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                   style: kBodyText2.apply(color: kPrimary),
                 ),
               ),
-              if (step == "enterBid")
+              if (step == "enterBid" || step == "confirmAccount")
                 TextButton(
                   onPressed: () {
-                    createAccount();
+                    if(step == "enterBid") nextStep();
+                    if(step == "confirmAccount") createAccount();
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        "Finish",
+                        step == "confirmAccount"?"Yes":"Next",
                         style: kBodyText2.apply(color: kGreen),
                       ),
                       const SizedBox(
@@ -251,8 +289,38 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                     ],
                   ),
                 ),
+              if(step == "confirmAccount") TextButton(
+                onPressed: () {
+                  setState((){
+                    bidTextController.text = "";
+                    step = "enterBid";
+                    print("test");
+                  });
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "No",
+                      style: kBodyText2.apply(color: kRed),
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    const Padding(
+                      padding: EdgeInsets.only(bottom: 3.0),
+                      child: Icon(
+                        Icons.clear_outlined,
+                        color: kRed,
+                        size: 30,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
-          )
+        ),
       ],
 
       backgroundColor: kBackgroundVariant,
