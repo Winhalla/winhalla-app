@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         padding: const EdgeInsets.fromLTRB(19, 9, 19, 6),
                         child: Text(
                           user.value["user"]["goal"]["name"],
-                          style: kBodyText1.apply(color: kOrange),
+                          style: kBodyText1.apply(color: kEpic),
                         )),
                     Positioned(
                         left: 19,
@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         right: 19,
                         child: LinearProgressIndicator(
                             value:(user.value["user"]["coins"]/user.value["user"]["goal"]["cost"])+0.02,
-                            valueColor: const AlwaysStoppedAnimation(kOrange),
+                            valueColor: const AlwaysStoppedAnimation(kEpic),
                             backgroundColor: kBackgroundVariant,
                           )
                     )

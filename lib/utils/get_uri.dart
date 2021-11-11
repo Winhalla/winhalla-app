@@ -13,7 +13,7 @@ class CallApi {
   BuildContext context;
   CallApi({required this.authKey, required this.context});
 
-  Future get(String path,{bool showError = true}) async {
+  Future get(String path, {bool showError = true}) async {
     late http.Response result;
     try {
       result = await http
