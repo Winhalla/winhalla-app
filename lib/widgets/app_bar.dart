@@ -5,6 +5,7 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/user_class.dart';
+import 'package:winhalla_app/widgets/account_edit_warning.dart';
 import 'package:winhalla_app/widgets/popup_legal.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
 
@@ -94,11 +95,7 @@ class MyAppBar extends StatelessWidget {
                                       ),
                                       GestureDetector(
                                         onTap: (){
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (_)=>LoginPage(accounts: accounts,))
-
-                                          );
+                                          showDialog(builder:(_)=>AccountEditWarning(accounts), context: context);
                                           overlayEntry.remove();
                                         },
                                         behavior:HitTestBehavior.translucent,

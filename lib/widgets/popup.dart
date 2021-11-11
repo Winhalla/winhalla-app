@@ -211,11 +211,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
 
 
       actionsPadding: const EdgeInsets.symmetric(horizontal: 13),
-      actions: [
-        /*Row(
-          children: [],
-          mainAxisSize: MainAxisSize.max,
-        ),*/Row(
+      actions: [Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               if (step == "platformSelection")
@@ -257,8 +253,6 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                 ),
             ],
           )
-        
-        
       ],
 
       backgroundColor: kBackgroundVariant,

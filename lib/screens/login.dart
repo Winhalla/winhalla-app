@@ -58,7 +58,7 @@ class _AccountCreationState extends State<AccountCreation> {
   Map<String, dynamic>? gAccount;
   String? steamId;
   bool alreadyCreatedAccount = false;
-  String file = "file";
+  final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   List<Map<String, String>> items = [
     {'name': "Steam (PC)", "file": "steam"},
     {'name': "PS3/4/5", "file": "ps"},
@@ -67,6 +67,16 @@ class _AccountCreationState extends State<AccountCreation> {
     {"name": "Mobile", "file": 'phone'},
   ];
   String? _err;
+  String fileToName(String file){
+    switch (file){
+      case "steam": return "Steam (PC)";
+      case "ps": return "PS3/4/5";
+      case "xbox": return "Xbox One/Series";
+      case "switch": return "Nintendo Switch";
+      case "phone": return "Mobile";
+      default: return "Steam (PC)";
+    }
+  }
   @override
   Widget build(BuildContext context) {
     if(widget.accounts != null && alreadyCreatedAccount == false) {
@@ -81,10 +91,6 @@ class _AccountCreationState extends State<AccountCreation> {
         }
       }
       alreadyCreatedAccount = true;
-    }
-
-    if(accounts.isNotEmpty) {
-      file = accounts[0]["file"] == null ? "platformId" : "file";
     }
     return Padding(
       padding: const EdgeInsets.fromLTRB(32, 70, 32, 0),
@@ -104,11 +110,12 @@ class _AccountCreationState extends State<AccountCreation> {
           const SizedBox(
             height: 50,
           ),
-          ListView.builder(
-            itemCount: accounts.length,
+          AnimatedList(
+            key: listKey,
+            initialItemCount: accounts.length,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (BuildContext context, int index) {
+            itemBuilder: (BuildContext context, int index, Animation<double> animation) {
               return Container(
                 padding: const EdgeInsets.fromLTRB(25, 20, 25, 20),
                 margin: EdgeInsets.only(top: index == 0 ? 0 : 20),
@@ -127,7 +134,7 @@ class _AccountCreationState extends State<AccountCreation> {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 3.0),
                       child: Image.asset(
-                        "assets/images/icons/pink/${accounts[index][file]}Pink.png",
+                        "assets/images/icons/pink/${accounts[index]["platformId"]}Pink.png",
                         height: 30,
                       ),
                     ),
@@ -139,6 +146,26 @@ class _AccountCreationState extends State<AccountCreation> {
                         accounts[index]["name"],
                         style: kBodyText1.apply(color: kEpic),
                       ),
+                    ),
+                    GestureDetector(
+                        child: const Icon(Icons.clear_outlined, size: 40, color: kEpic,),
+                        onTap:(){
+                          var name = accounts[index]["name"];
+                          var fileName = accounts[index]["platformId"];
+                          setState(() {
+                            listKey.currentState?.removeItem(
+                                index, (_, animation) => animatedFakeContainer(
+                                context,
+                                index,
+                                animation,
+                                name,
+                                fileName
+                              ),
+                                duration: const Duration(milliseconds: 150));
+                            items.add({"file":accounts[index]["platformId"], "name":fileToName(accounts[index]["platformId"])});
+                            accounts.removeAt(index);
+                          });
+                        }
                     )
                   ],
                 ),
@@ -180,6 +207,9 @@ class _AccountCreationState extends State<AccountCreation> {
                     await showDialog(context: context, builder: (context) => PopupWidget(context, items));
                 if (result != null) {
                   setState(() {
+                    listKey.currentState?.insertItem(
+                        accounts.length,
+                    );
                     accounts.add(result);
                     if(result["steamId"] != null){
                       steamId = result["steamId"];
@@ -192,54 +222,91 @@ class _AccountCreationState extends State<AccountCreation> {
           const Expanded(
             child: Text(""),
           ),
-          if (accounts.isNotEmpty)
-            GestureDetector(
-              behavior: HitTestBehavior.translucent,
-              onTap: () async {
-                final authKey = await secureStorage.read(key: "authKey");
-                if (authKey == null) {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, "/login");
-                  return;
-                }
-                CallApi callApi = CallApi(authKey: authKey , context: context);
-                print(accounts);
-                var accountData = await callApi.post(
-                    alreadyCreatedAccount?"/auth/editBrawlhallaAccounts":'/auth/createAccount',
-                    jsonEncode(
-                        {
-                          "accounts": accounts
-                        },
+            Row(
+              mainAxisAlignment: alreadyCreatedAccount && accounts.isNotEmpty
+                  ? MainAxisAlignment.spaceBetween
+                  : MainAxisAlignment.end,
+              children: [
+                if(alreadyCreatedAccount) GestureDetector(
+                  onTap: (){
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                    margin: EdgeInsets.only(bottom: _err == null ? 50:10),
+                    decoration: BoxDecoration(
+                      color: kBackgroundVariant,
+                      borderRadius: BorderRadius.circular(16),
                     ),
-                    showError:false
-                );
-                if(accountData["successful"] == false) {
-                  setState(() {
-                    _err = accountData["data"];
-                  });
-                  return;
-                }
-                try{
-                  if (accountData["data"]["accountExists"] == true) {
-                    setState(() {
-                      _err =
-                      "You have already created an account using this google/apple account, please contact support at contact@winhalla.app if it was not you";
-                    });
-                    return;
-                  }
-                } catch(e){}
-                if (ModalRoute.of(context)?.settings.name == "/") {
-                  Navigator.pop(context, "/");
-                  Navigator.pushNamed(context, "/");
-                } else {
-                  Navigator.pushReplacementNamed(context, "/");
-                }
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(10,8,6,8),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 1.0),
+                            child: Text(
+                              "Cancel",
+                              style: kBodyText2.apply(color: kRed),
+                            ),
+                          ),
+                          const SizedBox(
+                            width: 6,
+                          ),
+                          const Icon(
+                            Icons.clear_outlined,
+                            color: kRed,
+                            size: 30,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                if (accounts.isNotEmpty) GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () async {
+                    final authKey = await secureStorage.read(key: "authKey");
+                    if (authKey == null) {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, "/login");
+                      return;
+                    }
+                    CallApi callApi = CallApi(authKey: authKey , context: context);
+                    var accountData = await callApi.post(
+                        alreadyCreatedAccount?"/auth/editBrawlhallaAccounts":'/auth/createAccount',
+                        jsonEncode(
+                          {
+                            "accounts": accounts
+                          },
+                        ),
+                        showError:false
+                    );
+                    if(accountData["successful"] == false) {
+                      setState(() {
+                        _err = accountData["data"];
+                      });
+                      return;
+                    }
+                    try{
+                      if (accountData["data"]["accountExists"] == true) {
+                        setState(() {
+                          _err =
+                          "You have already created an account using this google/apple account, please contact support at contact@winhalla.app if it was not you";
+                        });
+                        return;
+                      }
+                    } catch(e){}
+                    if (ModalRoute.of(context)?.settings.name == "/") {
+                      Navigator.pop(context, "/");
+                      Navigator.pushNamed(context, "/");
+                    } else {
+                      Navigator.pushReplacementNamed(context, "/");
+                    }
 
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Container(
+                  },
+                  child: Container(
                     padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                     margin: EdgeInsets.only(bottom: _err == null ? 50:10),
                     decoration: BoxDecoration(
@@ -255,7 +322,7 @@ class _AccountCreationState extends State<AccountCreation> {
                             Padding(
                               padding: const EdgeInsets.only(top: 1.0),
                               child: Text(
-                                "Finish",
+                                alreadyCreatedAccount ? "Save" : "Finish",
                                 style: kBodyText2.apply(color: kGreen),
                               ),
                             ),
@@ -274,8 +341,8 @@ class _AccountCreationState extends State<AccountCreation> {
                         ),
                       ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
             if(_err != null) Container(
               margin: const EdgeInsets.only(bottom: 40),
@@ -290,6 +357,53 @@ class _AccountCreationState extends State<AccountCreation> {
     );
   }
 }
+Widget animatedFakeContainer(item, int index, Animation<double> animation, String name, String file) =>
+    FadeTransition(
+      opacity: Tween(begin: 0.0, end: 1.0).animate(
+          CurvedAnimation(parent: animation, curve: Curves.easeOut)),
+      child: SizeTransition(
+        sizeFactor: Tween(
+          begin: 0.0,
+          end: 1.0,
+          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOut),
+        ),
+        child: Container(
+              padding: const EdgeInsets.fromLTRB(25, 20, 25, 20),
+              margin: EdgeInsets.only(top: index == 0 ? 0 : 20),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: kEpic,
+                  width: 1,
+                ),
+                color: kBackgroundVariant,
+                borderRadius: BorderRadius.circular(17),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 3.0),
+                    child: Image.asset(
+                      "assets/images/icons/pink/${file}Pink.png",
+                      height: 30,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 18,
+                  ),
+                  Expanded(
+                    child: Text(
+                      name,
+                      style: kBodyText1.apply(color: kEpic),
+                    ),
+                  ),
+                  const Icon(Icons.clear_outlined, size: 40, color: kEpic,),
+                ],
+              ),
+            ),
+      ),
+    );
 
 class GoogleAppleLogin extends StatefulWidget {
   const GoogleAppleLogin({Key? key}) : super(key: key);
