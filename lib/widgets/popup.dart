@@ -294,7 +294,6 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                   setState((){
                     bidTextController.text = "";
                     step = "enterBid";
-                    print("test");
                   });
                 },
                 child: Row(
