@@ -7,6 +7,8 @@ Widget AccountEditWarning(accounts){
       builder: (context) {
         return AlertDialog(
           elevation: 10,
+
+          titlePadding: const EdgeInsets.only(top: 26, left: 30),
           title: Padding(
             padding: const EdgeInsets.fromLTRB(4,0,4,0),
             child: Text(
@@ -14,13 +16,15 @@ Widget AccountEditWarning(accounts){
               style: kBodyText1.apply(color: kRed),
             ),
           ),
+
+          contentPadding: const EdgeInsets.fromLTRB(28, 16, 28, 16),
           content: Padding(
             padding: const EdgeInsets.fromLTRB(4,0,4,0),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                Text("Changing linked accounts will reset your quest's progression to zero, and change their goals.", style: kBodyText3,),
+                Text("Changing linked accounts will reset the progression of your quests, and change their goals.", style: kBodyText3,),
                 SizedBox(height: 15,),
                 Text(
                   "You cannot change linked accounts if you are in a match",
@@ -29,6 +33,8 @@ Widget AccountEditWarning(accounts){
               ],
             ),
           ),
+
+          actionsPadding: const EdgeInsets.symmetric(horizontal: 13, vertical: 3.25),
           actions: [
             GestureDetector(
               onTap: () {
@@ -43,19 +49,19 @@ Widget AccountEditWarning(accounts){
                   children: [
                     Text(
                       "Cancel",
-                      style: kBodyText3.apply(color: kText80),
+                      style: kBodyText3.apply(color: kGray),
                     ),
                   ],
                 ),
               ),
             ),
-            const SizedBox(width: 10,),
+            const SizedBox(width: 5,),
             GestureDetector(
               onTap: () {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_)=>LoginPage(accounts: accounts,)),
+                  MaterialPageRoute(builder: (_)=>  LoginPage(accounts: accounts,)),
                 );
               },
               behavior: HitTestBehavior.translucent,
