@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
-import 'package:winhalla_app/screens/login.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/account_edit_warning.dart';
-import 'package:winhalla_app/widgets/popup_legal.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
 
 class MyAppBar extends StatelessWidget {
@@ -18,15 +15,7 @@ class MyAppBar extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(21, 30, 38, 24),
       color: kBackground,
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-        GestureDetector(
-          child: Image.asset("assets/images/icons/3_dots.png",color: kText95,height: 35,),
-          onTap: (){
-            showDialog(
-              context: context,
-              builder: (BuildContext context)=>LegalInfoWidget()
-            );
-          },
-        ),
+        const Text(""),
         SizedBox(
               width: 55,
               height: 55,
@@ -77,9 +66,7 @@ class MyAppBar extends StatelessWidget {
                                         behavior:HitTestBehavior.translucent,
                                         onTap:() async {
                                           await secureStorage.write(key: "authKey", value: null);
-                                          Navigator.pop(context);
-                                          await Future.delayed(const Duration(milliseconds: 150));
-                                          Navigator.pushNamed(context, "/login");
+                                          Navigator.pushReplacementNamed(context, "/login");
                                           overlayEntry.remove();
                                         },
                                         child: Container(
@@ -130,8 +117,32 @@ class MyAppBar extends StatelessWidget {
                                             ],
                                           ),
                                         ),
+                                      ),
+                                      Container(
+                                        margin: const EdgeInsets.fromLTRB(30, 0, 0, 10),
+                                        width: 75,
+                                        height: 1,
+                                        color: kText80,
+                                      ),
+                                      GestureDetector(
+                                        behavior:HitTestBehavior.translucent,
+                                        onTap: () async {
+                                          Navigator.pushNamed(context,"/legal");
+                                          overlayEntry.remove();
+                                        },
+                                        child: Container(
+                                          margin: const EdgeInsets.fromLTRB(28,10,24,22),
+                                          child: Row(
+                                            children: [
+                                              const Icon(Icons.menu_book,color:kText80,size: 24,),
+                                              const SizedBox(width: 10,),
+                                              Text("Legal", style: kBodyText3.apply(fontFamily: "Bebas Neue", color: kText80),),
+                                            ],
+                                          ),
+                                        ),
                                       )
-                                    ],),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
