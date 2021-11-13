@@ -36,7 +36,7 @@ class SoloMatch extends StatelessWidget {
               return RefreshIndicator(
                 onRefresh: () async {
                   var user = context.read<User>();
-                  await context.read<FfaMatch>().refresh(context, user.callApi, showInfo: true);
+                  await context.read<FfaMatch>().refresh(context, user, showInfo: true);
                   return;
                 },
                 child: ListView(

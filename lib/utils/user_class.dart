@@ -15,18 +15,15 @@ class User extends ChangeNotifier {
   late CallApi callApi;
 
   void refresh() async {
-    var storageKey = await secureStorage.read(key: "authKey");
-    if (storageKey == null) return;
-    var accountData = await http.get(getUri("/account"), headers: {"authorization": storageKey});
-    this.value = jsonDecode(accountData.body);
+    var accountData = await callApi.get("/account");
+    if(accountData["successful"] == false) return;
+    value = accountData["data"];
     notifyListeners();
   }
 
-  Future<void> refreshQuests(BuildContext context, {bool showInfo: false}) async {
-    var storageKey = await secureStorage.read(key: "authKey");
-    if (storageKey == null) return;
+  Future<void> refreshQuests(BuildContext context, {bool showInfo = false}) async {
 
-    var accountData = await this.callApi.get("/solo");
+    var accountData = await callApi.get("/solo");
     if(accountData["successful"] == false) return;
     if(showInfo && accountData["data"]["newQuests"] == true){
       showInfoDropdown(context, kGreen, "New quests available",
@@ -40,7 +37,7 @@ class User extends ChangeNotifier {
     var accountDataDecoded = accountData["data"]["solo"];
     accountDataDecoded["dailyQuests"].addAll(accountDataDecoded["finished"]["daily"]);
     accountDataDecoded["weeklyQuests"].addAll(accountDataDecoded["finished"]["weekly"]);
-    this.quests = accountDataDecoded;
+    quests = accountDataDecoded;
     notifyListeners();
     if (showInfo && accountData["data"]["updatedPlatforms"] != null) {
       List<Widget> icons = [];
@@ -56,11 +53,13 @@ class User extends ChangeNotifier {
             ),
         );
       }
-      if(icons.length>0) showInfoDropdown(context, kPrimary, "Data updated",
+      if(icons.length>0) {
+        showInfoDropdown(context, kPrimary, "Data updated",
           timeShown: 4500,
           body: Row(
             children: icons,
           ));
+      }
     }
   }
 
@@ -127,15 +126,21 @@ class User extends ChangeNotifier {
   }
 
   void addCoins(coins) {
-    this.value["user"]["coins"] += coins;
+    value["user"]["coins"] += coins;
     notifyListeners();
   }
 
-  User(this.value,this.callApi);
 
   Future<void> collectQuest(int questId, String type, int price) async {
     var result = await callApi.post("/solo/collect?id=$questId&type=$type","{}");
     if(result["successful"] == false) return;
+    try{
+      if(value["user"]["dailyChallenge"]["challenges"].firstWhere((e)=>e["goal"] == "winhallaQuest",orElse:null) != null){
+        refresh();
+      }
+    } catch(e){}
+
+
     quests["${type}Quests"].removeWhere((e)=>e["id"] == questId);
     value["user"]["coins"] += price;
     notifyListeners();
@@ -148,12 +153,13 @@ class User extends ChangeNotifier {
     print(value["user"]["goal"]);
   }
 
+  User(this.value,this.callApi);
 }
 
 Future<dynamic> initUser(context) async {
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
-  CallApi caller = new CallApi(authKey: storageKey, context: context);
+  CallApi caller = CallApi(authKey: storageKey, context: context);
   var data = await caller.get("/account");
   if(data["successful"] == false) {
     return null;
