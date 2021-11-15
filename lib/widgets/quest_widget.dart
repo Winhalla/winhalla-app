@@ -70,7 +70,16 @@ class QuestWidget extends StatelessWidget {
                         color: kOrange
                       ),
                       padding: const EdgeInsets.fromLTRB(19, 7, 19, 7),
-                      child: Text("Watch",style: kBodyText4.apply(color: kBlack),),
+                      child: Row(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(bottom:1.5),
+                            child: Image.asset("assets/images/video_ad.png", width: 20,),
+                          ),
+                          const SizedBox(width: 7,),
+                          Text("Watch",style: kBodyText4.apply(color: kBlack),),
+                        ],
+                      ),
                     ),
                     adNotReadyChild: Container(
                       decoration: BoxDecoration(
