@@ -188,7 +188,7 @@ class ShopItem extends StatelessWidget {
             ),
           ],
         ),
-        Positioned(
+        /*Positioned(
           top: 10,
           right: 20,
           child: GestureDetector(
@@ -201,7 +201,7 @@ class ShopItem extends StatelessWidget {
               child: const Text("Set As Goal",style: kBodyText4,),
             ),
           ),
-        ),
+        ),*/
       ],
     );
   }

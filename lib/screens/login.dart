@@ -302,6 +302,7 @@ class _AccountCreationState extends State<AccountCreation> {
                         return;
                       }
                     } catch(e){}
+                    await secureStorage.write(key:'link',value: null);
                     if (ModalRoute.of(context)?.settings.name == "/") {
                       Navigator.pop(context, "/");
                       Navigator.pushNamed(context, "/");
