@@ -18,7 +18,6 @@ void main() async {
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  static const List<Widget> screenList = [MyHomePage(), Quests(), PlayPage(),Shop()];
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -80,13 +79,18 @@ class AppCore extends StatefulWidget {
 
 class _AppCoreState extends State<AppCore> {
   int _selectedIndex = 0;
-
+  List<Widget> screenList = [];
   switchPage(index) {
+    print("test");
     setState(() {
       _selectedIndex = index;
     });
   }
-
+  @override
+  void initState(){
+    screenList = [MyHomePage(switchPage: switchPage,), const Quests(), const PlayPage(),const Shop()];
+    super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,15 +103,15 @@ class _AppCoreState extends State<AppCore> {
         body: widget.isUserDataLoaded
             ? _selectedIndex == 2 ||
                     _selectedIndex ==
-                        1 // If the page is a solo match, do not make it scrollable by default, because it's already a ListView
+                        1 // If the page is a solo match or quest, do not make it scrollable by default, because it's already a ListView
                 ? Padding(
                     padding: const EdgeInsets.fromLTRB(32, 15, 32, 0),
-                    child: MyApp.screenList[_selectedIndex],
+                    child: screenList[_selectedIndex],
                   )
                 : SingleChildScrollView(
                     child: Padding(
                     padding: const EdgeInsets.fromLTRB(32, 15, 32, 0),
-                    child: MyApp.screenList[_selectedIndex],
+                    child: screenList[_selectedIndex],
                   ))
             : Padding(
                 padding: const EdgeInsets.only(left: 40,right: 40,bottom:40),

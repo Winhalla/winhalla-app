@@ -102,9 +102,18 @@ class SoloMatch extends StatelessWidget {
                                 BoxDecoration(color: kText60, borderRadius: BorderRadius.circular(12))),
                             child: Container(
                                 padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
-                                child: Text(
-                                  "Boost it",
-                                  style: kBodyText4.apply(color: kBackground),
+                                child: Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(bottom:2.0),
+                                      child: Image.asset("assets/images/video_ad.png", width: 20,),
+                                    ),
+                                    const SizedBox(width: 7,),
+                                    Text(
+                                      "Boost it",
+                                      style: kBodyText4.apply(color: kBackground),
+                                    ),
+                                  ],
                                 ),
                                 decoration:
                                     BoxDecoration(color: kGreen, borderRadius: BorderRadius.circular(12))),

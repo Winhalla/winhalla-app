@@ -2,13 +2,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
-import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/DailyChallenge/daily_challenge.dart';
-import 'package:winhalla_app/widgets/quest_widget.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key}) : super(key: key);
+  final switchPage;
+  const MyHomePage({Key? key, required this.switchPage}) : super(key: key);
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -20,9 +19,14 @@ class _MyHomePageState extends State<MyHomePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Row(children: [
+          const Padding(
+            padding: EdgeInsets.only(top: 4.0),
+            child: Text("Balance:",style: kHeadline1,),
+          ),
+          const SizedBox(width: 25,),
           GestureDetector(
-            onTap: () => setState(() {}),
+            onTap: () => widget.switchPage(3),
             child: Container(
                 decoration: BoxDecoration(
                     color: kBackgroundVariant,
@@ -51,42 +55,45 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 )),
           ),
-          GestureDetector(
-            onTap: () => setState(() {}),
-            child: Consumer<User>(builder: (context, user, _) {
-              if (user.value["user"]?["goal"]?["name"] == null) {
-                return Container();
+          /*GestureDetector(
+            onTap: () {
+              print("test");
+              widget.switchPage(3);
+            },
+            child: Consumer<User>(
+              builder: (context, user, _) {
+                if(user.value["user"]?["goal"]?["name"] == null) {
+                  return Container();
+                }
+                return Stack(
+                  children: [
+                    Container(
+                        decoration: BoxDecoration(
+                            color: kBackgroundVariant,
+                            borderRadius: BorderRadius.circular(11)),
+                        padding: const EdgeInsets.fromLTRB(19, 9, 19, 6),
+                        child: Text(
+                          user.value["user"]["goal"]["name"],
+                          style: kBodyText1.apply(color: kOrange),
+                        )),
+                    Positioned(
+                        left: 19,
+                        bottom: 0,
+                        right: 19,
+                        child: LinearProgressIndicator(
+                            value:(user.value["user"]["coins"]/user.value["user"]["goal"]["cost"])+0.02,
+                            valueColor: const AlwaysStoppedAnimation(kOrange),
+                            backgroundColor: kBackgroundVariant,
+                          )
+                    )
+                  ],
+                );
               }
-              return Stack(
-                children: [
-                  Container(
-                      decoration: BoxDecoration(
-                          color: kBackgroundVariant,
-                          borderRadius: BorderRadius.circular(11)),
-                      padding: const EdgeInsets.fromLTRB(19, 9, 19, 6),
-                      child: Text(
-                        user.value["user"]["goal"]["name"],
-                        style: kBodyText1.apply(color: kEpic),
-                      )),
-                  Positioned(
-                      left: 19,
-                      bottom: 0,
-                      right: 19,
-                      child: LinearProgressIndicator(
-                        minHeight: 2.25,
-                        value: (user.value["user"]["coins"] /
-                                user.value["user"]["goal"]["cost"]) +
-                            0.03,
-                        valueColor: const AlwaysStoppedAnimation(kEpic),
-                        backgroundColor: kBackgroundVariant,
-                      ))
-                ],
-              );
-            }),
-          )
+            ),
+          )*/
         ]),
         const SizedBox(
-          height: 65,
+          height: 50,
         ),
         const DailyChallenge()
       ],
