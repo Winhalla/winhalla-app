@@ -35,7 +35,6 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Row(
                   children: [
                     Consumer<User>(builder: (context, user, _) {
-                      user.value["user"]["coins"] = 26542;
                       return Text(
                         user.value["user"]["coins"].toString(),
                         style: kBodyText1.apply(color: kPrimary),

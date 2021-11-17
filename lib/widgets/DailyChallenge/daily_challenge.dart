@@ -72,6 +72,17 @@ class _DailyChallengeState extends State<DailyChallenge> {
                 Consumer<User>(
                   builder: (context, user, _) {
                     final List dailyChallengeQuests = user.value["user"]["dailyChallenge"]["challenges"];
+                    for (var quest in dailyChallengeQuests) {
+                      final textPainter = TextPainter(
+                        text: TextSpan(text: quest["name"] as String, style: kBodyText3),
+                        textDirection: TextDirection.ltr,
+                      );
+                      textPainter.layout(
+                          maxWidth:
+                          138); //maxWidth needs to be set to: DailyChallengeItem maxWidth - DailyChallengeItem X padding
+                      List lines = textPainter.computeLineMetrics();
+                      quest["lineNumber"] = lines.length;
+                    }
                     return CustomPaint(
                       painter: TreePainter(
                         dailyChallengeQuests: dailyChallengeQuests,
