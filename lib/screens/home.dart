@@ -31,23 +31,26 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: BoxDecoration(
                     color: kBackgroundVariant,
                     borderRadius: BorderRadius.circular(11)),
-                padding: const EdgeInsets.fromLTRB(20, 9, 20, 6),
+                padding: const EdgeInsets.fromLTRB(22, 9, 21.5, 6),
                 child: Row(
                   children: [
-                    Consumer<User>(
-                      builder: (context, user, _) {
-                        return Text(
-                          user.value["user"]["coins"].toString(),
-                          style: kBodyText1.apply(color: kPrimary),
-                        );
-                      }
+                    Consumer<User>(builder: (context, user, _) {
+                      user.value["user"]["coins"] = 26542;
+                      return Text(
+                        user.value["user"]["coins"].toString(),
+                        style: kBodyText1.apply(color: kPrimary),
+                      );
+                    }),
+                    const SizedBox(
+                      width: 6.25,
                     ),
-
-                    const SizedBox(width: 10,),
-
                     Padding(
                       padding: const EdgeInsets.only(bottom: 3),
-                      child: Image.asset("assets/images/coin.png",height: 30,width: 30,),
+                      child: Image.asset(
+                        "assets/images/coin.png",
+                        height: 30,
+                        width: 30,
+                      ),
                     ),
                   ],
                 )),

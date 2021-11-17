@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
-const String url = "http://192.168.1.33:4000";
+const String url = "http://192.168.1.27:4000";
 
 Uri getUri (String path,){
   return Uri.parse(url+path); // 192.168.1.33:4000
@@ -13,7 +13,7 @@ class CallApi {
   BuildContext context;
   CallApi({required this.authKey, required this.context});
 
-  Future get(String path,{bool showError = true}) async {
+  Future get(String path, {bool showError = true}) async {
     late http.Response result;
     try {
       result = await http
