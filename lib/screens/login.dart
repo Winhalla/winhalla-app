@@ -9,6 +9,7 @@ import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:winhalla_app/widgets/popup.dart';
+import 'package:winhalla_app/widgets/popup_link.dart';
 
 
 class LoginPage extends StatelessWidget {
@@ -279,7 +280,7 @@ class _AccountCreationState extends State<AccountCreation> {
                     var link = await getNonNullSSData("link");
                     CallApi callApi = CallApi(authKey: authKey , context: context);
                     var accountData = await callApi.post(
-                        alreadyCreatedAccount?"/auth/editBrawlhallaAccounts":'/auth/createAccount?linkId=$link',
+                        alreadyCreatedAccount?"/auth/editBrawlhallaAccounts" : '/auth/createAccount'+ (link == "no data" ? "" : '?linkId=$link'),
                         jsonEncode(
                           {
                             "accounts": accounts
@@ -302,6 +303,7 @@ class _AccountCreationState extends State<AccountCreation> {
                         return;
                       }
                     } catch(e){}
+
                     await secureStorage.write(key:'link',value: null);
                     if (ModalRoute.of(context)?.settings.name == "/") {
                       Navigator.pop(context, "/");
@@ -309,7 +311,12 @@ class _AccountCreationState extends State<AccountCreation> {
                     } else {
                       Navigator.pushReplacementNamed(context, "/");
                     }
-
+                    try{
+                      print(accountData["data"]["isLinkDetected"] == true);
+                      if(accountData["data"]["isLinkDetected"] == true){
+                        showDialog(context: context, builder:(_)=>LinkActivatedWidget());
+                      }
+                    } catch(e){}
                   },
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),

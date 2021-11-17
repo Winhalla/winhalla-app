@@ -5,6 +5,7 @@ import 'package:winhalla_app/screens/legal.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
+import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
@@ -81,7 +82,6 @@ class _AppCoreState extends State<AppCore> {
   int _selectedIndex = 0;
   List<Widget> screenList = [];
   switchPage(index) {
-    print("test");
     setState(() {
       _selectedIndex = index;
     });
