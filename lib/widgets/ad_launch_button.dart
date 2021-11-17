@@ -12,7 +12,7 @@ class AdButton extends StatefulWidget {
   final Widget child;
   final Widget adNotReadyChild;
   final String goal;
-  const AdButton({Key? key, required this.child,required this.goal, required this.adNotReadyChild}) : super(key: key);
+  const AdButton({Key? key, required this.child,required this.goal, this.adNotReadyChild= const SizedBox(height: 0,width: 0,)}) : super(key: key);
 
   @override
   _AdButtonState createState() => _AdButtonState();
@@ -24,7 +24,7 @@ class _AdButtonState extends State<AdButton> {
   bool isAdReady = false;
   late RewardedAd _rewardedAd;
   late User user;
-  late FfaMatch match;
+  FfaMatch? match;
 
   Future<void> _initGoogleMobileAds() async {
     if(!hasAlreadyInitAdmob){
@@ -52,7 +52,11 @@ class _AdButtonState extends State<AdButton> {
                 isAdReady = false;
               });
               Future.delayed(const Duration(milliseconds: 500), () async {
-                await match.refresh(context, user.callApi);
+                if(match != null) {
+                  await match?.refresh(context, user);
+                } else {
+                  user.refresh();
+                }
               });
             },
           );
@@ -70,7 +74,7 @@ class _AdButtonState extends State<AdButton> {
   @override
   void initState() {
     user = context.read<User>();
-    match = context.read<FfaMatch>();
+    if(widget.goal == "earnMoreSoloMatch") match = context.read<FfaMatch>();
     _initGoogleMobileAds();
     super.initState();
   }

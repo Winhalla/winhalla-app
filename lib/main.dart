@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:winhalla_app/screens/home.dart';
+import 'package:winhalla_app/screens/legal.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
@@ -31,7 +32,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       title: 'Winhalla',
       theme: ThemeData(fontFamily: "Bebas Neue"),
-
+      debugShowCheckedModeBanner: false,
       // Start the app with the "/" named route. In this case, the app starts
       // on the FirstScreen widget.
       initialRoute: '/',
@@ -62,6 +63,7 @@ class _MyAppState extends State<MyApp> {
                 }),
         ),
         '/login': (context) => LoginPage(),
+        '/legal': (context) => const LegalPage(),
       },
     );
   }

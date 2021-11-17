@@ -4,12 +4,15 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 
+import 'ad_launch_button.dart';
+
 class QuestWidget extends StatelessWidget {
   final String name;
   Color color;
   final int progress;
   final int goal;
   final int reward;
+  final bool showAdButton;
 
   QuestWidget({
     Key? key,
@@ -17,7 +20,8 @@ class QuestWidget extends StatelessWidget {
     required this.color,
     required this.progress,
     required this.goal,
-    required this.reward
+    required this.reward,
+    this.showAdButton = false
   }) : super(key: key);
 
   @override
@@ -50,11 +54,35 @@ class QuestWidget extends StatelessWidget {
                       : kBodyText2,
                 ),
               ),
-              const Padding(padding: EdgeInsets.only(top: 10)),
-                Text(
-                  !isQuestFinished ? "$progress/$goal" : "Click to collect",
-                  style: kBodyText4.apply(color: color),
-                )
+              const SizedBox(height: 10,),
+              Row(
+                children: [
+                  Text(
+                    !isQuestFinished ? "$progress/$goal" : "Click to collect",
+                    style: kBodyText4.apply(color: color),
+                  ),
+                  if(showAdButton) const SizedBox(width: 15,),
+                  if(showAdButton) AdButton(
+                    goal: 'dailyChallenge',
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(13),
+                        color: kOrange
+                      ),
+                      padding: const EdgeInsets.fromLTRB(19, 7, 19, 7),
+                      child: Text("Watch",style: kBodyText4.apply(color: kBlack),),
+                    ),
+                    adNotReadyChild: Container(
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          color: kText80
+                      ),
+                      padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                      child: Text("Loading...",style: kBodyText4.apply(color: kBlack),),
+                    ),
+                  )
+                ],
+              )
             ],
           ),
           Container(

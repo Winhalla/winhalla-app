@@ -22,7 +22,7 @@ class TreePainter extends CustomPainter {
     double degToRad(num deg) => deg * (pi / 180.0);
 
     double rectSize = 45;
-    double currentHeight = 138;
+    double currentHeight = 183;
     double currentWidth = size.width - 65;
 
     Path path = Path();

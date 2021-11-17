@@ -1,10 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-
+import 'package:provider/src/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/quest_widget.dart';
-
 import 'daily_challenge_item.dart';
 import 'tree_painter.dart';
 
@@ -18,48 +16,7 @@ class DailyChallenge extends StatefulWidget {
 class _DailyChallengeState extends State<DailyChallenge> {
   @override
   Widget build(BuildContext context) {
-    final List<Map<String, dynamic>> dailyChallengeQuests = [
-      {
-        "name": "Lorem",
-        "goal": 3,
-        "progress": 1,
-        "completed": true,
-        "active": false,
-        "reward": 20
-      },
-      {
-        "name": "Watch 1 ad or maybe not",
-        "goal": 1,
-        "progress": 0,
-        "completed": true,
-        "active": false,
-        "reward": 30
-      },
-      {
-        "name": "test",
-        "goal": 1,
-        "progress": 0,
-        "completed": false,
-        "active": true,
-        "reward": 4
-      },
-      {
-        "name": "test",
-        "goal": 1,
-        "progress": 0,
-        "completed": false,
-        "active": false,
-        "reward": 4
-      },
-      {
-        "name": "test mmmh",
-        "goal": 1,
-        "progress": 0,
-        "completed": false,
-        "active": false,
-        "reward": 4
-      },
-    ];
+    final List dailyChallengeQuests = context.read<User>().value["user"]["dailyChallenge"]["challenges"];
 
     for (var quest in dailyChallengeQuests) {
       final textPainter = TextPainter(
@@ -136,7 +93,10 @@ class _DailyChallengeState extends State<DailyChallenge> {
                                         name: quest["name"] ,
                                         color: kOrange,
                                         progress: quest["progress"],
-                                        goal: quest["goal"]))
+                                        goal: quest["goalNb"],
+                                        showAdButton: quest["goal"] == "ad"
+                                    ),
+                        )
                                 : Row(
                               mainAxisSize: MainAxisSize.max,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,

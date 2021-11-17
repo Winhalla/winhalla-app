@@ -24,8 +24,9 @@ class LoginPage extends StatelessWidget {
       // SteamLogin(),
       AccountCreation(accounts: accounts)
     ];
-
-    if(userData?["data"]?["steam"] != null) step = 1;
+    try{
+      if(userData?["data"]?["steam"] != null) step = 1;
+    } catch(e) {}
     if(accounts != null) step = 1;
 
 
