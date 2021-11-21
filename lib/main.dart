@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:winhalla_app/screens/home.dart';
-import 'package:winhalla_app/screens/legal.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
@@ -63,7 +62,6 @@ class _MyAppState extends State<MyApp> {
                 }),
         ),
         '/login': (context) => LoginPage(),
-        '/legal': (context) => const LegalPage(),
       },
     );
   }

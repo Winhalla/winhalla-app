@@ -1,4 +1,4 @@
-package winhalla.app.winhalla_app
+package com.winhalla.app
 
 import io.flutter.embedding.android.FlutterActivity
 

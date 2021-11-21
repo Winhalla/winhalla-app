@@ -801,7 +801,6 @@ class GoogleSignInApi {
   static Future<Map<String, dynamic>?> login() async {
     var test = await _googleSignIn.signIn();
     var ggAuth = await test?.authentication;
-
     return {"account": test, "auth": ggAuth};
   }
 
