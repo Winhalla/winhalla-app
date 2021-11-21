@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
-const String url = "http://192.168.1.33:4000";
+const String url = "https://api.winhalla.app";
 
 Uri getUri (String path,){
-  return Uri.parse(url+path); // 192.168.1.33:4000
+  return Uri.parse(url+path);
 }
 class CallApi {
   String authKey;
