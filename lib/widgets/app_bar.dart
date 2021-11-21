@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/screens/login.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/account_edit_warning.dart';
@@ -67,6 +68,7 @@ class MyAppBar extends StatelessWidget {
                                         behavior:HitTestBehavior.translucent,
                                         onTap:() async {
                                           await secureStorage.write(key: "authKey", value: null);
+                                          await GoogleSignInApi.logout();
                                           Navigator.pushReplacementNamed(context, "/login");
                                           overlayEntry.remove();
                                         },
