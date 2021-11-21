@@ -9,7 +9,7 @@ import 'package:winhalla_app/utils/steam.dart';
 
 Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
   final bidTextController = TextEditingController();
-  String _chosenValue = items[0]["file"] as String;
+  String _chosenValue = items[0]["platformId"] as String;
   String step = "platformSelection";
   bool _loading = false;
   String? _error;
@@ -103,16 +103,16 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                     Map<String, String> value,
                   ) {
                     return DropdownMenuItem<String>(
-                      value: value["file"],
+                      value: value["platformId"],
                       child: Container(
                         height: 52,
                         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                         decoration: BoxDecoration(
                             color: kBackground,
 
-                            borderRadius: value["file"] == items[0]["file"]
+                            borderRadius: value["platformId"] == items[0]["platformId"]
                                 ? const BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15))
-                                : value["file"] == items[items.length - 1]["file"]
+                                : value["platformId"] == items[items.length - 1]["platformId"]
                                     ? const BorderRadius.only(
                                         bottomLeft: Radius.circular(15), bottomRight: Radius.circular(15))
                                     : BorderRadius.circular(0)),
@@ -125,7 +125,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Image.asset(
-                                    "assets/images/icons/${value["file"]}.png",
+                                    "assets/images/icons/${value["platformId"]}.png",
                                     width: 25,
                                   ),
                                 ],
