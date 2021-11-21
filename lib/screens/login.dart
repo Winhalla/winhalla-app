@@ -64,11 +64,11 @@ class _AccountCreationState extends State<AccountCreation> {
   bool alreadyCreatedAccount = false;
   final GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
   List<Map<String, String>> items = [
-    {'name': "Steam (PC)", "file": "steam"},
-    {'name': "PS3/4/5", "file": "ps"},
-    {'name': "Xbox One/Series", "file": "xbox"},
-    {'name': "Nintendo Switch", "file": "switch"},
-    {"name": "Mobile", "file": 'phone'},
+    {'name': "Steam (PC)", "platformId": "steam"},
+    {'name': "PS3/4/5", "platformId": "ps"},
+    {'name': "Xbox One/Series", "platformId": "xbox"},
+    {'name': "Nintendo Switch", "platformId": "switch"},
+    {"name": "Mobile", "platformId": 'phone'},
   ];
   String? _err;
   String fileToName(String file){
@@ -89,7 +89,7 @@ class _AccountCreationState extends State<AccountCreation> {
         for (int ii = 0; ii < items.length; ii++) {
           var element = items[ii];
 
-          if(element["file"] == accounts[i]["platformId"]){
+          if(element["platformId"] == accounts[i]["platformId"]){
             items.removeAt(ii);
           }
         }
@@ -166,7 +166,7 @@ class _AccountCreationState extends State<AccountCreation> {
                                 fileName
                               ),
                                 duration: const Duration(milliseconds: 150));
-                            items.add({"file":accounts[index]["platformId"], "name":fileToName(accounts[index]["platformId"])});
+                            items.add({"platformId":accounts[index]["platformId"], "name":fileToName(accounts[index]["platformId"])});
                             accounts.removeAt(index);
                           });
                         }
@@ -218,6 +218,8 @@ class _AccountCreationState extends State<AccountCreation> {
                     if(result["steamId"] != null){
                       steamId = result["steamId"];
                     }
+                    print(result["platformId"]);
+                    print(items);
                     items.removeWhere((item) => item["platformId"] == result["platformId"]);
                   });
                 }
