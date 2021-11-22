@@ -490,7 +490,7 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
               ),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           const Expanded(child:Text("")),
           GestureDetector(
             onTap: () async {
