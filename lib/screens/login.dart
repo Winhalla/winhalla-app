@@ -432,10 +432,11 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(42.5, 120, 42.5, 0),
+      padding: const EdgeInsets.fromLTRB(42.5, 120, 42.5, 125),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
             "Welcome to",
@@ -489,9 +490,8 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
               ),
             ],
           ),
-          const SizedBox(
-            height: 150,
-          ),
+          SizedBox(height: 20),
+          const Expanded(child:Text("")),
           GestureDetector(
             onTap: () async {
               var temp = await GoogleSignInApi.login();
@@ -601,7 +601,7 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
               children: [
                 Expanded(child: Text("Error: " + (_err as String), style: kBodyText4.apply(color: kRed),))
               ],),
-          )
+          ),
         ],
       ),
     );
