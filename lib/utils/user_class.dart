@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -157,6 +158,7 @@ class User extends ChangeNotifier {
 }
 
 Future<dynamic> initUser(context) async {
+  await Firebase.initializeApp();
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
   CallApi caller = CallApi(authKey: storageKey, context: context);

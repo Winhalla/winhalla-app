@@ -39,13 +39,15 @@ dependencies:
   http: ^0.13.3
   flutter_webview_plugin: ^0.4.0
   steam_login: ^1.1.0
-  google_sign_in: ^5.1.0
+  google_sign_in: ^5.2.1 #"^4.5.1"
   rive: ^0.7.31
   google_mobile_ads: ^0.13.5
   share: ^2.0.4
   flutter_secure_storage: ^4.2.1
   url_launcher: ^6.0.15
-
+  firebase_auth: ^3.2.0
+  firebase_analytics: 9.0.0-dev.3
+  firebase_core: ^1.10.0
 
 dev_dependencies:
   flutter_test:

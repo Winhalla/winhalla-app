@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -806,7 +807,7 @@ class GoogleSignInApi {
     return {"account": test, "auth": ggAuth};
   }
 
-  static Future logout() => _googleSignIn.disconnect();
+  static Future logout() => _googleSignIn.signOut();
 }
 
 class LoginPageManager extends ChangeNotifier {
@@ -823,4 +824,21 @@ class LoginPageManager extends ChangeNotifier {
   }
 
   LoginPageManager(this.page);
+}
+
+Future<UserCredential> signInWithGoogle() async {
+  // Trigger the authentication flow
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+  // Obtain the auth details from the request
+  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+  // Create a new credential
+  final credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+  );
+
+  // Once signed in, return the UserCredential
+  return await FirebaseAuth.instance.signInWithCredential(credential);
 }
