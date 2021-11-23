@@ -22,25 +22,27 @@ class User extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> refreshQuests(BuildContext context, {bool showInfo = false}) async {
+  Future<bool> refreshQuests(BuildContext context, {bool showInfo = false}) async {
 
     var accountData = await callApi.get("/solo");
-    if(accountData["successful"] == false) return;
-    if(showInfo && accountData["data"]["newQuests"] == true){
-      showInfoDropdown(context, kGreen, "New quests available",
+    if(accountData["successful"] == false) return true;
+    if(accountData["data"]["newQuests"] == true){
+      if(showInfo) {
+        showInfoDropdown(context, kGreen, "New quests available",
         timeShown: 4500,
         /*body: Row(
           children: icons,
         ),*/
       );
-
+      }
+      return true;
     }
     var accountDataDecoded = accountData["data"]["solo"];
     accountDataDecoded["dailyQuests"].addAll(accountDataDecoded["finished"]["daily"]);
     accountDataDecoded["weeklyQuests"].addAll(accountDataDecoded["finished"]["weekly"]);
     quests = accountDataDecoded;
     notifyListeners();
-    if (showInfo && accountData["data"]["updatedPlatforms"] != null) {
+    if (accountData["data"]["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < accountData["data"]["updatedPlatforms"].length;i++){
         icons.add(
@@ -54,14 +56,16 @@ class User extends ChangeNotifier {
             ),
         );
       }
-      if(icons.length>0) {
+      if(icons.isNotEmpty && showInfo) {
         showInfoDropdown(context, kPrimary, "Data updated",
           timeShown: 4500,
           body: Row(
             children: icons,
           ));
       }
+      return true;
     }
+    return false;
   }
 
   Future<String> enterMatch() async {

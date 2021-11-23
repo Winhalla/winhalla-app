@@ -4,9 +4,11 @@ import 'package:flutter/widgets.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
+import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/timer_widget.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/ad_launch_button.dart';
+import 'package:winhalla_app/widgets/popup_no_refresh.dart';
 import 'package:winhalla_app/widgets/tip_painter.dart';
 
 class SoloMatch extends StatelessWidget {
@@ -36,7 +38,9 @@ class SoloMatch extends StatelessWidget {
               return RefreshIndicator(
                 onRefresh: () async {
                   var user = context.read<User>();
-                  await context.read<FfaMatch>().refresh(context, user, showInfo: true);
+                  bool hasNotChanged = await context.read<FfaMatch>().refresh(context, user, showInfo: true);
+                  print(hasNotChanged);
+                  if(hasNotChanged && await getNonNullSSData("hideNoRefreshMatch") != "true") showDialog(context: context, builder: (_)=>NoRefreshPopup("match"));
                   return;
                 },
                 child: ListView(
