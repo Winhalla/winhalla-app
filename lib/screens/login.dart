@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -432,10 +433,11 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(42.5, 120, 42.5, 0),
+      padding: const EdgeInsets.fromLTRB(42.5, 120, 42.5, 125),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
             "Welcome to",
@@ -489,9 +491,8 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
               ),
             ],
           ),
-          const SizedBox(
-            height: 150,
-          ),
+          const SizedBox(height: 20),
+          const Expanded(child:Text("")),
           GestureDetector(
             onTap: () async {
               var temp = await GoogleSignInApi.login();
@@ -601,7 +602,7 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
               children: [
                 Expanded(child: Text("Error: " + (_err as String), style: kBodyText4.apply(color: kRed),))
               ],),
-          )
+          ),
         ],
       ),
     );
@@ -806,7 +807,7 @@ class GoogleSignInApi {
     return {"account": test, "auth": ggAuth};
   }
 
-  static Future logout() => _googleSignIn.disconnect();
+  static Future logout() => _googleSignIn.signOut();
 }
 
 class LoginPageManager extends ChangeNotifier {
@@ -823,4 +824,21 @@ class LoginPageManager extends ChangeNotifier {
   }
 
   LoginPageManager(this.page);
+}
+
+Future<UserCredential> signInWithGoogle() async {
+  // Trigger the authentication flow
+  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+  // Obtain the auth details from the request
+  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+  // Create a new credential
+  final credential = GoogleAuthProvider.credential(
+    accessToken: googleAuth?.accessToken,
+    idToken: googleAuth?.idToken,
+  );
+
+  // Once signed in, return the UserCredential
+  return await FirebaseAuth.instance.signInWithCredential(credential);
 }

@@ -148,8 +148,8 @@ class ShopItem extends StatelessWidget {
                         topRight: Radius.circular(20),
                         topLeft: Radius.circular(20)),
                     image: DecorationImage(
-                        image: AssetImage(
-                            "assets/images/shopItems/${name.toLowerCase().replaceAll(" ", "-")}.jpg"),
+                        image: NetworkImage(
+                            apiUrl+"/assets/shopItems/${name.toLowerCase().replaceAll(" ", "-")}.jpg"),
                         fit: BoxFit.cover)),
                 child: Row(
                   mainAxisSize: MainAxisSize.max,

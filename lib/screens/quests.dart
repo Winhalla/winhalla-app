@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/timer_widget.dart';
 import 'package:winhalla_app/utils/user_class.dart';
+import 'package:winhalla_app/widgets/popup_no_refresh.dart';
 import 'package:winhalla_app/widgets/quest_widget.dart';
 
 class Quests extends StatelessWidget {
@@ -49,7 +52,8 @@ class Quests extends StatelessWidget {
         }
         return RefreshIndicator(
           onRefresh: () async {
-            await context.read<User>().refreshQuests(context,showInfo: true);
+            bool hasNotChanged = await context.read<User>().refreshQuests(context,showInfo: true);
+            if(hasNotChanged && await getNonNullSSData("hideNoRefreshQuests") != "true") showDialog(context: context, builder: (_)=>NoRefreshPopup("quests"));
           },
           child: ListView(
             padding: const EdgeInsets.only(bottom: 14),

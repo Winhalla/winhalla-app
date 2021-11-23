@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "715775621317",
+    "project_id": "winhalla-app",
+    "storage_bucket": "winhalla-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:715775621317:android:62902bf13c79eb2edcd8ac",
+        "android_client_info": {
+          "package_name": "com.winhalla.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "715775621317-1g2b7me3md1sbtcpq6u6sesld3js9t4j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.winhalla.app",
+            "certificate_hash": "5c699c355d3ba69cfde9a31dea6fea0ff47611b4"
+          }
+        },
+        {
+          "client_id": "715775621317-p8c156c3ivg9k1d18da1v3c4ie1d0man.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.winhalla.app",
+            "certificate_hash": "36b7abde9ec019eab8a5230bd47676b6753c1934"
+          }
+        },
+        {
+          "client_id": "715775621317-vduk8l4e55odvh58no2k6rk727e126v3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.winhalla.app",
+            "certificate_hash": "7b3aac38c57ad18c2d76cf98d6f019d913b7e082"
+          }
+        },
+        {
+          "client_id": "715775621317-kerqftjgeahtcuu9cigvfgk5dcu4ld0d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhg_JWWN5-QdGaWfhkW3Lm1cF2JGLH-jE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "715775621317-kerqftjgeahtcuu9cigvfgk5dcu4ld0d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
