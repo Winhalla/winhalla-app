@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
-const String url = "http://192.168.1.33:4000";
+const String apiUrl = "http://192.168.1.33:4000";
 
 Uri getUri (String path,){
-  return Uri.parse(url+path); // 192.168.1.33:4000
+  return Uri.parse(apiUrl+path); // 192.168.1.33:4000
 }
 class CallApi {
   String authKey;
@@ -16,8 +16,7 @@ class CallApi {
   Future get(String path, {bool showError = true}) async {
     late http.Response result;
     try {
-      result = await http
-          .get(Uri.parse(url + path), headers: {"authorization": authKey});
+      result = await http.get(Uri.parse(apiUrl + path), headers: {"authorization": authKey});
     } catch (e) {
       if (showError) {
         showInfoDropdown(
@@ -77,8 +76,7 @@ class CallApi {
   Future post(String path, body, {bool showError = true}) async {
     late http.Response result;
     try {
-      result = await http.post(
-          Uri.parse(url + path),
+      result = await http.post(Uri.parse(apiUrl + path),
           headers: {
             "authorization": authKey,
             "Content-Type": "application/json"
