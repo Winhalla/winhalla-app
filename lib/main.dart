@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:winhalla_app/screens/home.dart';
@@ -51,7 +52,7 @@ class _MyAppState extends State<MyApp> {
                   newData["callApi"] = null;
                   newData["user"] = res.data["data"]["user"];
                   newData["steam"] = res.data["data"]["steam"];
-
+                  FirebaseAnalytics.instance.logAppOpen();
                   // newData["data"] = null;
                   return ChangeNotifierProvider<User>(
                       create: (_) => User(newData,callApi),
@@ -79,10 +80,25 @@ class AppCore extends StatefulWidget {
 class _AppCoreState extends State<AppCore> {
   int _selectedIndex = 0;
   List<Widget> screenList = [];
-  switchPage(index) {
+  String indexToScreenName(int index){
+    switch (index) {
+      case 0:
+        return "Home";
+      case 1:
+        return "Quests";
+      case 2:
+        return "Play";
+      case 3:
+        return "Shop";
+      default:
+        return "Unknown page";
+    }
+  }
+  void switchPage(index) {
     setState(() {
       _selectedIndex = index;
     });
+    FirebaseAnalytics.instance.logScreenView(screenClass: "HomeClass",screenName: indexToScreenName(index));
   }
   @override
   void initState(){

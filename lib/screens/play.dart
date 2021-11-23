@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -20,23 +21,21 @@ class _PlayPageState extends State<PlayPage> {
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0, top: 10),
+              const Padding(
+                padding: EdgeInsets.only(left: 10.0, top: 10),
                 child: Text(
                   "Match History:",
                   style: kHeadline1,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 35,
               ),
               Consumer<User>(builder: (context, user, _) {
                 var alreadyTutorial;
                 try{
                   alreadyTutorial = user.value["user"]["lastGames"].firstWhere((e)=>e["wins"]=="tutorial");
-                } catch(e){
-
-                }
+                } catch(e){}
 
                 if (user.value["user"]["lastGames"].length < 4 && alreadyTutorial == null) {
                   user.value["user"]["lastGames"].add({
@@ -72,7 +71,7 @@ class _PlayPageState extends State<PlayPage> {
                                     "${match["coinsEarned"]}",
                                     style: kBodyText1.apply(color: kPrimary),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 6,
                                   ),
                                   Image.asset(
@@ -95,7 +94,7 @@ class _PlayPageState extends State<PlayPage> {
                       }),
                 );
               }),
-              SizedBox(
+              const SizedBox(
                 height: 40,
               ),
               Row(
@@ -105,9 +104,11 @@ class _PlayPageState extends State<PlayPage> {
                       onTap: () async {
                         var matchId = await context.read<User>().enterMatch();
                         if(matchId == "err") return;
+                        FirebaseAnalytics.instance.logScreenView(screenClass: "Ffa match",screenName: "Ffa match");
                         setState(() {
                           matchInProgressId = matchId;
                         });
+
                       },
                       child: Container(
                         margin: const EdgeInsets.fromLTRB(12, 10, 14, 75),
@@ -115,14 +116,14 @@ class _PlayPageState extends State<PlayPage> {
                         padding: const EdgeInsets.fromLTRB(12, 12, 25, 12),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
+                          children: const [
+                            Icon(
                               Icons.play_arrow_outlined,
                               color: kText,
                               size: 50,
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(top: 5.0),
+                              padding: EdgeInsets.only(top: 5.0),
                               child: Text(
                                 "Start a match",
                                 style: kBodyText1,
@@ -140,14 +141,5 @@ class _PlayPageState extends State<PlayPage> {
         :
         // Can't be null bc we check above. Null safety still there.
         SoloMatch(matchId: matchInProgressId as String);
-  }
-}
-
-class SoloMatchCreator extends StatelessWidget {
-  const SoloMatchCreator({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }

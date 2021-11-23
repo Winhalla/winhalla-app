@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -813,32 +814,26 @@ class GoogleSignInApi {
 class LoginPageManager extends ChangeNotifier {
   int page = 0;
 
-  void changePage(number) {
-    page = number;
-    notifyListeners();
-  }
-
   void next() {
+    FirebaseAnalytics.instance.logScreenView(screenClass: "Login",screenName: indexToScreenName(page));
     page++;
     notifyListeners();
   }
 
-  LoginPageManager(this.page);
+  LoginPageManager(this.page){
+    FirebaseAnalytics.instance.logScreenView(screenClass: "Login",screenName: indexToScreenName(page));
+  }
 }
 
-Future<UserCredential> signInWithGoogle() async {
-  // Trigger the authentication flow
-  final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-  // Obtain the auth details from the request
-  final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-
-  // Create a new credential
-  final credential = GoogleAuthProvider.credential(
-    accessToken: googleAuth?.accessToken,
-    idToken: googleAuth?.idToken,
-  );
-
-  // Once signed in, return the UserCredential
-  return await FirebaseAuth.instance.signInWithCredential(credential);
+String indexToScreenName(int index){
+  switch (index) {
+    case 0:
+      return "Google/Apple login";
+    case 1:
+      return "Enter Link";
+    case 2:
+      return "Create account";
+    default:
+      return "Unknown page";
+  }
 }
