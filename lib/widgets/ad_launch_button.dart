@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/src/provider.dart';
@@ -55,8 +56,20 @@ class _AdButtonState extends State<AdButton> {
                 if(match != null) {
                   await match?.refresh(context, user);
                 } else {
-                  user.refresh();
+                  await user.refresh();
+                  FirebaseAnalytics.instance.logEvent(
+                      name: "FinishDailyChallenge",
+                      parameters: {
+                        "type":"Ad"
+                      }
+                  );
                 }
+                await FirebaseAnalytics.instance.logEvent(
+                    name: "AdWatched",
+                    parameters:{
+                      "goal":widget.goal,
+                    }
+                );
               });
             },
           );

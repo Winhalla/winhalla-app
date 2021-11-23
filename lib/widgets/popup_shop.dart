@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -80,8 +81,15 @@ Widget PopupWidget(BuildContext context,String email,int itemId,{int? amount}) {
             else {
               var result = await http.post(getUri("/buy/$itemId?email=${emailTextController.text}"+(amount != null?"&number=$amount":"")),
                   headers: {"authorization": await getNonNullSSData("authKey")});
-              if(result.body == "OK") Navigator.pop(context,{"success":true});
-              else {
+              if(result.body == "OK") {
+                FirebaseAnalytics.instance.logEvent(
+                    name: "buyItem",
+                    parameters: {
+                      "item":itemId,
+                    }
+                );
+                Navigator.pop(context, {"success": true});
+              } else {
                 setState((){
                   _err = result.body;
                 });

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -29,14 +30,14 @@ class Shop extends StatelessWidget {
           Row(
             children: [
               const Padding(
-                padding: EdgeInsets.only(top: 2),
+                padding: EdgeInsets.only(top: 4),
                 child: Text(
                   "Balance:",
                   style: kHeadline1,
                 ),
               ),
               const SizedBox(
-                width: 20,
+                width: 25,
               ),
               Container(
                 decoration: BoxDecoration(
@@ -415,6 +416,13 @@ class Price extends StatelessWidget {
         var userInfo = context.read<User>().value["user"];
         try {
           if (userInfo["coins"] < int.parse(cost)) {
+            FirebaseAnalytics.instance.logEvent(
+                name: "ClickedShopItemPrice",
+                parameters: {
+                  "item":itemId,
+                  "enoughCoins":false
+                }
+            );
             showInfoDropdown(
               context,
               kRed,
@@ -432,6 +440,13 @@ class Price extends StatelessWidget {
         } on FormatException {
           return;
         }
+        FirebaseAnalytics.instance.logEvent(
+            name: "ClickedShopItemPrice",
+            parameters: {
+              "item":itemId,
+              "enoughCoins":true
+            }
+        );
         var result = await showDialog(
             context: context,
             builder: (context) => PopupWidget(

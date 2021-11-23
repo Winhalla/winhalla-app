@@ -1,5 +1,4 @@
-import 'dart:convert';
-
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -20,12 +19,24 @@ class FfaMatch extends ChangeNotifier {
     match["players"] = match["players"].where((e)=>e["steamId"]!= steamId).toList();
     value = match;
 
+    if (match["userPlayer"]["gamesPlayed"] >= 7) {
+      FirebaseAnalytics.instance.logEvent(
+        name: "FinishedSoloMatch",
+      );
+    }
+
     if(
     match["userPlayer"]["gamesPlayed"] >= 7
         &&
     user.value["user"]["dailyChallenge"]["challenges"].firstWhere((e)=>e["goal"] == "winhallaMatch",orElse:null) != null
     ){
       user.refresh();
+      FirebaseAnalytics.instance.logEvent(
+        name: "FinishDailyChallenge",
+        parameters: {
+          "type":"Match"
+        }
+      );
     }
 
     if(match["updatedPlatforms"] != null) {
@@ -51,8 +62,20 @@ class FfaMatch extends ChangeNotifier {
         );
       }
       notifyListeners();
+      FirebaseAnalytics.instance.logEvent(
+          name: "MatchRefresh",
+          parameters:{
+            "updated":true
+          }
+      );
       return false;
     }
+    FirebaseAnalytics.instance.logEvent(
+        name: "MatchRefresh",
+        parameters:{
+          "updated":false
+        }
+    );
     notifyListeners();
     return true;
   }
@@ -70,6 +93,9 @@ class FfaMatch extends ChangeNotifier {
     match["players"] = match["players"].where((e)=>e["steamId"]!= steamId).toList();
     value = match;
     areOtherPlayersShown = false;
+    FirebaseAnalytics.instance.logEvent(
+      name: "JoinSoloMatch",
+    );
     notifyListeners();
   }
 }

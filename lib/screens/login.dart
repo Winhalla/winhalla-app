@@ -220,8 +220,6 @@ class _AccountCreationState extends State<AccountCreation> {
                     if(result["steamId"] != null){
                       steamId = result["steamId"];
                     }
-                    print(result["platformId"]);
-                    print(items);
                     items.removeWhere((item) => item["platformId"] == result["platformId"]);
                   });
                 }
@@ -307,7 +305,7 @@ class _AccountCreationState extends State<AccountCreation> {
                         return;
                       }
                     } catch(e){}
-
+                    if(!alreadyCreatedAccount) FirebaseAnalytics.instance.logSignUp(signUpMethod: "N/A");
                     await secureStorage.write(key:'link',value: null);
                     if (ModalRoute.of(context)?.settings.name == "/") {
                       Navigator.pop(context, "/");
@@ -520,12 +518,18 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
               await secureStorage.write(key: "authKey", value: idToken);
               try{
                 var accountData = jsonDecode((await http.get(getUri("/account"), headers: {"authorization": idToken})).body)["user"];
+                FirebaseAnalytics.instance.setUserId(
+                    id: accountData["steam"]["id"]
+                );
                 if (accountData != null) {
                   Navigator.pop(context);
                   Navigator.pushNamed(context, "/");
                   return;
                 }
               } catch(e){}
+              FirebaseAnalytics.instance.logEvent(
+                name: "SignIn"
+              );
               var skipReferralLink = await http.get(getUri("/auth/checkDetectedLink"));
               if(skipReferralLink.body == "true") {
                 context.read<LoginPageManager>().next();

@@ -31,7 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 decoration: BoxDecoration(
                     color: kBackgroundVariant,
                     borderRadius: BorderRadius.circular(11)),
-                padding: const EdgeInsets.fromLTRB(22, 9, 21.5, 6),
+                padding: const EdgeInsets.fromLTRB(22, 9, 22, 6),
                 child: Row(
                   children: [
                     Consumer<User>(builder: (context, user, _) {
@@ -41,7 +41,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       );
                     }),
                     const SizedBox(
-                      width: 6.25,
+                      width: 10,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 3),

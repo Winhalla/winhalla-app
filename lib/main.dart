@@ -53,6 +53,9 @@ class _MyAppState extends State<MyApp> {
                   newData["user"] = res.data["data"]["user"];
                   newData["steam"] = res.data["data"]["steam"];
                   FirebaseAnalytics.instance.logAppOpen();
+                  FirebaseAnalytics.instance.setUserId(
+                      id: newData["steam"]["id"]
+                  );
                   // newData["data"] = null;
                   return ChangeNotifierProvider<User>(
                       create: (_) => User(newData,callApi),

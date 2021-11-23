@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -15,7 +16,7 @@ class User extends ChangeNotifier {
   int lastShopRefresh = 0;
   late CallApi callApi;
 
-  void refresh() async {
+  Future<void> refresh() async {
     var accountData = await callApi.get("/account");
     if(accountData["successful"] == false) return;
     value = accountData["data"];
@@ -27,15 +28,22 @@ class User extends ChangeNotifier {
     var accountData = await callApi.get("/solo");
     if(accountData["successful"] == false) return true;
     if(accountData["data"]["newQuests"] == true){
+
       if(showInfo) {
         showInfoDropdown(context, kGreen, "New quests available",
-        timeShown: 4500,
-        /*body: Row(
-          children: icons,
-        ),*/
-      );
+          timeShown: 4500,
+          /*body: Row(
+            children: icons,
+          ),*/
+        );
       }
-      return true;
+      FirebaseAnalytics.instance.logEvent(
+          name: "QuestsRefresh",
+          parameters:{
+            "updated":true
+          }
+      );
+      return false;
     }
     var accountDataDecoded = accountData["data"]["solo"];
     accountDataDecoded["dailyQuests"].addAll(accountDataDecoded["finished"]["daily"]);
@@ -63,9 +71,21 @@ class User extends ChangeNotifier {
             children: icons,
           ));
       }
-      return true;
+      FirebaseAnalytics.instance.logEvent(
+          name: "QuestsRefresh",
+          parameters:{
+            "updated":true
+          }
+      );
+      return false;
     }
-    return false;
+    FirebaseAnalytics.instance.logEvent(
+        name: "QuestsRefresh",
+        parameters:{
+          "updated":false
+        }
+    );
+    return true;
   }
 
   Future<String> enterMatch() async {
@@ -137,15 +157,24 @@ class User extends ChangeNotifier {
 
 
   Future<void> collectQuest(int questId, String type, int price) async {
+
     var result = await callApi.post("/solo/collect?id=$questId&type=$type","{}");
     if(result["successful"] == false) return;
     try{
       if(value["user"]["dailyChallenge"]["challenges"].firstWhere((e)=>e["goal"] == "winhallaQuest",orElse:null) != null){
         refresh();
+        FirebaseAnalytics.instance.logEvent(
+          name: "FinishDailyChallenge",
+          parameters: {
+            "type":"Quests"
+          }
+        );
       }
     } catch(e){}
 
-
+    FirebaseAnalytics.instance.logEvent(
+      name: "CollectQuest",
+    );
     quests["${type}Quests"].removeWhere((e)=>e["id"] == questId);
     value["user"]["coins"] += price;
     notifyListeners();
