@@ -1,12 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
-import 'package:winhalla_app/screens/login.dart';
+import 'package:winhalla_app/widgets/login/google_apple_login.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/launch_url.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
-import 'package:winhalla_app/widgets/tip_painter.dart';
-import 'package:share/share.dart';
 import 'package:http/http.dart' as http;
 
 Widget LegalInfoPopup(){
@@ -105,7 +103,7 @@ Widget LegalInfoPopup(){
                   child: Container(
                     decoration: BoxDecoration(borderRadius: BorderRadius.circular(15),color:kRed),
                     padding: const EdgeInsets.fromLTRB(22, 9, 22, 9),
-                    child: Text("Delete account",style: kBodyText4,),
+                    child: const Text("Delete account",style: kBodyText4,),
                   ),
                 )
               ],

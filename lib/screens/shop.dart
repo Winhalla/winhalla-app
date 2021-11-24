@@ -10,6 +10,7 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:http/http.dart' as http;
+import 'package:winhalla_app/widgets/coin.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
 import 'package:winhalla_app/widgets/popup_shop.dart';
 // This is bc we can't use context.read<User>() in the future field of FutureBuilder
@@ -39,33 +40,11 @@ class Shop extends StatelessWidget {
               const SizedBox(
                 width: 25,
               ),
-              Container(
-                decoration: BoxDecoration(
-                    color: kBackgroundVariant,
-                    borderRadius: BorderRadius.circular(12)),
-                padding: const EdgeInsets.fromLTRB(22, 9, 22, 6),
-                child: Row(
-                  children: [
-                    Consumer<User>(builder: (context, user, _) {
-                      return Text(
-                        user.value["user"]["coins"].toString(),
-                        style: kBodyText1.apply(color: kPrimary),
-                      );
-                    }),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 3),
-                      child: Image.asset(
-                        "assets/images/coin.png",
-                        height: 30,
-                        width: 30,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              Consumer<User>(
+                builder: (context, user, _) {
+                  return Coin(nb: user.value["user"]["coins"].toString(),);
+                }
+              )
             ],
           ),
           const SizedBox(
@@ -465,34 +444,14 @@ class Price extends StatelessWidget {
           context.read<User>().addCoins(-int.parse(cost));
         }
       },
-      child: Container(
-        decoration: BoxDecoration(
-            color: kPrimary, borderRadius: BorderRadius.circular(14)),
+      child: Coin(
+        nb:cost,
+        color:kText,
+        bgColor: kPrimary,
+        fontSize: 24,
+        borderRadius: 14,
         padding: const EdgeInsets.fromLTRB(16, 9, 16, 6),
-        child: Row(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(bottom: .80),
-              child: Text(
-                cost,
-                style: kBodyText2.apply(fontFamily: "Bebas neue"),
-              ),
-            ),
-            const SizedBox(
-              width: 8,
-            ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 2.5),
-              child: Image.asset(
-                "assets/images/coin.png",
-                color: kText,
-                height: 30,
-                width: 30,
-              ),
-            ),
-          ],
-        ),
-      ),
+      )
     );
   }
 }

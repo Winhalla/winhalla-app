@@ -183,7 +183,6 @@ Widget LinkInfoWidget(String linkId){
           ],
         ),
       ),
-
       backgroundColor: kBackgroundVariant,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),

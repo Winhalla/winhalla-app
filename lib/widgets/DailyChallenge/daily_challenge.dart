@@ -4,6 +4,7 @@ import 'package:provider/src/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/quest_widget.dart';
+import '../coin.dart';
 import 'daily_challenge_item.dart';
 import 'tree_painter.dart';
 
@@ -27,31 +28,19 @@ class _DailyChallengeState extends State<DailyChallenge> {
               style: kHeadline1,
             ),
             GestureDetector(
-                // ignore: avoid_returning_null_for_void
-                onTap: () => null,
-                child: Container(
-                  padding: const EdgeInsets.fromLTRB(15, 9, 15, 6),
-                  decoration:
-                      BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(11)),
-                  child: Row(
-                    children: [
-                      Consumer<User>(
-                        builder: (context, user, _) {
-                          return Text(
-                            user.value["user"]["dailyChallenge"]["challenges"].fold(0, (sum, item) => sum + item["reward"]).toString(),
-                            style: kBodyText1.apply(color: kOrange),
-                          );
-                        }
-                      ),
-                      const SizedBox(width: 10,),
-
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 3),
-                        child: Image.asset("assets/images/CoinOrange.png",height: 30,width: 30,),
-                      ),
-                    ],
-                  ),
-                ))
+              // ignore: avoid_returning_null_for_void
+              onTap: () => null,
+              child: Consumer<User>(
+                builder: (context, user, _) {
+                  return Coin(
+                    nb: user.value["user"]["dailyChallenge"]["challenges"]
+                        .fold(0, (sum, item) => sum + item["reward"]).toString(),
+                    color:kOrange,
+                    padding: const EdgeInsets.fromLTRB(16, 9, 16, 6),
+                  );
+                }
+              ),
+            ),
           ],
         ),
         Padding(
