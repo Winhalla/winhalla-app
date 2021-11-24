@@ -1,19 +1,49 @@
+import 'dart:async';
+import 'dart:isolate';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:rive/rive.dart';
 import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
-import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:provider/provider.dart';
 import 'config/themes/dark_theme.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
-void main() async {
-  runApp(const MyApp());
+void main() {
+  // Non-flutter errors catching
+  Isolate.current.addErrorListener(RawReceivePort((pair) async {
+    final List<dynamic> errorAndStacktrace = pair;
+    await FirebaseCrashlytics.instance.recordError(
+      errorAndStacktrace.first,
+      errorAndStacktrace.last,
+    );
+  }).sendPort);
+
+  // Flutter errors catching
+  runZonedGuarded<Future<void>>(() async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await Firebase.initializeApp();
+      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+
+      if (kDebugMode) {
+        // Force disable Crashlytics collection while doing every day development.
+        await FirebaseCrashlytics.instance
+            .setCrashlyticsCollectionEnabled(false);
+      } else {
+        await FirebaseCrashlytics.instance
+            .setCrashlyticsCollectionEnabled(true);
+      }
+
+      runApp(const MyApp());
+    }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack)
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -53,6 +83,7 @@ class _MyAppState extends State<MyApp> {
                   newData["user"] = res.data["data"]["user"];
                   newData["steam"] = res.data["data"]["steam"];
                   FirebaseAnalytics.instance.logAppOpen();
+                  FirebaseCrashlytics.instance.setUserIdentifier(newData["steam"]["id"]);
                   FirebaseAnalytics.instance.setUserId(
                       id: newData["steam"]["id"]
                   );

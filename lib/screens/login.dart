@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -516,8 +516,9 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
                 });
               }
               await secureStorage.write(key: "authKey", value: idToken);
-              try{
+              try {
                 var accountData = jsonDecode((await http.get(getUri("/account"), headers: {"authorization": idToken})).body)["user"];
+                FirebaseCrashlytics.instance.setUserIdentifier(accountData["steam"]["id"]);
                 FirebaseAnalytics.instance.setUserId(
                     id: accountData["steam"]["id"]
                 );
@@ -526,9 +527,12 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
                   Navigator.pushNamed(context, "/");
                   return;
                 }
-              } catch(e){}
+              } catch(e) {}
               FirebaseAnalytics.instance.logEvent(
-                name: "SignIn"
+                name: "SignIn",
+                parameters: {
+                  "method":"Google"
+                }
               );
               var skipReferralLink = await http.get(getUri("/auth/checkDetectedLink"));
               if(skipReferralLink.body == "true") {
