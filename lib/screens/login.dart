@@ -1,7 +1,4 @@
-import 'dart:async';
-
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -49,14 +46,14 @@ class LoginPageManager extends ChangeNotifier {
   int page = 0;
 
   void next() {
-    FirebaseAnalytics.instance.logScreenView(screenClass: "Login",screenName: indexToScreenName(page));
+    FirebaseAnalytics.instance.logScreenView(screenClass: indexToScreenName(page));
     FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(page));
     page++;
     notifyListeners();
   }
 
   LoginPageManager(this.page){
-    FirebaseAnalytics.instance.logScreenView(screenClass: "Login",screenName: indexToScreenName(page));
+    FirebaseAnalytics.instance.logScreenView(screenClass: indexToScreenName(page));
     FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(page));
   }
 }

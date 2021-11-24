@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
@@ -105,9 +107,20 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
                   _err = e.toString();
                 });
               }
+
               await secureStorage.write(key: "authKey", value: idToken);
               try{
                 var accountData = jsonDecode((await http.get(getUri("/account"), headers: {"authorization": idToken})).body)["user"];
+                FirebaseAnalytics.instance.logEvent(
+                  name: "SignIn",
+                  parameters: {
+                    "method":"Google"
+                  }
+                );
+                FirebaseCrashlytics.instance.setUserIdentifier(accountData["steam"]["id"]);
+                FirebaseAnalytics.instance.setUserId(
+                    id: accountData["steam"]["id"]
+                );
                 if (accountData != null) {
                   Navigator.pop(context);
                   Navigator.pushNamed(context, "/");

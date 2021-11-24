@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
@@ -260,7 +262,10 @@ class _AccountCreationState extends State<AccountCreation> {
                       return;
                     }
                   } catch(e){}
-
+                  FirebaseCrashlytics.instance.setUserIdentifier(accountData["steam"]["id"]);
+                  FirebaseAnalytics.instance.setUserId(
+                      id: accountData["steam"]["id"]
+                  );
                   await secureStorage.write(key:'link',value: null);
                   if (ModalRoute.of(context)?.settings.name == "/") {
                     Navigator.pop(context, "/");
