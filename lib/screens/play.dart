@@ -105,6 +105,7 @@ class _PlayPageState extends State<PlayPage> {
                         var matchId = await context.read<User>().enterMatch();
                         if(matchId == "err") return;
                         FirebaseAnalytics.instance.logScreenView(screenClass: "Ffa match",screenName: "Ffa match");
+                        FirebaseAnalytics.instance.setCurrentScreen(screenName: "Ffa match");
                         setState(() {
                           matchInProgressId = matchId;
                         });

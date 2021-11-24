@@ -102,6 +102,7 @@ class _AppCoreState extends State<AppCore> {
       _selectedIndex = index;
     });
     FirebaseAnalytics.instance.logScreenView(screenClass: "HomeClass",screenName: indexToScreenName(index));
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(index));
   }
   @override
   void initState(){
