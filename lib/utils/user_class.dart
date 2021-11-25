@@ -163,6 +163,7 @@ class User extends ChangeNotifier {
 
 Future<dynamic> initUser(context) async {
   await Firebase.initializeApp();
+
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
   CallApi caller = CallApi(authKey: storageKey, context: context);
@@ -170,5 +171,19 @@ Future<dynamic> initUser(context) async {
   if(data["successful"] == false) {
     return null;
   }
-  return {"data": data["data"], "authKey": storageKey,"callApi":caller};
+
+  dynamic tutorialStep = secureStorage.read(key:"tutorialStep");
+  dynamic tutorialFinished = getNonNullSSData("tutorialFinished");
+  tutorialStep = await tutorialStep;
+  tutorialFinished = await tutorialFinished;
+
+  return {
+    "data": data["data"],
+    "authKey": storageKey,
+    "callApi":caller,
+    "tutorial": {
+      "needed": tutorialFinished != "true",
+      "tutorialStep": tutorialStep == null ? 0 : tutorialStep
+    }
+  };
 }

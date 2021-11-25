@@ -51,6 +51,7 @@ class _MyAppState extends State<MyApp> {
                   newData["callApi"] = null;
                   newData["user"] = res.data["data"]["user"];
                   newData["steam"] = res.data["data"]["steam"];
+                  newData["tutorial"] = res.data["data"]["tutorial"];
 
                   // newData["data"] = null;
                   return ChangeNotifierProvider<User>(
