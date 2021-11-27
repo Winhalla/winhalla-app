@@ -111,6 +111,11 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
               await secureStorage.write(key: "authKey", value: idToken);
               try{
                 var accountData = jsonDecode((await http.get(getUri("/account"), headers: {"authorization": idToken})).body)["user"];
+                if (accountData != null) {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, "/");
+                  return;
+                }
                 FirebaseAnalytics.instance.logEvent(
                   name: "SignIn",
                   parameters: {
@@ -121,11 +126,6 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
                 FirebaseAnalytics.instance.setUserId(
                     id: accountData["steam"]["id"]
                 );
-                if (accountData != null) {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, "/");
-                  return;
-                }
               } catch(e){}
               var skipReferralLink = await http.get(getUri("/auth/checkDetectedLink"));
               if(skipReferralLink.body == "true") {
