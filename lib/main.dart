@@ -82,6 +82,8 @@ class _MyAppState extends State<MyApp> {
                   newData["callApi"] = null;
                   newData["user"] = res.data["data"]["user"];
                   newData["steam"] = res.data["data"]["steam"];
+                  newData["tutorial"] = res.data["data"]["tutorial"];
+
                   FirebaseAnalytics.instance.logAppOpen();
                   FirebaseCrashlytics.instance.setUserIdentifier(newData["steam"]["id"]);
                   FirebaseAnalytics.instance.setUserId(

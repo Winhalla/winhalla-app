@@ -39,7 +39,6 @@ class SoloMatch extends StatelessWidget {
                 onRefresh: () async {
                   var user = context.read<User>();
                   bool hasNotChanged = await context.read<FfaMatch>().refresh(context, user, showInfo: true);
-                  print(hasNotChanged);
                   if(hasNotChanged && await getNonNullSSData("hideNoRefreshMatch") != "true") showDialog(context: context, builder: (_)=>NoRefreshPopup("match"));
                   return;
                 },
@@ -156,7 +155,7 @@ class SoloMatch extends StatelessWidget {
                             width: 5,
                           ),
                           const Text(
-                            "players in this match...",
+                            "other players in this match...",
                             style: kBodyText3,
                           ),
                           const SizedBox(
@@ -181,16 +180,15 @@ class SoloMatch extends StatelessWidget {
                           padding: const EdgeInsets.only(top: 50),
                           child: ListView.builder(
                             itemBuilder: (context, int index) {
-                              if (index.isOdd) {
-                                return const SizedBox(height: 39);
-                              } //Spacing between each player card
-
                               final player = match.value["players"][index];
-                              return PlayerWidget(
-                                isUser: false,
-                                avatarUrl: player["avatarURL"],
-                                games: player["gamesPlayed"],
-                                name: player["username"],
+                              return Padding(
+                                padding: EdgeInsets.only(top:index == 0?0:22.0),
+                                child: PlayerWidget(
+                                  isUser: false,
+                                  avatarUrl: player["avatarURL"],
+                                  games: player["gamesPlayed"],
+                                  name: player["username"],
+                                ),
                               );
                             },
                             itemCount: match.value["players"].length,

@@ -28,7 +28,7 @@ class FfaMatch extends ChangeNotifier {
     if(
     match["userPlayer"]["gamesPlayed"] >= 7
         &&
-    user.value["user"]["dailyChallenge"]["challenges"].firstWhere((e)=>e["goal"] == "winhallaMatch",orElse:null) != null
+    user.value["user"]["dailyChallenge"]["challenges"].firstWhere((e)=>e["goal"] == "winhallaMatch",orElse:()=>null) != null
     ){
       user.refresh();
       FirebaseAnalytics.instance.logEvent(

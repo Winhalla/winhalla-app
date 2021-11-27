@@ -157,7 +157,6 @@ class User extends ChangeNotifier {
 
 
   Future<void> collectQuest(int questId, String type, int price) async {
-
     var result = await callApi.post("/solo/collect?id=$questId&type=$type","{}");
     if(result["successful"] == false) return;
     try{
@@ -198,5 +197,19 @@ Future<dynamic> initUser(context) async {
   if(data["successful"] == false) {
     return null;
   }
-  return {"data": data["data"], "authKey": storageKey,"callApi":caller};
+
+  dynamic tutorialStep = secureStorage.read(key:"tutorialStep");
+  dynamic tutorialFinished = getNonNullSSData("tutorialFinished");
+  tutorialStep = await tutorialStep;
+  tutorialFinished = await tutorialFinished;
+
+  return {
+    "data": data["data"],
+    "authKey": storageKey,
+    "callApi":caller,
+    "tutorial": {
+      "needed": tutorialFinished != "true",
+      "tutorialStep": tutorialStep == null ? 0 : tutorialStep
+    }
+  };
 }
