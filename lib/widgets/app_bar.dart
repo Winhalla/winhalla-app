@@ -10,15 +10,67 @@ import 'package:winhalla_app/widgets/popup_link.dart';
 
 class MyAppBar extends StatelessWidget {
   final bool isUserDataLoaded;
-  const MyAppBar(this.isUserDataLoaded);
+  final int currentPage;
+
+  const MyAppBar(this.isUserDataLoaded, this.currentPage);
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(21, 30, 38, 24),
+      padding: const EdgeInsets.fromLTRB(30, 30, 38, 24),
       color: kBackground,
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-        const Text(""),
-        SizedBox(
+      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <
+          Widget> [
+            if (currentPage == 2) 
+              Consumer<User>(builder: (context, user, _) {
+
+                if (user.inGame == null) return const Text("");
+                if (user.inGame['isFinished'] == true) {
+                  return GestureDetector(
+                    behavior: HitTestBehavior.translucent,
+                    onTap: () {
+                      user.exitMatch();
+                      user.enterMatch();
+                    },
+                    child: Row(
+                      children: const <Widget>[
+                        Icon(
+                          Icons.open_in_new_rounded,
+                          size: 30,
+                          color: kGreen,
+                        ),
+                        SizedBox(width: 6),
+                        Text(
+                          'New match',
+                          style: kBodyText3,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return GestureDetector(
+                  behavior: HitTestBehavior.translucent,
+                  onTap: () {
+                    user.exitMatch();
+                  },
+                  child: Row(
+                    children: const <Widget>[
+                      Icon(
+                        Icons.exit_to_app_rounded,
+                        size: 30,
+                        color: kPrimary,
+                      ),
+                      SizedBox(width: 6),
+                      Text(
+                        'Exit',
+                        style: kBodyText3,
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            Text(""),
+            SizedBox(
               width: 55,
               height: 55,
               child: ClipRRect(
@@ -37,109 +89,163 @@ class MyAppBar extends StatelessWidget {
                             children: [
                               Positioned.fill(
                                   child: GestureDetector(
-                                    onTapDown:(_){
-                                      overlayEntry.remove();
-                                    },
-                                    child: Container(
-                                      color: Colors.transparent,
-                                    ),
-                                  )
-                              ),
+                                onTapDown: (_) {
+                                  overlayEntry.remove();
+                                },
+                                child: Container(
+                                  color: Colors.transparent,
+                                ),
+                              )),
                               Positioned(
-                                top:125,
-                                right:20,
+                                top: 125,
+                                right: 20,
                                 child: Container(
                                   decoration: BoxDecoration(
                                     color: kBackgroundVariant,
                                     borderRadius: BorderRadius.circular(20),
-                                    boxShadow:[
+                                    boxShadow: [
                                       BoxShadow(
-                                        color: Colors.black.withOpacity(0.8), //color of shadow
+                                        color: Colors.black
+                                            .withOpacity(0.8), //color of shadow
                                         spreadRadius: 5, //spread radius
                                         blurRadius: 8, // blur radius
                                       ),
                                     ],
                                   ),
-                                  child:Column(
+                                  child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       GestureDetector(
-                                        behavior:HitTestBehavior.translucent,
-                                        onTap:() async {
-                                          await secureStorage.write(key: "authKey", value: null);
+                                        behavior: HitTestBehavior.translucent,
+                                        onTap: () async {
+                                          await secureStorage.write(
+                                              key: "authKey", value: null);
                                           await GoogleSignInApi.logout();
-                                          Navigator.pushReplacementNamed(context, "/login");
+                                          Navigator.pushReplacementNamed(
+                                              context, "/login");
                                           overlayEntry.remove();
                                         },
                                         child: Container(
-                                          margin: const EdgeInsets.fromLTRB(24,19,24,0),
+                                          margin: const EdgeInsets.fromLTRB(
+                                              24, 19, 24, 0),
                                           child: Row(
                                             children: [
-                                              const Icon(Icons.logout,color:kRed,size: 30,),
-                                              const SizedBox(width: 10,),
-                                              Text("Logout",style: kBodyText2.apply(fontFamily: "Bebas Neue"),),
+                                              const Icon(
+                                                Icons.logout,
+                                                color: kRed,
+                                                size: 30,
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                "Logout",
+                                                style: kBodyText2.apply(
+                                                    fontFamily: "Bebas Neue"),
+                                              ),
                                             ],
                                           ),
                                         ),
                                       ),
                                       GestureDetector(
-                                        onTap: (){
-                                          showDialog(builder:(_)=>AccountEditWarning(accounts), context: context);
+                                        onTap: () {
+                                          showDialog(
+                                              builder: (_) =>
+                                                  AccountEditWarning(accounts),
+                                              context: context);
                                           overlayEntry.remove();
                                         },
-                                        behavior:HitTestBehavior.translucent,
+                                        behavior: HitTestBehavior.translucent,
                                         child: Container(
-                                          margin: const EdgeInsets.fromLTRB(24,15,24,15),
+                                          margin: const EdgeInsets.fromLTRB(
+                                              24, 15, 24, 15),
                                           child: Row(
                                             children: [
-                                              const Icon(Icons.add_circle_outline,color:kPrimary,size: 30,),
-                                              const SizedBox(width: 10,),
-                                              Text("Add Account",style: kBodyText2.apply(fontFamily: "Bebas Neue"),),
+                                              const Icon(
+                                                Icons.add_circle_outline,
+                                                color: kPrimary,
+                                                size: 30,
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                "Add Account",
+                                                style: kBodyText2.apply(
+                                                    fontFamily: "Bebas Neue"),
+                                              ),
                                             ],
                                           ),
                                         ),
                                       ),
                                       GestureDetector(
-                                        behavior:HitTestBehavior.translucent,
+                                        behavior: HitTestBehavior.translucent,
                                         onTap: () async {
                                           showDialog(
                                               context: context,
-                                              builder: (BuildContext context)=>LinkInfoWidget(linkId)
-                                          );
-                                          await Future.delayed(const Duration(milliseconds: 100));
+                                              builder: (BuildContext context) =>
+                                                  LinkInfoWidget(linkId));
+                                          await Future.delayed(
+                                              const Duration(milliseconds: 100));
                                           overlayEntry.remove();
                                         },
                                         child: Container(
-                                          margin: const EdgeInsets.fromLTRB(24,0,24,19),
+                                          margin: const EdgeInsets.fromLTRB(
+                                              24, 0, 24, 19),
                                           child: Row(
                                             children: [
-                                              const Icon(Icons.share,color:kOrange,size: 30,),
-                                              const SizedBox(width: 10,),
-                                              Text("Referral link",style: kBodyText2.apply(fontFamily: "Bebas Neue"),),
+                                              const Icon(
+                                                Icons.share,
+                                                color: kOrange,
+                                                size: 30,
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                "Referral link",
+                                                style: kBodyText2.apply(
+                                                    fontFamily: "Bebas Neue"),
+                                              ),
                                             ],
                                           ),
                                         ),
                                       ),
                                       Container(
-                                        margin: const EdgeInsets.fromLTRB(30, 0, 0, 10),
+                                        margin:
+                                            const EdgeInsets.fromLTRB(30, 0, 0, 10),
                                         width: 75,
                                         height: 1,
                                         color: kText80,
                                       ),
                                       GestureDetector(
-                                        behavior:HitTestBehavior.translucent,
+                                        behavior: HitTestBehavior.translucent,
                                         onTap: () async {
-                                          showDialog(context: context, builder: (_)=>LegalInfoPopup());
+                                          showDialog(
+                                              context: context,
+                                              builder: (_) => LegalInfoPopup());
                                           overlayEntry.remove();
                                         },
                                         child: Container(
-                                          margin: const EdgeInsets.fromLTRB(28,10,24,22),
+                                          margin: const EdgeInsets.fromLTRB(
+                                              28, 10, 24, 22),
                                           child: Row(
                                             children: [
-                                              const Icon(Icons.menu_book,color:kText80,size: 24,),
-                                              const SizedBox(width: 10,),
-                                              Text("Legal", style: kBodyText3.apply(fontFamily: "Bebas Neue", color: kText80),),
+                                              const Icon(
+                                                Icons.menu_book,
+                                                color: kText80,
+                                                size: 24,
+                                              ),
+                                              const SizedBox(
+                                                width: 10,
+                                              ),
+                                              Text(
+                                                "Legal",
+                                                style: kBodyText3.apply(
+                                                    fontFamily: "Bebas Neue",
+                                                    color: kText80),
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -153,10 +259,7 @@ class MyAppBar extends StatelessWidget {
                         );
                       },
                     );
-                    Overlay.of(context)?.insert(
-                        overlayEntry
-                    );
-
+                    Overlay.of(context)?.insert(overlayEntry);
                   },
                   child: isUserDataLoaded
                       ? Consumer<User>(builder: (context, user, _) {
@@ -175,8 +278,9 @@ class MyAppBar extends StatelessWidget {
                         ),
                 ),
               ),
-            )
-          ]),
+            ),
+        ]
+      ),
     );
   }
 }

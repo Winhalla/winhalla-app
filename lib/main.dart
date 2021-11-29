@@ -18,14 +18,11 @@ void main() async {
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
-
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -37,31 +34,53 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/',
       routes: {
         '/': (context) => SafeArea(
-            child: FutureBuilder(
-                future: initUser(context),
-                builder: (context, AsyncSnapshot<dynamic> res) {
-                  if (!res.hasData) return const AppCore(isUserDataLoaded: false);
-                  if (res.data == "no data" || res.data["data"] == "" || res.data["data"] == null) {
-                    return LoginPage(userData:res.data);
-                  }
-                  if(res.data["data"]["user"] == null) return LoginPage(userData: res.data);
-                  // Do not edit res.data directly otherwise it calls the build function again for some reason
-                  var newData = res.data as Map<String,dynamic>;
-                  var callApi = res.data["callApi"];
-                  newData["callApi"] = null;
-                  newData["user"] = res.data["data"]["user"];
-                  newData["steam"] = res.data["data"]["steam"];
-                  newData["tutorial"] = res.data["data"]["tutorial"];
+              child: FutureBuilder(
+                  future: initUser(context),
+                  builder: (context, AsyncSnapshot<dynamic> res) {
+                    if (!res.hasData) {
+                      return const AppCore(isUserDataLoaded: false);
+                    }
 
-                  // newData["data"] = null;
-                  return ChangeNotifierProvider<User>(
-                      create: (_) => User(newData,callApi),
+                    if (res.data == "no data" ||
+                        res.data["data"] == "" ||
+                        res.data["data"] == null) {
+                      return LoginPage(userData: res.data);
+                    }
+
+                    if (res.data["data"]["user"] == null) {
+                      return LoginPage(userData: res.data);
+                    }
+
+                    // Do not edit res.data directly otherwise it calls the build function again for some reason
+                    var newData = res.data as Map<String, dynamic>;
+                    var callApi = res.data["callApi"];
+
+                    newData["callApi"] = null;
+                    newData["user"] = res.data["data"]["user"];
+                    newData["steam"] = res.data["data"]["steam"];
+                    newData["tutorial"] = res.data["data"]["tutorial"];
+
+                    var inGameData = newData["user"]["inGame"];
+                    var currentMatch = inGameData
+                        .where((g) => g["isFinished"] == false)
+                        .toList();
+
+                    var inGame = null;
+                    if (currentMatch.length > 0) {
+                      inGame = {
+                        'id': currentMatch[0]["id"],
+                        'joinDate': currentMatch[0]["joinDate"]
+                      };
+                    }
+                    // newData["data"] = null;
+                    return ChangeNotifierProvider<User>(
+                      create: (_) => User(newData, callApi, inGame),
                       child: const AppCore(
                         isUserDataLoaded: true,
                       ),
-                  );
-                }),
-        ),
+                    );
+                  }),
+            ),
         '/login': (context) => LoginPage(),
       },
     );
@@ -85,11 +104,20 @@ class _AppCoreState extends State<AppCore> {
       _selectedIndex = index;
     });
   }
+
   @override
-  void initState(){
-    screenList = [MyHomePage(switchPage: switchPage,), const Quests(), const PlayPage(),const Shop()];
+  void initState() {
+    screenList = [
+      MyHomePage(
+        switchPage: switchPage,
+      ),
+      const Quests(),
+      const PlayPage(),
+      const Shop()
+    ];
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -98,7 +126,7 @@ class _AppCoreState extends State<AppCore> {
             ? null
             : PreferredSize(
                 preferredSize: const Size.fromHeight(134),
-                child: MyAppBar(widget.isUserDataLoaded)),
+                child: MyAppBar(widget.isUserDataLoaded, _selectedIndex)),
         body: widget.isUserDataLoaded
             ? _selectedIndex == 2 ||
                     _selectedIndex ==
@@ -113,7 +141,7 @@ class _AppCoreState extends State<AppCore> {
                     child: screenList[_selectedIndex],
                   ))
             : Padding(
-                padding: const EdgeInsets.only(left: 40,right: 40,bottom:40),
+                padding: const EdgeInsets.only(left: 40, right: 40, bottom: 40),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -123,8 +151,13 @@ class _AppCoreState extends State<AppCore> {
                         "assets/animated/loading.riv",
                       ),
                     ),
-                    Text("Loading...",style: kHeadline1,),
-                    SizedBox(height: 15,),
+                    Text(
+                      "Loading...",
+                      style: kHeadline1,
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
                     Padding(
                       padding: EdgeInsets.only(right: 7.0),
                       child: CircularProgressIndicator(),
@@ -190,11 +223,25 @@ class _AppCoreState extends State<AppCore> {
                         },
                         child: SizedBox(
                           height: 90,
-                          child: Icon(
-                            Icons.play_circle_outline_outlined,
-                            color: _selectedIndex == 2 ? kPrimary : kText95,
-                            size: 34,
-                          ),
+                          child: Consumer<User>(builder: (context, user, _) {
+                            /*if (user.inGame == false) {
+                                Future.delayed(Duration(milliseconds: 1), () {
+                                  switchPage(0);
+                                });
+                              }*/
+                            return Icon(
+                              Icons.play_circle_outline_outlined,
+                              color: user.inGame != null &&
+                                      user.inGame != false &&
+                                      user.inGame["joinDate"] + 3600 * 1000 >
+                                          DateTime.now().millisecondsSinceEpoch
+                                  ? kOrange
+                                  : _selectedIndex == 2
+                                      ? kPrimary
+                                      : kText95,
+                              size: 34,
+                            );
+                          }),
                         ),
                       ),
                     ),
