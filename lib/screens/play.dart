@@ -13,30 +13,40 @@ class PlayPage extends StatefulWidget {
 
 class _PlayPageState extends State<PlayPage> {
   String? matchInProgressId;
-
+  Future<void> joinMatch() async {
+    print("test");
+    var matchId = await context.read<User>().enterMatch();
+    if(matchId == "err") return;
+    setState(() {
+      matchInProgressId = matchId;
+    });
+  }
+  void exitMatch(){
+    setState(() {
+      matchInProgressId = null;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return matchInProgressId == null
         ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 10.0, top: 10),
+              const Padding(
+                padding: EdgeInsets.only(left: 10.0, top: 10),
                 child: Text(
                   "Match History:",
                   style: kHeadline1,
                 ),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 35,
               ),
               Consumer<User>(builder: (context, user, _) {
                 var alreadyTutorial;
                 try{
                   alreadyTutorial = user.value["user"]["lastGames"].firstWhere((e)=>e["wins"]=="tutorial");
-                } catch(e){
-
-                }
+                } catch(e){}
 
                 if (user.value["user"]["lastGames"].length < 4 && alreadyTutorial == null) {
                   user.value["user"]["lastGames"].add({
@@ -54,11 +64,13 @@ class _PlayPageState extends State<PlayPage> {
                   flex: 1,
                   fit: FlexFit.tight,
                   child: ListView.builder(
+                      key: user.keys[7],
                       shrinkWrap: true,
                       itemCount: user.value["user"]["lastGames"].length,
                       itemBuilder: (BuildContext context, int index) {
                         var match = user.value["user"]["lastGames"][index];
                         return Container(
+                          key: index == 0 ? user.keys[7] : null,
                           decoration: BoxDecoration(
                               color: kBackgroundVariant, borderRadius: BorderRadius.circular(20)),
                           padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
@@ -72,7 +84,7 @@ class _PlayPageState extends State<PlayPage> {
                                     "${match["coinsEarned"]}",
                                     style: kBodyText1.apply(color: kPrimary),
                                   ),
-                                  SizedBox(
+                                  const SizedBox(
                                     width: 6,
                                   ),
                                   Image.asset(
@@ -95,42 +107,52 @@ class _PlayPageState extends State<PlayPage> {
                       }),
                 );
               }),
-              SizedBox(
+
+              const SizedBox(
                 height: 40,
               ),
               Row(
                 children: [
                   Expanded(
-                    child: GestureDetector(
-                      onTap: () async {
-                        var matchId = await context.read<User>().enterMatch();
-                        if(matchId == "err") return;
-                        setState(() {
-                          matchInProgressId = matchId;
-                        });
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.fromLTRB(12, 10, 14, 75),
-                        decoration: BoxDecoration(color: kPrimary, borderRadius: BorderRadius.circular(20)),
-                        padding: const EdgeInsets.fromLTRB(12, 12, 25, 12),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(
-                              Icons.play_arrow_outlined,
-                              color: kText,
-                              size: 50,
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 5.0),
-                              child: Text(
-                                "Start a match",
-                                style: kBodyText1,
+                    child: Consumer<User>(
+                      builder: (context, user, _) {
+                        context.read<User>().setKeyFx(joinMatch, "joinMatch");
+                        context.read<User>().setKeyFx(exitMatch, "exitMatch");
+                        return GestureDetector(
+                          onTap: () async {
+                            var matchId = await context.read<User>().enterMatch();
+                            if(matchId == "err") return;
+                            setState(() {
+                              matchInProgressId = matchId;
+                            });
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(12, 10, 14, 75),
+                            child: Container(
+                              key: user.keys[2],
+                              decoration: BoxDecoration(color: kPrimary, borderRadius: BorderRadius.circular(20)),
+                              padding: const EdgeInsets.fromLTRB(12, 12, 25, 12),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: const [
+                                  Icon(
+                                    Icons.play_arrow_outlined,
+                                    color: kText,
+                                    size: 50,
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(top: 5.0),
+                                    child: Text(
+                                      "Start a match",
+                                      style: kBodyText1,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ),
+                          ),
+                        );
+                      }
                     ),
                   ),
                 ],

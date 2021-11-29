@@ -5,6 +5,7 @@ import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+import 'package:winhalla_app/utils/tutorial_controller.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
@@ -51,13 +52,22 @@ class _MyAppState extends State<MyApp> {
                   newData["callApi"] = null;
                   newData["user"] = res.data["data"]["user"];
                   newData["steam"] = res.data["data"]["steam"];
-                  newData["tutorial"] = res.data["data"]["tutorial"];
+                  newData["tutorial"] = res.data["tutorial"];
 
-                  // newData["data"] = null;
+                  List<GlobalKey?> keys = [];
+                  for (int i = 0; i < 10; i++) {
+                    if(i == 0 || i == 4 || i == 5) {
+                      keys.add(null);
+                    } else {
+                      keys.add(GlobalKey());
+                    }
+                  }
+
                   return ChangeNotifierProvider<User>(
-                      create: (_) => User(newData,callApi),
-                      child: const AppCore(
+                      create: (_) => User(newData, callApi, keys),
+                      child: AppCore(
                         isUserDataLoaded: true,
+                        tutorial: newData["tutorial"],
                       ),
                   );
                 }),
@@ -70,8 +80,9 @@ class _MyAppState extends State<MyApp> {
 
 class AppCore extends StatefulWidget {
   final bool isUserDataLoaded;
+  final tutorial;
 
-  const AppCore({Key? key, required this.isUserDataLoaded}) : super(key: key);
+  const AppCore({Key? key, required this.isUserDataLoaded, this.tutorial}) : super(key: key);
 
   @override
   _AppCoreState createState() => _AppCoreState();
@@ -80,7 +91,7 @@ class AppCore extends StatefulWidget {
 class _AppCoreState extends State<AppCore> {
   int _selectedIndex = 0;
   List<Widget> screenList = [];
-  switchPage(index) {
+  void switchPage(index) {
     setState(() {
       _selectedIndex = index;
     });
@@ -90,9 +101,10 @@ class _AppCoreState extends State<AppCore> {
     screenList = [MyHomePage(switchPage: switchPage,), const Quests(), const PlayPage(),const Shop()];
     super.initState();
   }
+  bool hasSummonedTutorial = false;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    Widget child = Scaffold(
         backgroundColor: kBackground,
         appBar: !widget.isUserDataLoaded
             ? null
@@ -182,21 +194,26 @@ class _AppCoreState extends State<AppCore> {
                         ),
                       ),
                     ),
-                    Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          switchPage(2);
-                        },
-                        child: SizedBox(
-                          height: 90,
-                          child: Icon(
-                            Icons.play_circle_outline_outlined,
-                            color: _selectedIndex == 2 ? kPrimary : kText95,
-                            size: 34,
+                    Consumer<User>(
+                      builder: (context, user, _) {
+                        return Expanded(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: () {
+                              switchPage(2);
+                            },
+                            child: SizedBox(
+                              height: 90,
+                              child: Icon(
+                                Icons.play_circle_outline_outlined,
+                                key: user.keys[1],
+                                color: _selectedIndex == 2 ? kPrimary : kText95,
+                                size: 34,
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
+                        );
+                      }
                     ),
                     Expanded(
                       child: GestureDetector(
@@ -217,5 +234,28 @@ class _AppCoreState extends State<AppCore> {
                   ],
                 ),
               ));
+    if(widget.tutorial?["needed"] == true){
+      double screenH = MediaQuery.of(context).size.height;
+      double screenW = MediaQuery.of(context).size.width;
+      TutorialController tutorial =
+        TutorialController(widget.tutorial["tutorialStep"], context.read<User>().keys, screenW, screenH, context);
+      return ChangeNotifierProvider<TutorialController>.value(
+        value: tutorial,
+        child: Builder(
+          builder: (context) {
+            if(!hasSummonedTutorial) {
+              hasSummonedTutorial = true;
+              context.read<User>().setKeyFx(switchPage, "switchPage");
+              Future.delayed(const Duration(milliseconds: 1000), (){
+                tutorial.summon(context);
+              });
+            }
+            return child;
+          }
+        ),
+      );
+    } else {
+      return child;
+    }
   }
 }

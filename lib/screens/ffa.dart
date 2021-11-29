@@ -78,6 +78,7 @@ class SoloMatch extends StatelessWidget {
                             children: [
                               Consumer<FfaMatch>(
                                 builder: (context, match,_) {
+                                  context.read<User>().setKeyFx(match.refresh, "refreshMatch");
                                   return Text("x${(match.value["userPlayer"]["multiplier"]/100).round()}", style: const TextStyle(color: kGreen, fontSize: 34));
                                 }
                               ),
@@ -132,12 +133,15 @@ class SoloMatch extends StatelessWidget {
                     ),
                     Consumer<FfaMatch>(builder: (context, match, _) {
                       final player = match.value["userPlayer"];
-                      return PlayerWidget(
-                        isUser: true,
-                        avatarUrl: player["avatarURL"],
-                        games: player["gamesPlayed"],
-                        wins: player["wins"],
-                        name: player["username"],
+                      return Container(
+                        key:  context.read<User>().keys[3],
+                        child: PlayerWidget(
+                          isUser: true,
+                          avatarUrl: player["avatarURL"],
+                          games: player["gamesPlayed"],
+                          wins: player["wins"],
+                          name: player["username"],
+                        ),
                       );
                     }),
                     const SizedBox(

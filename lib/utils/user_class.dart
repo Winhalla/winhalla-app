@@ -13,6 +13,8 @@ class User extends ChangeNotifier {
   dynamic quests;
   int lastQuestsRefresh = 0;
   int lastShopRefresh = 0;
+  List<GlobalKey?> keys;
+  Map<String,dynamic> keyFx = {};
   late CallApi callApi;
 
   void refresh() async {
@@ -155,10 +157,13 @@ class User extends ChangeNotifier {
     var result = await callApi.post("/setGoal",jsonEncode({"itemId":itemId}));
     if(result["successful"] == false) return;
     value["user"]["goal"] = result["data"];
-    print(value["user"]["goal"]);
   }
 
-  User(this.value,this.callApi);
+  User(this.value, this.callApi, this.keys);
+
+  void setKeyFx(Function keyFx1, String key) {
+    keyFx[key] = keyFx1;
+  }
 }
 
 Future<dynamic> initUser(context) async {
@@ -176,14 +181,13 @@ Future<dynamic> initUser(context) async {
   dynamic tutorialFinished = getNonNullSSData("tutorialFinished");
   tutorialStep = await tutorialStep;
   tutorialFinished = await tutorialFinished;
-
   return {
     "data": data["data"],
     "authKey": storageKey,
     "callApi":caller,
     "tutorial": {
       "needed": tutorialFinished != "true",
-      "tutorialStep": tutorialStep == null ? 0 : tutorialStep
+      "tutorialStep": tutorialStep ?? 0
     }
   };
 }

@@ -15,13 +15,14 @@ const Color kGray = Color(0xFFBEBEC2);
 const Color kText95 = Color(0xF2FDFDFD); // 95% opacity
 const Color kText90 = Color(0xE6FDFDFD); // 90% opacity
 const Color kText80 = Color(0xCCFDFDFD); // 80% opacity
-const Color kText70 = Color(0xB3FDFDFD); // 80% opacity
+const Color kText70 = Color(0xB3FDFDFD); // 70% opacity
 const Color kText60 = Color(0x99FDFDFD); // 60% opacity
 
 const TextStyle kHeadline1 = TextStyle(color: kText, fontSize: 40);
 const TextStyle kHeadline2 = TextStyle(color: kText, fontSize: 35);
 
 const TextStyle kBodyText1 = TextStyle(color: kText95, fontSize: 30, fontFamily: "Bebas Neue");
+const TextStyle kBodyText1Roboto = TextStyle(color: kText95, fontSize: 30, fontFamily: "Roboto Condensed");
 
 const TextStyle kBodyText2 =
     TextStyle(color: kText95, fontSize: 24, fontFamily: "Roboto Condensed");
