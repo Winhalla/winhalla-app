@@ -74,6 +74,11 @@ class TutorialController extends ChangeNotifier{
                               user.keyFx["switchPage"](2);
                             } else if(tutorial.status == 2){
                               await user.keyFx["joinMatch"]();
+                            } else if (tutorial.status == 8){
+                              user.keyFx["switchPage"](1);
+                            } else if (tutorial.status == 12){
+                              var questData = user.value["user"]["solo"]["dailyQuests"]
+                              await user.collectQuest()
                             }
                             Timer.periodic(const Duration(milliseconds: 100),(timer){
                               if(user.keys[tutorial.status+1]?.currentContext != null){
@@ -148,7 +153,7 @@ class Tutorial extends ChangeNotifier{
   late List<GlobalKey?> keys;
   late double screenW;
   late double screenH;
-  late List<Map> tutorials;
+  late List<Map<String,dynamic>> tutorials;
   late BuildContext ctxt;
   // late BuildContext context;
   bool backButtonEnabled = true;
@@ -438,6 +443,146 @@ class Tutorial extends ChangeNotifier{
         ),
         "controlButtonsEnabled":{
           "back":false,
+          "next":true
+        },
+      },{
+        "widget": Container(),
+        "controlButtonsEnabled":{
+          "back":true,
+          "next":false
+        },
+      }, { 
+        "widget": Positioned(
+          left: 40,
+          right: 40,
+          child: SizedBox(
+            width: screenW - 80,
+            height: screenH - 70,
+            child: Padding(
+              padding: EdgeInsets.only(top: screenH/1.8,),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(style: kBodyText1Roboto, children: [
+                        const TextSpan(
+                            text: "This is the quests, complete these quests in ", style: kBodyText1Roboto),
+                        TextSpan(
+                            text: "any online Brawlhalla gamemode",
+                            style: kBodyText1Roboto.apply(color: kPrimary)),
+                        const TextSpan(
+                            text:
+                                "(unless specified)",
+                            style: kBodyText1Roboto),
+                      ]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        "controlButtonsEnabled":{
+          "back":true,
+          "next":true
+        },
+      }, {
+        "widget":Positioned(
+          left: 40,
+          right: 40,
+          bottom: 10,
+          child: SizedBox(
+            width: screenW-80,
+            height: screenH/1.5,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Expanded(
+                  child: Text(
+                      "Let’s pretend you just completed one of these goals.",
+                      style: kBodyText1Roboto
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        "controlButtonsEnabled":{
+          "back":true,
+          "next":true
+        },
+      },{ // 12th item
+        "widget":Positioned(
+          left: 20,
+          right: 20,
+          bottom: 10,
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW-40,
+                height: screenH/1.5,
+                child: RefreshIndicator(
+                  onRefresh: () async {
+                    await ctxt.read<User>().refreshQuests(ctxt, showInfo:false)
+                    context.read<Tutorial>().next();
+                  },
+                  child: ListView(
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Text("Pull down to refresh", style: kBodyText1Roboto,),
+                        ],
+                      ),
+                      const Icon(Icons.south, size: 40, color: kText,)
+                    ],
+                  ),
+                ),
+              );
+            }
+          ),
+        ),
+        "controlButtonsEnabled":{
+          "back":true,
+          "next":false
+        },
+      },{
+        "widget": Positioned(
+          left: 40,
+          right: 40,
+          child: SizedBox(
+            width: screenW - 80,
+            height: screenH - 70,
+            child: Padding(
+              padding: EdgeInsets.only(top: screenH/1.8,),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(
+                        style: kBodyText1Roboto, 
+                        children: [
+                          const TextSpan(
+                              text: "This quest is now completed. ", style: kBodyText1Roboto),
+                          TextSpan(
+                              text: "Tap it ",
+                              style: kBodyText1Roboto.apply(color: kPrimary)),
+                          const TextSpan(
+                              text:
+                                  "to collect it and get the coins",
+                              style: kBodyText1Roboto),
+                        ]
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        "controlButtonsEnabled":{
+          "back":true,
           "next":false
         },
       }

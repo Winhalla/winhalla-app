@@ -125,11 +125,13 @@ class Quests extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 78.0),
                     child: ListView.builder(
+                      key: user.keys[9]
                       itemBuilder: (context, int index) {
                         return GestureDetector(
+                          key: index == 1 ? user.keys[12] : null
                           behavior: HitTestBehavior.translucent,
                           onTap: (){
-                            user.collectQuest(
+                            if(progress >= goal) user.collectQuest(
                                 user.quests["dailyQuests"][index]["id"],
                                 "daily",
                                 user.quests["dailyQuests"][index]["reward"]);

@@ -55,8 +55,8 @@ class _MyAppState extends State<MyApp> {
                   newData["tutorial"] = res.data["tutorial"];
 
                   List<GlobalKey?> keys = [];
-                  for (int i = 0; i < 10; i++) {
-                    if(i == 0 || i == 4 || i == 5) {
+                  for (int i = 0; i < 15; i++) {
+                    if(i == 0 || i == 4 || i == 5 || i == 10 || i == 11) {
                       keys.add(null);
                     } else {
                       keys.add(GlobalKey());
@@ -187,6 +187,7 @@ class _AppCoreState extends State<AppCore> {
                         child: SizedBox(
                           height: 90,
                           child: Icon(
+                            key: context.read<User>().keys[8]
                             Icons.check_box_outlined,
                             color: _selectedIndex == 1 ? kPrimary : kText95,
                             size: 34,
