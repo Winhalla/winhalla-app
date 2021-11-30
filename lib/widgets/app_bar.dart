@@ -23,25 +23,47 @@ class MyAppBar extends StatelessWidget {
           Widget> [
             if (currentPage == 2) 
               Consumer<User>(builder: (context, user, _) {
-
                 if (user.inGame == null) return const Text("");
-                if (user.inGame['isFinished'] == true) {
+
+                if (user.gamesPlayedInMatch > 0) {
+                  print("okbro");
+                  if (user.inGame["isFinished"] == true) {
+                    return GestureDetector(
+                      behavior: HitTestBehavior.translucent,
+                      onTap: () {
+                        user.enterMatch();
+                      },
+                      child: Row(
+                        children: const <Widget>[
+                          Icon(
+                            Icons.open_in_new_rounded,
+                            size: 30,
+                            color: kGreen,
+                          ),
+                          SizedBox(width: 6),
+                          Text(
+                            'New match',
+                            style: kBodyText3,
+                          ),
+                        ],
+                      ),
+                    );
+                  }
                   return GestureDetector(
                     behavior: HitTestBehavior.translucent,
                     onTap: () {
-                      user.exitMatch();
-                      user.enterMatch();
+                      user.exitMatch(true);
                     },
                     child: Row(
                       children: const <Widget>[
                         Icon(
-                          Icons.open_in_new_rounded,
+                          Icons.exit_to_app_rounded,
                           size: 30,
-                          color: kGreen,
+                          color: kPrimary,
                         ),
                         SizedBox(width: 6),
                         Text(
-                          'New match',
+                          'End match',
                           style: kBodyText3,
                         ),
                       ],
@@ -51,7 +73,7 @@ class MyAppBar extends StatelessWidget {
                 return GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTap: () {
-                    user.exitMatch();
+                    user.exitMatch(false);
                   },
                   child: Row(
                     children: const <Widget>[

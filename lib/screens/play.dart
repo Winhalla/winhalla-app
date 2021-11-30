@@ -12,7 +12,6 @@ class PlayPage extends StatefulWidget {
 }
 
 class _PlayPageState extends State<PlayPage> {
-  String? matchInProgressId;
 
   @override
   Widget build(BuildContext context) {
@@ -23,14 +22,14 @@ class _PlayPageState extends State<PlayPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Padding(
-                  padding: EdgeInsets.only(left: 10.0, top: 10),
+                  padding: EdgeInsets.only(left: 6, top: 4.5),
                   child: Text(
                     "Match History:",
                     style: kHeadline1,
                   ),
                 ),
                 const SizedBox(
-                  height: 35,
+                  height: 34,
                 ),
                 Consumer<User>(builder: (context, user, _) {
                   var alreadyTutorial;
@@ -72,9 +71,12 @@ class _PlayPageState extends State<PlayPage> {
                               children: [
                                 Row(
                                   children: [
-                                    Text(
-                                      "${match["coinsEarned"]}",
-                                      style: kBodyText1.apply(color: kPrimary),
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 2.85),
+                                      child: Text(
+                                        "${match["coinsEarned"]}",
+                                        style: kBodyText1.apply(color: kPrimary),
+                                      ),
                                     ),
                                     const SizedBox(
                                       width: 6,
@@ -104,7 +106,7 @@ class _PlayPageState extends State<PlayPage> {
                   );
                 }),
                 const SizedBox(
-                  height: 40,
+                  height: 34,
                 ),
                 Row(
                   children: [
@@ -113,12 +115,9 @@ class _PlayPageState extends State<PlayPage> {
                         onTap: () async {
                           var matchId = await context.read<User>().enterMatch();
                           if (matchId == "err") return;
-                          setState(() {
-                            matchInProgressId = matchId;
-                          });
                         },
                         child: Container(
-                          margin: const EdgeInsets.fromLTRB(12, 10, 14, 75),
+                          margin: const EdgeInsets.fromLTRB(8, 0, 8, 42),
                           decoration: BoxDecoration(
                               color: kPrimary,
                               borderRadius: BorderRadius.circular(20)),
@@ -132,7 +131,7 @@ class _PlayPageState extends State<PlayPage> {
                                 size: 50,
                               ),
                               Padding(
-                                padding: EdgeInsets.only(top: 5.0),
+                                padding: EdgeInsets.only(top: 3.5, left: 1),
                                 child: Text(
                                   "Start a match",
                                   style: kBodyText1,

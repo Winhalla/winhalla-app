@@ -12,6 +12,7 @@ class User extends ChangeNotifier {
   dynamic shop;
   dynamic quests;
   dynamic inGame;
+  int gamesPlayedInMatch = 0;
 
   int lastQuestsRefresh = 0;
   int lastShopRefresh = 0;
@@ -24,14 +25,20 @@ class User extends ChangeNotifier {
     value = accountData["data"];
 
     var inGameData = value["user"]["inGame"];
+    print(inGameData);
     var currentMatch =
         inGameData.where((g) => g["isFinished"] == false).toList();
-
+    print(currentMatch);
+    print(inGame);
     if (currentMatch.length > 0) {
       inGame = {
         'id': currentMatch[0]["id"],
-        'joinDate': currentMatch[0]["joinDate"]
+        'joinDate': currentMatch[0]["joinDate"],
+        'isFinished': false,
       };
+    } else if (inGame["isMatchFinished"] == true) {
+      inGame = null;
+      gamesPlayedInMatch = 0;
     }
 
     notifyListeners();
@@ -89,6 +96,12 @@ class User extends ChangeNotifier {
   }
 
   Future<String> enterMatch() async {
+    if (inGame != null) {
+      inGame = null;
+      gamesPlayedInMatch = 0;
+      notifyListeners();
+    }
+
     dynamic matchId = await callApi.get("/lobby");
     if (matchId["successful"] == false) return "err";
     matchId = matchId["data"];
@@ -100,16 +113,24 @@ class User extends ChangeNotifier {
     value["user"] = accountData["user"];
     value["steam"] = accountData["steam"];
 
-    inGame = {'id': matchId, 'joinDate': DateTime.now().millisecondsSinceEpoch};
+    inGame = {
+      'id': matchId,
+      'joinDate': DateTime.now().millisecondsSinceEpoch,
+      'isFinished': false
+    };
 
     notifyListeners();
     return matchId;
   }
 
-  Future<void> exitMatch() async {
-    await callApi.post("/exitMatch", "");
-    inGame = null;
+  Future<void> exitMatch(beforeEnd) async {
+    if (beforeEnd == true) {
+      await callApi.post("/endMatch", "");
+    } else {
+      await callApi.post("/exitMatch", "");
+    }
 
+    inGame = null;
     notifyListeners();
   }
 

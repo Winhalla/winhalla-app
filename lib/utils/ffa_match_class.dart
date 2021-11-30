@@ -10,6 +10,7 @@ import 'package:winhalla_app/widgets/info_dropdown.dart';
 class FfaMatch extends ChangeNotifier {
   dynamic value;
   bool areOtherPlayersShown = false;
+
   Future<bool> refresh(BuildContext context, User user,
       {bool showInfo = false}) async {
     dynamic match = await user.callApi.get("/getMatch/${value["_id"]}");
@@ -17,16 +18,24 @@ class FfaMatch extends ChangeNotifier {
 
     match = match["data"];
     var steamId = value["userPlayer"]["steamId"];
+
     match["userPlayer"] =
         match["players"].firstWhere((e) => e["steamId"] == steamId);
+
     match["players"] =
         match["players"].where((e) => e["steamId"] != steamId).toList();
     value = match;
-
+    
+    print(match);
+    print(match["fastFinish"]);
+    user.inGame["isMatchFinished"] = match["finished"] ? true : match["fastFinish"];
+    print(user.inGame);
+    user.gamesPlayedInMatch = match["userPlayer"]["gamesPlayed"];
     if (match["userPlayer"]["gamesPlayed"] >= 7) {
       print("7");
-      user.refresh();
+      user.inGame["isFinished"] = true;
     }
+    user.refresh();
 
     if (match["updatedPlatforms"] != null) {
       List<Widget> icons = [];

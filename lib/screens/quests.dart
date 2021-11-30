@@ -64,7 +64,7 @@ class Quests extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Padding(
-                      padding: EdgeInsets.fromLTRB(8.0, 3, 0, 0),
+                      padding: EdgeInsets.fromLTRB(6.0, 3, 0, 0),
                       child: Text('Daily', style: kHeadline1),
                     ),
                     Consumer<User>(
@@ -88,7 +88,7 @@ class Quests extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                height: 30,
+                height: 32,
               ),
               Consumer<User>(
                 builder: (context, user,_) {
@@ -158,7 +158,7 @@ class Quests extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Padding(
-                      padding: EdgeInsets.fromLTRB(8.0, 3.5, 0, 0),
+                      padding: EdgeInsets.fromLTRB(6.0, 3, 0, 0),
                       child: Text('Weekly', style: kHeadline1),
                     ),
                     Consumer<User>(
@@ -182,7 +182,7 @@ class Quests extends StatelessWidget {
                 ),
               ),
               const SizedBox(
-                height: 30,
+                height: 33,
               ),
               Consumer<User>(
                   builder: (context, user,_) {
