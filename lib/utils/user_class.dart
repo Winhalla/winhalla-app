@@ -25,11 +25,9 @@ class User extends ChangeNotifier {
     value = accountData["data"];
 
     var inGameData = value["user"]["inGame"];
-    print(inGameData);
     var currentMatch =
         inGameData.where((g) => g["isFinished"] == false).toList();
-    print(currentMatch);
-    print(inGame);
+
     if (currentMatch.length > 0) {
       inGame = {
         'id': currentMatch[0]["id"],

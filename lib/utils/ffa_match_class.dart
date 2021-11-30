@@ -25,14 +25,11 @@ class FfaMatch extends ChangeNotifier {
     match["players"] =
         match["players"].where((e) => e["steamId"] != steamId).toList();
     value = match;
-    
-    print(match);
-    print(match["fastFinish"]);
+
     user.inGame["isMatchFinished"] = match["finished"] ? true : match["fastFinish"];
-    print(user.inGame);
     user.gamesPlayedInMatch = match["userPlayer"]["gamesPlayed"];
+
     if (match["userPlayer"]["gamesPlayed"] >= 7) {
-      print("7");
       user.inGame["isFinished"] = true;
     }
     user.refresh();
