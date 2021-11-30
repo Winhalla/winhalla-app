@@ -55,8 +55,8 @@ class _MyAppState extends State<MyApp> {
                   newData["tutorial"] = res.data["tutorial"];
 
                   List<GlobalKey?> keys = [];
-                  for (int i = 0; i < 15; i++) {
-                    if(i == 0 || i == 4 || i == 5 || i == 10 || i == 11) {
+                  for (int i = 0; i < 18; i++) {
+                    if(i == 0 || i == 4 || i == 5 || i == 10 || i == 11 || i == 17) {
                       keys.add(null);
                     } else {
                       keys.add(GlobalKey());
@@ -239,17 +239,15 @@ class _AppCoreState extends State<AppCore> {
     if(widget.tutorial?["needed"] == true){
       double screenH = MediaQuery.of(context).size.height;
       double screenW = MediaQuery.of(context).size.width;
-      TutorialController tutorial =
-        TutorialController(widget.tutorial["tutorialStep"], context.read<User>().keys, screenW, screenH, context);
-      return ChangeNotifierProvider<TutorialController>.value(
-        value: tutorial,
+      return ChangeNotifierProvider<TutorialController>(
+        create: (context)=>TutorialController(widget.tutorial["tutorialStep"], context.read<User>().keys, screenW, screenH, context),
         child: Builder(
           builder: (context) {
             if(!hasSummonedTutorial) {
               hasSummonedTutorial = true;
               context.read<User>().setKeyFx(switchPage, "switchPage");
-              Future.delayed(const Duration(milliseconds: 1000), (){
-                tutorial.summon(context);
+              Future.delayed(const Duration(milliseconds: 100), (){
+                context.read<TutorialController>().summon(context);
               });
             }
             return child;

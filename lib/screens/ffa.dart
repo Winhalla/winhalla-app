@@ -94,7 +94,7 @@ class SoloMatch extends StatelessWidget {
                               )
                             ],
                           ),
-                          AdButton(
+                          /*AdButton(
                             goal: 'earnMoreSoloMatch',
                             adNotReadyChild:Container(
                                 padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
@@ -121,7 +121,7 @@ class SoloMatch extends StatelessWidget {
                                 ),
                                 decoration:
                                     BoxDecoration(color: kGreen, borderRadius: BorderRadius.circular(12))),
-                          )
+                          )*/
                         ],
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       ),

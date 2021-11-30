@@ -28,6 +28,8 @@ class TutorialController extends ChangeNotifier{
   }
 
   void summon(BuildContext context) {
+    ctxt = context;
+    tutorial.ctxt = context;
     try{
       overlayEntry.remove();
     }catch(e) {}
@@ -67,38 +69,46 @@ class TutorialController extends ChangeNotifier{
                             color: Colors.black.withOpacity(0.80),
                           ),
                         ),
-                        Positioned.fromRect(rect: tutorial.currentWidgetPosition[4], child: GestureDetector(
-                          onTap: () async {
-                            User user = ctxt.read<User>();
-                            if(tutorial.status == 1){
-                              user.keyFx["switchPage"](2);
+                        Positioned.fromRect(
+                          rect: tutorial.currentWidgetPosition[4],
+                          child: GestureDetector(
+                            onTap: () async {
+                              User user = ctxt.read<User>();
+                              if(tutorial.status == 1){
+                                user.keyFx["switchPage"](2);
 
-                            } else if(tutorial.status == 2){
-                              await user.keyFx["joinMatch"]();
+                              } else if(tutorial.status == 2){
+                                await user.keyFx["joinMatch"]();
 
-                            } else if (tutorial.status == 8){
-                              user.keyFx["switchPage"](1);
+                              } else if (tutorial.status == 8){
+                                user.keyFx["switchPage"](1);
 
-                            } else if (tutorial.status == 13){
-                              user.keyFx["switchPage"](0);
+                              } else if (tutorial.status == 13){
+                                user.keyFx["switchPage"](0);
 
-                            } else if (tutorial.status == 12){
-                              var questData = user.quests["finished"]["daily"][0];
-                              await user.collectQuest(questData["id"],"daily",questData["reward"]);
-                            }
-                            Timer.periodic(const Duration(milliseconds: 100),(timer){
-                              if(user.keys[tutorial.status+1]?.currentContext != null){
-                                tutorial.next();
-                                timer.cancel();
+                              } else if (tutorial.status == 12){
+                                var questData = user.quests["finished"]["daily"][0];
+                                await user.collectQuest(questData["id"],"daily",questData["reward"]);
+
+                              } else if (tutorial.status == 16){
+                                user.keyFx["playAd"]();
+                                Future.delayed(const Duration(seconds: 1),()=>tutorial.next());
+                                return;
                               }
-                            });
+
+                              Timer.periodic(const Duration(milliseconds: 100),(timer){
+                                if(user.keys[tutorial.status+1]?.currentContext != null){
+                                  tutorial.next();
+                                  timer.cancel();
+                                }
+                              });
 
 
-                          },
-                          child: Container(
-                              color: Colors.transparent,
-                            ),
-                        ),
+                            },
+                            child: Container(
+                                color: Colors.transparent,
+                              ),
+                          ),
                         ),
                         tutorial.currentTextWidget,
                         Positioned(
@@ -123,12 +133,29 @@ class TutorialController extends ChangeNotifier{
                               if(tutorial.nextButtonEnabled)  TextButton(
                                 onPressed: () =>
                                     tutorial.next(),
-                                child: const Text(
-                                  "Next",
-                                  style: TextStyle(
-                                      fontFamily: 'Roboto condensed',
-                                      fontSize: 30,
-                                      color: kOrange),
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      tutorial.status == 17?"Finish":"Next",
+                                      style: TextStyle(
+                                          fontFamily: 'Roboto condensed',
+                                          fontSize: 30,
+                                          color: tutorial.status == 17?kGreen:kOrange),
+                                    ),
+                                    if(tutorial.status == 17)
+                                      const SizedBox(
+                                        width: 6,
+                                      ),
+                                    if(tutorial.status == 17)
+                                      const Padding(
+                                        padding: EdgeInsets.only(bottom: 3),
+                                        child: Icon(
+                                          Icons.check,
+                                          color: kGreen,
+                                          size: 30,
+                                        ),
+                                      ),
+                                  ],
                                 ),
                               )
                               else Container(),
@@ -175,7 +202,7 @@ class Tutorial extends ChangeNotifier{
 
   void next(){
     status ++;
-    print(status);
+    if(status == 18) return ctxt.read<TutorialController>().endTutorial();
     calculateNextValues();
     notifyListeners();
   }
@@ -466,7 +493,7 @@ class Tutorial extends ChangeNotifier{
             width: screenW - 40,
             height: screenH,
             child: Padding(
-              padding: EdgeInsets.only(top: screenH/2,),
+              padding: EdgeInsets.only(top: screenH/1.8,),
               child: Row(
                 children: [
                   Expanded(
@@ -562,7 +589,7 @@ class Tutorial extends ChangeNotifier{
             width: screenW - 80,
             height: screenH - 70,
             child: Padding(
-              padding: EdgeInsets.only(top: screenH/1.8,),
+              padding: EdgeInsets.only(top: screenH/1.65,),
               child: Row(
                 children: [
                   Expanded(
@@ -593,12 +620,185 @@ class Tutorial extends ChangeNotifier{
           "next":true
         },
       },{ // 14th item ; index : 13
-        "widget": Container(),
+        "widget": Positioned(
+          left: 20,
+          right: 20,
+          child: SizedBox(
+            width: screenW - 40,
+            height: screenH,
+            child: Padding(
+              padding: EdgeInsets.only(top: screenH/2,),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(style: kBodyText1Roboto, children: [
+                        const TextSpan(
+                            text: "Now that this quest is completed, let's check the ", style: kBodyText1Roboto),
+                        TextSpan(
+                            text: "daily challenges",
+                            style: kBodyText1Roboto.apply(color: kPrimary)),
+                      ]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
         "controlButtonsEnabled":{
           "back":false,
           "next":false
         },
-      }
+      },{ // 15th item ; index : 14
+        "widget": Positioned(
+          left: 20,
+          right: 20,
+          bottom: 65,
+          child: SizedBox(
+            width: screenW - 40,
+            height: screenH - 40,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(style: kBodyText1Roboto, children: [
+                      const TextSpan(
+                          text: "These are the ", style: kBodyText1Roboto),
+                      TextSpan(
+                          text: "daily challenges, ",
+                          style: kBodyText1Roboto.apply(color: kPrimary)),
+                      const TextSpan(
+                          text:
+                          "Complete them by doing different actions ",
+                          style: kBodyText1Roboto),
+                      TextSpan(
+                          text:
+                          "in the app.",
+                          style: kBodyText1Roboto.apply(color: kPrimary)),
+                    ]),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+        "controlButtonsEnabled":{
+          "back":false,
+          "next":true
+        },
+      },{ // 16th item ; index : 15
+        "widget": Positioned(
+          left: 20,
+          right: 20,
+          child: SizedBox(
+            width: screenW - 40,
+            height: screenH,
+            child: Padding(
+              padding: EdgeInsets.only(top: screenH/2,),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(style: kBodyText1Roboto, children: [
+                        const TextSpan(
+                            text: "You just completed this one, so it will update ", style: kBodyText1Roboto),
+                        TextSpan(
+                            text: "automatically.",
+                            style: kBodyText1Roboto.apply(color: kPrimary)),
+                      ]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        "controlButtonsEnabled":{
+          "back":false,
+          "next":true
+        },
+      },{ // 17th item ; index : 16
+        "widget": Positioned(
+          left: 20,
+          right: 20,
+          child: SizedBox(
+            width: screenW - 40,
+            height: screenH,
+            child: Padding(
+              padding: EdgeInsets.only(top: screenH/2,),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: RichText(
+                      text: TextSpan(style: kBodyText1Roboto, children: [
+                        const TextSpan(
+                            text: "Now, ", style: kBodyText1Roboto),
+                        TextSpan(
+                            text: "this challenge ",
+                            style: kBodyText1Roboto.apply(color: kPrimary)),
+                        const TextSpan(
+                            text: "has unlocked, ", style: kBodyText1Roboto),
+                        TextSpan(
+                            text: "complete it ",
+                            style: kBodyText1Roboto.apply(color: kPrimary)),
+                        const TextSpan(
+                            text: "to get it's ", style: kBodyText1Roboto),
+                        TextSpan(
+                            text: "reward",
+                            style: kBodyText1Roboto.apply(color: kPrimary)),
+                      ]),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        "controlButtonsEnabled":{
+          "back":false,
+          "next":false
+        },
+      },{ // index : 17
+        "widget":Positioned(
+          left: 20,
+          right: 20,
+          child: SizedBox(
+            width: screenW-40,
+            height: screenH-70,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 10),
+              child: Column(mainAxisAlignment:MainAxisAlignment.center, children: [
+                const Text("Tutorial completed!", style: TextStyle(fontSize: 40),),
+                const SizedBox(height: 20,),
+                Row(
+                  children: [
+                    Expanded(
+                      child: RichText(
+                        text: TextSpan(style: kBodyText1Roboto, children: [
+                          const TextSpan(
+                              text: "Go enjoy the app! If you’ve got any ",
+                              style: kBodyText1Roboto
+                          ),
+                          TextSpan(text: "questions ", style:kBodyText1Roboto.apply(color: kPrimary )),
+                          const TextSpan(text: "or ", style: kBodyText1Roboto ),
+                          TextSpan(text: "issue", style:kBodyText1Roboto.apply(color: kPrimary) ),
+                          const TextSpan(text: ", send us a message! (on Instagram, Discord, or contact email...).", style:kBodyText1Roboto ),
+                        ]),
+                      ),
+                    ),
+                  ],
+                )
+              ],),
+            ),
+          ),
+        ),
+        "controlButtonsEnabled":{
+          "back":false,
+          "next":true
+        },
+      },
     ];
     calculateNextValues();
   }
