@@ -94,34 +94,47 @@ class SoloMatch extends StatelessWidget {
                               )
                             ],
                           ),
-                          /*AdButton(
-                            goal: 'earnMoreSoloMatch',
-                            adNotReadyChild:Container(
-                                padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
-                                child: Text(
-                                  "Ad loading...",
-                                  style: kBodyText4.apply(color: kText),
-                                ),
-                                decoration:
-                                BoxDecoration(color: kText60, borderRadius: BorderRadius.circular(12))),
-                            child: Container(
-                                padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom:2.0),
-                                      child: Image.asset("assets/images/video_ad.png", width: 20,),
+                          Consumer<FfaMatch>(
+                            builder: (context, match, _) {
+                              if(match.value["userPlayer"]["adsWatched"] >= 16) {
+                                return Container(
+                                    padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
+                                    decoration: BoxDecoration(color: kText60, borderRadius: BorderRadius.circular(12)),
+                                    child: Text(
+                                      "Max ads reached",
+                                      style: kBodyText4.apply(color: kText),
                                     ),
-                                    const SizedBox(width: 7,),
-                                    Text(
-                                      "Boost it",
-                                      style: kBodyText4.apply(color: kBackground),
+                                );
+                              }
+                              return AdButton(
+                                goal: 'earnMoreSoloMatch',
+                                adNotReadyChild:Container(
+                                    padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
+                                    child: Text(
+                                      "Ad loading...",
+                                      style: kBodyText4.apply(color: kText),
                                     ),
-                                  ],
-                                ),
-                                decoration:
-                                    BoxDecoration(color: kGreen, borderRadius: BorderRadius.circular(12))),
-                          )*/
+                                    decoration: BoxDecoration(color: kText60, borderRadius: BorderRadius.circular(12))),
+                                child: Container(
+                                    padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
+                                    child: Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(bottom:2.0),
+                                          child: Image.asset("assets/images/video_ad.png", width: 20,),
+                                        ),
+                                        const SizedBox(width: 7,),
+                                        Text(
+                                          "Boost it",
+                                          style: kBodyText4.apply(color: kBackground),
+                                        ),
+                                      ],
+                                    ),
+                                    decoration:
+                                        BoxDecoration(color: kGreen, borderRadius: BorderRadius.circular(12))),
+                              );
+                            }
+                          )
                         ],
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       ),
