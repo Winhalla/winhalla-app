@@ -172,6 +172,7 @@ class _AppCoreState extends State<AppCore> {
                           height: 90,
                           child: Icon(
                             Icons.home_outlined,
+                            key: context.read<User>().keys[13],
                             color: _selectedIndex == 0 ? kPrimary : kText95,
                             size: 34,
                           ),
@@ -187,8 +188,8 @@ class _AppCoreState extends State<AppCore> {
                         child: SizedBox(
                           height: 90,
                           child: Icon(
-                            key: context.read<User>().keys[8]
                             Icons.check_box_outlined,
+                            key: context.read<User>().keys[8],
                             color: _selectedIndex == 1 ? kPrimary : kText95,
                             size: 34,
                           ),

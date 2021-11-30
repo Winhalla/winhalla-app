@@ -46,25 +46,25 @@ class TutorialController extends ChangeNotifier{
                         Positioned.fromRect(
                             rect: tutorial.currentWidgetPosition[0],
                             child: Container(
-                              color: Colors.black.withOpacity(0.85),
+                              color: Colors.black.withOpacity(0.80),
                             ),
                         ),
                         Positioned.fromRect(
                           rect: tutorial.currentWidgetPosition[1],
                           child: Container(
-                            color: Colors.black.withOpacity(0.85),
+                            color: Colors.black.withOpacity(0.80),
                           ),
                         ),
                         Positioned.fromRect(
                           rect: tutorial.currentWidgetPosition[2],
                           child: Container(
-                            color: Colors.black.withOpacity(0.85),
+                            color: Colors.black.withOpacity(0.80),
                           ),
                         ),
                         Positioned.fromRect(
                           rect: tutorial.currentWidgetPosition[3],
                           child: Container(
-                            color: Colors.black.withOpacity(0.85),
+                            color: Colors.black.withOpacity(0.80),
                           ),
                         ),
                         Positioned.fromRect(rect: tutorial.currentWidgetPosition[4], child: GestureDetector(
@@ -72,13 +72,19 @@ class TutorialController extends ChangeNotifier{
                             User user = ctxt.read<User>();
                             if(tutorial.status == 1){
                               user.keyFx["switchPage"](2);
+
                             } else if(tutorial.status == 2){
                               await user.keyFx["joinMatch"]();
+
                             } else if (tutorial.status == 8){
                               user.keyFx["switchPage"](1);
+
+                            } else if (tutorial.status == 13){
+                              user.keyFx["switchPage"](0);
+
                             } else if (tutorial.status == 12){
-                              var questData = user.value["user"]["solo"]["dailyQuests"]
-                              await user.collectQuest()
+                              var questData = user.quests["finished"]["daily"][0];
+                              await user.collectQuest(questData["id"],"daily",questData["reward"]);
                             }
                             Timer.periodic(const Duration(milliseconds: 100),(timer){
                               if(user.keys[tutorial.status+1]?.currentContext != null){
@@ -169,6 +175,7 @@ class Tutorial extends ChangeNotifier{
 
   void next(){
     status ++;
+    print(status);
     calculateNextValues();
     notifyListeners();
   }
@@ -425,7 +432,7 @@ class Tutorial extends ChangeNotifier{
                             style: kBodyText1Roboto.apply(color: kPrimary)),
                         const TextSpan(
                             text:
-                                "will show up there. It will display the",
+                                "will show up there. It will display the ",
                             style: kBodyText1Roboto),
                         TextSpan(
                             text: "number of coins ",
@@ -448,31 +455,31 @@ class Tutorial extends ChangeNotifier{
       },{
         "widget": Container(),
         "controlButtonsEnabled":{
-          "back":true,
+          "back":false,
           "next":false
         },
       }, { 
         "widget": Positioned(
-          left: 40,
-          right: 40,
+          left: 20,
+          right: 20,
           child: SizedBox(
-            width: screenW - 80,
-            height: screenH - 70,
+            width: screenW - 40,
+            height: screenH,
             child: Padding(
-              padding: EdgeInsets.only(top: screenH/1.8,),
+              padding: EdgeInsets.only(top: screenH/2,),
               child: Row(
                 children: [
                   Expanded(
                     child: RichText(
                       text: TextSpan(style: kBodyText1Roboto, children: [
                         const TextSpan(
-                            text: "This is the quests, complete these quests in ", style: kBodyText1Roboto),
+                            text: "Here are the quests, Complete them in ", style: kBodyText1Roboto),
                         TextSpan(
-                            text: "any online Brawlhalla gamemode",
+                            text: "any online Brawlhalla gamemode ",
                             style: kBodyText1Roboto.apply(color: kPrimary)),
                         const TextSpan(
                             text:
-                                "(unless specified)",
+                                "(unless a gamemode is specified)",
                             style: kBodyText1Roboto),
                       ]),
                     ),
@@ -512,7 +519,7 @@ class Tutorial extends ChangeNotifier{
           "back":true,
           "next":true
         },
-      },{ // 12th item
+      },{ // 12th item ; index : 11
         "widget":Positioned(
           left: 20,
           right: 20,
@@ -524,7 +531,7 @@ class Tutorial extends ChangeNotifier{
                 height: screenH/1.5,
                 child: RefreshIndicator(
                   onRefresh: () async {
-                    await ctxt.read<User>().refreshQuests(ctxt, showInfo:false)
+                    await ctxt.read<User>().refreshQuests(ctxt, showInfo:false);
                     context.read<Tutorial>().next();
                   },
                   child: ListView(
@@ -547,7 +554,7 @@ class Tutorial extends ChangeNotifier{
           "back":true,
           "next":false
         },
-      },{
+      },{ // 13th item ; index : 12
         "widget": Positioned(
           left: 40,
           right: 40,
@@ -582,7 +589,13 @@ class Tutorial extends ChangeNotifier{
           ),
         ),
         "controlButtonsEnabled":{
-          "back":true,
+          "back":false,
+          "next":true
+        },
+      },{ // 14th item ; index : 13
+        "widget": Container(),
+        "controlButtonsEnabled":{
+          "back":false,
           "next":false
         },
       }

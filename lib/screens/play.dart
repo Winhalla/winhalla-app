@@ -64,7 +64,6 @@ class _PlayPageState extends State<PlayPage> {
                   flex: 1,
                   fit: FlexFit.tight,
                   child: ListView.builder(
-                      key: user.keys[7],
                       shrinkWrap: true,
                       itemCount: user.value["user"]["lastGames"].length,
                       itemBuilder: (BuildContext context, int index) {
