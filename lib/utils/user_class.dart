@@ -7,7 +7,7 @@ import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
 
-class User extends ChangeNotifier {
+class   User extends ChangeNotifier {
   dynamic value;
   dynamic shop;
   dynamic quests;

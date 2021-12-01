@@ -84,7 +84,7 @@ class _MyAppState extends State<MyApp> {
                     // newData["data"] = null;
                     return ChangeNotifierProvider<User>(
                       create: (_) => User(newData, callApi, keys ,inGame),
-                      child: const AppCore(
+                      child: AppCore(
                         isUserDataLoaded: true,
                         tutorial: newData["tutorial"],
                       )

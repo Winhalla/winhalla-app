@@ -78,7 +78,7 @@ class TutorialController extends ChangeNotifier{
                                 user.keyFx["switchPage"](2);
 
                               } else if(tutorial.status == 2){
-                                await user.keyFx["joinMatch"](true);
+                                await user.enterMatch();
 
                               } else if (tutorial.status == 8){
                                 user.keyFx["switchPage"](1);
@@ -136,11 +136,11 @@ class TutorialController extends ChangeNotifier{
                                 child: Row(
                                   children: [
                                     Text(
-                                      tutorial.status == 17?"Finish":"Next",
+                                      tutorial.status == 17 ? "Finish" : "Next",
                                       style: TextStyle(
                                           fontFamily: 'Roboto condensed',
                                           fontSize: 30,
-                                          color: tutorial.status == 17?kGreen:kOrange),
+                                          color: tutorial.status == 17 ? kGreen : kOrange),
                                     ),
                                     if(tutorial.status == 17)
                                       const SizedBox(
@@ -202,6 +202,7 @@ class Tutorial extends ChangeNotifier{
 
   void next(){
     status ++;
+    print(status);
     if(status == 18) return ctxt.read<TutorialController>().endTutorial();
     calculateNextValues();
     notifyListeners();
@@ -224,9 +225,9 @@ class Tutorial extends ChangeNotifier{
       ];
     }
     if(index == 6){
-      Future.delayed(const Duration(milliseconds: 4000), (){
+      Future.delayed(const Duration(milliseconds: 4000), () async {
         User user = ctxt.read<User>();
-        user.keyFx["exitMatch"]();
+        await user.exitMatch(false);
         Timer.periodic(const Duration(milliseconds: 100),(timer){
           if(user.keys[status+1]?.currentContext != null){
             next();

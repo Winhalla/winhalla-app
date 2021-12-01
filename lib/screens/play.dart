@@ -12,26 +12,7 @@ class PlayPage extends StatefulWidget {
 }
 
 class _PlayPageState extends State<PlayPage> {
-  String? matchInProgressId;
-  Future<void> joinMatch(bool isTutorial) async {
-    if(isTutorial){
-      setState(() {
-        matchInProgressId = "tutorial";
-      });
-      return;
-    }
-    print("test");
-    var matchId = await context.read<User>().enterMatch();
-    if(matchId == "err") return;
-    setState(() {
-      matchInProgressId = matchId;
-    });
-  }
-  void exitMatch(){
-    setState(() {
-      matchInProgressId = null;
-    });
-  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, _) {
