@@ -17,16 +17,16 @@ class User extends ChangeNotifier {
   Map<String,dynamic> keyFx = {};
   late CallApi callApi;
 
-  void refresh() async {
+  Future<void> refresh() async {
     var accountData = await callApi.get("/account");
     if(accountData["successful"] == false) return;
     value = accountData["data"];
     notifyListeners();
   }
 
-  Future<bool> refreshQuests(BuildContext context, {bool showInfo = false}) async {
+  Future<bool> refreshQuests(BuildContext context, {bool showInfo = false, isTutorial = true}) async {
 
-    var accountData = await callApi.get("/solo");
+    var accountData = await callApi.get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
     if(accountData["successful"] == false) return true;
     if(accountData["data"]["newQuests"] == true){
       if(showInfo) {

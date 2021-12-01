@@ -13,7 +13,13 @@ class PlayPage extends StatefulWidget {
 
 class _PlayPageState extends State<PlayPage> {
   String? matchInProgressId;
-  Future<void> joinMatch() async {
+  Future<void> joinMatch(bool isTutorial) async {
+    if(isTutorial){
+      setState(() {
+        matchInProgressId = "tutorial";
+      });
+      return;
+    }
     print("test");
     var matchId = await context.read<User>().enterMatch();
     if(matchId == "err") return;
@@ -43,23 +49,6 @@ class _PlayPageState extends State<PlayPage> {
                 height: 35,
               ),
               Consumer<User>(builder: (context, user, _) {
-                var alreadyTutorial;
-                try{
-                  alreadyTutorial = user.value["user"]["lastGames"].firstWhere((e)=>e["wins"]=="tutorial");
-                } catch(e){}
-
-                if (user.value["user"]["lastGames"].length < 4 && alreadyTutorial == null) {
-                  user.value["user"]["lastGames"].add({
-                    "players": ['Philtrom', 'Philtrom2'],
-                    "Date": "2021-10-12T15:26:59.598Z",
-                    "_id": "6165a943a065c71f5c1f0787",
-                    "gm": 'FFA',
-                    "wins": "tutorial",
-                    "coinsEarned": 10,
-                    "rank": 0,
-                    "id": '6165a73b60b0762990aebf5e'
-                  });
-                }
                 return Flexible(
                   flex: 1,
                   fit: FlexFit.tight,
@@ -93,7 +82,7 @@ class _PlayPageState extends State<PlayPage> {
                                 ],
                               ),
                               Text(
-                                match["wins"] == "tutorial"?"tutorial":"${match["wins"]}/7 wins",
+                                match["id"] == "tutorial"?"tutorial":"${match["wins"]}/7 wins",
                                 style: kBodyText2.apply(color: kGray, fontFamily: "Bebas neue"),
                               ),
                               Text(

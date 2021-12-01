@@ -78,7 +78,7 @@ class TutorialController extends ChangeNotifier{
                                 user.keyFx["switchPage"](2);
 
                               } else if(tutorial.status == 2){
-                                await user.keyFx["joinMatch"]();
+                                await user.keyFx["joinMatch"](true);
 
                               } else if (tutorial.status == 8){
                                 user.keyFx["switchPage"](1);
@@ -404,7 +404,7 @@ class Tutorial extends ChangeNotifier{
                 child: RefreshIndicator(
                   onRefresh: () async {
                     User user = ctxt.read<User>();
-                    await user.keyFx["refreshMatch"](ctxt, user, showInfo:false);
+                    await user.keyFx["refreshMatch"](ctxt, user, showInfo:false, isTutorial:true, isTutorialRefresh:true);
                     context.read<Tutorial>().next();
                   },
                   child: ListView(
@@ -558,7 +558,7 @@ class Tutorial extends ChangeNotifier{
                 height: screenH/1.5,
                 child: RefreshIndicator(
                   onRefresh: () async {
-                    await ctxt.read<User>().refreshQuests(ctxt, showInfo:false);
+                    await ctxt.read<User>().refreshQuests(ctxt, showInfo:false, isTutorial:true);
                     context.read<Tutorial>().next();
                   },
                   child: ListView(
@@ -703,7 +703,7 @@ class Tutorial extends ChangeNotifier{
                     child: RichText(
                       text: TextSpan(style: kBodyText1Roboto, children: [
                         const TextSpan(
-                            text: "You just completed this one, so it will update ", style: kBodyText1Roboto),
+                            text: "You just completed this one, so it has updated ", style: kBodyText1Roboto),
                         TextSpan(
                             text: "automatically.",
                             style: kBodyText1Roboto.apply(color: kPrimary)),
