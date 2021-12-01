@@ -7,7 +7,7 @@ import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
 
-class User extends ChangeNotifier {
+class   User extends ChangeNotifier {
   dynamic value;
   dynamic shop;
   dynamic quests;
@@ -16,10 +16,11 @@ class User extends ChangeNotifier {
 
   int lastQuestsRefresh = 0;
   int lastShopRefresh = 0;
-
+  List<GlobalKey?> keys;
+  Map<String,dynamic> keyFx = {};
   late CallApi callApi;
 
-  void refresh() async {
+  Future<void> refresh() async {
     var accountData = await callApi.get("/account");
     if (accountData["successful"] == false) return;
     value = accountData["data"];
@@ -43,8 +44,8 @@ class User extends ChangeNotifier {
   }
 
   Future<bool> refreshQuests(BuildContext context,
-      {bool showInfo = false}) async {
-    var accountData = await callApi.get("/solo");
+      {bool showInfo = false, isTutorial = true}) async {
+    var accountData = await callApi.get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
     if (accountData["successful"] == false) return true;
     if (accountData["data"]["newQuests"] == true) {
       if (showInfo) {
@@ -212,7 +213,11 @@ class User extends ChangeNotifier {
     value["user"]["goal"] = result["data"];
   }
 
-  User(this.value, this.callApi, this.inGame);
+  void setKeyFx(Function keyFx1, String key) {
+    keyFx[key] = keyFx1;
+  }
+
+  User(this.value, this.callApi, this.keys, this.inGame);
 }
 
 Future<dynamic> initUser(context) async {
@@ -230,14 +235,13 @@ Future<dynamic> initUser(context) async {
   dynamic tutorialFinished = getNonNullSSData("tutorialFinished");
   tutorialStep = await tutorialStep;
   tutorialFinished = await tutorialFinished;
-
   return {
     "data": data["data"],
     "authKey": storageKey,
     "callApi": caller,
     "tutorial": {
       "needed": tutorialFinished != "true",
-      "tutorialStep": tutorialStep == null ? 0 : tutorialStep
+      "tutorialStep": tutorialStep ?? 0
     }
   };
 }

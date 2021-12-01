@@ -35,28 +35,8 @@ class _PlayPageState extends State<PlayPage> {
                       .toList();
 
                   var lastGames = user.value["user"]["lastGames"];
-
-                  var alreadyTutorial;
-                  try {
-                    alreadyTutorial = user.value["user"]["lastGames"]
-                        .firstWhere((e) => e["wins"] == "tutorial");
-                  } catch (e) {}
-
-                  if (user.value["user"]["lastGames"].length < 4 &&
-                      alreadyTutorial == null) {
-                    user.value["user"]["lastGames"].add({
-                      "players": ['Philtrom', 'Philtrom2'],
-                      "Date": "2021-10-12T15:26:59.598Z",
-                      "_id": "6165a943a065c71f5c1f0787",
-                      "gm": 'FFA',
-                      "wins": "tutorial",
-                      "coinsEarned": 10,
-                      "rank": 0,
-                      "id": '6165a73b60b0762990aebf5e'
-                    });
-                  }
-
                   var lastWidget;
+                  
                   return Flexible(
                     flex: 1,
                     fit: FlexFit.tight,
@@ -77,6 +57,7 @@ class _PlayPageState extends State<PlayPage> {
                                   : false;
 
                           return Container(
+                            key: index == 0 ? user.keys[7] : null,
                             decoration: BoxDecoration(
                                 color: kBackgroundVariant,
                                 borderRadius: BorderRadius.circular(20)),
@@ -183,6 +164,7 @@ class _PlayPageState extends State<PlayPage> {
                           if (matchId == "err") return;
                         },
                         child: Container(
+                          key: user.keys[2],
                           margin: const EdgeInsets.fromLTRB(8, 0, 8, 42),
                           decoration: BoxDecoration(
                               color: kPrimary,
@@ -213,7 +195,6 @@ class _PlayPageState extends State<PlayPage> {
               ],
             )
           :
-          // Can't be null bc we check above. Null safety still there.
           SoloMatch(matchId: user.inGame['id']);
     });
   }

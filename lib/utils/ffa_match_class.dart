@@ -12,8 +12,13 @@ class FfaMatch extends ChangeNotifier {
   bool areOtherPlayersShown = false;
 
   Future<bool> refresh(BuildContext context, User user,
-      {bool showInfo = false}) async {
-    dynamic match = await user.callApi.get("/getMatch/${value["_id"]}");
+      {bool showInfo = false,
+        bool isTutorial = false,
+        bool isTutorialRefresh = false}) async {
+
+    dynamic match =
+      await user.callApi.get(
+          "/getMatch/${isTutorial ? "tutorial" : value["_id"]}" + (isTutorialRefresh ? "?isRefresh=true" : ""));
     if (match["successful"] == false) return true;
 
     match = match["data"];
@@ -32,7 +37,7 @@ class FfaMatch extends ChangeNotifier {
     if (match["userPlayer"]["gamesPlayed"] >= 7) {
       user.inGame["isFinished"] = true;
     }
-    user.refresh();
+    await user.refresh();
 
     if (match["updatedPlatforms"] != null) {
       List<Widget> icons = [];

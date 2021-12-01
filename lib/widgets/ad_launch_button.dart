@@ -71,27 +71,32 @@ class _AdButtonState extends State<AdButton> {
     );
   }
 
+  Future<void> playAd() async {
+    if(_lastAdError) {
+      _initGoogleMobileAds();
+    } else if (isAdReady){
+      _rewardedAd.show(onUserEarnedReward: (rewardedAd, rewardItem){
+      });
+    }
+  }
+
   @override
   void initState() {
     user = context.read<User>();
+    user.setKeyFx(playAd, "playAd");
     if(widget.goal == "earnMoreSoloMatch") match = context.read<FfaMatch>();
     _initGoogleMobileAds();
     super.initState();
   }
+
+
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       child: isAdReady?widget.child:widget.adNotReadyChild,
-      onTap: () async {
-        if(_lastAdError) {
-          _initGoogleMobileAds();
-        } else if (isAdReady){
-          _rewardedAd.show(onUserEarnedReward: (rewardedAd, rewardItem){
-          });
-        }
-      },
+      onTap: playAd
     );
   }
 }
