@@ -230,17 +230,30 @@ Future<dynamic> initUser(context) async {
   if (data["successful"] == false) {
     return null;
   }
+  dynamic tutorialFinished;
+  dynamic tutorialStep;
+  try{
+    tutorialFinished = data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true ? false : true;
+    if(data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true){
+      tutorialStep = 17;
 
-  dynamic tutorialStep = secureStorage.read(key: "tutorialStep");
-  dynamic tutorialFinished = getNonNullSSData("tutorialFinished");
-  tutorialStep = await tutorialStep;
-  tutorialFinished = await tutorialFinished;
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] == true){
+      tutorialStep = 13;
+
+    } else if(data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] == true){
+      tutorialStep = 8;
+
+    } else {
+      tutorialStep = 0;
+    }
+
+  } catch(e){}
   return {
     "data": data["data"],
     "authKey": storageKey,
     "callApi": caller,
     "tutorial": {
-      "needed": tutorialFinished != "true",
+      "needed": tutorialFinished ?? false,
       "tutorialStep": tutorialStep ?? 0
     }
   };

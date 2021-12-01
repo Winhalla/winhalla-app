@@ -132,6 +132,7 @@ class _AppCoreState extends State<AppCore> {
 
   @override
   Widget build(BuildContext context) {
+    print(widget.tutorial);
     Widget child = Scaffold(
         backgroundColor: kBackground,
         appBar: !widget.isUserDataLoaded

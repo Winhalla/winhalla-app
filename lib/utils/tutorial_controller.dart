@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -203,7 +203,10 @@ class Tutorial extends ChangeNotifier{
   void next(){
     status ++;
     print(status);
-    if(status == 18) return ctxt.read<TutorialController>().endTutorial();
+    if(status == 18) {
+      ctxt.read<User>().callApi.post("/finishedTutorial","{}");
+      return ctxt.read<TutorialController>().endTutorial();
+    }
     calculateNextValues();
     notifyListeners();
   }
@@ -618,7 +621,7 @@ class Tutorial extends ChangeNotifier{
         ),
         "controlButtonsEnabled":{
           "back":false,
-          "next":true
+          "next":false
         },
       },{ // 14th item ; index : 13
         "widget": Positioned(
@@ -759,7 +762,7 @@ class Tutorial extends ChangeNotifier{
         ),
         "controlButtonsEnabled":{
           "back":false,
-          "next":false
+          "next":true
         },
       },{ // index : 17
         "widget":Positioned(
