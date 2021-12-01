@@ -26,7 +26,6 @@ class MyAppBar extends StatelessWidget {
                 if (user.inGame == null) return const Text("");
 
                 if (user.gamesPlayedInMatch > 0) {
-                  print("okbro");
                   if (user.inGame["isFinished"] == true) {
                     return GestureDetector(
                       behavior: HitTestBehavior.translucent,

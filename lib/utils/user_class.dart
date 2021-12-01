@@ -129,6 +129,8 @@ class User extends ChangeNotifier {
     }
 
     inGame = null;
+    gamesPlayedInMatch = 0;
+    
     notifyListeners();
   }
 

@@ -12,11 +12,9 @@ class PlayPage extends StatefulWidget {
 }
 
 class _PlayPageState extends State<PlayPage> {
-
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, _) {
-      
       return user.inGame == null
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,6 +30,12 @@ class _PlayPageState extends State<PlayPage> {
                   height: 34,
                 ),
                 Consumer<User>(builder: (context, user, _) {
+                  var filteredInGameList = user.value["user"]["inGame"]
+                      .where((g) => g["nbOfUsersFinishing"] > 0 ? true : false)
+                      .toList();
+
+                  var lastGames = user.value["user"]["lastGames"];
+
                   var alreadyTutorial;
                   try {
                     alreadyTutorial = user.value["user"]["lastGames"]
@@ -51,55 +55,117 @@ class _PlayPageState extends State<PlayPage> {
                       "id": '6165a73b60b0762990aebf5e'
                     });
                   }
+
+                  var lastWidget;
                   return Flexible(
                     flex: 1,
                     fit: FlexFit.tight,
                     child: ListView.builder(
                         shrinkWrap: true,
-                        itemCount: user.value["user"]["lastGames"].length,
+                        itemCount: lastGames.length + filteredInGameList.length,
                         itemBuilder: (BuildContext context, int index) {
-                          var match = user.value["user"]["lastGames"][index];
+                          var mergedArray = List.from(filteredInGameList)
+                            ..addAll(lastGames);
+                          var currentMatch = mergedArray[index];
+
+                          //if last widget is an "in game" tile, AND this one is a "match history" tile, set lastWidget to separator
+                          lastWidget = currentMatch["wins"] != null &&
+                                  lastWidget == false
+                              ? "separator"
+                              : currentMatch["wins"] != null
+                                  ? true
+                                  : false;
+
                           return Container(
                             decoration: BoxDecoration(
                                 color: kBackgroundVariant,
                                 borderRadius: BorderRadius.circular(20)),
                             padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
                             margin: EdgeInsets.only(
-                                left: 10, right: 15, top: index == 0 ? 0 : 15),
+                                left: 10,
+                                right: 15,
+                                top: lastWidget == "separator"
+                                    ? 30
+                                    : index == 0
+                                        ? 0
+                                        : 15),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 2.85),
-                                      child: Text(
-                                        "${match["coinsEarned"]}",
-                                        style: kBodyText1.apply(color: kPrimary),
+                              children: currentMatch["wins"] == null
+                                  ? [
+                                      RichText(
+                                        softWrap: true,
+                                        text: TextSpan(
+                                            style: kBodyText2.apply(
+                                                color: kText80),
+                                            children: [
+                                              const TextSpan(text: "Waiting "),
+                                              TextSpan(
+                                                  text:
+                                                      "${currentMatch["nbOfUsersFinishing"]} ",
+                                                  style: const TextStyle(
+                                                      color: kPrimary)),
+                                              const TextSpan(
+                                                  text: "players..."),
+                                            ]),
                                       ),
-                                    ),
-                                    const SizedBox(
-                                      width: 6,
-                                    ),
-                                    Image.asset(
-                                      "assets/images/logo.png",
-                                      width: 34,
-                                    )
-                                  ],
-                                ),
-                                Text(
-                                  match["wins"] == "tutorial"
-                                      ? "tutorial"
-                                      : "${match["wins"]}/7 wins",
-                                  style: kBodyText2.apply(
-                                      color: kGray, fontFamily: "Bebas neue"),
-                                ),
-                                Text(
-                                  "#${match["rank"] + 1}",
-                                  style: kBodyText1.apply(
-                                      fontFamily: "Bebas neue"),
-                                )
-                              ],
+                                      Row(
+                                        children: [
+                                          const Text(
+                                            "x",
+                                            style: TextStyle(
+                                                color: kGreen,
+                                                fontSize: 24,
+                                                fontFamily: 'Roboto Condensed'),
+                                          ),
+                                          const SizedBox(width: 1.5),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(top: .5),
+                                            child: Text(
+                                                "${currentMatch["adsWatched"]}",
+                                                style: const TextStyle(
+                                                    color: kGreen,
+                                                    fontSize: 28)),
+                                          ),
+                                        ],
+                                      )
+                                    ]
+                                  : [
+                                      Row(
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 2.85),
+                                            child: Text(
+                                              "${currentMatch["coinsEarned"]}",
+                                              style: kBodyText1.apply(
+                                                  color: kPrimary),
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            width: 6,
+                                          ),
+                                          Image.asset(
+                                            "assets/images/logo.png",
+                                            width: 34,
+                                          )
+                                        ],
+                                      ),
+                                      Text(
+                                        currentMatch["wins"] == "tutorial"
+                                            ? "tutorial"
+                                            : "${currentMatch["wins"]}/7 wins",
+                                        style: kBodyText2.apply(
+                                            color: kGray,
+                                            fontFamily: "Bebas neue"),
+                                      ),
+                                      Text(
+                                        "#${currentMatch["rank"] + 1}",
+                                        style: kBodyText1.apply(
+                                            fontFamily: "Bebas neue"),
+                                      )
+                                    ],
                             ),
                           );
                         }),

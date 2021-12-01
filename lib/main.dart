@@ -72,7 +72,7 @@ class _MyAppState extends State<MyApp> {
                         'joinDate': currentMatch[0]["joinDate"]
                       };
                     }
-                    // newData["data"] = null;
+
                     return ChangeNotifierProvider<User>(
                       create: (_) => User(newData, callApi, inGame),
                       child: const AppCore(
