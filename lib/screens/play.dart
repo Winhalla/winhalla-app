@@ -12,11 +12,30 @@ class PlayPage extends StatefulWidget {
 }
 
 class _PlayPageState extends State<PlayPage> {
-
+  String? matchInProgressId;
+  Future<void> joinMatch(bool isTutorial) async {
+    if(isTutorial){
+      setState(() {
+        matchInProgressId = "tutorial";
+      });
+      return;
+    }
+    print("test");
+    var matchId = await context.read<User>().enterMatch();
+    if(matchId == "err") return;
+    setState(() {
+      matchInProgressId = matchId;
+    });
+  }
+  void exitMatch(){
+    setState(() {
+      matchInProgressId = null;
+    });
+  }
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, _) {
-      
+
       return user.inGame == null
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -32,25 +51,6 @@ class _PlayPageState extends State<PlayPage> {
                   height: 34,
                 ),
                 Consumer<User>(builder: (context, user, _) {
-                  var alreadyTutorial;
-                  try {
-                    alreadyTutorial = user.value["user"]["lastGames"]
-                        .firstWhere((e) => e["wins"] == "tutorial");
-                  } catch (e) {}
-
-                  if (user.value["user"]["lastGames"].length < 4 &&
-                      alreadyTutorial == null) {
-                    user.value["user"]["lastGames"].add({
-                      "players": ['Philtrom', 'Philtrom2'],
-                      "Date": "2021-10-12T15:26:59.598Z",
-                      "_id": "6165a943a065c71f5c1f0787",
-                      "gm": 'FFA',
-                      "wins": "tutorial",
-                      "coinsEarned": 10,
-                      "rank": 0,
-                      "id": '6165a73b60b0762990aebf5e'
-                    });
-                  }
                   return Flexible(
                     flex: 1,
                     fit: FlexFit.tight,
@@ -60,6 +60,7 @@ class _PlayPageState extends State<PlayPage> {
                         itemBuilder: (BuildContext context, int index) {
                           var match = user.value["user"]["lastGames"][index];
                           return Container(
+                            key: index == 0 ? user.keys[7] : null,
                             decoration: BoxDecoration(
                                 color: kBackgroundVariant,
                                 borderRadius: BorderRadius.circular(20)),
@@ -88,7 +89,7 @@ class _PlayPageState extends State<PlayPage> {
                                   ],
                                 ),
                                 Text(
-                                  match["wins"] == "tutorial"
+                                  match["id"] == "tutorial"
                                       ? "tutorial"
                                       : "${match["wins"]}/7 wins",
                                   style: kBodyText2.apply(
@@ -117,6 +118,7 @@ class _PlayPageState extends State<PlayPage> {
                           if (matchId == "err") return;
                         },
                         child: Container(
+                          key: user.keys[2],
                           margin: const EdgeInsets.fromLTRB(8, 0, 8, 42),
                           decoration: BoxDecoration(
                               color: kPrimary,
@@ -147,7 +149,6 @@ class _PlayPageState extends State<PlayPage> {
               ],
             )
           :
-          // Can't be null bc we check above. Null safety still there.
           SoloMatch(matchId: user.inGame['id']);
     });
   }

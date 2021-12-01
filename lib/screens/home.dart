@@ -36,7 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onTap: () => widget.switchPage(3),
                 child: Consumer<User>(builder: (context, user, _) {
                   return Coin(
-                    nb: user.value["user"]["coins"].toString(),
+                    nb: ((user.value["user"]["coins"]*10).round()/10).toString(),
                   );
                 },
               ),
