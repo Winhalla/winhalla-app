@@ -406,9 +406,12 @@ class Tutorial extends ChangeNotifier{
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                Text(
-                  "Let's jump in a match!",
-                  style: TextStyle(fontFamily: "Roboto condensed", fontSize: 35)
+                Expanded(
+                  child: Text(
+                    "Let's jump in a match!",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontFamily: "Roboto condensed", fontSize: 35, )
+                  ),
                 ),
               ],
             ),
@@ -431,9 +434,12 @@ class Tutorial extends ChangeNotifier{
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                Text(
-                    "This is your player card",
-                    style: kBodyText1Roboto
+                Expanded(
+                  child: Text(
+                      "This is your player card",
+                      textAlign: TextAlign.center,
+                      style: kBodyText1Roboto
+                  ),
                 ),
               ],
             ),
@@ -492,7 +498,13 @@ class Tutorial extends ChangeNotifier{
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: const [
-                          Text("Pull down to refresh", style: kBodyText1Roboto,),
+                          Expanded(
+                            child: Text(
+                              "Pull down to refresh",
+                              style: kBodyText1Roboto,
+                              textAlign: TextAlign.center,
+                            )
+                          ),
                         ],
                       ),
                       const Icon(Icons.south, size: 40, color: kText,)
