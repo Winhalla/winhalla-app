@@ -658,8 +658,14 @@ class Tutorial extends ChangeNotifier{
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: const [
-                          Text("Pull down to refresh", style: kBodyText1Roboto,),
-                        ],
+                          Expanded(
+                            child: Text(
+                              "Pull down to refresh",
+                              textAlign: TextAlign.center,
+                              style: kBodyText1Roboto,
+                            )
+                          ),
+                      ],
                       ),
                       const Icon(Icons.south, size: 40, color: kText,)
                     ],
