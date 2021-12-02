@@ -6,6 +6,47 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 
+class FadeMaskContainer extends StatefulWidget {
+  final Rect widgetPosition;
+  final bool isTransition;
+
+  const FadeMaskContainer({Key? key, required this.widgetPosition, required this.isTransition = false}) : super(key: key);
+  @override
+  _FadeMaskContainerState createState() => _FadeMaskContainerState();
+}
+class _FadeMaskContainerState extends State<FadeMaskContainer> with TickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(duration: Duration(seconds: widget.isTransition ? 1 : 0), vsync: this);
+    Future.delayed(Duration(seconds: widget.isTransition ? 2.5 : 0),(){
+      _animation = Tween<double>(begin: 0, end: 0.85).animate(_controller);
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+        opacity: _animation,
+        child: Positioned.fromRect(
+        rect: widget.widgetPosition,
+        child: Container(
+          color: Colors.black.withOpacity(0.85),
+        ),
+      )
+    );
+  }
+}
+
 class TutorialController extends ChangeNotifier{
   late OverlayEntry overlayEntry;
   late List<GlobalKey?> keys;
@@ -42,33 +83,19 @@ class TutorialController extends ChangeNotifier{
               style: const TextStyle(fontFamily: "Bebas neue"),
               child: Consumer<Tutorial>(
                 builder: (context, tutorial, _) {
+                  int ii = tutorial.status
+                  List<Widget> masks = [];
+                  for (int i=0; i<4; i++){
+                    masks.add(
+                      FadeMaskContainer(
+                        widgetPosition:tutorial.currentWidgetPosition[i],
+                        isTransition: ii == 3 || ii == 7 || ii == 9 || ii == 14 ? ,
+                      )
+                    )
+                  }
                   return SizedBox.expand(
                     child: Stack(
-                      children: [
-                        Positioned.fromRect(
-                            rect: tutorial.currentWidgetPosition[0],
-                            child: Container(
-                              color: Colors.black.withOpacity(0.80),
-                            ),
-                        ),
-                        Positioned.fromRect(
-                          rect: tutorial.currentWidgetPosition[1],
-                          child: Container(
-                            color: Colors.black.withOpacity(0.80),
-                          ),
-                        ),
-                        Positioned.fromRect(
-                          rect: tutorial.currentWidgetPosition[2],
-                          child: Container(
-                            color: Colors.black.withOpacity(0.80),
-                          ),
-                        ),
-                        Positioned.fromRect(
-                          rect: tutorial.currentWidgetPosition[3],
-                          child: Container(
-                            color: Colors.black.withOpacity(0.80),
-                          ),
-                        ),
+                      children: masks.addAll([
                         Positioned.fromRect(
                           rect: tutorial.currentWidgetPosition[4],
                           child: GestureDetector(
@@ -162,7 +189,7 @@ class TutorialController extends ChangeNotifier{
                             ]
                       ),
                         )
-                    ]
+                    ])
                     ),
                   );
                 }
