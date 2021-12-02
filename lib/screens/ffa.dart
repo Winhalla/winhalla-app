@@ -355,6 +355,7 @@ class PlayerWidget extends StatelessWidget {
                 child: ClipRRect(borderRadius: BorderRadius.circular(11), child: Image.network(avatarUrl)),
               ),
               Column(
+                key: isUser ? context.read<User>().keys[6] : null,
                 children: [
                   Row(
                     children: [

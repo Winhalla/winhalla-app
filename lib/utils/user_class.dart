@@ -28,17 +28,19 @@ class   User extends ChangeNotifier {
     var inGameData = value["user"]["inGame"];
     var currentMatch =
         inGameData.where((g) => g["isFinished"] == false).toList();
+    try{
+      if (currentMatch.length > 0) {
+        inGame = {
+          'id': currentMatch[0]["id"],
+          'joinDate': currentMatch[0]["joinDate"],
+          'isFinished': false,
+        };
+      } else if (inGame["isMatchFinished"] == true) {
+        inGame = null;
+        gamesPlayedInMatch = 0;
+      }
+    } catch(e){}
 
-    if (currentMatch.length > 0) {
-      inGame = {
-        'id': currentMatch[0]["id"],
-        'joinDate': currentMatch[0]["joinDate"],
-        'isFinished': false,
-      };
-    } else if (inGame["isMatchFinished"] == true) {
-      inGame = null;
-      gamesPlayedInMatch = 0;
-    }
 
     notifyListeners();
   }
@@ -94,7 +96,18 @@ class   User extends ChangeNotifier {
     return false;
   }
 
-  Future<String> enterMatch() async {
+  Future<String> enterMatch({bool isTutorial = false}) async {
+    if(isTutorial){
+      inGame = {
+        'id': "tutorial",
+        'joinDate': DateTime.now().millisecondsSinceEpoch,
+        'isFinished': false
+      };
+      notifyListeners();
+      return "tutorial";
+    }
+
+
     if (inGame != null) {
       inGame = null;
       gamesPlayedInMatch = 0;
@@ -122,7 +135,14 @@ class   User extends ChangeNotifier {
     return matchId;
   }
 
-  Future<void> exitMatch(beforeEnd) async {
+  Future<void> exitMatch(bool beforeEnd, {isTutorial = false}) async {
+    if(isTutorial){
+      inGame = null;
+      gamesPlayedInMatch = 0;
+      notifyListeners();
+      return;
+    }
+
     if (beforeEnd == true) {
       await callApi.post("/endMatch", "");
     } else {

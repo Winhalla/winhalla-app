@@ -164,28 +164,30 @@ class _PlayPageState extends State<PlayPage> {
                           if (matchId == "err") return;
                         },
                         child: Container(
-                          key: user.keys[2],
                           margin: const EdgeInsets.fromLTRB(8, 0, 8, 42),
                           decoration: BoxDecoration(
                               color: kPrimary,
                               borderRadius: BorderRadius.circular(20)),
-                          padding: const EdgeInsets.fromLTRB(12, 12, 25, 12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              Icon(
-                                Icons.play_arrow_outlined,
-                                color: kText,
-                                size: 50,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(top: 3.5, left: 1),
-                                child: Text(
-                                  "Start a match",
-                                  style: kBodyText1,
+                          child: Padding(
+                            key: user.keys[2],
+                            padding: const EdgeInsets.fromLTRB(12, 12, 25, 12),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: const [
+                                Icon(
+                                  Icons.play_arrow_outlined,
+                                  color: kText,
+                                  size: 50,
                                 ),
-                              ),
-                            ],
+                                Padding(
+                                  padding: EdgeInsets.only(top: 3.5, left: 1),
+                                  child: Text(
+                                    "Start a match",
+                                    style: kBodyText1,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

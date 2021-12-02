@@ -15,10 +15,9 @@ class FfaMatch extends ChangeNotifier {
       {bool showInfo = false,
         bool isTutorial = false,
         bool isTutorialRefresh = false}) async {
-
-    dynamic match =
-      await user.callApi.get(
-          "/getMatch/${isTutorial ? "tutorial" : value["_id"]}" + (isTutorialRefresh ? "?isRefresh=true" : ""));
+    dynamic match = await user.callApi.get(
+          "/getMatch/${isTutorial ? "tutorial" : value["_id"]}" + (isTutorialRefresh ? "?isRefresh=true" : ""),
+    );
     if (match["successful"] == false) return true;
 
     match = match["data"];
@@ -31,12 +30,15 @@ class FfaMatch extends ChangeNotifier {
         match["players"].where((e) => e["steamId"] != steamId).toList();
     value = match;
 
-    user.inGame["isMatchFinished"] = match["finished"] ? true : match["fastFinish"];
-    user.gamesPlayedInMatch = match["userPlayer"]["gamesPlayed"];
+    if(!isTutorialRefresh){
+      user.inGame["isMatchFinished"] = match["finished"] ? true : match["fastFinish"];
+      user.gamesPlayedInMatch = match["userPlayer"]["gamesPlayed"];
 
-    if (match["userPlayer"]["gamesPlayed"] >= 7) {
-      user.inGame["isFinished"] = true;
+      if (match["userPlayer"]["gamesPlayed"] >= 7) {
+        user.inGame["isFinished"] = true;
+      }
     }
+
     await user.refresh();
 
     if (match["updatedPlatforms"] != null) {
@@ -67,10 +69,6 @@ class FfaMatch extends ChangeNotifier {
     }
     notifyListeners();
     return true;
-  }
-
-  void exit() async {
-    await http.post(getUri("/exitMatch/${value["_id"].toString()}"));
   }
 
   void togglePlayerShown() {
