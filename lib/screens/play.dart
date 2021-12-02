@@ -134,7 +134,7 @@ class _PlayPageState extends State<PlayPage> {
                                         ],
                                       ),
                                       Text(
-                                        currentMatch["wins"] == "tutorial"
+                                        currentMatch["id"] == "tutorial"
                                             ? "tutorial"
                                             : "${currentMatch["wins"]}/7 wins",
                                         style: kBodyText2.apply(
