@@ -246,14 +246,12 @@ class _AppCoreState extends State<AppCore> {
                             return Icon(
                               Icons.play_circle_outline_outlined,
                               key: user.keys[1],
-                              color: user.inGame != null &&
+                              color: _selectedIndex == 2
+                                  ? kPrimary : user.inGame != null &&
                                       user.inGame != false &&
                                       user.inGame["joinDate"] + 3600 * 1000 >
                                           DateTime.now().millisecondsSinceEpoch
-                                  ? kOrange
-                                  : _selectedIndex == 2
-                                      ? kPrimary
-                                      : kText95,
+                                  ? kOrange : kText95,
                               size: 34,
                             );
                           }),
