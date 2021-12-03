@@ -684,7 +684,7 @@ class Tutorial extends ChangeNotifier{
         "widget": FadeInPositioned(
           left: 40,
           right: 40,
-          top: 312,
+          top: 304,
 
           child: SizedBox(
             width: screenW - 80,
