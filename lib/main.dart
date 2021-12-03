@@ -61,14 +61,19 @@ class _MyAppState extends State<MyApp> {
                     newData["steam"] = res.data["data"]["steam"];
                     newData["tutorial"] = res.data["tutorial"];
 
-                  List<GlobalKey?> keys = [];
-                  for (int i = 0; i < 18; i++) {
-                    if(i == 0 || i == 4 || i == 5 || i == 10 || i == 11 || i == 17) {
-                      keys.add(null);
-                    } else {
-                      keys.add(GlobalKey());
+                    List<GlobalKey?> keys = [];
+                    for (int i = 0; i < 18; i++) {
+                      if (i == 0 ||
+                          i == 4 ||
+                          i == 5 ||
+                          i == 10 ||
+                          i == 11 ||
+                          i == 17) {
+                        keys.add(null);
+                      } else {
+                        keys.add(GlobalKey());
+                      }
                     }
-                  }
                     var inGameData = newData["user"]["inGame"];
                     var currentMatch = inGameData
                         .where((g) => g["isFinished"] == false)
@@ -83,12 +88,11 @@ class _MyAppState extends State<MyApp> {
                     }
 
                     return ChangeNotifierProvider<User>(
-                      create: (_) => User(newData, callApi, keys ,inGame),
-                      child: AppCore(
-                        isUserDataLoaded: true,
-                        tutorial: newData["tutorial"],
-                      )
-                    );
+                        create: (_) => User(newData, callApi, keys, inGame),
+                        child: AppCore(
+                          isUserDataLoaded: true,
+                          tutorial: newData["tutorial"],
+                        ));
                   }),
             ),
         '/login': (context) => LoginPage(),
@@ -101,7 +105,8 @@ class AppCore extends StatefulWidget {
   final bool isUserDataLoaded;
   final tutorial;
 
-  const AppCore({Key? key, required this.isUserDataLoaded, this.tutorial}) : super(key: key);
+  const AppCore({Key? key, required this.isUserDataLoaded, this.tutorial})
+      : super(key: key);
 
   @override
   _AppCoreState createState() => _AppCoreState();
@@ -111,6 +116,9 @@ class _AppCoreState extends State<AppCore> {
   int _selectedIndex = 0;
   List<Widget> screenList = [];
   void switchPage(index) {
+    if (context.read<User>().inGame?["showMatch"] == false) {
+      context.read<User>().resetInGame();
+    }
     setState(() {
       _selectedIndex = index;
     });
@@ -128,6 +136,7 @@ class _AppCoreState extends State<AppCore> {
     ];
     super.initState();
   }
+
   bool hasSummonedTutorial = false;
 
   @override
@@ -247,11 +256,17 @@ class _AppCoreState extends State<AppCore> {
                               Icons.play_circle_outline_outlined,
                               key: user.keys[1],
                               color: _selectedIndex == 2
-                                  ? kPrimary : user.inGame != null &&
-                                      user.inGame != false &&
-                                      user.inGame["joinDate"] + 3600 * 1000 >
-                                          DateTime.now().millisecondsSinceEpoch
-                                  ? kOrange : kText95,
+                                  ? kPrimary
+                                  : user.inGame != null &&
+                                          user.inGame["showActivity"] !=
+                                              false &&
+                                          user.inGame != false &&
+                                          user.inGame["joinDate"] +
+                                                  3600 * 1000 >
+                                              DateTime.now()
+                                                  .millisecondsSinceEpoch
+                                      ? kOrange
+                                      : kText95,
                               size: 34,
                             );
                           }),
@@ -277,23 +292,22 @@ class _AppCoreState extends State<AppCore> {
                   ],
                 ),
               ));
-    if(widget.tutorial?["needed"] == true){
+    if (widget.tutorial?["needed"] == true) {
       double screenH = MediaQuery.of(context).size.height;
       double screenW = MediaQuery.of(context).size.width;
       return ChangeNotifierProvider<TutorialController>(
-        create: (context)=>TutorialController(widget.tutorial["tutorialStep"], context.read<User>().keys, screenW, screenH, context),
-        child: Builder(
-          builder: (context) {
-            if(!hasSummonedTutorial) {
-              hasSummonedTutorial = true;
-              context.read<User>().setKeyFx(switchPage, "switchPage");
-              Future.delayed(const Duration(milliseconds: 100), (){
-                context.read<TutorialController>().summon(context);
-              });
-            }
-            return child;
+        create: (context) => TutorialController(widget.tutorial["tutorialStep"],
+            context.read<User>().keys, screenW, screenH, context),
+        child: Builder(builder: (context) {
+          if (!hasSummonedTutorial) {
+            hasSummonedTutorial = true;
+            context.read<User>().setKeyFx(switchPage, "switchPage");
+            Future.delayed(const Duration(milliseconds: 100), () {
+              context.read<TutorialController>().summon(context);
+            });
           }
-        ),
+          return child;
+        }),
       );
     } else {
       return child;

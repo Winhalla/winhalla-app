@@ -22,24 +22,31 @@ class SoloMatch extends StatelessWidget {
       child: FutureBuilder(
         future: context.read<User>().callApi.get("/getMatch/$matchId"),
         builder: (BuildContext context, AsyncSnapshot res) {
-          if (!res.hasData) {
-            return const Center(
-                child: CircularProgressIndicator()
-            );
+          if (context.read<User>().inGame["showActivity"] == false) {
+            context.read<User>().hideMatch();
           }
-          if(res.data["successful"] == false){
-            return const Center(
-              child: CircularProgressIndicator()
-            );
+
+          if (!res.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (res.data["successful"] == false) {
+            return const Center(child: CircularProgressIndicator());
           }
           return ChangeNotifierProvider<FfaMatch>(
-            create: (context) => FfaMatch(res.data["data"], context.read<User>().value["steam"]["id"]),
+            create: (context) => FfaMatch(
+                res.data["data"], context.read<User>().value["steam"]["id"]),
             child: Builder(builder: (context) {
               return RefreshIndicator(
                 onRefresh: () async {
                   var user = context.read<User>();
-                  bool hasNotChanged = await context.read<FfaMatch>().refresh(context, user, showInfo: true);
-                  if(hasNotChanged && await getNonNullSSData("hideNoRefreshMatch") != "true") showDialog(context: context, builder: (_)=>NoRefreshPopup("match"));
+                  bool hasNotChanged = await context
+                      .read<FfaMatch>()
+                      .refresh(context, user, showInfo: true);
+                  if (hasNotChanged &&
+                      await getNonNullSSData("hideNoRefreshMatch") != "true")
+                    showDialog(
+                        context: context,
+                        builder: (_) => NoRefreshPopup("match"));
                   return;
                 },
                 child: ListView(
@@ -52,13 +59,18 @@ class SoloMatch extends StatelessWidget {
                         ),
                         Container(
                             decoration: BoxDecoration(
-                                color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
+                                color: kBackgroundVariant,
+                                borderRadius: BorderRadius.circular(14)),
                             padding: const EdgeInsets.fromLTRB(25, 9, 25, 6),
-                            child: Consumer<FfaMatch>(builder: (context, match, _) {
+                            child: Consumer<FfaMatch>(
+                                builder: (context, match, _) {
                               return TimerWidget(
                                 showHours: "no",
-                                numberOfSeconds: (((match.value["userPlayer"]["joinDate"] + 3600 * 1000) -
-                                            DateTime.now().millisecondsSinceEpoch) /
+                                numberOfSeconds: (((match.value["userPlayer"]
+                                                    ["joinDate"] +
+                                                3600 * 1000) -
+                                            DateTime.now()
+                                                .millisecondsSinceEpoch) /
                                         1000)
                                     .round(),
                               );
@@ -76,15 +88,21 @@ class SoloMatch extends StatelessWidget {
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Consumer<FfaMatch>(
-                                builder: (context, match,_) {
-                                  context.read<User>().setKeyFx(match.refresh, "refreshMatch");
-                                  if(match.value["finished"] == true){
-                                    return Text("x${(match.value["userPlayer"]["multiplier"]).round()}", style: const TextStyle(color: kGreen, fontSize: 34));
-                                  }
-                                  return Text("x${(match.value["userPlayer"]["multiplier"]/100).round()}", style: const TextStyle(color: kGreen, fontSize: 34));
+                              Consumer<FfaMatch>(builder: (context, match, _) {
+                                context
+                                    .read<User>()
+                                    .setKeyFx(match.refresh, "refreshMatch");
+                                if (match.value["finished"] == true) {
+                                  return Text(
+                                      "x${(match.value["userPlayer"]["multiplier"]).round()}",
+                                      style: const TextStyle(
+                                          color: kGreen, fontSize: 34));
                                 }
-                              ),
+                                return Text(
+                                    "x${(match.value["userPlayer"]["multiplier"] / 100).round()}",
+                                    style: const TextStyle(
+                                        color: kGreen, fontSize: 34));
+                              }),
                               const SizedBox(
                                 width: 9,
                               ),
@@ -97,52 +115,66 @@ class SoloMatch extends StatelessWidget {
                               )
                             ],
                           ),
-                          Consumer<FfaMatch>(
-                            builder: (context, match, _) {
-                              if(match.value["userPlayer"]["adsWatched"] >= 16) {
-                                return Container(
-                                    padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
-                                    decoration: BoxDecoration(color: kText60, borderRadius: BorderRadius.circular(12)),
-                                    child: Text(
-                                      "Max ads reached",
-                                      style: kBodyText4.apply(color: kText),
-                                    ),
-                                );
-                              }
-                              return AdButton(
-                                goal: 'earnMoreSoloMatch',
-                                adNotReadyChild:Container(
-                                    padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
-                                    child: Text(
-                                      "Ad loading...",
-                                      style: kBodyText4.apply(color: kText),
-                                    ),
-                                    decoration: BoxDecoration(color: kText60, borderRadius: BorderRadius.circular(12))),
-                                child: Container(
-                                    padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
-                                    child: Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(bottom:2.0),
-                                          child: Image.asset("assets/images/video_ad.png", width: 20,),
-                                        ),
-                                        const SizedBox(width: 7,),
-                                        Text(
-                                          "Boost it",
-                                          style: kBodyText4.apply(color: kBackground),
-                                        ),
-                                      ],
-                                    ),
-                                    decoration:
-                                        BoxDecoration(color: kGreen, borderRadius: BorderRadius.circular(12))),
+                          Consumer<FfaMatch>(builder: (context, match, _) {
+                            if (match.value["userPlayer"]["adsWatched"] >= 16) {
+                              return Container(
+                                padding: const EdgeInsets.fromLTRB(
+                                    19, 11.5, 19, 8.5),
+                                decoration: BoxDecoration(
+                                    color: kText60,
+                                    borderRadius: BorderRadius.circular(12)),
+                                child: Text(
+                                  "Max ads reached",
+                                  style: kBodyText4.apply(color: kText),
+                                ),
                               );
                             }
-                          )
+                            return AdButton(
+                              goal: 'earnMoreSoloMatch',
+                              adNotReadyChild: Container(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      19, 11.5, 19, 8.5),
+                                  child: Text(
+                                    "Ad loading...",
+                                    style: kBodyText4.apply(color: kText),
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: kText60,
+                                      borderRadius: BorderRadius.circular(12))),
+                              child: Container(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      19, 11.5, 19, 8.5),
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding:
+                                            const EdgeInsets.only(bottom: 2.0),
+                                        child: Image.asset(
+                                          "assets/images/video_ad.png",
+                                          width: 20,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 7,
+                                      ),
+                                      Text(
+                                        "Boost it",
+                                        style: kBodyText4.apply(
+                                            color: kBackground),
+                                      ),
+                                    ],
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: kGreen,
+                                      borderRadius: BorderRadius.circular(12))),
+                            );
+                          })
                         ],
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       ),
-                      decoration:
-                          BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(20)),
+                      decoration: BoxDecoration(
+                          color: kBackgroundVariant,
+                          borderRadius: BorderRadius.circular(20)),
                     ),
                     const SizedBox(
                       height: 60,
@@ -150,7 +182,7 @@ class SoloMatch extends StatelessWidget {
                     Consumer<FfaMatch>(builder: (context, match, _) {
                       final player = match.value["userPlayer"];
                       return Container(
-                        key:  context.read<User>().keys[3],
+                        key: context.read<User>().keys[3],
                         child: PlayerWidget(
                           isUser: true,
                           avatarUrl: player["avatarURL"],
@@ -175,7 +207,7 @@ class SoloMatch extends StatelessWidget {
                             width: 5,
                           ),
                           Text(
-                            "other player${match.value["players"].length>1?"s":""} in this match...",
+                            "other player${match.value["players"].length > 1 ? "s" : ""} in this match...",
                             style: kBodyText3,
                           ),
                           const SizedBox(
@@ -184,7 +216,8 @@ class SoloMatch extends StatelessWidget {
                           GestureDetector(
                             child: Text(
                               match.areOtherPlayersShown ? "HIDE" : "SHOW",
-                              style: kBodyText2.apply(fontFamily: "Bebas Neue", color: kText80),
+                              style: kBodyText2.apply(
+                                  fontFamily: "Bebas Neue", color: kText80),
                             ),
                             onTap: () {
                               match.togglePlayerShown();
@@ -195,14 +228,16 @@ class SoloMatch extends StatelessWidget {
                       );
                     }),
                     Consumer<FfaMatch>(builder: (context, match, _) {
-                      if (match.areOtherPlayersShown && match.value["players"].length > 0) {
+                      if (match.areOtherPlayersShown &&
+                          match.value["players"].length > 0) {
                         return Padding(
                           padding: const EdgeInsets.only(top: 50),
                           child: ListView.builder(
                             itemBuilder: (context, int index) {
                               final player = match.value["players"][index];
                               return Padding(
-                                padding: EdgeInsets.only(top:index == 0?0:22.0),
+                                padding:
+                                    EdgeInsets.only(top: index == 0 ? 0 : 22.0),
                                 child: PlayerWidget(
                                   isUser: false,
                                   avatarUrl: player["avatarURL"],
@@ -289,11 +324,18 @@ class SoloMatch extends StatelessWidget {
                                     SizedBox(
                                       width: 200,
                                       child: RichText(
-                                        text: const TextSpan(style: kBodyText3, children: [
-                                          TextSpan(text: "Start "),
-                                          TextSpan(text: "playing ", style: TextStyle(color: kPrimary)),
-                                          TextSpan(text: "Brawlhalla! (only ranked games)")
-                                        ]),
+                                        text: const TextSpan(
+                                            style: kBodyText3,
+                                            children: [
+                                              TextSpan(text: "Start "),
+                                              TextSpan(
+                                                  text: "playing ",
+                                                  style: TextStyle(
+                                                      color: kPrimary)),
+                                              TextSpan(
+                                                  text:
+                                                      "Brawlhalla! (only ranked games)")
+                                            ]),
                                       ),
                                     ),
                                     const SizedBox(
@@ -303,12 +345,20 @@ class SoloMatch extends StatelessWidget {
                                       width: 200,
                                       child: RichText(
                                         softWrap: true,
-                                        text: const TextSpan(style: kBodyText3, children: [
-                                          TextSpan(text: "Drag down ", style: TextStyle(color: kPrimary)),
-                                          TextSpan(text: "to "),
-                                          TextSpan(text: "sync ", style: TextStyle(color: kPrimary)),
-                                          TextSpan(text: "your stats"),
-                                        ]),
+                                        text: const TextSpan(
+                                            style: kBodyText3,
+                                            children: [
+                                              TextSpan(
+                                                  text: "Drag down ",
+                                                  style: TextStyle(
+                                                      color: kPrimary)),
+                                              TextSpan(text: "to "),
+                                              TextSpan(
+                                                  text: "sync ",
+                                                  style: TextStyle(
+                                                      color: kPrimary)),
+                                              TextSpan(text: "your stats"),
+                                            ]),
                                       ),
                                     ),
                                   ],
@@ -350,12 +400,15 @@ class PlayerWidget extends StatelessWidget {
     return Stack(
       children: [
         Container(
-          padding: EdgeInsets.fromLTRB(35, isUser ? 25 : 18, 35, isUser ? 25 : 18),
+          padding:
+              EdgeInsets.fromLTRB(35, isUser ? 25 : 18, 35, isUser ? 25 : 18),
           child: Row(
             children: [
               SizedBox(
                 width: isUser ? 72 : 60,
-                child: ClipRRect(borderRadius: BorderRadius.circular(11), child: Image.network(avatarUrl)),
+                child: ClipRRect(
+                    borderRadius: BorderRadius.circular(11),
+                    child: Image.network(avatarUrl)),
               ),
               Column(
                 key: isUser ? context.read<User>().keys[6] : null,
@@ -374,7 +427,8 @@ class PlayerWidget extends StatelessWidget {
                       ),
                       Text(
                         "$games/7",
-                        style: TextStyle(color: isUser ? kEpic : kPrimary, fontSize: 26),
+                        style: TextStyle(
+                            color: isUser ? kEpic : kPrimary, fontSize: 26),
                       )
                     ],
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -382,13 +436,13 @@ class PlayerWidget extends StatelessWidget {
                   const SizedBox(
                     height: 2.5,
                   ),
-                
                   if (isUser == true)
                     Row(
                       children: [
                         const Padding(
                           padding: EdgeInsets.only(bottom: 1.5),
-                          child: Text("Games won:", style: TextStyle(color: kText, fontSize: 22)),
+                          child: Text("Games won:",
+                              style: TextStyle(color: kText, fontSize: 22)),
                         ),
                         const SizedBox(
                           width: 10,
