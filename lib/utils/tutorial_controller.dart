@@ -428,13 +428,13 @@ class Tutorial extends ChangeNotifier{
           // top: 10,
           left: 20,
           right: 20,
-          bottom: 10,
+          bottom: 128,
           child: SizedBox(
             width: screenW-40,
             height: screenH/3,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
               children: const [
                 Expanded(
                   child: Text(
@@ -581,32 +581,31 @@ class Tutorial extends ChangeNotifier{
         },
       }, { 
         "widget": FadeInPositioned(
+          top: 86,
           left: 20,
           right: 20,
           child: SizedBox(
             width: screenW - 40,
             height: screenH,
-            child: Padding(
-              padding: EdgeInsets.only(top: screenH/2,),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(style: kBodyText1Roboto, children: [
-                        const TextSpan(
-                            text: "Here are the quests, Complete them in ", style: kBodyText1Roboto),
-                        TextSpan(
-                            text: "any online Brawlhalla gamemode ",
-                            style: kBodyText1Roboto.apply(color: kPrimary)),
-                        const TextSpan(
-                            text:
-                                "(unless a gamemode is specified)",
-                            style: kBodyText1Roboto),
-                      ]),
-                    ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(style: kBodyText1Roboto, children: [
+                      const TextSpan(
+                          text: "Here are the quests, Complete them in ", style: kBodyText1Roboto),
+                      TextSpan(
+                          text: "any online Brawlhalla gamemode ",
+                          style: kBodyText1Roboto.apply(color: kPrimary)),
+                      const TextSpan(
+                          text:
+                              "(unless a gamemode is specified)",
+                          style: kBodyText1Roboto),
+                    ]),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -685,33 +684,33 @@ class Tutorial extends ChangeNotifier{
         "widget": FadeInPositioned(
           left: 40,
           right: 40,
+          top: 312,
+
           child: SizedBox(
             width: screenW - 80,
             height: screenH - 70,
-            child: Padding(
-              padding: EdgeInsets.only(top: screenH/1.65,),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(
-                        style: kBodyText1Roboto, 
-                        children: [
-                          const TextSpan(
-                              text: "This quest is now completed. ", style: kBodyText1Roboto),
-                          TextSpan(
-                              text: "Tap it ",
-                              style: kBodyText1Roboto.apply(color: kPrimary)),
-                          const TextSpan(
-                              text:
-                                  "to collect it and get the coins",
-                              style: kBodyText1Roboto),
-                        ]
-                      ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: RichText(
+                    text: TextSpan(
+                      style: kBodyText1Roboto,
+                      children: [
+                        const TextSpan(
+                            text: "This quest is now completed. ", style: kBodyText1Roboto),
+                        TextSpan(
+                            text: "Tap it ",
+                            style: kBodyText1Roboto.apply(color: kPrimary)),
+                        const TextSpan(
+                            text:
+                                "to collect it and get the coins",
+                            style: kBodyText1Roboto),
+                      ]
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
@@ -822,14 +821,14 @@ class Tutorial extends ChangeNotifier{
         },
       },{ // 17th item ; index : 16
         "widget": FadeInPositioned(
+          top: screenH/3,
           left: 20,
           right: 20,
           child: SizedBox(
             width: screenW - 40,
             height: screenH,
-            child: Padding(
-              padding: EdgeInsets.only(top: screenH/1.6,),
-              child: Row(
+            child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Expanded(
                     child: RichText(
@@ -854,7 +853,6 @@ class Tutorial extends ChangeNotifier{
                   ),
                 ],
               ),
-            ),
           ),
         ),
         "controlButtonsEnabled":{
