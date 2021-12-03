@@ -9,6 +9,8 @@ import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
+import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+import 'package:winhalla_app/utils/tutorial_controller.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
@@ -49,14 +51,11 @@ void main() {
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
 
-
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -68,36 +67,72 @@ class _MyAppState extends State<MyApp> {
       initialRoute: '/',
       routes: {
         '/': (context) => SafeArea(
-            child: FutureBuilder(
-                future: initUser(context),
-                builder: (context, AsyncSnapshot<dynamic> res) {
-                  if (!res.hasData) return const AppCore(isUserDataLoaded: false);
-                  if (res.data == "no data" || res.data["data"] == "" || res.data["data"] == null) {
-                    return LoginPage(userData:res.data);
-                  }
-                  if(res.data["data"]["user"] == null) return LoginPage(userData: res.data);
-                  // Do not edit res.data directly otherwise it calls the build function again for some reason
-                  var newData = res.data as Map<String,dynamic>;
-                  var callApi = res.data["callApi"];
-                  newData["callApi"] = null;
-                  newData["user"] = res.data["data"]["user"];
-                  newData["steam"] = res.data["data"]["steam"];
-                  newData["tutorial"] = res.data["data"]["tutorial"];
+              child: FutureBuilder(
+                  future: initUser(context),
+                  builder: (context, AsyncSnapshot<dynamic> res) {
+                    if (!res.hasData) {
+                      return const AppCore(isUserDataLoaded: false);
+                    }
 
-                  FirebaseAnalytics.instance.logAppOpen();
-                  FirebaseCrashlytics.instance.setUserIdentifier(newData["steam"]["id"]);
-                  FirebaseAnalytics.instance.setUserId(
-                      id: newData["steam"]["id"]
-                  );
-                  // newData["data"] = null;
-                  return ChangeNotifierProvider<User>(
-                      create: (_) => User(newData,callApi),
-                      child: const AppCore(
+                    if (res.data == "no data" ||
+                        res.data["data"] == "" ||
+                        res.data["data"] == null) {
+                      return LoginPage(userData: res.data);
+                    }
+
+                    if (res.data["data"]["user"] == null) {
+                      return LoginPage(userData: res.data);
+                    }
+
+                    // Do not edit res.data directly otherwise it calls the build function again for some reason
+                    var newData = res.data as Map<String, dynamic>;
+                    var callApi = res.data["callApi"];
+
+                    newData["callApi"] = null;
+                    newData["user"] = res.data["data"]["user"];
+                    newData["steam"] = res.data["data"]["steam"];
+                    newData["tutorial"] = res.data["tutorial"];
+
+                  List<GlobalKey?> keys = [];
+                  for (int i = 0; i < 18; i++) {
+                    if(i == 0 || i == 4 || i == 5 || i == 10 || i == 11 || i == 17) {
+                      keys.add(null);
+                    } else {
+                      keys.add(GlobalKey());
+                    }
+                  }
+                    var inGameData = newData["user"]["inGame"];
+                    var currentMatch = inGameData
+                        .where((g) => g["isFinished"] == false)
+                        .toList();
+
+                    try{
+                      FirebaseAnalytics.instance.logAppOpen();
+                      FirebaseCrashlytics.instance.setUserIdentifier(newData["steam"]["id"]);
+                      FirebaseAnalytics.instance.setUserId(
+                          id: newData["steam"]["id"]
+                      );
+                    } catch(e){}
+
+
+
+                    var inGame = null;
+                    if (currentMatch.length > 0) {
+                      inGame = {
+                        'id': currentMatch[0]["id"],
+                        'joinDate': currentMatch[0]["joinDate"]
+                      };
+                    }
+
+                    return ChangeNotifierProvider<User>(
+                      create: (_) => User(newData, callApi, keys ,inGame),
+                      child: AppCore(
                         isUserDataLoaded: true,
-                      ),
-                  );
-                }),
-        ),
+                        tutorial: newData["tutorial"],
+                      )
+                    );
+                  }),
+            ),
         '/login': (context) => LoginPage(),
       },
     );
@@ -106,8 +141,9 @@ class _MyAppState extends State<MyApp> {
 
 class AppCore extends StatefulWidget {
   final bool isUserDataLoaded;
+  final tutorial;
 
-  const AppCore({Key? key, required this.isUserDataLoaded}) : super(key: key);
+  const AppCore({Key? key, required this.isUserDataLoaded, this.tutorial}) : super(key: key);
 
   @override
   _AppCoreState createState() => _AppCoreState();
@@ -137,20 +173,30 @@ class _AppCoreState extends State<AppCore> {
     FirebaseAnalytics.instance.logScreenView(screenClass: "HomeClass",screenName: indexToScreenName(index));
     FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(index));
   }
+
   @override
-  void initState(){
-    screenList = [MyHomePage(switchPage: switchPage,), const Quests(), const PlayPage(),const Shop()];
+  void initState() {
+    screenList = [
+      MyHomePage(
+        switchPage: switchPage,
+      ),
+      const Quests(),
+      const PlayPage(),
+      const Shop()
+    ];
     super.initState();
   }
+  bool hasSummonedTutorial = false;
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    Widget child = Scaffold(
         backgroundColor: kBackground,
         appBar: !widget.isUserDataLoaded
             ? null
             : PreferredSize(
                 preferredSize: const Size.fromHeight(134),
-                child: MyAppBar(widget.isUserDataLoaded)),
+                child: MyAppBar(widget.isUserDataLoaded, _selectedIndex)),
         body: widget.isUserDataLoaded
             ? _selectedIndex == 2 ||
                     _selectedIndex ==
@@ -165,7 +211,7 @@ class _AppCoreState extends State<AppCore> {
                     child: screenList[_selectedIndex],
                   ))
             : Padding(
-                padding: const EdgeInsets.only(left: 40,right: 40,bottom:40),
+                padding: const EdgeInsets.only(left: 40, right: 40, bottom: 40),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -175,8 +221,13 @@ class _AppCoreState extends State<AppCore> {
                         "assets/animated/loading.riv",
                       ),
                     ),
-                    Text("Loading...",style: kHeadline1,),
-                    SizedBox(height: 15,),
+                    Text(
+                      "Loading...",
+                      style: kHeadline1,
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
                     Padding(
                       padding: EdgeInsets.only(right: 7.0),
                       child: CircularProgressIndicator(),
@@ -212,6 +263,7 @@ class _AppCoreState extends State<AppCore> {
                           height: 90,
                           child: Icon(
                             Icons.home_outlined,
+                            key: context.read<User>().keys[13],
                             color: _selectedIndex == 0 ? kPrimary : kText95,
                             size: 34,
                           ),
@@ -228,6 +280,7 @@ class _AppCoreState extends State<AppCore> {
                           height: 90,
                           child: Icon(
                             Icons.check_box_outlined,
+                            key: context.read<User>().keys[8],
                             color: _selectedIndex == 1 ? kPrimary : kText95,
                             size: 34,
                           ),
@@ -242,11 +295,24 @@ class _AppCoreState extends State<AppCore> {
                         },
                         child: SizedBox(
                           height: 90,
-                          child: Icon(
-                            Icons.play_circle_outline_outlined,
-                            color: _selectedIndex == 2 ? kPrimary : kText95,
-                            size: 34,
-                          ),
+                          child: Consumer<User>(builder: (context, user, _) {
+                            /*if (user.inGame == false) {
+                                Future.delayed(Duration(milliseconds: 1), () {
+                                  switchPage(0);
+                                });
+                              }*/
+                            return Icon(
+                              Icons.play_circle_outline_outlined,
+                              key: user.keys[1],
+                              color: _selectedIndex == 2
+                                  ? kPrimary : user.inGame != null &&
+                                      user.inGame != false &&
+                                      user.inGame["joinDate"] + 3600 * 1000 >
+                                          DateTime.now().millisecondsSinceEpoch
+                                  ? kOrange : kText95,
+                              size: 34,
+                            );
+                          }),
                         ),
                       ),
                     ),
@@ -269,5 +335,26 @@ class _AppCoreState extends State<AppCore> {
                   ],
                 ),
               ));
+    if(widget.tutorial?["needed"] == true){
+      double screenH = MediaQuery.of(context).size.height;
+      double screenW = MediaQuery.of(context).size.width;
+      return ChangeNotifierProvider<TutorialController>(
+        create: (context)=>TutorialController(widget.tutorial["tutorialStep"], context.read<User>().keys, screenW, screenH, context),
+        child: Builder(
+          builder: (context) {
+            if(!hasSummonedTutorial) {
+              hasSummonedTutorial = true;
+              context.read<User>().setKeyFx(switchPage, "switchPage");
+              Future.delayed(const Duration(milliseconds: 100), (){
+                context.read<TutorialController>().summon(context);
+              });
+            }
+            return child;
+          }
+        ),
+      );
+    } else {
+      return child;
+    }
   }
 }

@@ -78,6 +78,7 @@ class SoloMatch extends StatelessWidget {
                             children: [
                               Consumer<FfaMatch>(
                                 builder: (context, match,_) {
+                                  context.read<User>().setKeyFx(match.refresh, "refreshMatch");
                                   return Text("x${(match.value["userPlayer"]["multiplier"]/100).round()}", style: const TextStyle(color: kGreen, fontSize: 34));
                                 }
                               ),
@@ -93,33 +94,46 @@ class SoloMatch extends StatelessWidget {
                               )
                             ],
                           ),
-                          AdButton(
-                            goal: 'earnMoreSoloMatch',
-                            adNotReadyChild:Container(
-                                padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
-                                child: Text(
-                                  "Ad loading...",
-                                  style: kBodyText4.apply(color: kText),
-                                ),
-                                decoration:
-                                BoxDecoration(color: kText60, borderRadius: BorderRadius.circular(12))),
-                            child: Container(
-                                padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom:2.0),
-                                      child: Image.asset("assets/images/video_ad.png", width: 20,),
+                          Consumer<FfaMatch>(
+                            builder: (context, match, _) {
+                              if(match.value["userPlayer"]["adsWatched"] >= 16) {
+                                return Container(
+                                    padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
+                                    decoration: BoxDecoration(color: kText60, borderRadius: BorderRadius.circular(12)),
+                                    child: Text(
+                                      "Max ads reached",
+                                      style: kBodyText4.apply(color: kText),
                                     ),
-                                    const SizedBox(width: 7,),
-                                    Text(
-                                      "Boost it",
-                                      style: kBodyText4.apply(color: kBackground),
+                                );
+                              }
+                              return AdButton(
+                                goal: 'earnMoreSoloMatch',
+                                adNotReadyChild:Container(
+                                    padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
+                                    child: Text(
+                                      "Ad loading...",
+                                      style: kBodyText4.apply(color: kText),
                                     ),
-                                  ],
-                                ),
-                                decoration:
-                                    BoxDecoration(color: kGreen, borderRadius: BorderRadius.circular(12))),
+                                    decoration: BoxDecoration(color: kText60, borderRadius: BorderRadius.circular(12))),
+                                child: Container(
+                                    padding: const EdgeInsets.fromLTRB(19, 11.5, 19, 8.5),
+                                    child: Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(bottom:2.0),
+                                          child: Image.asset("assets/images/video_ad.png", width: 20,),
+                                        ),
+                                        const SizedBox(width: 7,),
+                                        Text(
+                                          "Boost it",
+                                          style: kBodyText4.apply(color: kBackground),
+                                        ),
+                                      ],
+                                    ),
+                                    decoration:
+                                        BoxDecoration(color: kGreen, borderRadius: BorderRadius.circular(12))),
+                              );
+                            }
                           )
                         ],
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -132,12 +146,15 @@ class SoloMatch extends StatelessWidget {
                     ),
                     Consumer<FfaMatch>(builder: (context, match, _) {
                       final player = match.value["userPlayer"];
-                      return PlayerWidget(
-                        isUser: true,
-                        avatarUrl: player["avatarURL"],
-                        games: player["gamesPlayed"],
-                        wins: player["wins"],
-                        name: player["username"],
+                      return Container(
+                        key:  context.read<User>().keys[3],
+                        child: PlayerWidget(
+                          isUser: true,
+                          avatarUrl: player["avatarURL"],
+                          games: player["gamesPlayed"],
+                          wins: player["wins"],
+                          name: player["username"],
+                        ),
                       );
                     }),
                     const SizedBox(
@@ -338,6 +355,7 @@ class PlayerWidget extends StatelessWidget {
                 child: ClipRRect(borderRadius: BorderRadius.circular(11), child: Image.network(avatarUrl)),
               ),
               Column(
+                key: isUser ? context.read<User>().keys[6] : null,
                 children: [
                   Row(
                     children: [

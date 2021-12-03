@@ -19,6 +19,7 @@ class _DailyChallengeState extends State<DailyChallenge> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      key:context.read<User>().keys[14],
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -30,16 +31,15 @@ class _DailyChallengeState extends State<DailyChallenge> {
             GestureDetector(
               // ignore: avoid_returning_null_for_void
               onTap: () => null,
-              child: Consumer<User>(
-                builder: (context, user, _) {
-                  return Coin(
-                    nb: user.value["user"]["dailyChallenge"]["challenges"]
-                        .fold(0, (sum, item) => sum + item["reward"]).toString(),
-                    color:kOrange,
-                    padding: const EdgeInsets.fromLTRB(16, 9, 16, 6),
-                  );
-                }
-              ),
+              child: Consumer<User>(builder: (context, user, _) {
+                return Coin(
+                  nb: user.value["user"]["dailyChallenge"]["challenges"]
+                      .fold(0, (sum, item) => sum + item["reward"])
+                      .toString(),
+                  color: kOrange,
+                  padding: const EdgeInsets.fromLTRB(16, 9, 16, 6),
+                );
+              }),
             ),
           ],
         ),
@@ -58,84 +58,82 @@ class _DailyChallengeState extends State<DailyChallenge> {
                           child: Container(),
                         ),
                       )),*/
-                Consumer<User>(
-                  builder: (context, user, _) {
-                    final List dailyChallengeQuests = user.value["user"]["dailyChallenge"]["challenges"];
-                    for (var quest in dailyChallengeQuests) {
-                      final textPainter = TextPainter(
-                        text: TextSpan(text: quest["name"] as String, style: kBodyText3),
-                        textDirection: TextDirection.ltr,
-                      );
-                      textPainter.layout(
-                          maxWidth:
-                          138); //maxWidth needs to be set to: DailyChallengeItem maxWidth - DailyChallengeItem X padding
-                      List lines = textPainter.computeLineMetrics();
-                      quest["lineNumber"] = lines.length;
-                    }
-                    return CustomPaint(
-                      painter: TreePainter(
-                        dailyChallengeQuests: dailyChallengeQuests,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          for (var quest in dailyChallengeQuests)
-                            quest["completed"]
-                                ?
-                                Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 11.5),
-                                        child: DailyChallengeItem(
-                                          name: quest["name"],
-                                          completed: quest["completed"],
-                                        ),
-                                      )
-                                : quest["active"]
-                                    ? Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 11.5),
-                                        child: QuestWidget(
-                                            reward: quest["reward"],
-                                            name: quest["name"] ,
-                                            color: kOrange,
-                                            progress: quest["progress"],
-                                            goal: quest["goalNb"],
-                                            showAdButton: quest["goal"] == "ad"
-                                        ),
-                            )
-                                    : Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 11.5),
-                                        child: DailyChallengeItem(
-                                          name: quest["name"] as String,
-                                          completed: quest["completed"] as bool,
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.only(top: 21),
-                                        child: Row(
+                Consumer<User>(builder: (context, user, _) {
+                  final List dailyChallengeQuests = user.value["user"]["dailyChallenge"]["challenges"];
+                  for (var quest in dailyChallengeQuests) {
+                    final textPainter = TextPainter(
+                      text: TextSpan(text: quest["name"] as String, style: kBodyText3),
+                      textDirection: TextDirection.ltr,
+                    );
+                    textPainter.layout(
+                        maxWidth:
+                        138); //maxWidth needs to be set to: DailyChallengeItem maxWidth - DailyChallengeItem X padding
+                    List lines = textPainter.computeLineMetrics();
+                    quest["lineNumber"] = lines.length;
+                  }
+                  return CustomPaint(
+                    painter: TreePainter(
+                      dailyChallengeQuests: dailyChallengeQuests,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        for (int i = 0; i < dailyChallengeQuests.length; i++)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 11.5),
+                            child: Container(
+                              key: i == 0 ? user.keys[15] : i == 1 ? user.keys[16] : null,
+                              child: dailyChallengeQuests[i]["completed"]
+                                  ? DailyChallengeItem(
+                                    name: dailyChallengeQuests[i]["name"],
+                                    completed: dailyChallengeQuests[i]["completed"],
+                                  )
+                                  : dailyChallengeQuests[i]["active"]
+                                      ? QuestWidget(
+                                          reward: dailyChallengeQuests[i]["reward"],
+                                          name: dailyChallengeQuests[i]["name"],
+                                          color: kOrange,
+                                          progress: dailyChallengeQuests[i]["progress"],
+                                          goal: dailyChallengeQuests[i]["goalNb"],
+                                          showAdButton: dailyChallengeQuests[i]["goal"] == "ad")
+                                      : Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
-                                            Text(
-                                              quest["reward"].toString(),
-                                              style: kBodyText3,
+                                            DailyChallengeItem(
+                                              name: dailyChallengeQuests[i]["name"] as String,
+                                              completed:
+                                                  dailyChallengeQuests[i]["completed"] as bool,
                                             ),
-                                            const SizedBox(width: 3.40),
-                                            Image.asset(
-                                              "assets/images/CoinText90.png",
-                                              height: 25,
-                                              width: 25,
-                                            )
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.only(top: 21),
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    dailyChallengeQuests[i]["reward"].toString(),
+                                                    style: kBodyText3,
+                                                  ),
+                                                  const SizedBox(width: 3.40),
+                                                  Image.asset(
+                                                    "assets/images/CoinText90.png",
+                                                    height: 25,
+                                                    width: 25,
+                                                  )
+                                                ],
+                                              ),
+                                            ),
                                           ],
                                         ),
-                                      ),
-                                  ],)
-                        ],
-                      ),
-                    );
-                  }
-                )
+                            ),
+                          )
+                      ],
+                    ),
+                  );
+                })
               ],
             )),
       ],

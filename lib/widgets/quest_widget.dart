@@ -41,7 +41,7 @@ class QuestWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
-                width: 175,
+                width: 173,
                 child: Text(
                   name,
                   style: isQuestFinished

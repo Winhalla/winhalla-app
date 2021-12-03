@@ -9,42 +9,62 @@ import 'package:winhalla_app/widgets/info_dropdown.dart';
 class FfaMatch extends ChangeNotifier {
   dynamic value;
   bool areOtherPlayersShown = false;
-  Future<bool> refresh(BuildContext context,User user,{bool showInfo =false}) async {
-    dynamic match = await user.callApi.get("/getMatch/${value["_id"]}");
-    if(match["successful"] == false) return true;
+
+  Future<bool> refresh(BuildContext context, User user,
+      {bool showInfo = false,
+        bool isTutorial = false,
+        bool isTutorialRefresh = false}) async {
+    dynamic match = await user.callApi.get(
+          "/getMatch/${isTutorial ? "tutorial" : value["_id"]}" + (isTutorialRefresh ? "?isRefresh=true" : ""),
+    );
+    if (match["successful"] == false) return true;
 
     match = match["data"];
     var steamId = value["userPlayer"]["steamId"];
-    match["userPlayer"] = match["players" ].firstWhere((e) => e["steamId"] == steamId);
-    match["players"] = match["players"].where((e)=>e["steamId"]!= steamId).toList();
+
+    match["userPlayer"] =
+        match["players"].firstWhere((e) => e["steamId"] == steamId);
+
+    match["players"] =
+        match["players"].where((e) => e["steamId"] != steamId).toList();
     value = match;
+    user.gamesPlayedInMatch = match["userPlayer"]["gamesPlayed"];
 
     if (match["userPlayer"]["gamesPlayed"] >= 7) {
       FirebaseAnalytics.instance.logEvent(
         name: "FinishedSoloMatch",
       );
-    }
-
-    if(
-    match["userPlayer"]["gamesPlayed"] >= 7
-        &&
-    user.value["user"]["dailyChallenge"]["challenges"].firstWhere((e)=>e["goal"] == "winhallaMatch",orElse:()=>null) != null
-    ){
-      user.refresh();
-      FirebaseAnalytics.instance.logEvent(
-        name: "FinishDailyChallenge",
-        parameters: {
-          "type":"Match"
+      try{
+        if(user.value["user"]["dailyChallenge"]["challenges"].firstWhere((e)=>e["goal"] == "winhallaMatch",orElse:()=>null) != null){
+          FirebaseAnalytics.instance.logEvent(
+              name: "FinishDailyChallenge",
+              parameters: {
+                "type":"Match"
+              }
+          );
         }
-      );
+      } catch(e){
+
+      }
+
+
     }
 
-    if(match["updatedPlatforms"] != null) {
+    /*if(isTutorialRefresh){
+      user.inGame["isMatchFinished"] = match["finished"] ? true : match["fastFinish"];
+      if (match["userPlayer"]["gamesPlayed"] >= 7) {
+        user.inGame["isFinished"] = true;
+      }
+    }*/
+
+    await user.refresh();
+
+    if (match["updatedPlatforms"] != null) {
       List<Widget> icons = [];
-      for (int i = 0; i < match["updatedPlatforms"].length;i++){
+      for (int i = 0; i < match["updatedPlatforms"].length; i++) {
         icons.add(
           Padding(
-            padding: EdgeInsets.only(left: i!=0?12:0),
+            padding: EdgeInsets.only(left: i != 0 ? 12 : 0),
             child: Image.asset(
               "assets/images/icons/pink/${match["updatedPlatforms"][i]}Pink.png",
               color: kText80,
@@ -53,12 +73,13 @@ class FfaMatch extends ChangeNotifier {
           ),
         );
       }
-      if(icons.isNotEmpty && showInfo) {
-        showInfoDropdown(context, kPrimary, "Data updated",
+      if (icons.isNotEmpty && showInfo) {
+        showInfoDropdown(
+          context,
+          kPrimary,
+          "Data updated",
           timeShown: 4500,
-          body: Row(
-              children: icons
-          ),
+          body: Row(children: icons),
         );
       }
       notifyListeners();
@@ -80,17 +101,16 @@ class FfaMatch extends ChangeNotifier {
     return true;
   }
 
-  void exit() async {
-    await http.post(getUri("/exitMatch/${value["_id"].toString()}"));
-  }
   void togglePlayerShown() {
     areOtherPlayersShown = !areOtherPlayersShown;
     notifyListeners();
   }
 
   FfaMatch(match, String steamId) {
-    match["userPlayer"] = match["players"].firstWhere((e) => e["steamId"] == steamId);
-    match["players"] = match["players"].where((e)=>e["steamId"]!= steamId).toList();
+    match["userPlayer"] =
+        match["players"].firstWhere((e) => e["steamId"] == steamId);
+    match["players"] =
+        match["players"].where((e) => e["steamId"] != steamId).toList();
     value = match;
     areOtherPlayersShown = false;
     FirebaseAnalytics.instance.logEvent(

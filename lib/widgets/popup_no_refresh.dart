@@ -16,6 +16,7 @@ Widget NoRefreshPopup(String type){
             padding: const EdgeInsets.fromLTRB(4,0,4,0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Expanded(
                   child: Text(
@@ -29,7 +30,7 @@ Widget NoRefreshPopup(String type){
                   },
                   behavior: HitTestBehavior.translucent,
                   child: const Padding(
-                    padding: EdgeInsets.fromLTRB(0, 0, 0, 35),
+                    padding: EdgeInsets.fromLTRB(0, 3, 0, 22),
                     child: Icon(
                       Icons.close,
                       color: kGray,
@@ -47,11 +48,11 @@ Widget NoRefreshPopup(String type){
             padding: const EdgeInsets.fromLTRB(6,0,4,0),
             child: RichText(
               text: TextSpan(style: kBodyText3, children: [
-                const TextSpan(text: "... data ", style: TextStyle(height: 1.3)),
+                const TextSpan(text: "...data ", style: TextStyle(height: 1.3)),
                 const TextSpan(text: "doesn't refresh ", style: TextStyle(color: kPrimary,height: 1.3)),
                 const TextSpan(text: "instantly. This is due to the ", style: TextStyle(height: 1.3)),
                 const TextSpan(text: "Brawlhalla API ", style: TextStyle(color: kPrimary,height: 1.3)),
-                TextSpan(text: type == "quests" ? "latency. It can take up to 3 hours." : "latency. It usually takes a few minutes, but it can take up to 30", style: TextStyle(height: 1.3)),
+                TextSpan(text: type == "quests" ? "latency. It can take up to 3 hours." : "latency. It usually takes a few minutes, but it can take up to 30.", style: TextStyle(height: 1.3)),
               ]),
             ),
           ),

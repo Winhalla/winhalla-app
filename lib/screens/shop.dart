@@ -42,7 +42,7 @@ class Shop extends StatelessWidget {
               ),
               Consumer<User>(
                 builder: (context, user, _) {
-                  return Coin(nb: user.value["user"]["coins"].toString(),);
+                  return Coin(nb: ((user.value["user"]["coins"]*10).round()/10).toString(),);
                 }
               )
             ],

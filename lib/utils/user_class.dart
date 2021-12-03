@@ -8,29 +8,55 @@ import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
 
-class User extends ChangeNotifier {
+class   User extends ChangeNotifier {
   dynamic value;
   dynamic shop;
   dynamic quests;
+  dynamic inGame;
+  int gamesPlayedInMatch = 0;
+
   int lastQuestsRefresh = 0;
   int lastShopRefresh = 0;
+  List<GlobalKey?> keys;
+  Map<String,dynamic> keyFx = {};
   late CallApi callApi;
 
   Future<void> refresh() async {
     var accountData = await callApi.get("/account");
-    if(accountData["successful"] == false) return;
+    if (accountData["successful"] == false) return;
     value = accountData["data"];
+
+    var inGameData = value["user"]["inGame"];
+    var currentMatch =
+        inGameData.where((g) => g["isFinished"] == false).toList();
+    try{
+      if (currentMatch.length > 0) {
+        inGame = {
+          'id': currentMatch[0]["id"],
+          'joinDate': currentMatch[0]["joinDate"],
+          'isFinished': false,
+        };
+      } else if (inGame["isMatchFinished"] == true) {
+        inGame = null;
+        gamesPlayedInMatch = 0;
+      }
+    } catch(e){}
+
+
     notifyListeners();
   }
 
-  Future<bool> refreshQuests(BuildContext context, {bool showInfo = false}) async {
+  Future<bool> refreshQuests(BuildContext context,
+      {bool showInfo = false, isTutorial = true}) async {
+    var accountData = await callApi.get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
+    if (accountData["successful"] == false) return true;
+    if (accountData["data"]["newQuests"] == true) {
 
-    var accountData = await callApi.get("/solo");
-    if(accountData["successful"] == false) return true;
-    if(accountData["data"]["newQuests"] == true){
-
-      if(showInfo) {
-        showInfoDropdown(context, kGreen, "New quests available",
+      if (showInfo) {
+        showInfoDropdown(
+          context,
+          kGreen,
+          "New quests available",
           timeShown: 4500,
           /*body: Row(
             children: icons,
@@ -46,30 +72,32 @@ class User extends ChangeNotifier {
       return false;
     }
     var accountDataDecoded = accountData["data"]["solo"];
-    accountDataDecoded["dailyQuests"].addAll(accountDataDecoded["finished"]["daily"]);
-    accountDataDecoded["weeklyQuests"].addAll(accountDataDecoded["finished"]["weekly"]);
+    accountDataDecoded["dailyQuests"]
+        .addAll(accountDataDecoded["finished"]["daily"]);
+    accountDataDecoded["weeklyQuests"]
+        .addAll(accountDataDecoded["finished"]["weekly"]);
     quests = accountDataDecoded;
     notifyListeners();
     if (accountData["data"]["updatedPlatforms"] != null) {
       List<Widget> icons = [];
-      for (int i = 0; i < accountData["data"]["updatedPlatforms"].length;i++){
+      for (int i = 0; i < accountData["data"]["updatedPlatforms"].length; i++) {
         icons.add(
-            Padding(
-              padding: EdgeInsets.only(left: i!=0?12:0),
-              child: Image.asset(
-                "assets/images/icons/pink/${accountData["data"]["updatedPlatforms"][i]}Pink.png",
-                color: kText80,
-                height: 40,
-              ),
+          Padding(
+            padding: EdgeInsets.only(left: i != 0 ? 12 : 0),
+            child: Image.asset(
+              "assets/images/icons/pink/${accountData["data"]["updatedPlatforms"][i]}Pink.png",
+              color: kText80,
+              height: 40,
             ),
+          ),
         );
       }
-      if(icons.isNotEmpty && showInfo) {
+      if (icons.isNotEmpty && showInfo) {
         showInfoDropdown(context, kPrimary, "Data updated",
-          timeShown: 4500,
-          body: Row(
-            children: icons,
-          ));
+            timeShown: 4500,
+            body: Row(
+              children: icons,
+            ));
       }
       FirebaseAnalytics.instance.logEvent(
           name: "QuestsRefresh",
@@ -88,41 +116,89 @@ class User extends ChangeNotifier {
     return true;
   }
 
-  Future<String> enterMatch() async {
-    dynamic matchId = await this.callApi.get("/lobby");
-    if(matchId["successful"] == false) return "err";
+  Future<String> enterMatch({bool isTutorial = false}) async {
+    if(isTutorial){
+      inGame = {
+        'id': "tutorial",
+        'joinDate': DateTime.now().millisecondsSinceEpoch,
+        'isFinished': false
+      };
+      notifyListeners();
+      return "tutorial";
+    }
+
+
+    if (inGame != null) {
+      inGame = null;
+      gamesPlayedInMatch = 0;
+      notifyListeners();
+    }
+
+    dynamic matchId = await callApi.get("/lobby");
+    if (matchId["successful"] == false) return "err";
     matchId = matchId["data"];
 
-    dynamic accountData = await this.callApi.get("/account",showError: false);
-    if(accountData["successful"] == false) return matchId;
+    dynamic accountData = await callApi.get("/account", showError: false);
+    if (accountData["successful"] == false) return matchId;
 
     accountData = accountData["data"];
-    this.value["user"] = accountData["user"];
-    this.value["steam"] = accountData["steam"];
+    value["user"] = accountData["user"];
+    value["steam"] = accountData["steam"];
 
+    inGame = {
+      'id': matchId,
+      'joinDate': DateTime.now().millisecondsSinceEpoch,
+      'isFinished': false
+    };
+
+    notifyListeners();
     return matchId;
   }
 
+  Future<void> exitMatch(bool beforeEnd, {isOnlyLayout = false}) async {
+    if(isOnlyLayout){
+      inGame = null;
+      gamesPlayedInMatch = 0;
+      notifyListeners();
+      return;
+    }
+
+    if (beforeEnd == true) {
+      await callApi.post("/endMatch", "");
+    } else {
+      await callApi.post("/exitMatch", "");
+    }
+    await refresh();
+    inGame = null;
+    gamesPlayedInMatch = 0;
+
+    notifyListeners();
+  }
+
   Future initQuestsData() async {
-    if(lastQuestsRefresh + 900 * 1000 > DateTime.now().millisecondsSinceEpoch && this.quests != null) {
+    if (lastQuestsRefresh + 900 * 1000 >
+            DateTime.now().millisecondsSinceEpoch &&
+        quests != null) {
       return "loaded";
     }
-    dynamic questsData = await this.callApi.get("/solo");
-    if(questsData["successful"] == false) return;
+    dynamic questsData = await callApi.get("/solo");
+    if (questsData["successful"] == false) return;
     questsData = questsData["data"]["solo"];
     questsData["dailyQuests"].addAll(questsData["finished"]["daily"]);
     questsData["weeklyQuests"].addAll(questsData["finished"]["weekly"]);
-    this.quests = questsData;
-    this.lastQuestsRefresh = DateTime.now().millisecondsSinceEpoch;
+    quests = questsData;
+    lastQuestsRefresh = DateTime.now().millisecondsSinceEpoch;
     notifyListeners();
     return "loaded";
   }
 
   Future initShopData() async {
-    if (this.shop == null || this.lastShopRefresh + 86400*2 * 1000 < DateTime.now().millisecondsSinceEpoch) {
+    if (shop == null ||
+        lastShopRefresh + 86400 * 2 * 1000 <
+            DateTime.now().millisecondsSinceEpoch) {
       try {
-        dynamic shopData = await this.callApi.get("/shop");
-        if(shopData["successful"] == false) return;
+        dynamic shopData = await callApi.get("/shop");
+        if (shopData["successful"] == false) return;
         shopData = shopData["data"];
         var featuredItem = shopData.firstWhere((e) => e["state"] == 0);
         var paypalItem = shopData.firstWhere((e) => e["type"] == "paypal");
@@ -136,18 +212,17 @@ class User extends ChangeNotifier {
           "featuredItem": featuredItem,
           "paypalData": paypalItem
         };
-        this.shop = shopDataProcessed;
-        this.lastShopRefresh = DateTime.now().millisecondsSinceEpoch;
+        shop = shopDataProcessed;
+        lastShopRefresh = DateTime.now().millisecondsSinceEpoch;
         return shopDataProcessed;
       } catch (e) {}
-
     } else {
-      return this.shop;
+      return shop;
     }
   }
 
   void editShopData(shopData) {
-    this.shop = shopData;
+    shop = shopData;
   }
 
   void addCoins(coins) {
@@ -155,12 +230,14 @@ class User extends ChangeNotifier {
     notifyListeners();
   }
 
-
   Future<void> collectQuest(int questId, String type, int price) async {
-    var result = await callApi.post("/solo/collect?id=$questId&type=$type","{}");
-    if(result["successful"] == false) return;
-    try{
-      if(value["user"]["dailyChallenge"]["challenges"].firstWhere((e)=>e["goal"] == "winhallaQuest",orElse:null) != null){
+    var result =
+        await callApi.post("/solo/collect?id=$questId&type=$type", "{}");
+    if (result["successful"] == false) return;
+    try {
+      if (value["user"]["dailyChallenge"]["challenges"]
+              .firstWhere((e) => e["goal"] == "winhallaQuest", orElse: null) !=
+          null) {
         refresh();
         FirebaseAnalytics.instance.logEvent(
           name: "FinishDailyChallenge",
@@ -169,7 +246,7 @@ class User extends ChangeNotifier {
           }
         );
       }
-    } catch(e){}
+    } catch (e) {}
 
     FirebaseAnalytics.instance.logEvent(
       name: "CollectQuest",
@@ -180,13 +257,16 @@ class User extends ChangeNotifier {
   }
 
   Future<void> setItemGoal(int itemId) async {
-    var result = await callApi.post("/setGoal",jsonEncode({"itemId":itemId}));
-    if(result["successful"] == false) return;
+    var result = await callApi.post("/setGoal", jsonEncode({"itemId": itemId}));
+    if (result["successful"] == false) return;
     value["user"]["goal"] = result["data"];
-    print(value["user"]["goal"]);
   }
 
-  User(this.value,this.callApi);
+  void setKeyFx(Function keyFx1, String key) {
+    keyFx[key] = keyFx1;
+  }
+
+  User(this.value, this.callApi, this.keys, this.inGame);
 }
 
 Future<dynamic> initUser(context) async {
@@ -194,22 +274,34 @@ Future<dynamic> initUser(context) async {
   if (storageKey == null) return "no data";
   CallApi caller = CallApi(authKey: storageKey, context: context);
   var data = await caller.get("/account");
-  if(data["successful"] == false) {
+  if (data["successful"] == false) {
     return null;
   }
+  dynamic tutorialFinished;
+  dynamic tutorialStep;
+  try{
+    tutorialFinished = data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true ? false : true;
+    if(data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true){
+      tutorialStep = 17;
 
-  dynamic tutorialStep = secureStorage.read(key:"tutorialStep");
-  dynamic tutorialFinished = getNonNullSSData("tutorialFinished");
-  tutorialStep = await tutorialStep;
-  tutorialFinished = await tutorialFinished;
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] == true){
+      tutorialStep = 13;
 
+    } else if(data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] == true){
+      tutorialStep = 8;
+
+    } else {
+      tutorialStep = 0;
+    }
+
+  } catch(e){}
   return {
     "data": data["data"],
     "authKey": storageKey,
-    "callApi":caller,
+    "callApi": caller,
     "tutorial": {
-      "needed": tutorialFinished != "true",
-      "tutorialStep": tutorialStep == null ? 0 : tutorialStep
+      "needed": tutorialFinished ?? false,
+      "tutorialStep": tutorialStep ?? 0
     }
   };
 }

@@ -30,7 +30,7 @@ class Coin extends StatelessWidget {
           children: [
             Consumer<User>(builder: (context, user, _) {
               return Text(
-                nb,
+                double.parse(nb).floor().toString(),
                 style: TextStyle(color: color, fontSize: fontSize),
               );
             }),
