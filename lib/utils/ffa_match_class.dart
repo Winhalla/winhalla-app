@@ -61,7 +61,7 @@ class FfaMatch extends ChangeNotifier {
     await user.refresh();
 
     if(match["finished"] == true) {
-      await user.exitMatch(false, isOnlyLayout: true);
+      await user.exitMatch(isOnlyLayout: true);
     }
 
     if (match["updatedPlatforms"] != null) {
