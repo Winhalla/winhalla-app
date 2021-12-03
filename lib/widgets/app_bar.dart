@@ -26,12 +26,11 @@ class MyAppBar extends StatelessWidget {
                 if (user.inGame == null) return const Text("");
 
                 if (user.gamesPlayedInMatch > 0) {
-                  if (user.gamesPlayedInMatch > 6) {
                   return Row(
                     children: [
                       GestureDetector(
                         onTap: (){
-                          user.exitMatch(false, isOnlyLayout: true);
+                          user.exitMatch(isOnlyLayout: true);
                         },
                         child: Row(children: const <Widget>[
                           Icon(
@@ -69,8 +68,6 @@ class MyAppBar extends StatelessWidget {
                       )
                     ],
                   );
-                  }
-                  return const Text("");
                   /*return GestureDetector(
                     behavior: HitTestBehavior.translucent,
                     onTap: () {
@@ -95,7 +92,7 @@ class MyAppBar extends StatelessWidget {
                 return GestureDetector(
                   behavior: HitTestBehavior.translucent,
                   onTap: () {
-                    user.exitMatch(false);
+                    user.exitMatch();
                   },
                   child: Row(
                     children: const <Widget>[

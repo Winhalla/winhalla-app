@@ -135,19 +135,16 @@ class   User extends ChangeNotifier {
     return matchId;
   }
 
-  Future<void> exitMatch(bool beforeEnd, {isOnlyLayout = false}) async {
+  Future<void> exitMatch({isOnlyLayout = false}) async {
     if(isOnlyLayout){
       inGame = null;
       gamesPlayedInMatch = 0;
       notifyListeners();
       return;
     }
+    
+    await callApi.post("/exitMatch", "");
 
-    if (beforeEnd == true) {
-      await callApi.post("/endMatch", "");
-    } else {
-      await callApi.post("/exitMatch", "");
-    }
     await refresh();
     inGame = null;
     gamesPlayedInMatch = 0;

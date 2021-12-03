@@ -31,13 +31,14 @@ class FfaMatch extends ChangeNotifier {
     value = match;
     user.gamesPlayedInMatch = match["userPlayer"]["gamesPlayed"];
 
-    if(isTutorialRefresh){
+    /*if(isTutorialRefresh){
       user.inGame["isMatchFinished"] = match["finished"] ? true : match["fastFinish"];
-      if (match["userPlayer"]["gamesPlayed"] >= 7) {
-        user.inGame["isFinished"] = true;
-      }
-    }
+    }*/
 
+    if (match["userPlayer"]["gamesPlayed"] >= 7) {
+      user.inGame["isFinished"] = true;
+    }
+    
     await user.refresh();
 
     if (match["updatedPlatforms"] != null) {

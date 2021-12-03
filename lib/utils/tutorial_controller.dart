@@ -106,7 +106,7 @@ class _TutorialStackState extends State<TutorialStack> {
           Positioned.fromRect(
             rect: tutorial.currentWidgetPosition[i],
             child: Container(
-              color: Colors.black.withOpacity(0.85),
+              color: Colors.black.withOpacity(0.86),
             ),
           ),
         Positioned.fromRect(
@@ -150,7 +150,7 @@ class _TutorialStackState extends State<TutorialStack> {
         ),
         tutorial.currentTextWidget,
         Positioned(
-          bottom: 50,
+          bottom: 24,
           left: 30,
           right: 30,
           child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -305,10 +305,11 @@ class Tutorial extends ChangeNotifier{
         const Rect.fromLTWH(0, 0, 0, 0),
       ];
     }
-    if(index == 6){
-      Future.delayed(const Duration(milliseconds: 4500), () async {
+
+    if(index == 6) {
+      Future.delayed(const Duration(milliseconds: 4000), () async {
         User user = ctxt.read<User>();
-        await user.exitMatch(false, isOnlyLayout: true);
+        await user.exitMatch(isOnlyLayout: true);
         Timer.periodic(const Duration(milliseconds: 100),(timer){
           if(user.keys[status+1]?.currentContext != null){
             next();
@@ -317,6 +318,7 @@ class Tutorial extends ChangeNotifier{
         });
       });
     }
+
     BuildContext? context = keys[index]?.currentContext;
     if(context == null) {
       throw Exception("Key not found");
@@ -585,7 +587,7 @@ class Tutorial extends ChangeNotifier{
             width: screenW - 40,
             height: screenH,
             child: Padding(
-              padding: EdgeInsets.only(top: screenH/1.8,),
+              padding: EdgeInsets.only(top: screenH/2,),
               child: Row(
                 children: [
                   Expanded(
@@ -750,26 +752,27 @@ class Tutorial extends ChangeNotifier{
         },
       },{ // 15th item ; index : 14
         "widget": FadeInPositioned(
-          left: 20,
-          right: 20,
-          bottom: 65,
+          top: 90,
+          left: 24,
+          right: 24,
           child: SizedBox(
-            width: screenW - 40,
+            width: screenW - 48,
             height: screenH - 40,
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: RichText(
                     text: TextSpan(style: kBodyText1Roboto, children: [
                       const TextSpan(
-                          text: "These are the ", style: kBodyText1Roboto),
+                          text: "These are the ",
+                          style: kBodyText1Roboto),
                       TextSpan(
-                          text: "daily challenges, ",
+                          text: "daily challenges: ",
                           style: kBodyText1Roboto.apply(color: kPrimary)),
                       const TextSpan(
                           text:
-                          "Complete them by doing different actions ",
+                          "complete them by doing different actions ",
                           style: kBodyText1Roboto),
                       TextSpan(
                           text:
@@ -825,7 +828,7 @@ class Tutorial extends ChangeNotifier{
             width: screenW - 40,
             height: screenH,
             child: Padding(
-              padding: EdgeInsets.only(top: screenH/2,),
+              padding: EdgeInsets.only(top: screenH/1.6,),
               child: Row(
                 children: [
                   Expanded(
@@ -837,7 +840,7 @@ class Tutorial extends ChangeNotifier{
                             text: "this challenge ",
                             style: kBodyText1Roboto.apply(color: kPrimary)),
                         const TextSpan(
-                            text: "has unlocked, ", style: kBodyText1Roboto),
+                            text: "has been unlocked, ", style: kBodyText1Roboto),
                         TextSpan(
                             text: "complete it ",
                             style: kBodyText1Roboto.apply(color: kPrimary)),
@@ -868,8 +871,8 @@ class Tutorial extends ChangeNotifier{
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 10),
               child: Column(mainAxisAlignment:MainAxisAlignment.center, children: [
-                const Text("Tutorial completed!", style: TextStyle(fontSize: 40),),
-                const SizedBox(height: 20,),
+                const Text("Tutorial completed!", style: TextStyle(fontSize: 48, color: kGreen),),
+                const SizedBox(height: 28,),
                 Row(
                   children: [
                     Expanded(
