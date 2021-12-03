@@ -102,11 +102,11 @@ class MyAppBar extends StatelessWidget {
                       Icon(
                         Icons.exit_to_app_rounded,
                         size: 30,
-                        color: kRed,
+                        color: kPrimary,
                       ),
                       SizedBox(width: 6),
                       Text(
-                        'Leave this match',
+                        'Leave',
                         style: kBodyText3,
                       ),
                     ],
