@@ -102,6 +102,7 @@ class _MyAppState extends State<MyApp> {
                     }
                   }
                     var inGameData = newData["user"]["inGame"];
+                    print(inGameData);
                     var currentMatch = inGameData
                         .where((g) => g["isFinished"] == false)
                         .toList();
@@ -170,7 +171,7 @@ class _AppCoreState extends State<AppCore> {
     setState(() {
       _selectedIndex = index;
     });
-    FirebaseAnalytics.instance.logScreenView(screenClass: "HomeClass",screenName: indexToScreenName(index));
+    FirebaseAnalytics.instance.logScreenView(screenClass: indexToScreenName(index));
     FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(index));
   }
 
@@ -301,15 +302,17 @@ class _AppCoreState extends State<AppCore> {
                                   switchPage(0);
                                 });
                               }*/
+                            print(user.inGame);
+                            Color color = _selectedIndex == 2
+                                ? kPrimary : user.inGame != null &&
+                                user.inGame != false &&
+                                user.inGame["joinDate"] + 3600 * 1000 >
+                                    DateTime.now().millisecondsSinceEpoch
+                                ? kOrange : kText95;
                             return Icon(
                               Icons.play_circle_outline_outlined,
                               key: user.keys[1],
-                              color: _selectedIndex == 2
-                                  ? kPrimary : user.inGame != null &&
-                                      user.inGame != false &&
-                                      user.inGame["joinDate"] + 3600 * 1000 >
-                                          DateTime.now().millisecondsSinceEpoch
-                                  ? kOrange : kText95,
+                              color: color,
                               size: 34,
                             );
                           }),

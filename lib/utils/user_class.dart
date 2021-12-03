@@ -117,6 +117,8 @@ class   User extends ChangeNotifier {
   }
 
   Future<String> enterMatch({bool isTutorial = false}) async {
+    FirebaseAnalytics.instance.logScreenView(screenClass: "SoloMatch");
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: "SoloMatch");
     if(isTutorial){
       inGame = {
         'id': "tutorial",
@@ -156,6 +158,8 @@ class   User extends ChangeNotifier {
   }
 
   Future<void> exitMatch(bool beforeEnd, {isOnlyLayout = false}) async {
+    FirebaseAnalytics.instance.logScreenView(screenClass: "Play");
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: "Play");
     if(isOnlyLayout){
       inGame = null;
       gamesPlayedInMatch = 0;
