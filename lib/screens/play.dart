@@ -45,7 +45,7 @@ class _PlayPageState extends State<PlayPage> {
                         itemCount: lastGames.length + filteredInGameList.length,
                         itemBuilder: (BuildContext context, int index) {
                           var mergedArray = List.from(filteredInGameList)
-                            ..addAll(lastGames);
+                            ..addAll(lastGames.reversed);
                           var currentMatch = mergedArray[index];
 
                           //if last widget is an "in game" tile, AND this one is a "match history" tile, set lastWidget to separator

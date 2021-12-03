@@ -79,6 +79,9 @@ class SoloMatch extends StatelessWidget {
                               Consumer<FfaMatch>(
                                 builder: (context, match,_) {
                                   context.read<User>().setKeyFx(match.refresh, "refreshMatch");
+                                  if(match.value["finished"] == true){
+                                    return Text("x${(match.value["userPlayer"]["multiplier"]).round()}", style: const TextStyle(color: kGreen, fontSize: 34));
+                                  }
                                   return Text("x${(match.value["userPlayer"]["multiplier"]/100).round()}", style: const TextStyle(color: kGreen, fontSize: 34));
                                 }
                               ),
@@ -86,7 +89,7 @@ class SoloMatch extends StatelessWidget {
                                 width: 9,
                               ),
                               const Padding(
-                                padding: EdgeInsets.only(bottom: 3.12),
+                                padding: EdgeInsets.only(bottom: 3),
                                 child: Text(
                                   "Reward",
                                   style: TextStyle(color: kText, fontSize: 25),
@@ -171,8 +174,8 @@ class SoloMatch extends StatelessWidget {
                           const SizedBox(
                             width: 5,
                           ),
-                          const Text(
-                            "other players in this match...",
+                          Text(
+                            "other player${match.value["players"].length>1?"s":""} in this match...",
                             style: kBodyText3,
                           ),
                           const SizedBox(
