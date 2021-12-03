@@ -41,6 +41,10 @@ class FfaMatch extends ChangeNotifier {
     
     await user.refresh();
 
+    if(match["finished"] == true) {
+      await user.exitMatch(false, isOnlyLayout: true);
+    }
+
     if (match["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < match["updatedPlatforms"].length; i++) {
