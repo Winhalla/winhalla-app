@@ -41,7 +41,7 @@ class FfaMatch extends ChangeNotifier {
 
     await user.refresh();
 
-    if(match["finished"] == true) {
+    if(match["finished"] == true && !isTutorialRefresh) {
       await user.exitMatch(isOnlyLayout: true);
     }
 
