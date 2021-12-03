@@ -30,6 +30,11 @@ class SoloMatch extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (res.data["successful"] == false) {
+            Future.delayed(
+                const Duration(milliseconds: 1),
+                    () => context.read<User>().exitMatch(isOnlyLayout: true)
+            );
+
             return const Center(child: CircularProgressIndicator());
           }
           return ChangeNotifierProvider<FfaMatch>(
@@ -43,10 +48,11 @@ class SoloMatch extends StatelessWidget {
                       .read<FfaMatch>()
                       .refresh(context, user, showInfo: true);
                   if (hasNotChanged &&
-                      await getNonNullSSData("hideNoRefreshMatch") != "true")
+                      await getNonNullSSData("hideNoRefreshMatch") != "true") {
                     showDialog(
                         context: context,
                         builder: (_) => NoRefreshPopup("match"));
+                  }
                   return;
                 },
                 child: ListView(

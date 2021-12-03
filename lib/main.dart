@@ -320,7 +320,7 @@ class _AppCoreState extends State<AppCore> {
                                               false &&
                                           user.inGame != false &&
                                           user.inGame["joinDate"] +
-                                                  3600 * 1000 >
+                                                  36 * 1000 >
                                               DateTime.now()
                                                   .millisecondsSinceEpoch
                                       ? kOrange
@@ -359,8 +359,18 @@ class _AppCoreState extends State<AppCore> {
         child: Builder(builder: (context) {
           if (!hasSummonedTutorial) {
             hasSummonedTutorial = true;
-            context.read<User>().setKeyFx(switchPage, "switchPage");
-            Future.delayed(const Duration(milliseconds: 100), () {
+            User user = context.read<User>();
+            user.setKeyFx(switchPage, "switchPage");
+            Future.delayed(const Duration(milliseconds: 100), () async {
+              try{
+                if(user.value["user"]["solo"]["dailyQuests"].length < 2 && user.value["user"]["solo"]["lastDaily"] != null) {
+                  await user.callApi.get("/newDailyQuestsTutorial");
+                }
+              }catch(e){}
+
+              if(user.inGame != null){
+                user.exitMatch(isOnlyLayout:true);
+              }
               context.read<TutorialController>().summon(context);
             });
           }

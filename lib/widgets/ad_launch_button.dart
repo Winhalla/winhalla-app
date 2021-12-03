@@ -98,7 +98,7 @@ class _AdButtonState extends State<AdButton> {
     user = context.read<User>();
     user.setKeyFx(playAd, "playAd");
     if(widget.goal == "earnMoreSoloMatch") match = context.read<FfaMatch>();
-    _initGoogleMobileAds();
+    // _initGoogleMobileAds();
     super.initState();
   }
 

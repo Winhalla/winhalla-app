@@ -6,7 +6,7 @@ import 'package:winhalla_app/widgets/info_dropdown.dart';
 const String apiUrl = "https://api.winhalla.app";
 
 Uri getUri (String path,){
-  return Uri.parse(apiUrl+path);
+  return Uri.parse(apiUrl+path); // 192.168.1.33:4000
 }
 class CallApi {
   String authKey;

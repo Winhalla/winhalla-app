@@ -53,14 +53,15 @@ class FfaMatch extends ChangeNotifier {
 
     /*if(isTutorialRefresh){
       user.inGame["isMatchFinished"] = match["finished"] ? true : match["fastFinish"];
-      if (match["userPlayer"]["gamesPlayed"] >= 7) {
-        user.inGame["isFinished"] = true;
-      }
     }*/
+
+    if (match["userPlayer"]["gamesPlayed"] >= 7) {
+      user.inGame["isFinished"] = true;
+    }
 
     await user.refresh();
 
-    if(match["finished"] == true) {
+    if(match["finished"] == true && !isTutorialRefresh) {
       await user.exitMatch(isOnlyLayout: true);
     }
 
