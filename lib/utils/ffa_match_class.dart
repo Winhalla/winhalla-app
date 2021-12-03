@@ -31,6 +31,7 @@ class FfaMatch extends ChangeNotifier {
     user.gamesPlayedInMatch = match["userPlayer"]["gamesPlayed"];
 
     if (match["userPlayer"]["gamesPlayed"] >= 7) {
+      user.inGame["isFinished"] = true;
       FirebaseAnalytics.instance.logEvent(
         name: "FinishedSoloMatch",
       );
@@ -58,6 +59,10 @@ class FfaMatch extends ChangeNotifier {
     }*/
 
     await user.refresh();
+
+    if(match["finished"] == true) {
+      await user.exitMatch(false, isOnlyLayout: true);
+    }
 
     if (match["updatedPlatforms"] != null) {
       List<Widget> icons = [];

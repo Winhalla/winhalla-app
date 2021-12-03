@@ -8,7 +8,7 @@ import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
 
-class   User extends ChangeNotifier {
+class User extends ChangeNotifier {
   dynamic value;
   dynamic shop;
   dynamic quests;
@@ -18,7 +18,7 @@ class   User extends ChangeNotifier {
   int lastQuestsRefresh = 0;
   int lastShopRefresh = 0;
   List<GlobalKey?> keys;
-  Map<String,dynamic> keyFx = {};
+  Map<String, dynamic> keyFx = {};
   late CallApi callApi;
 
   Future<void> refresh() async {
@@ -29,7 +29,7 @@ class   User extends ChangeNotifier {
     var inGameData = value["user"]["inGame"];
     var currentMatch =
         inGameData.where((g) => g["isFinished"] == false).toList();
-    try{
+    try {
       if (currentMatch.length > 0) {
         inGame = {
           'id': currentMatch[0]["id"],
@@ -40,15 +40,15 @@ class   User extends ChangeNotifier {
         inGame = null;
         gamesPlayedInMatch = 0;
       }
-    } catch(e){}
-
+    } catch (e) {}
 
     notifyListeners();
   }
 
   Future<bool> refreshQuests(BuildContext context,
       {bool showInfo = false, isTutorial = true}) async {
-    var accountData = await callApi.get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
+    var accountData = await callApi
+        .get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
     if (accountData["successful"] == false) return true;
     if (accountData["data"]["newQuests"] == true) {
 
@@ -116,10 +116,11 @@ class   User extends ChangeNotifier {
     return true;
   }
 
-  Future<String> enterMatch({bool isTutorial = false}) async {
+  Future<String> enterMatch(
+      {bool isTutorial = false, String? targetedMatchId}) async {
     FirebaseAnalytics.instance.logScreenView(screenClass: "SoloMatch");
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "SoloMatch");
-    if(isTutorial){
+    if (isTutorial) {
       inGame = {
         'id': "tutorial",
         'joinDate': DateTime.now().millisecondsSinceEpoch,
@@ -129,16 +130,21 @@ class   User extends ChangeNotifier {
       return "tutorial";
     }
 
-
     if (inGame != null) {
       inGame = null;
       gamesPlayedInMatch = 0;
       notifyListeners();
     }
+    dynamic matchId;
 
-    dynamic matchId = await callApi.get("/lobby");
-    if (matchId["successful"] == false) return "err";
-    matchId = matchId["data"];
+    if (targetedMatchId != null) {
+      matchId = targetedMatchId;
+      gamesPlayedInMatch = 7;
+    } else {
+      matchId = await callApi.get("/lobby");
+      if (matchId["successful"] == false) return "err";
+      matchId = matchId["data"];
+    }
 
     dynamic accountData = await callApi.get("/account", showError: false);
     if (accountData["successful"] == false) return matchId;
@@ -150,28 +156,27 @@ class   User extends ChangeNotifier {
     inGame = {
       'id': matchId,
       'joinDate': DateTime.now().millisecondsSinceEpoch,
-      'isFinished': false
+      'isFinished': false,
+      'showActivity': targetedMatchId != null ? false : null,
+      'showMatch': true,
     };
 
     notifyListeners();
     return matchId;
   }
 
-  Future<void> exitMatch(bool beforeEnd, {isOnlyLayout = false}) async {
+  Future<void> exitMatch({isOnlyLayout = false}) async {
     FirebaseAnalytics.instance.logScreenView(screenClass: "Play");
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "Play");
-    if(isOnlyLayout){
+    if (isOnlyLayout) {
       inGame = null;
       gamesPlayedInMatch = 0;
       notifyListeners();
       return;
     }
 
-    if (beforeEnd == true) {
-      await callApi.post("/endMatch", "");
-    } else {
-      await callApi.post("/exitMatch", "");
-    }
+    await callApi.post("/exitMatch", "");
+
     await refresh();
     inGame = null;
     gamesPlayedInMatch = 0;
@@ -270,6 +275,16 @@ class   User extends ChangeNotifier {
     keyFx[key] = keyFx1;
   }
 
+  void hideMatch() {
+    inGame["showMatch"] = false;
+  }
+
+  void resetInGame() {
+    inGame = null;
+    gamesPlayedInMatch = 0;
+    notifyListeners();
+  }
+
   User(this.value, this.callApi, this.keys, this.inGame);
 }
 
@@ -283,22 +298,23 @@ Future<dynamic> initUser(context) async {
   }
   dynamic tutorialFinished;
   dynamic tutorialStep;
-  try{
-    tutorialFinished = data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true ? false : true;
-    if(data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true){
+  try {
+    tutorialFinished =
+        data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true
+            ? false
+            : true;
+    if (data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true) {
       tutorialStep = 17;
-
-    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] == true){
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] ==
+        true) {
       tutorialStep = 13;
-
-    } else if(data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] == true){
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] ==
+        true) {
       tutorialStep = 8;
-
     } else {
       tutorialStep = 0;
     }
-
-  } catch(e){}
+  } catch (e) {}
   return {
     "data": data["data"],
     "authKey": storageKey,
