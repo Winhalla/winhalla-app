@@ -428,13 +428,13 @@ class Tutorial extends ChangeNotifier{
           // top: 10,
           left: 20,
           right: 20,
-          bottom: 128,
+          top: 306,
           child: SizedBox(
             width: screenW-40,
             height: screenH/3,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
                 Expanded(
                   child: Text(

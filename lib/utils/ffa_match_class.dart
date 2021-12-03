@@ -38,11 +38,11 @@ class FfaMatch extends ChangeNotifier {
     if (match["userPlayer"]["gamesPlayed"] >= 7) {
       user.inGame["isFinished"] = true;
     }
-    
+
     await user.refresh();
 
     if(match["finished"] == true) {
-      await user.exitMatch(false, isOnlyLayout: true);
+      await user.exitMatch(isOnlyLayout: true);
     }
 
     if (match["updatedPlatforms"] != null) {
