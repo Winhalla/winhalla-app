@@ -262,10 +262,7 @@ class _AccountCreationState extends State<AccountCreation> {
                       return;
                     }
                   } catch(e){}
-                  FirebaseCrashlytics.instance.setUserIdentifier(accountData["steam"]["id"]);
-                  FirebaseAnalytics.instance.setUserId(
-                      id: accountData["steam"]["id"]
-                  );
+
                   await secureStorage.write(key:'link',value: null);
                   if (ModalRoute.of(context)?.settings.name == "/") {
                     Navigator.pop(context, "/");
