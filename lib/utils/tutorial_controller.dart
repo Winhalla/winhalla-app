@@ -308,7 +308,7 @@ class Tutorial extends ChangeNotifier{
     if(index == 6){
       Future.delayed(const Duration(milliseconds: 4500), () async {
         User user = ctxt.read<User>();
-        await user.exitMatch(false, isTutorial: true);
+        await user.exitMatch(false, isOnlyLayout: true);
         Timer.periodic(const Duration(milliseconds: 100),(timer){
           if(user.keys[status+1]?.currentContext != null){
             next();

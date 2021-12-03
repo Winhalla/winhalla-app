@@ -135,8 +135,8 @@ class   User extends ChangeNotifier {
     return matchId;
   }
 
-  Future<void> exitMatch(bool beforeEnd, {isTutorial = false}) async {
-    if(isTutorial){
+  Future<void> exitMatch(bool beforeEnd, {isOnlyLayout = false}) async {
+    if(isOnlyLayout){
       inGame = null;
       gamesPlayedInMatch = 0;
       notifyListeners();
@@ -148,7 +148,7 @@ class   User extends ChangeNotifier {
     } else {
       await callApi.post("/exitMatch", "");
     }
-
+    await refresh();
     inGame = null;
     gamesPlayedInMatch = 0;
     

@@ -26,29 +26,52 @@ class MyAppBar extends StatelessWidget {
                 if (user.inGame == null) return const Text("");
 
                 if (user.gamesPlayedInMatch > 0) {
-                  if (user.inGame["isFinished"] == true) {
-                    return GestureDetector(
-                      behavior: HitTestBehavior.translucent,
-                      onTap: () {
-                        user.enterMatch();
-                      },
-                      child: Row(
-                        children: const <Widget>[
+                  if (user.gamesPlayedInMatch > 6) {
+                  return Row(
+                    children: [
+                      GestureDetector(
+                        onTap: (){
+                          user.exitMatch(false, isOnlyLayout: true);
+                        },
+                        child: Row(children: const <Widget>[
                           Icon(
-                            Icons.open_in_new_rounded,
+                            Icons.exit_to_app_rounded,
                             size: 30,
-                            color: kGreen,
+                            color: kPrimary,
                           ),
                           SizedBox(width: 6),
                           Text(
-                            'New match',
+                            'Back',
                             style: kBodyText3,
                           ),
-                        ],
+                        ]),
                       ),
-                    );
+                      const SizedBox(width: 15,),
+                      GestureDetector(
+                        behavior: HitTestBehavior.translucent,
+                        onTap: () {
+                          user.enterMatch();
+                        },
+                        child: Row(
+                          children: const <Widget>[
+                            Icon(
+                              Icons.open_in_new_rounded,
+                              size: 30,
+                              color: kGreen,
+                            ),
+                            SizedBox(width: 6),
+                            Text(
+                              'New match',
+                              style: kBodyText3,
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
+                  );
                   }
-                  return GestureDetector(
+                  return const Text("");
+                  /*return GestureDetector(
                     behavior: HitTestBehavior.translucent,
                     onTap: () {
                       user.exitMatch(true);
@@ -67,7 +90,7 @@ class MyAppBar extends StatelessWidget {
                         ),
                       ],
                     ),
-                  );
+                  );*/
                 }
                 return GestureDetector(
                   behavior: HitTestBehavior.translucent,
@@ -79,18 +102,18 @@ class MyAppBar extends StatelessWidget {
                       Icon(
                         Icons.exit_to_app_rounded,
                         size: 30,
-                        color: kPrimary,
+                        color: kRed,
                       ),
                       SizedBox(width: 6),
                       Text(
-                        'Exit',
+                        'Leave this match',
                         style: kBodyText3,
                       ),
                     ],
                   ),
                 );
               }),
-            Text(""),
+            const Text(""),
             SizedBox(
               width: 55,
               height: 55,
@@ -110,12 +133,12 @@ class MyAppBar extends StatelessWidget {
                             children: [
                               Positioned.fill(
                                   child: GestureDetector(
-                                onTapDown: (_) {
-                                  overlayEntry.remove();
-                                },
-                                child: Container(
-                                  color: Colors.transparent,
-                                ),
+                                    onTapDown: (_) {
+                                      overlayEntry.remove();
+                                    },
+                                    child: Container(
+                                      color: Colors.transparent,
+                                    ),
                               )),
                               Positioned(
                                 top: 125,

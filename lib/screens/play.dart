@@ -30,9 +30,9 @@ class _PlayPageState extends State<PlayPage> {
                   height: 34,
                 ),
                 Consumer<User>(builder: (context, user, _) {
-                  var filteredInGameList = user.value["user"]["inGame"]
-                      .where((g) => g["nbOfUsersFinishing"] > 0 ? true : false)
-                      .toList();
+                  var filteredInGameList = user.value["user"]["inGame"];
+                      /*.where((g) => g["nbOfUsersFinishing"] > 0 ? true : false)
+                      .toList();*/
 
                   var lastGames = user.value["user"]["lastGames"];
                   var lastWidget;
@@ -55,7 +55,7 @@ class _PlayPageState extends State<PlayPage> {
                               : currentMatch["wins"] != null
                                   ? true
                                   : false;
-
+                          if(currentMatch["nbOfUsersFinishing"] == 0) currentMatch["nbOfUsersFinishing"] = 1;
                           return Container(
                             key: index == 0 ? user.keys[7] : null,
                             decoration: BoxDecoration(
@@ -82,12 +82,11 @@ class _PlayPageState extends State<PlayPage> {
                                             children: [
                                               const TextSpan(text: "Waiting "),
                                               TextSpan(
-                                                  text:
-                                                      "${currentMatch["nbOfUsersFinishing"]} ",
+                                                  text: currentMatch["nbOfUsersFinishing"].toString(),
                                                   style: const TextStyle(
                                                       color: kPrimary)),
-                                              const TextSpan(
-                                                  text: "players..."),
+                                              TextSpan(
+                                                  text: " player${currentMatch["nbOfUsersFinishing"] > 1 ? "s" :""}..."),
                                             ]),
                                       ),
                                       Row(
@@ -104,7 +103,7 @@ class _PlayPageState extends State<PlayPage> {
                                             padding:
                                                 const EdgeInsets.only(top: .5),
                                             child: Text(
-                                                "${currentMatch["adsWatched"]}",
+                                                "${(currentMatch["multiplier"]/100).round()}",
                                                 style: const TextStyle(
                                                     color: kGreen,
                                                     fontSize: 28)),
