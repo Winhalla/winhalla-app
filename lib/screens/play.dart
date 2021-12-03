@@ -15,7 +15,9 @@ class _PlayPageState extends State<PlayPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, _) {
-      return user.inGame == null || user.inGame["showMatch"] == false
+      return user.inGame == null
+          || user.inGame["showMatch"] == false
+          || user.inGame["joinDate"] + 3600 * 1000 < DateTime.now().millisecondsSinceEpoch
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -40,7 +42,13 @@ class _PlayPageState extends State<PlayPage> {
                   return Flexible(
                     flex: 1,
                     fit: FlexFit.tight,
-                    child: ListView.builder(
+                    child: lastGames.length + filteredInGameList.length == 0
+                        ? Row(
+                            children: [Text("Nothing here for now...", style: kBodyText2.apply(color: kText80),)],
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            // crossAxisAlignment: CrossAxisAlignment.start,
+                        )
+                        : ListView.builder(
                         shrinkWrap: true,
                         itemCount: lastGames.length + filteredInGameList.length,
                         itemBuilder: (BuildContext context, int index) {

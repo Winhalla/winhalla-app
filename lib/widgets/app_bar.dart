@@ -23,7 +23,9 @@ class MyAppBar extends StatelessWidget {
           Widget> [
             if (currentPage == 2) 
               Consumer<User>(builder: (context, user, _) {
-                if (user.inGame == null) return const Text("");
+                if (user.inGame == null || user.inGame["joinDate"] + 3600 * 1000 < DateTime.now().millisecondsSinceEpoch) {
+                  return const Text("");
+                }
 
                 if (user.gamesPlayedInMatch > 0) {
                   return Row(
@@ -68,26 +70,6 @@ class MyAppBar extends StatelessWidget {
                       )
                     ],
                   );
-                  /*return GestureDetector(
-                    behavior: HitTestBehavior.translucent,
-                    onTap: () {
-                      user.exitMatch(true);
-                    },
-                    child: Row(
-                      children: const <Widget>[
-                        Icon(
-                          Icons.exit_to_app_rounded,
-                          size: 30,
-                          color: kPrimary,
-                        ),
-                        SizedBox(width: 6),
-                        Text(
-                          'End match',
-                          style: kBodyText3,
-                        ),
-                      ],
-                    ),
-                  );*/
                 }
                 return GestureDetector(
                   behavior: HitTestBehavior.translucent,
