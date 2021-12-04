@@ -95,10 +95,19 @@ class SoloMatch extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Consumer<FfaMatch>(builder: (context, match, _) {
-                                Future.delayed(
-                                    const Duration(milliseconds: 1),
-                                        ()=>user.setGames(match.value["userPlayer"]["gamesPlayed"])
-                                );
+                                Future.delayed(const Duration(milliseconds: 1),() {
+                                  if(match.value["userPlayer"]["joinDate"] + 3600 * 1000
+                                      <
+                                      DateTime.now().millisecondsSinceEpoch) {
+                                    user.setGames(7);
+                                  } else {
+                                    user.setGames(match.value["userPlayer"]["gamesPlayed"]);
+                                  }
+
+                                  if (user.inGame["showActivity"] == false && match.value["userPlayer"]["gamesPlayed"] < 7) {
+                                    user.setMatchInProgress();
+                                  }
+                                });
                                 context
                                     .read<User>()
                                     .setKeyFx(match.refresh, "refreshMatch");

@@ -36,7 +36,7 @@ class _MyAppBarState extends State<MyAppBar> {
             if (widget.currentPage == 2)
               Consumer<User>(builder: (context, user, _) {
                 user.setKeyFx(rebuildNavbar, "rebuildNavbar");
-                if (user.inGame == null || user.inGame["joinDate"] + 3600 * 1000 < DateTime.now().millisecondsSinceEpoch) {
+                if (user.inGame == null || user.inGame["joinDate"] + 3600 * 1000 < DateTime.now().millisecondsSinceEpoch || user.inGame["isShown"] == false) {
                   return const Text("");
                 }
 
@@ -45,7 +45,7 @@ class _MyAppBarState extends State<MyAppBar> {
                     children: [
                       GestureDetector(
                         onTap: (){
-                          user.exitMatch(isOnlyLayout: true);
+                          user.exitMatch(isBackButton: user.gamesPlayedInMatch < 7, isOnlyLayout: user.gamesPlayedInMatch > 6);
                         },
                         child: Row(children: const <Widget>[
                           Icon(
