@@ -262,7 +262,7 @@ class _AppCoreState extends State<AppCore> {
                                               false &&
                                           user.inGame != false &&
                                           user.inGame["joinDate"] +
-                                                  36 * 1000 >
+                                                  3600 * 1000 >
                                               DateTime.now()
                                                   .millisecondsSinceEpoch
                                       ? kOrange

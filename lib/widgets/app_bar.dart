@@ -8,11 +8,23 @@ import 'package:winhalla_app/widgets/account_edit_warning.dart';
 import 'package:winhalla_app/widgets/popup_legal.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
 
-class MyAppBar extends StatelessWidget {
+class MyAppBar extends StatefulWidget {
   final bool isUserDataLoaded;
   final int currentPage;
 
   const MyAppBar(this.isUserDataLoaded, this.currentPage);
+
+  @override
+  State<MyAppBar> createState() => _MyAppBarState();
+}
+
+class _MyAppBarState extends State<MyAppBar> {
+  int rebuilds = 0;
+  void rebuildNavbar(){
+    setState(() {
+      rebuilds++;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,8 +33,9 @@ class MyAppBar extends StatelessWidget {
       color: kBackground,
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <
           Widget> [
-            if (currentPage == 2) 
+            if (widget.currentPage == 2)
               Consumer<User>(builder: (context, user, _) {
+                user.setKeyFx(rebuildNavbar, "rebuildNavbar");
                 if (user.inGame == null || user.inGame["joinDate"] + 3600 * 1000 < DateTime.now().millisecondsSinceEpoch) {
                   return const Text("");
                 }
@@ -47,8 +60,8 @@ class MyAppBar extends StatelessWidget {
                           ),
                         ]),
                       ),
-                      const SizedBox(width: 15,),
-                      GestureDetector(
+                      if(user.gamesPlayedInMatch > 6) const SizedBox(width: 15,),
+                      if(user.gamesPlayedInMatch > 6) GestureDetector(
                         behavior: HitTestBehavior.translucent,
                         onTap: () {
                           user.enterMatch();
@@ -284,7 +297,7 @@ class MyAppBar extends StatelessWidget {
                     );
                     Overlay.of(context)?.insert(overlayEntry);
                   },
-                  child: isUserDataLoaded
+                  child: widget.isUserDataLoaded
                       ? Consumer<User>(builder: (context, user, _) {
                           if (user.value == null) {
                             return Image.asset(
