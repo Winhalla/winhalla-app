@@ -21,8 +21,10 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
 
   @override
   Widget build(BuildContext context) {
+
+    bool isSmallScreen = MediaQuery.of(context).size.height < 750;
     return Padding(
-      padding: const EdgeInsets.fromLTRB(42.5, 120, 42.5, 125),
+      padding: EdgeInsets.fromLTRB(42.5, isSmallScreen ? 84 : 120, 42.5, isSmallScreen ? 80 : 125),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
