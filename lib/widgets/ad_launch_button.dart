@@ -33,7 +33,10 @@ class _AdButtonState extends State<AdButton> {
       hasAlreadyInitAdmob = true;
     }
     await RewardedAd.load(
-      serverSideVerificationOptions: ServerSideVerificationOptions(userId: user.value["steam"]["id"],customData: widget.goal),
+      serverSideVerificationOptions: ServerSideVerificationOptions(
+          userId: user.value["steam"]["id"],
+          customData: widget.goal == "earnMoreSoloMatch" ? match?.value["_id"] : widget.goal
+      ),
       adUnitId: AdHelper.rewardedAdUnitId,
       request: const AdRequest(),
       rewardedAdLoadCallback: RewardedAdLoadCallback(
@@ -97,8 +100,11 @@ class _AdButtonState extends State<AdButton> {
   void initState() {
     user = context.read<User>();
     user.setKeyFx(playAd, "playAd");
-    if(widget.goal == "earnMoreSoloMatch") match = context.read<FfaMatch>();
-    // _initGoogleMobileAds();
+    if(widget.goal == "earnMoreSoloMatch") {
+      match = context.read<FfaMatch>();
+      if(user.inGame["showActivity"] == false) user.toggleShowMatch(true);
+    }
+    _initGoogleMobileAds();
     super.initState();
   }
 

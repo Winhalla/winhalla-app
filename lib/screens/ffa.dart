@@ -13,7 +13,6 @@ import 'package:winhalla_app/widgets/tip_painter.dart';
 
 class SoloMatch extends StatelessWidget {
   final String matchId;
-
   const SoloMatch({Key? key, required this.matchId}) : super(key: key);
 
   @override
@@ -22,8 +21,9 @@ class SoloMatch extends StatelessWidget {
       child: FutureBuilder(
         future: context.read<User>().callApi.get("/getMatch/$matchId"),
         builder: (BuildContext context, AsyncSnapshot res) {
-          if (context.read<User>().inGame["showActivity"] == false) {
-            context.read<User>().hideMatch();
+          User user = context.read<User>();
+          if (user.inGame["showActivity"] == false) {
+            user.toggleShowMatch(false);
           }
 
           if (!res.hasData) {
@@ -32,14 +32,14 @@ class SoloMatch extends StatelessWidget {
           if (res.data["successful"] == false) {
             Future.delayed(
                 const Duration(milliseconds: 1),
-                    () => context.read<User>().exitMatch(isOnlyLayout: true)
+                    () => user.exitMatch(isOnlyLayout: true)
             );
 
             return const Center(child: CircularProgressIndicator());
           }
           return ChangeNotifierProvider<FfaMatch>(
             create: (context) => FfaMatch(
-                res.data["data"], context.read<User>().value["steam"]["id"]),
+                res.data["data"], user.value["steam"]["id"]),
             child: Builder(builder: (context) {
               return RefreshIndicator(
                 onRefresh: () async {
@@ -95,6 +95,10 @@ class SoloMatch extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Consumer<FfaMatch>(builder: (context, match, _) {
+                                Future.delayed(
+                                    const Duration(milliseconds: 1),
+                                        ()=>user.setGames(match.value["userPlayer"]["gamesPlayed"])
+                                );
                                 context
                                     .read<User>()
                                     .setKeyFx(match.refresh, "refreshMatch");

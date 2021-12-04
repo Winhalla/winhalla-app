@@ -14,7 +14,7 @@ class User extends ChangeNotifier {
   dynamic quests;
   dynamic inGame;
   int gamesPlayedInMatch = 0;
-
+  GlobalKey appBarKey = GlobalKey();
   int lastQuestsRefresh = 0;
   int lastShopRefresh = 0;
   List<GlobalKey?> keys;
@@ -262,7 +262,6 @@ class User extends ChangeNotifier {
     );
     quests["${type}Quests"].removeWhere((e)=>e["id"] == questId);
     value["user"]["coins"] += price;
-    notifyListeners();
   }
 
   Future<void> setItemGoal(int itemId) async {
@@ -275,14 +274,19 @@ class User extends ChangeNotifier {
     keyFx[key] = keyFx1;
   }
 
-  void hideMatch() {
-    inGame["showMatch"] = false;
+  void toggleShowMatch(bool setTo) {
+    inGame["showMatch"] = setTo;
   }
 
   void resetInGame() {
     inGame = null;
     gamesPlayedInMatch = 0;
     notifyListeners();
+  }
+
+  void setGames(games) {
+    gamesPlayedInMatch = games;
+    keyFx["rebuildNavbar"]();
   }
 
   User(this.value, this.callApi, this.keys, this.inGame);
