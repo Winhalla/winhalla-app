@@ -26,15 +26,24 @@ class _TimerWidgetState extends State<TimerWidget> {
 
   void startTimer() {
     var numberOfSeconds = widget.numberOfSeconds -10;
-    const oneSec = const Duration(seconds: 1);
+    if(numberOfSeconds < 0){
+      Future.delayed(const Duration(milliseconds: 1), () {
+        setState(() {
+          timer = "00:00";
+          color = kRed;
+        });
+      });
+      return;
+    }
+    const oneSec = Duration(seconds: 1);
     int days = (widget.numberOfSeconds / 86400).floor();
     int hours = (widget.numberOfSeconds / 3600).floor() - days * 24;
     int minutes = (widget.numberOfSeconds / 60).floor() - hours * 60 - days * 1440;
     int seconds = widget.numberOfSeconds % 60;
 
     void timerFx(Timer? cancel) {
-      if (numberOfSeconds != widget.numberOfSeconds -10) {
-        numberOfSeconds = widget.numberOfSeconds -10;
+      if (numberOfSeconds != widget.numberOfSeconds - 10) {
+        numberOfSeconds = widget.numberOfSeconds - 10;
         days = (numberOfSeconds / 86400).floor();
         hours = (numberOfSeconds / 3600).floor() - days * 24;
         minutes = (numberOfSeconds / 60).floor() - hours * 60 - days * 1440;

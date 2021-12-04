@@ -17,10 +17,10 @@ class _PlayPageState extends State<PlayPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, _) {
-      return user.inGame == null ||
+      return (user.inGame == null ||
               user.inGame["showMatch"] == false ||
               user.inGame["joinDate"] + 3600 * 1000 <
-                  DateTime.now().millisecondsSinceEpoch
+                  DateTime.now().millisecondsSinceEpoch) || (user.inGame["isShown"] == false)
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -35,6 +35,10 @@ class _PlayPageState extends State<PlayPage> {
                   height: 34,
                 ),
                 Consumer<User>(builder: (context, user, _) {
+                  Future.delayed(
+                      const Duration(milliseconds: 1),
+                          () => user.setIsShown(true)
+                  );
                   var filteredInGameList = user.value["user"]["inGame"];
                   /*.where((g) => g["nbOfUsersFinishing"] > 0 ? true : false)
                       .toList();*/
@@ -73,8 +77,10 @@ class _PlayPageState extends State<PlayPage> {
                                   : currentMatch["wins"] != null
                                       ? true
                                       : false;
-                              if (currentMatch["nbOfUsersFinishing"] == 0)
+                              if (currentMatch["nbOfUsersFinishing"] == 0) {
                                 currentMatch["nbOfUsersFinishing"] = 1;
+                              }
+                              print(currentMatch);
                               return GestureDetector(
                                 onTap: () {
                                   if (currentMatch["wins"] == null) {
@@ -86,7 +92,12 @@ class _PlayPageState extends State<PlayPage> {
                                   key: index == 0 ? user.keys[7] : null,
                                   decoration: BoxDecoration(
                                       color: kBackgroundVariant,
-                                      borderRadius: BorderRadius.circular(20)),
+                                      borderRadius: BorderRadius.circular(20),
+                                      border: currentMatch["isFinished"] == false ? Border.all(
+                                        color:  kPrimary,
+                                        width: 1,
+                                      ) : null,
+                                  ),
                                   padding:
                                       const EdgeInsets.fromLTRB(30, 20, 30, 20),
                                   margin: EdgeInsets.only(
@@ -107,7 +118,10 @@ class _PlayPageState extends State<PlayPage> {
                                               text: TextSpan(
                                                   style: kBodyText2.apply(
                                                       color: kText80),
-                                                  children: [
+                                                  children: currentMatch["isFinished"] == false ? [
+                                                    TextSpan(
+                                                        text: "Match in progress! ", style: kBodyText2.apply(color:kText)),
+                                                  ] :[
                                                     const TextSpan(
                                                         text: "Waiting "),
                                                     TextSpan(

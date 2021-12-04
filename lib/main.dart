@@ -188,110 +188,118 @@ class _AppCoreState extends State<AppCore> {
               ),
         bottomNavigationBar: !widget.isUserDataLoaded
             ? null
-            : Container(
-                padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                decoration: const BoxDecoration(
-                  color: kBackground,
-                  /*boxShadow: [
-                                BoxShadow(
-                                  offset: Offset(0, -8),
-                                  blurRadius: 8,
-                                  color: Colors.black.withOpacity(0.20)
-                                )
-                              ]*/
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          switchPage(0);
-                        },
-                        child: SizedBox(
-                          height: 90,
-                          child: Icon(
-                            Icons.home_outlined,
-                            key: context.read<User>().keys[13],
-                            color: _selectedIndex == 0 ? kPrimary : kText95,
-                            size: 34,
+            : StatefulBuilder(
+              builder: (context,setState) {
+                void rebuildBottomNavbar(){
+                  setState((){});
+                }
+                context.read<User>().setKeyFx(rebuildBottomNavbar, "rebuildBottomNavbar");
+                return Container(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                    decoration: const BoxDecoration(
+                      color: kBackground,
+                      /*boxShadow: [
+                                    BoxShadow(
+                                      offset: Offset(0, -8),
+                                      blurRadius: 8,
+                                      color: Colors.black.withOpacity(0.20)
+                                    )
+                                  ]*/
+                    ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: () {
+                              switchPage(0);
+                            },
+                            child: SizedBox(
+                              height: 90,
+                              child: Icon(
+                                Icons.home_outlined,
+                                key: context.read<User>().keys[13],
+                                color: _selectedIndex == 0 ? kPrimary : kText95,
+                                size: 34,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          switchPage(1);
-                        },
-                        child: SizedBox(
-                          height: 90,
-                          child: Icon(
-                            Icons.check_box_outlined,
-                            key: context.read<User>().keys[8],
-                            color: _selectedIndex == 1 ? kPrimary : kText95,
-                            size: 34,
+                        Expanded(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: () {
+                              switchPage(1);
+                            },
+                            child: SizedBox(
+                              height: 90,
+                              child: Icon(
+                                Icons.check_box_outlined,
+                                key: context.read<User>().keys[8],
+                                color: _selectedIndex == 1 ? kPrimary : kText95,
+                                size: 34,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          switchPage(2);
-                        },
-                        child: SizedBox(
-                          height: 90,
-                          child: Consumer<User>(builder: (context, user, _) {
-                            /*if (user.inGame == false) {
-                                Future.delayed(Duration(milliseconds: 1), () {
-                                  switchPage(0);
-                                });
-                              }*/
-                            return Icon(
-                              Icons.play_circle_outline_outlined,
-                              key: user.keys[1],
-                              color: _selectedIndex == 2
-                                  ? kPrimary
-                                  : user.inGame != null &&
-                                          user.inGame["showActivity"] !=
-                                              false &&
-                                          user.inGame != false &&
-                                          user.inGame["joinDate"] +
-                                                  3600 * 1000 >
-                                              DateTime.now()
-                                                  .millisecondsSinceEpoch
-                                      ? kOrange
-                                      : kText95,
-                              size: 34,
-                            );
-                          }),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: GestureDetector(
-                        behavior: HitTestBehavior.translucent,
-                        onTap: () {
-                          switchPage(3);
-                        },
-                        child: SizedBox(
-                          height: 90,
-                          child: Icon(
-                            Icons.card_giftcard,
-                            color: _selectedIndex == 3 ? kPrimary : kText95,
-                            size: 34,
+                        Expanded(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: () {
+                              switchPage(2);
+                            },
+                            child: SizedBox(
+                              height: 90,
+                              child: Consumer<User>(builder: (context, user, _) {
+                                /*if (user.inGame == false) {
+                                    Future.delayed(Duration(milliseconds: 1), () {
+                                      switchPage(0);
+                                    });
+                                  }*/
+                                return Icon(
+                                  Icons.play_circle_outline_outlined,
+                                  key: user.keys[1],
+                                  color: _selectedIndex == 2
+                                      ? kPrimary
+                                      : user.inGame != null &&
+                                              user.inGame["showActivity"] !=
+                                                  false &&
+                                              user.inGame != false &&
+                                              user.inGame["joinDate"] +
+                                                      3600 * 1000 >
+                                                  DateTime.now()
+                                                      .millisecondsSinceEpoch
+                                          ? kOrange
+                                          : kText95,
+                                  size: 34,
+                                );
+                              }),
+                            ),
                           ),
                         ),
-                      ),
+                        Expanded(
+                          child: GestureDetector(
+                            behavior: HitTestBehavior.translucent,
+                            onTap: () {
+                              switchPage(3);
+                            },
+                            child: SizedBox(
+                              height: 90,
+                              child: Icon(
+                                Icons.card_giftcard,
+                                color: _selectedIndex == 3 ? kPrimary : kText95,
+                                size: 34,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              ));
+                  );
+              }
+            ));
     if (widget.tutorial?["needed"] == true) {
       double screenH = MediaQuery.of(context).size.height;
       double screenW = MediaQuery.of(context).size.width;

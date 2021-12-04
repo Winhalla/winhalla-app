@@ -102,7 +102,7 @@ class User extends ChangeNotifier {
       inGame = {
         'id': "tutorial",
         'joinDate': DateTime.now().millisecondsSinceEpoch,
-        'isFinished': false
+        'isFinished': false,
       };
       notifyListeners();
       return "tutorial";
@@ -143,7 +143,14 @@ class User extends ChangeNotifier {
     return matchId;
   }
 
-  Future<void> exitMatch({isOnlyLayout = false}) async {
+  Future<void> exitMatch({isOnlyLayout = false, isBackButton = false}) async {
+    if (isBackButton) {
+      inGame["isShown"] = false;
+      notifyListeners();
+      print(inGame);
+      return;
+    }
+
     if (isOnlyLayout) {
       inGame = null;
       gamesPlayedInMatch = 0;
@@ -256,7 +263,21 @@ class User extends ChangeNotifier {
     keyFx["rebuildNavbar"]();
   }
 
+  void setMatchInProgress() {
+    inGame["showActivity"] = null;
+    keyFx["rebuildNavbar"]();
+    keyFx["rebuildBottomNavbar"]();
+  }
+
+  void setIsShown(bool isShown) {
+    if(inGame != null) {
+      inGame["isShown"] = isShown;
+    }
+  }
+
   User(this.value, this.callApi, this.keys, this.inGame);
+
+
 }
 
 Future<dynamic> initUser(context) async {
