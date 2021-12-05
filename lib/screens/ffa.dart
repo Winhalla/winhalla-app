@@ -96,15 +96,17 @@ class SoloMatch extends StatelessWidget {
                             children: [
                               Consumer<FfaMatch>(builder: (context, match, _) {
                                 Future.delayed(const Duration(milliseconds: 1),() {
-                                  if(match.value["userPlayer"]["joinDate"] + 3600 * 1000
+                                  bool hasExpiredTime = match.value["userPlayer"]["joinDate"] + 3600 * 1000
                                       <
-                                      DateTime.now().millisecondsSinceEpoch) {
+                                      DateTime.now().millisecondsSinceEpoch;
+
+                                  if(hasExpiredTime) {
                                     user.setGames(7);
                                   } else {
                                     user.setGames(match.value["userPlayer"]["gamesPlayed"]);
                                   }
 
-                                  if (user.inGame["showActivity"] == false && match.value["userPlayer"]["gamesPlayed"] < 7) {
+                                  if (user.inGame["showActivity"] == false && (match.value["userPlayer"]["gamesPlayed"] < 7 && !hasExpiredTime)) {
                                     user.setMatchInProgress();
                                   }
                                 });

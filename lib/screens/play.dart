@@ -17,6 +17,13 @@ class _PlayPageState extends State<PlayPage> {
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, _) {
+      bool hasMatchInProgress = false;
+      try{
+        if(user.value["user"]["inGame"].firstWhere((e) => e["isFinished"] == false, orElse: () => null) != null){
+          hasMatchInProgress = true;
+        }
+      }catch(e){}
+
       return (user.inGame == null ||
               user.inGame["showMatch"] == false ||
               user.inGame["joinDate"] + 3600 * 1000 <
@@ -213,12 +220,11 @@ class _PlayPageState extends State<PlayPage> {
                           setState(() {
                             _isLoadingMatch = true;
                           });
-                        
                           var matchId = await context
                               .read<User>()
                               .enterMatch();
                           _isLoadingMatch = false;
-                          if (matchId == "err") return;
+                          if (matchId == "err") _isLoadingMatch = false;
                         },
                         child: Container(
                           margin: const EdgeInsets.fromLTRB(8, 0, 8, 42),
@@ -237,7 +243,7 @@ class _PlayPageState extends State<PlayPage> {
                                     width: 26,
                                     height: 26,
                                     child: CircularProgressIndicator(
-                                      strokeWidth: 4.5,
+                                      strokeWidth: 4,
                                       color: kText,
                                     ),
                                   ),
@@ -247,10 +253,10 @@ class _PlayPageState extends State<PlayPage> {
                                   color: kText,
                                   size: 50,
                                 ),
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 3.5, left: 1),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 3.5, left: 1),
                                   child: Text(
-                                    "Start a match",
+                                    hasMatchInProgress? "Go to match" :"Start a match",
                                     style: kBodyText1,
                                   ),
                                 ),
