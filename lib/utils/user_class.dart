@@ -135,7 +135,7 @@ class User extends ChangeNotifier {
       'id': matchId,
       'joinDate': DateTime.now().millisecondsSinceEpoch,
       'isFinished': false,
-      'showActivity': targetedMatchId != null ? false : null,
+      'showActivity': targetedMatchId != null && isFromMatchHistory ? false : null,
       'showMatch': true,
       'isFromMatchHistory': isFromMatchHistory
     };
