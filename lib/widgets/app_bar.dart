@@ -45,7 +45,12 @@ class _MyAppBarState extends State<MyAppBar> {
                     children: [
                       GestureDetector(
                         onTap: (){
-                          user.exitMatch(isBackButton: user.gamesPlayedInMatch < 7, isOnlyLayout: user.gamesPlayedInMatch > 6);
+                          print(user.inGame);
+                          user.exitMatch(
+                              isBackButton: user.gamesPlayedInMatch < 7,
+                              isOnlyLayout: user.gamesPlayedInMatch > 6,
+                              isFromMatchHistory: user.inGame["isFromMatchHistory"] == true
+                          );
                         },
                         child: Row(children: const <Widget>[
                           Icon(

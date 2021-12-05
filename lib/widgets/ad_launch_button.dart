@@ -104,7 +104,7 @@ class _AdButtonState extends State<AdButton> {
       match = context.read<FfaMatch>();
       if(user.inGame["showActivity"] == false) user.toggleShowMatch(true);
     }
-    // _initGoogleMobileAds();
+    _initGoogleMobileAds();
     super.initState();
   }
 
