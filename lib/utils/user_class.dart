@@ -20,7 +20,7 @@ class User extends ChangeNotifier {
   Map<String, dynamic> keyFx = {};
   late CallApi callApi;
 
-  Future<void> refresh() async {
+  Future<void> refresh({notify = true}) async {
     var accountData = await callApi.get("/account");
     if (accountData["successful"] == false) return;
     value = accountData["data"];
@@ -40,8 +40,8 @@ class User extends ChangeNotifier {
         gamesPlayedInMatch = 0;
       }
     } catch (e) {}
-
-    notifyListeners();
+    print(inGame);
+    if(notify)notifyListeners();
   }
 
   Future<bool> refreshQuests(BuildContext context,
@@ -97,7 +97,7 @@ class User extends ChangeNotifier {
   }
 
   Future<String> enterMatch(
-      {bool isTutorial = false, String? targetedMatchId}) async {
+      {bool isTutorial = false, String? targetedMatchId, bool isFromMatchHistory = false}) async {
     if (isTutorial) {
       inGame = {
         'id': "tutorial",
@@ -137,17 +137,17 @@ class User extends ChangeNotifier {
       'isFinished': false,
       'showActivity': targetedMatchId != null ? false : null,
       'showMatch': true,
+      'isFromMatchHistory': isFromMatchHistory
     };
 
     notifyListeners();
     return matchId;
   }
 
-  Future<void> exitMatch({isOnlyLayout = false, isBackButton = false}) async {
+  Future<void> exitMatch({isOnlyLayout = false, isBackButton = false, isFromMatchHistory = false}) async {
     if (isBackButton) {
       inGame["isShown"] = false;
       notifyListeners();
-      print(inGame);
       return;
     }
 
@@ -155,6 +155,7 @@ class User extends ChangeNotifier {
       inGame = null;
       gamesPlayedInMatch = 0;
       notifyListeners();
+      if(isFromMatchHistory) refresh(notify:false);
       return;
     }
 

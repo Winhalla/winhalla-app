@@ -43,7 +43,6 @@ class _FadeInPositionedState extends State<FadeInPositioned> {
         _visible = false;
         Future.delayed(const Duration(milliseconds: 1), () {
           setState(() {
-            print("show");
             _visible = true;
             _dontResetNextBuild = true;
           });
@@ -276,7 +275,6 @@ class Tutorial extends ChangeNotifier{
 
   void next(){
     status ++;
-    print(status);
     if(nextStatus != null){
       status = nextStatus as int;
       nextStatus = null;

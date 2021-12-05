@@ -80,12 +80,13 @@ class _PlayPageState extends State<PlayPage> {
                               if (currentMatch["nbOfUsersFinishing"] == 0) {
                                 currentMatch["nbOfUsersFinishing"] = 1;
                               }
-                              print(currentMatch);
                               return GestureDetector(
                                 onTap: () {
                                   if (currentMatch["wins"] == null) {
                                     user.enterMatch(
-                                        targetedMatchId: currentMatch["id"]);
+                                        targetedMatchId: currentMatch["id"],
+                                        isFromMatchHistory: !(currentMatch["isFinished"] == false)
+                                    );
                                   }
                                 },
                                 child: Container(
