@@ -28,9 +28,15 @@ class Coin extends StatelessWidget {
         padding: padding,
         child: Row(
           children: [
-            Consumer<User>(builder: (context, user, _) {
+            Builder(builder: (context) {
+              String text = "";
+              try{
+                text = double.parse(nb).floor().toString();
+              }catch(e){
+                text = "...";
+              }
               return Text(
-                double.parse(nb).floor().toString(),
+                text,
                 style: TextStyle(color: color, fontSize: fontSize),
               );
             }),
