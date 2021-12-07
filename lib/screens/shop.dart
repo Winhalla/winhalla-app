@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/animation.dart';
@@ -353,13 +354,16 @@ class _PaypalCreditState extends State<PaypalCredit> {
                       ),
                     ),
                   ),
-                  const Padding(
-                    child: Icon(
-                      Icons.arrow_right_alt,
-                      size: 40,
-                      color: kText,
+                  Padding(
+                    child: Transform.rotate(
+                      angle: 180 * pi / 180,
+                      child: const Icon(
+                        Icons.arrow_right_alt,
+                        size: 40,
+                        color: kText,
+                      ),
                     ),
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   ),
                   Price(
                       cost: amount.runtimeType == String
