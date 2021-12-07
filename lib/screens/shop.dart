@@ -362,7 +362,7 @@ class _PaypalCreditState extends State<PaypalCredit> {
                         color: kText,
                       ),
                     ),
-                    padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                   ),
                   Price(
                       cost: amount.runtimeType == String

@@ -82,7 +82,7 @@ class _AdButtonState extends State<AdButton> {
   }
 
   Future<void> playAd() async {
-    if (user.inGame["showActivity"] == false) user.toggleShowMatch(true);
+    if (user.inGame?["showActivity"] == false) user.toggleShowMatch(true);
     if (_lastAdError) {
       _initGoogleMobileAds();
     } else if (isAdReady) {
