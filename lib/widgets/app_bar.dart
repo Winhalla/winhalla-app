@@ -45,7 +45,6 @@ class _MyAppBarState extends State<MyAppBar> {
                     children: [
                       GestureDetector(
                         onTap: (){
-                          print(user.inGame);
                           user.exitMatch(
                               isBackButton: user.gamesPlayedInMatch < 7,
                               isOnlyLayout: user.gamesPlayedInMatch > 6,

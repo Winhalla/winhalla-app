@@ -98,10 +98,12 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
     });
 
     await Future.delayed(Duration(milliseconds:widget.displayDuration-352));
-    setState(() {
-      topPosition = -200;
-      topBgPosition = -230;
-    });
+    if(mounted) {
+      setState(() {
+        topPosition = -200;
+        topBgPosition = -230;
+      });
+    }
   }
   @override
   Widget build(BuildContext context) {

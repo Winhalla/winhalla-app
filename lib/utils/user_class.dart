@@ -41,15 +41,21 @@ class User extends ChangeNotifier {
         gamesPlayedInMatch = 0;
       }
     } catch (e) {}
-    print(inGame);
     if(notify)notifyListeners();
   }
 
   Future<bool> refreshQuests(BuildContext context,
-      {bool showInfo = false, isTutorial = true}) async {
+      {bool showInfo = false, isTutorial = false}) async {
     var accountData = await callApi
         .get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
     if (accountData["successful"] == false) return true;
+    var accountDataDecoded = accountData["data"]["solo"];
+    accountDataDecoded["dailyQuests"]
+        .addAll(accountDataDecoded["finished"]["daily"]);
+    accountDataDecoded["weeklyQuests"]
+        .addAll(accountDataDecoded["finished"]["weekly"]);
+    quests = accountDataDecoded;
+    notifyListeners();
     if (accountData["data"]["newQuests"] == true) {
 
       if (showInfo) {
@@ -71,13 +77,6 @@ class User extends ChangeNotifier {
       );
       return false;
     }
-    var accountDataDecoded = accountData["data"]["solo"];
-    accountDataDecoded["dailyQuests"]
-        .addAll(accountDataDecoded["finished"]["daily"]);
-    accountDataDecoded["weeklyQuests"]
-        .addAll(accountDataDecoded["finished"]["weekly"]);
-    quests = accountDataDecoded;
-    notifyListeners();
     if (accountData["data"]["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < accountData["data"]["updatedPlatforms"].length; i++) {
@@ -253,7 +252,7 @@ class User extends ChangeNotifier {
     if (result["successful"] == false) return;
     try {
       if (value["user"]["dailyChallenge"]["challenges"]
-              .firstWhere((e) => e["goal"] == "winhallaQuest", orElse: null) !=
+              .firstWhere((e) => e["goal"] == "winhallaQuest", orElse: ()=>null) !=
           null) {
         refresh();
         FirebaseAnalytics.instance.logEvent(
@@ -325,18 +324,17 @@ Future<dynamic> initUser(context) async {
   dynamic tutorialFinished;
   dynamic tutorialStep;
   try {
-    tutorialFinished =
-        data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true
-            ? false
-            : true;
+    tutorialFinished = data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true ? false : true;
+
     if (data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true) {
       tutorialStep = 17;
-    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] ==
-        true) {
+
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] == true) {
       tutorialStep = 13;
-    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] ==
-        true) {
+
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] == true) {
       tutorialStep = 8;
+
     } else {
       tutorialStep = 0;
     }
