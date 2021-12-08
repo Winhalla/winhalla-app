@@ -40,15 +40,21 @@ class User extends ChangeNotifier {
         gamesPlayedInMatch = 0;
       }
     } catch (e) {}
-    print(inGame);
     if(notify)notifyListeners();
   }
 
   Future<bool> refreshQuests(BuildContext context,
-      {bool showInfo = false, isTutorial = true}) async {
+      {bool showInfo = false, isTutorial = false}) async {
     var accountData = await callApi
         .get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
     if (accountData["successful"] == false) return true;
+    var accountDataDecoded = accountData["data"]["solo"];
+    accountDataDecoded["dailyQuests"]
+        .addAll(accountDataDecoded["finished"]["daily"]);
+    accountDataDecoded["weeklyQuests"]
+        .addAll(accountDataDecoded["finished"]["weekly"]);
+    quests = accountDataDecoded;
+    notifyListeners();
     if (accountData["data"]["newQuests"] == true) {
       if (showInfo) {
         showInfoDropdown(
@@ -63,13 +69,6 @@ class User extends ChangeNotifier {
       }
       return true;
     }
-    var accountDataDecoded = accountData["data"]["solo"];
-    accountDataDecoded["dailyQuests"]
-        .addAll(accountDataDecoded["finished"]["daily"]);
-    accountDataDecoded["weeklyQuests"]
-        .addAll(accountDataDecoded["finished"]["weekly"]);
-    quests = accountDataDecoded;
-    notifyListeners();
     if (accountData["data"]["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < accountData["data"]["updatedPlatforms"].length; i++) {

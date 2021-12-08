@@ -122,6 +122,7 @@ class Quests extends StatelessWidget {
                       ),
                     );
                   }
+                  bool isCollectingQuestDaily = false;
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 78.0),
                     child: ListView.builder(
@@ -129,12 +130,17 @@ class Quests extends StatelessWidget {
                       itemBuilder: (context, int index) {
                         return GestureDetector(
                           behavior: HitTestBehavior.translucent,
-                          onTap: (){
-                            if(user.quests["dailyQuests"][index]["progress"] >= user.quests["dailyQuests"][index]["goal"]) {
-                              user.collectQuest(
-                                user.quests["dailyQuests"][index]["id"],
-                                "daily",
-                                user.quests["dailyQuests"][index]["reward"]);
+                          onTap: () async {
+                            if(isCollectingQuestDaily == true) return;
+                            isCollectingQuestDaily = true;
+                            try {
+                              if (user.quests["dailyQuests"][index]["progress"] >= user.quests["dailyQuests"][index]["goal"]) {
+                                await user.collectQuest(user.quests["dailyQuests"][index]["id"], "daily",
+                                    user.quests["dailyQuests"][index]["reward"]);
+                              }
+                              isCollectingQuestDaily = false;
+                            } catch(e) {
+                              isCollectingQuestDaily = false;
                             }
                           },
                           child: Container(
@@ -143,7 +149,7 @@ class Quests extends StatelessWidget {
                                 key: index == 1 ? user.keys[12] : null,
                                 reward:user.quests["dailyQuests"][index]["reward"],
                                 name: user.quests["dailyQuests"][index]["name"],
-                                color: _getColorFromPrice(user.quests["dailyQuests"][index]["reward"], "weekly"),
+                                color: _getColorFromPrice(user.quests["dailyQuests"][index]["reward"], "daily"),
                                 progress: user.quests["dailyQuests"][index]["progress"],
                                 goal: user.quests["dailyQuests"][index]["goal"]),
                           ),
@@ -217,15 +223,23 @@ class Quests extends StatelessWidget {
                         ],
                       );
                     }
+                    bool isCollectingQuestWeekly = false;
                     return ListView.builder(
                       itemBuilder: (context, int index) {
                         return GestureDetector(
                           behavior: HitTestBehavior.translucent,
-                          onTap: (){
-                            user.collectQuest(
-                                user.quests["weeklyQuests"][index]["id"],
-                                "weekly",
-                                user.quests["weeklyQuests"][index]["reward"]);
+                          onTap: () async {
+                            if(isCollectingQuestWeekly == true) return;
+                            isCollectingQuestWeekly = true;
+                            try {
+                              if (user.quests["weeklyQuests"][index]["progress"] >= user.quests["weeklyQuests"][index]["goal"]) {
+                                await user.collectQuest(user.quests["weeklyQuests"][index]["id"], "weekly",
+                                    user.quests["weeklyQuests"][index]["reward"]);
+                              }
+                              isCollectingQuestWeekly = false;
+                            } catch(e) {
+                              isCollectingQuestWeekly = false;
+                            }
                           },
                           child: Container(
                             margin: EdgeInsets.only(top: index != 0 ? 30.0 : 0),

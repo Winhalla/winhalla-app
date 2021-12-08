@@ -47,3 +47,4 @@ app.*.map.json
 android/gradle.propreties
 android/gradle.properties
 node_modules
+/obfuscated_stacktraces/
