@@ -229,7 +229,7 @@ class User extends ChangeNotifier {
     if (result["successful"] == false) return;
     try {
       if (value["user"]["dailyChallenge"]["challenges"]
-              .firstWhere((e) => e["goal"] == "winhallaQuest", orElse: null) !=
+              .firstWhere((e) => e["goal"] == "winhallaQuest", orElse: ()=>null) !=
           null) {
         refresh();
       }
@@ -283,7 +283,6 @@ class User extends ChangeNotifier {
 
 Future<dynamic> initUser(context) async {
   await Firebase.initializeApp();
-
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
   CallApi caller = CallApi(authKey: storageKey, context: context);
@@ -294,18 +293,17 @@ Future<dynamic> initUser(context) async {
   dynamic tutorialFinished;
   dynamic tutorialStep;
   try {
-    tutorialFinished =
-        data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true
-            ? false
-            : true;
+    tutorialFinished = data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true ? false : true;
+
     if (data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true) {
       tutorialStep = 17;
-    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] ==
-        true) {
+
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] == true) {
       tutorialStep = 13;
-    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] ==
-        true) {
+
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] == true) {
       tutorialStep = 8;
+
     } else {
       tutorialStep = 0;
     }
