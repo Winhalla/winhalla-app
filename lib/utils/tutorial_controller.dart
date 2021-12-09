@@ -279,7 +279,7 @@ class Tutorial extends ChangeNotifier{
       status = nextStatus as int;
       nextStatus = null;
     }
-    if(status == 18) {
+    if(status >= 18) {
       ctxt.read<User>().callApi.post("/finishedTutorial","{}");
       return ctxt.read<TutorialController>().endTutorial();
     }
