@@ -40,7 +40,7 @@ class SoloMatch extends StatelessWidget {
           return ChangeNotifierProvider<FfaMatch>(
             create: (context) => FfaMatch(
                 res.data["data"], user.value["steam"]["id"]),
-            child: Builder(builder: (context) {
+            child: Builder(builder: (BuildContext context) {
               return RefreshIndicator(
                 onRefresh: () async {
                   var user = context.read<User>();
@@ -49,9 +49,12 @@ class SoloMatch extends StatelessWidget {
                       .refresh(context, user, showInfo: true);
                   if (hasNotChanged &&
                       await getNonNullSSData("hideNoRefreshMatch") != "true") {
-                    showDialog(
-                        context: context,
-                        builder: (_) => NoRefreshPopup("match"));
+                      if(user.appBarKey.currentContext != null){
+                        showDialog(
+                            context: user.appBarKey.currentContext as BuildContext,
+                            builder: (_) => NoRefreshPopup("match"));
+                      }
+
                   }
                   return;
                 },
