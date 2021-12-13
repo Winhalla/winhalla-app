@@ -63,11 +63,6 @@ class _DailyChallengeState extends State<DailyChallenge> {
                       )),*/
                 Consumer<User>(builder: (context, user, _) {
                   final List dailyChallengeQuests = user.value["user"]["dailyChallenge"]["challenges"];
-                  var oldQuests;
-                  (() async => {
-                        oldQuests =
-                            jsonDecode(await getNonNullSSData("questsData"))
-                  })();
                   for (var quest in dailyChallengeQuests) {
                     final textPainter = TextPainter(
                       text: TextSpan(text: quest["name"] as String, style: kBodyText3),

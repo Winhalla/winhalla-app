@@ -61,8 +61,7 @@ class Quests extends StatelessWidget {
                   .read<User>()
                   .refreshQuests(context, showInfo: true);
               context.read<User>().refreshOldQuestsData();
-              /*oldQuestsData = refreshedQuests;
-              print("quest ${oldQuestsData}");*/
+
               if (refreshedQuests == false &&
                   await getNonNullSSData("hideNoRefreshQuests") != "true") {
                 showDialog(
@@ -193,20 +192,23 @@ class Quests extends StatelessWidget {
                                     ["progress"],
                                 goal: user.quests["dailyQuests"][index]["goal"],
                                 oldProgress: user.oldQuestsData["dailyQuests"]
-                                    .where(
-                                      (q) =>
-                                          q["name"] ==
-                                          user.quests["dailyQuests"][index]
-                                              ["name"],
-                                    )
-                                    .toList().length > 0 ?  user.oldQuestsData["dailyQuests"]
-                                    .where(
-                                      (q) =>
-                                          q["name"] ==
-                                          user.quests["dailyQuests"][index]
-                                              ["name"],
-                                    )
-                                    .toList()[0]["progress"] : 0, 
+                                            .where(
+                                              (q) =>
+                                                  q["name"] ==
+                                                  user.quests["dailyQuests"]
+                                                      [index]["name"],
+                                            )
+                                            .toList()
+                                            .length > 0 //Handle if quests are new ones
+                                    ? user.oldQuestsData["dailyQuests"]
+                                        .where(
+                                          (q) =>
+                                              q["name"] ==
+                                              user.quests["dailyQuests"][index]
+                                                  ["name"],
+                                        )
+                                        .toList()[0]["progress"]
+                                    : 0,
                               ),
                             ));
                       },
@@ -328,13 +330,12 @@ class Quests extends StatelessWidget {
                                   ["progress"],
                               goal: user.quests["weeklyQuests"][index]["goal"],
                               oldProgress: user.oldQuestsData["weeklyQuests"]
-                                  .where((q) =>
-                                      q["name"] ==
-                                      user.quests["weeklyQuests"][index]
-                                          ["name"])
-                                  .toList()
-                                          .length >
-                                      0
+                                          .where((q) =>
+                                              q["name"] ==
+                                              user.quests["weeklyQuests"][index]
+                                                  ["name"])
+                                          .toList()
+                                          .length > 0 //Handle if quests are new ones
                                   ? user.oldQuestsData["weeklyQuests"]
                                       .where(
                                         (q) =>
