@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -37,82 +39,110 @@ class Quests extends StatelessWidget {
       }
     }
   }
+
 /*
 
 */
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: context.read<User>().initQuestsData(),
-      builder: (BuildContext context,AsyncSnapshot res)  {
-        if(!res.hasData) {
-          return const Center(
+        future: context.read<User>().initQuestsData(),
+        builder: (BuildContext context, AsyncSnapshot res) {
+          if (!res.hasData) {
+            return const Center(
               child: CircularProgressIndicator(),
-          );
-        }
-        return RefreshIndicator(
-          onRefresh: () async {
-            bool hasNotChanged = await context.read<User>().refreshQuests(context,showInfo: true);
-            if(hasNotChanged && await getNonNullSSData("hideNoRefreshQuests") != "true") showDialog(context: context, builder: (_)=>NoRefreshPopup("quests"));
-          },
-          child: ListView(
-            padding: const EdgeInsets.only(bottom: 14),
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(6.0, 3, 0, 0),
-                      child: Text('Daily', style: kHeadline1),
-                    ),
-                    Consumer<User>(
-                      builder: (context, user,_) {
-                        if(user.quests["dailyQuests"].length < 1) return Container();
+            );
+          }
+          context.read<User>().refreshOldQuestsData();
+
+          return RefreshIndicator(
+            onRefresh: () async {
+              var refreshedQuests = await context
+                  .read<User>()
+                  .refreshQuests(context, showInfo: true);
+              context.read<User>().refreshOldQuestsData();
+              /*oldQuestsData = refreshedQuests;
+              print("quest ${oldQuestsData}");*/
+              if (refreshedQuests == false &&
+                  await getNonNullSSData("hideNoRefreshQuests") != "true") {
+                showDialog(
+                    context: context, builder: (_) => NoRefreshPopup("quests"));
+              }
+            },
+            child: ListView(
+              padding: const EdgeInsets.only(bottom: 14),
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(6.0, 3, 0, 0),
+                        child: Text('Daily', style: kHeadline1),
+                      ),
+                      Consumer<User>(builder: (context, user, _) {
+                        if (user.quests["dailyQuests"].length < 1) {
+                          return Container();
+                        }
                         return Container(
-                          decoration:
-                              BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
-                          padding: const EdgeInsets.fromLTRB(25, 9, 25, 7.5),
-                          child: TimerWidget(
-                                showHours: "hours",
-                                numberOfSeconds:
-                                    (((user.quests["lastDaily"] + 86400000) - DateTime.now().millisecondsSinceEpoch) /
-                                            1000)
-                                        .round(),
-                              )
-                        );
-                      }
-                    )
-                  ],
+                            decoration: BoxDecoration(
+                                color: kBackgroundVariant,
+                                borderRadius: BorderRadius.circular(14)),
+                            padding: const EdgeInsets.fromLTRB(25, 9, 25, 7.5),
+                            child: TimerWidget(
+                              showHours: "hours",
+                              numberOfSeconds:
+                                  (((user.quests["lastDaily"] + 86400000) -
+                                              DateTime.now()
+                                                  .millisecondsSinceEpoch) /
+                                          1000)
+                                      .round(),
+                            ));
+                      })
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 32,
-              ),
-              Consumer<User>(
-                builder: (context, user,_) {
-                  if(user.quests["dailyQuests"].length<1) {
+                const SizedBox(
+                  height: 32,
+                ),
+                Consumer<User>(builder: (context, user, _) {
+                  if (user.quests["dailyQuests"].length < 1) {
                     return Padding(
-                      padding: const EdgeInsets.only(bottom:50.0),
+                      padding: const EdgeInsets.only(bottom: 50.0),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Container(
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color:kBackgroundVariant),
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: kBackgroundVariant),
                             padding: const EdgeInsets.fromLTRB(35, 20, 35, 20),
                             child: Column(
                               children: [
-                                const Text("New quests in:",style: kBodyText1,),
-                                const SizedBox(height: 5,),
+                                const Text(
+                                  "New quests in:",
+                                  style: kBodyText1,
+                                ),
+                                const SizedBox(
+                                  height: 5,
+                                ),
                                 Container(
-                                  padding: const EdgeInsets.fromLTRB(20, 9, 20, 9),
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(14),color: kBackground),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(20, 9, 20, 9),
+                                  decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(14),
+                                      color: kBackground),
                                   child: TimerWidget(
-                                      fontSize:35,
-                                      numberOfSeconds:
-                                      (((user.quests["lastDaily"] + 86400000) - DateTime.now().millisecondsSinceEpoch) /1000).round(),
+                                      fontSize: 35,
+                                      numberOfSeconds: (((user
+                                                          .quests["lastDaily"] +
+                                                      86400000) -
+                                                  DateTime.now()
+                                                      .millisecondsSinceEpoch) /
+                                              1000)
+                                          .round(),
                                       showHours: "hours"),
                                 ),
                               ],
@@ -129,138 +159,202 @@ class Quests extends StatelessWidget {
                       key: user.keys[9],
                       itemBuilder: (context, int index) {
                         return GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: () async {
-                            if(isCollectingQuestDaily == true) return;
-                            isCollectingQuestDaily = true;
-                            try {
-                              if (user.quests["dailyQuests"][index]["progress"] >= user.quests["dailyQuests"][index]["goal"]) {
-                                await user.collectQuest(user.quests["dailyQuests"][index]["id"], "daily",
-                                    user.quests["dailyQuests"][index]["reward"]);
+                            behavior: HitTestBehavior.translucent,
+                            onTap: () async {
+                              if (isCollectingQuestDaily == true) return;
+                              isCollectingQuestDaily = true;
+                              try {
+                                if (user.quests["dailyQuests"][index]
+                                        ["progress"] >=
+                                    user.quests["dailyQuests"][index]["goal"]) {
+                                  await user.collectQuest(
+                                      user.quests["dailyQuests"][index]["id"],
+                                      "daily",
+                                      user.quests["dailyQuests"][index]
+                                          ["reward"]);
+                                }
+                                isCollectingQuestDaily = false;
+                              } catch (e) {
+                                isCollectingQuestDaily = false;
                               }
-                              isCollectingQuestDaily = false;
-                            } catch(e) {
-                              isCollectingQuestDaily = false;
-                            }
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(top: index != 0 ? 30.0 : 0),
-                            child: QuestWidget(
+                            },
+                            child: Container(
+                              margin:
+                                  EdgeInsets.only(top: index != 0 ? 30.0 : 0),
+                              child: QuestWidget(
                                 key: index == 1 ? user.keys[12] : null,
-                                reward:user.quests["dailyQuests"][index]["reward"],
+                                reward: user.quests["dailyQuests"][index]
+                                    ["reward"],
                                 name: user.quests["dailyQuests"][index]["name"],
-                                color: _getColorFromPrice(user.quests["dailyQuests"][index]["reward"], "daily"),
-                                progress: user.quests["dailyQuests"][index]["progress"],
-                                goal: user.quests["dailyQuests"][index]["goal"]),
-                          ),
-                        );
+                                color: _getColorFromPrice(
+                                    user.quests["dailyQuests"][index]["reward"],
+                                    "daily"),
+                                progress: user.quests["dailyQuests"][index]
+                                    ["progress"],
+                                goal: user.quests["dailyQuests"][index]["goal"],
+                                oldProgress: user.oldQuestsData["dailyQuests"]
+                                    .where(
+                                      (q) =>
+                                          q["name"] ==
+                                          user.quests["dailyQuests"][index]
+                                              ["name"],
+                                    )
+                                    .toList().length > 0 ?  user.oldQuestsData["dailyQuests"]
+                                    .where(
+                                      (q) =>
+                                          q["name"] ==
+                                          user.quests["dailyQuests"][index]
+                                              ["name"],
+                                    )
+                                    .toList()[0]["progress"] : 0, 
+                              ),
+                            ));
                       },
                       itemCount: user.quests["dailyQuests"].length,
                       physics: const NeverScrollableScrollPhysics(),
                       shrinkWrap: true,
                     ),
                   );
-                }
-              ),
-              Padding(
-                padding: const EdgeInsets.only(right: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.fromLTRB(6.0, 3, 0, 0),
-                      child: Text('Weekly', style: kHeadline1),
-                    ),
-                    Consumer<User>(
-                        builder: (context, user,_) {
-                          if(user.quests["weeklyQuests"].length < 1) return Container();
-                          return Container(
-                              decoration:
-                              BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(14)),
-                              padding: const EdgeInsets.fromLTRB(25, 9, 25, 7.5),
-                              child: TimerWidget(
-                                showHours: "days",
-                                numberOfSeconds:
-                                (((user.quests["lastWeekly"] + 86400000*7) - DateTime.now().millisecondsSinceEpoch) /
-                                    1000)
-                                    .round(),
-                              )
-                          );
-                        }
-                    )
-                  ],
+                }),
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.fromLTRB(6.0, 3, 0, 0),
+                        child: Text('Weekly', style: kHeadline1),
+                      ),
+                      Consumer<User>(builder: (context, user, _) {
+                        if (user.quests["weeklyQuests"].length < 1)
+                          return Container();
+                        return Container(
+                            decoration: BoxDecoration(
+                                color: kBackgroundVariant,
+                                borderRadius: BorderRadius.circular(14)),
+                            padding: const EdgeInsets.fromLTRB(25, 9, 25, 7.5),
+                            child: TimerWidget(
+                              showHours: "days",
+                              numberOfSeconds:
+                                  (((user.quests["lastWeekly"] + 86400000 * 7) -
+                                              DateTime.now()
+                                                  .millisecondsSinceEpoch) /
+                                          1000)
+                                      .round(),
+                            ));
+                      })
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(
-                height: 33,
-              ),
-              Consumer<User>(
-                  builder: (context, user,_) {
-                    if(user.quests["weeklyQuests"].length<1) {
-                      return Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color:kBackgroundVariant),
-                            padding: const EdgeInsets.fromLTRB(35, 20, 35, 20),
-                            child: Column(
-                              children: [
-                                const Text("New quests in:",style: kBodyText1,),
-                                const SizedBox(height: 5,),
-                                Container(
-                                  padding: const EdgeInsets.fromLTRB(20, 9, 20, 9),
-                                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(14),color: kBackground),
-                                  child: TimerWidget(
-                                      fontSize:35,
-                                      numberOfSeconds:
-                                      (((user.quests["lastWeekly"] + 86400000*7) - DateTime.now().millisecondsSinceEpoch) /1000).round(),
-                                      showHours: "days"),
-                                ),
-                              ],
-                            ),
+                const SizedBox(
+                  height: 33,
+                ),
+                Consumer<User>(builder: (context, user, _) {
+                  if (user.quests["weeklyQuests"].length < 1) {
+                    return Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: kBackgroundVariant),
+                          padding: const EdgeInsets.fromLTRB(35, 20, 35, 20),
+                          child: Column(
+                            children: [
+                              const Text(
+                                "New quests in:",
+                                style: kBodyText1,
+                              ),
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              Container(
+                                padding:
+                                    const EdgeInsets.fromLTRB(20, 9, 20, 9),
+                                decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(14),
+                                    color: kBackground),
+                                child: TimerWidget(
+                                    fontSize: 35,
+                                    numberOfSeconds: (((user
+                                                        .quests["lastWeekly"] +
+                                                    86400000 * 7) -
+                                                DateTime.now()
+                                                    .millisecondsSinceEpoch) /
+                                            1000)
+                                        .round(),
+                                    showHours: "days"),
+                              ),
+                            ],
                           ),
-                        ],
-                      );
-                    }
-                    bool isCollectingQuestWeekly = false;
-                    return ListView.builder(
-                      itemBuilder: (context, int index) {
-                        return GestureDetector(
+                        ),
+                      ],
+                    );
+                  }
+                  bool isCollectingQuestWeekly = false;
+                  return ListView.builder(
+                    itemBuilder: (context, int index) {
+                      return GestureDetector(
                           behavior: HitTestBehavior.translucent,
                           onTap: () async {
-                            if(isCollectingQuestWeekly == true) return;
+                            if (isCollectingQuestWeekly == true) return;
                             isCollectingQuestWeekly = true;
                             try {
-                              if (user.quests["weeklyQuests"][index]["progress"] >= user.quests["weeklyQuests"][index]["goal"]) {
-                                await user.collectQuest(user.quests["weeklyQuests"][index]["id"], "weekly",
-                                    user.quests["weeklyQuests"][index]["reward"]);
+                              if (user.quests["weeklyQuests"][index]
+                                      ["progress"] >=
+                                  user.quests["weeklyQuests"][index]["goal"]) {
+                                await user.collectQuest(
+                                    user.quests["weeklyQuests"][index]["id"],
+                                    "weekly",
+                                    user.quests["weeklyQuests"][index]
+                                        ["reward"]);
                               }
                               isCollectingQuestWeekly = false;
-                            } catch(e) {
+                            } catch (e) {
                               isCollectingQuestWeekly = false;
                             }
                           },
                           child: Container(
                             margin: EdgeInsets.only(top: index != 0 ? 30.0 : 0),
                             child: QuestWidget(
-                                reward:user.quests["weeklyQuests"][index]["reward"],
-                                name: user.quests["weeklyQuests"][index]["name"],
-                                color: _getColorFromPrice(user.quests["weeklyQuests"][index]["reward"], "weekly"),
-                                progress: user.quests["weeklyQuests"][index]["progress"],
-                                goal: user.quests["weeklyQuests"][index]["goal"]),
-                          ),
-                        );
-                      },
-                      itemCount: user.quests["weeklyQuests"].length,
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                    );
-                  }
-              ),
-            ],
-          ),
-        );
-    });
+                              reward: user.quests["weeklyQuests"][index]
+                                  ["reward"],
+                              name: user.quests["weeklyQuests"][index]["name"],
+                              color: _getColorFromPrice(
+                                  user.quests["weeklyQuests"][index]["reward"],
+                                  "weekly"),
+                              progress: user.quests["weeklyQuests"][index]
+                                  ["progress"],
+                              goal: user.quests["weeklyQuests"][index]["goal"],
+                              oldProgress: user.oldQuestsData["weeklyQuests"]
+                                  .where((q) =>
+                                      q["name"] ==
+                                      user.quests["weeklyQuests"][index]
+                                          ["name"])
+                                  .toList()
+                                          .length >
+                                      0
+                                  ? user.oldQuestsData["weeklyQuests"]
+                                      .where(
+                                        (q) =>
+                                            q["name"] ==
+                                            user.quests["weeklyQuests"][index]
+                                                ["name"],
+                                      )
+                                      .toList()[0]["progress"]
+                                  : 0,
+                            ),
+                          ));
+                    },
+                    itemCount: user.quests["weeklyQuests"].length,
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                  );
+                }),
+              ],
+            ),
+          );
+        });
   }
 }

@@ -14,46 +14,61 @@ class QuestWidget extends StatefulWidget {
   int goal;
   final int reward;
   final bool showAdButton;
-
-  QuestWidget(
-      {Key? key,
-      required this.name,
-      required this.color,
-      required this.progress,
-      required this.goal,
-      required this.reward,
-      this.showAdButton = false})
-      : super(key: key);
+  final oldProgress;
+  QuestWidget({
+    Key? key,
+    required this.name,
+    required this.color,
+    required this.progress,
+    required this.goal,
+    required this.reward,
+    required this.oldProgress,
+    this.showAdButton = false,
+  }) : super(key: key);
 
   @override
   State<QuestWidget> createState() => _QuestWidgetState();
 }
 
 class _QuestWidgetState extends State<QuestWidget>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _animationController;
   var curvedAnimation;
-
   @override
   void initState() {
     super.initState();
-    widget.progress = 100;
-    widget.goal = 100;
-    //initialize animation controller
-    double maxValue = widget.progress / widget.goal;
-    print(widget.progress / widget.goal);
+
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 3000),
     );
-
     _animationController.forward();
 
+    double beginValue = 0;
+    if (widget.oldProgress == widget.progress) beginValue = 1;
+
     curvedAnimation = Tween(
-      begin: 0,
-      end: maxValue,
+      begin: beginValue,
+      end: 1,
     ).animate(CurvedAnimation(
         parent: _animationController, curve: Curves.easeOutQuint));
+
+  }
+
+  @override
+  void didUpdateWidget (QuestWidget oldWidget) {
+    _animationController.reset();
+    _animationController.forward();
+
+    double beginValue = 0;
+    if (widget.oldProgress == widget.progress) beginValue = 1;
+
+    curvedAnimation = Tween(
+      begin: beginValue,
+      end: 1,
+    ).animate(CurvedAnimation(
+        parent: _animationController, curve: Curves.easeOutQuint));
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -64,7 +79,6 @@ class _QuestWidgetState extends State<QuestWidget>
 
   @override
   Widget build(BuildContext context) {
-    double percentage = widget.progress / widget.goal * 100;
 
     return Container(
       decoration: BoxDecoration(
@@ -108,7 +122,7 @@ class _QuestWidgetState extends State<QuestWidget>
                       children: [
                         AnimatedCrossFade(
                           firstChild: Text(
-                              "${(widget.goal * curvedAnimation.value).round()}/${widget.goal}",
+                              "${(widget.oldProgress + ((widget.progress - widget.oldProgress) * curvedAnimation.value).ceil())}/${widget.goal}",
                               style: kBodyText4.apply(color: widget.color)),
                           secondChild: Text("Click to collect",
                               style: kBodyText4.apply(color: widget.color)),
@@ -181,7 +195,12 @@ class _QuestWidgetState extends State<QuestWidget>
                                   progressColor: widget.color,
                                   percentage: curvedAnimation.value < 0.1
                                       ? 0.6
-                                      : curvedAnimation.value * 100 - 0.6,
+                                      : (widget.oldProgress / widget.goal +
+                                                  ((widget.progress -
+                                                          widget.oldProgress) /
+                                                      widget.goal *
+                                                      curvedAnimation.value)) *
+                                              100 - 0.6,
                                   width: 9),
                             ),
                           ),
@@ -193,7 +212,7 @@ class _QuestWidgetState extends State<QuestWidget>
                                     top:
                                         2), //add padding to center the font that has default bottom spacing
                                 child: Text(
-                                    "${(curvedAnimation.value * 100).ceil()}%",
+                                    "${((widget.oldProgress / widget.goal + ((widget.progress - widget.oldProgress) / widget.goal * curvedAnimation.value)) * 100).ceil()}%",
                                     style:
                                         kBodyText4.apply(color: widget.color)),
                               ),

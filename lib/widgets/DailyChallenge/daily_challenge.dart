@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:provider/src/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/quest_widget.dart';
 import '../coin.dart';
@@ -60,6 +63,11 @@ class _DailyChallengeState extends State<DailyChallenge> {
                       )),*/
                 Consumer<User>(builder: (context, user, _) {
                   final List dailyChallengeQuests = user.value["user"]["dailyChallenge"]["challenges"];
+                  var oldQuests;
+                  (() async => {
+                        oldQuests =
+                            jsonDecode(await getNonNullSSData("questsData"))
+                  })();
                   for (var quest in dailyChallengeQuests) {
                     final textPainter = TextPainter(
                       text: TextSpan(text: quest["name"] as String, style: kBodyText3),
@@ -95,7 +103,9 @@ class _DailyChallengeState extends State<DailyChallenge> {
                                           color: kOrange,
                                           progress: dailyChallengeQuests[i]["progress"],
                                           goal: dailyChallengeQuests[i]["goalNb"],
-                                          showAdButton: dailyChallengeQuests[i]["goal"] == "ad")
+                                          showAdButton: dailyChallengeQuests[i]["goal"] == "ad",
+                                          oldProgress: 0,
+                                      )
                                       : Row(
                                           mainAxisSize: MainAxisSize.max,
                                           mainAxisAlignment:
