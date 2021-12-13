@@ -13,6 +13,7 @@ class User extends ChangeNotifier {
   dynamic quests;
   dynamic inGame;
   int gamesPlayedInMatch = 0;
+  bool animateMatchHistory = false;
   GlobalKey appBarKey = GlobalKey();
   int lastQuestsRefresh = 0;
   int lastShopRefresh = 0;
@@ -143,7 +144,7 @@ class User extends ChangeNotifier {
     return matchId;
   }
 
-  Future<void> exitMatch({isOnlyLayout = false, isBackButton = false, isFromMatchHistory = false}) async {
+  Future<void> exitMatch({isOnlyLayout = false, isBackButton = false, isFromMatchHistory = false, matchHistoryAnimated = false}) async {
     if (isBackButton) {
       inGame["isShown"] = false;
       notifyListeners();
@@ -153,6 +154,8 @@ class User extends ChangeNotifier {
     if (isOnlyLayout) {
       inGame = null;
       gamesPlayedInMatch = 0;
+      print(matchHistoryAnimated);
+      if(matchHistoryAnimated) animateMatchHistory = true;
       notifyListeners();
       if(isFromMatchHistory) refresh(notify:false);
       return;
@@ -276,6 +279,10 @@ class User extends ChangeNotifier {
   }
 
   User(this.value, this.callApi, this.keys, this.inGame);
+
+  void setAnimateMatchHistory(bool setTo) {
+    animateMatchHistory = setTo;
+  }
 
 
 }
