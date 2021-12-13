@@ -225,8 +225,7 @@ class User extends ChangeNotifier {
                 .map((q) => {"name": q["name"], "progress": q["progress"]})
                 .toList(),
           });
-    //oldQuestsData = jsonDecode(await getNonNullSSData("questsData"));
-    //print(oldQuestsData != Object);
+
     notifyListeners();
 
     storeQuestsData(quests);
