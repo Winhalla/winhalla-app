@@ -217,7 +217,18 @@ class User extends ChangeNotifier {
     quests = questsData;
     lastQuestsRefresh = DateTime.now().millisecondsSinceEpoch;
 
-    oldQuestsData = jsonDecode(await getNonNullSSData("questsData"));
+    //Handle if there is no questsData key in secure storage
+    oldQuestsData = await getNonNullSSData("questsData") != "no data"
+        ? jsonDecode(await getNonNullSSData("questsData"))
+        : jsonEncode({
+            "dailyQuests": questsData["dailyQuests"]
+                .map((q) => {"name": q["name"], "progress": q["progress"]})
+                .toList(),
+            "weeklyQuests": questsData["weeklyQuests"]
+                .map((q) => {"name": q["name"], "progress": q["progress"]})
+                .toList(),
+          });
+
     notifyListeners();
 
     storeQuestsData(quests);
