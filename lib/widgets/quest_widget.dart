@@ -211,10 +211,16 @@ class _QuestWidgetState extends State<QuestWidget>
                                 padding: const EdgeInsets.only(
                                     top:
                                         2), //add padding to center the font that has default bottom spacing
-                                child: Text(
-                                    "${((widget.oldProgress / widget.goal + ((widget.progress - widget.oldProgress) / widget.goal * curvedAnimation.value)) * 100).ceil()}%",
-                                    style:
-                                        kBodyText4.apply(color: widget.color)),
+                                child: Builder(
+                                  builder: (context) {
+                                    var text = ((widget.oldProgress / widget.goal + ((widget.progress - widget.oldProgress) / widget.goal * curvedAnimation.value)) * 100).ceil();
+                                    if(text > 100) text = 100;
+                                    return Text(
+                                        "$text%",
+                                        style:
+                                            kBodyText4.apply(color: widget.color));
+                                  }
+                                ),
                               ),
                             ),
                           ),

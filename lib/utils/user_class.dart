@@ -65,8 +65,19 @@ class User extends ChangeNotifier {
       ...accountDataDecoded["weeklyQuests"]
     ];
     quests = accountDataDecoded;
-
-    oldQuestsData = jsonDecode(await getNonNullSSData("questsData"));
+    var oldQuestsData1 = await getNonNullSSData("questsData");
+    if(oldQuestsData1 != "no data"){
+      oldQuestsData = jsonDecode(oldQuestsData1);
+    } else {
+      oldQuestsData = {
+        "dailyQuests": accountDataDecoded["dailyQuests"]
+            .map((q) => {"name": q["name"], "progress": q["progress"]})
+            .toList(),
+        "weeklyQuests": accountDataDecoded["weeklyQuests"]
+            .map((q) => {"name": q["name"], "progress": q["progress"]})
+            .toList(),
+      };
+    }
     notifyListeners();
 
     if (accountData["data"]["newQuests"] == true) {
@@ -296,6 +307,7 @@ class User extends ChangeNotifier {
 
     quests["${type}Quests"].removeWhere((e) => e["id"] == questId);
     value["user"]["coins"] += price;
+    notifyListeners();
   }
 
   Future<void> setItemGoal(int itemId) async {
