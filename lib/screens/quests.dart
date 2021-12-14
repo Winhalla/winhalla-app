@@ -57,12 +57,12 @@ class Quests extends StatelessWidget {
 
           return RefreshIndicator(
             onRefresh: () async {
-              var refreshedQuests = await context
+              var showNoRefreshQuests = await context
                   .read<User>()
                   .refreshQuests(context, showInfo: true);
               context.read<User>().refreshOldQuestsData();
 
-              if (refreshedQuests == false &&
+              if (showNoRefreshQuests == true &&
                   await getNonNullSSData("hideNoRefreshQuests") != "true") {
                 showDialog(
                     context: context, builder: (_) => NoRefreshPopup("quests"));
@@ -181,7 +181,7 @@ class Quests extends StatelessWidget {
                               margin:
                                   EdgeInsets.only(top: index != 0 ? 30.0 : 0),
                               child: QuestWidget(
-                                key: index == 1 ? user.keys[12] : null,
+                                key: index == 0 ? user.keys[12] : null,
                                 reward: user.quests["dailyQuests"][index]
                                     ["reward"],
                                 name: user.quests["dailyQuests"][index]["name"],

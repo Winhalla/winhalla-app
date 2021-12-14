@@ -85,6 +85,10 @@ class User extends ChangeNotifier {
       storeQuestsData(quests);
       return false;
     }
+    if(accountData["data"]["updatedPlatforms"] == null) {
+      return false;
+    }
+
     if (accountData["data"]["updatedPlatforms"].length > 0) {
       List<Widget> icons = [];
       for (int i = 0; i < accountData["data"]["updatedPlatforms"].length; i++) {
@@ -218,16 +222,19 @@ class User extends ChangeNotifier {
     lastQuestsRefresh = DateTime.now().millisecondsSinceEpoch;
 
     //Handle if there is no questsData key in secure storage
-    oldQuestsData = await getNonNullSSData("questsData") != "no data"
-        ? jsonDecode(await getNonNullSSData("questsData"))
-        : jsonEncode({
-            "dailyQuests": questsData["dailyQuests"]
-                .map((q) => {"name": q["name"], "progress": q["progress"]})
-                .toList(),
-            "weeklyQuests": questsData["weeklyQuests"]
-                .map((q) => {"name": q["name"], "progress": q["progress"]})
-                .toList(),
-          });
+    var oldQuestsData1 = await getNonNullSSData("questsData");
+    if(oldQuestsData1 != "no data"){
+      oldQuestsData = jsonDecode(oldQuestsData1);
+    } else {
+      oldQuestsData = {
+        "dailyQuests": questsData["dailyQuests"]
+            .map((q) => {"name": q["name"], "progress": q["progress"]})
+            .toList(),
+        "weeklyQuests": questsData["weeklyQuests"]
+            .map((q) => {"name": q["name"], "progress": q["progress"]})
+            .toList(),
+      };
+    }
 
     notifyListeners();
 
