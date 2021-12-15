@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/screens/ffa.dart';
 import 'package:winhalla_app/utils/user_class.dart';
+import 'package:winhalla_app/widgets/coin_dropdown.dart';
 
 class PlayPage extends StatefulWidget {
   const PlayPage({Key? key}) : super(key: key);
@@ -82,6 +83,7 @@ class _PlayPageState extends State<PlayPage> {
                                 initialItemCount:lastGames.length + filteredInGameList.length,
                                 itemBuilder: (BuildContext context, int index, Animation<double> animation) {
 
+                                  var currentMatch = mergedArray[index];
                                   // For animation
                                   if(index == 0) {
                                     if (user.animateMatchHistory && user.value["user"]["lastGames"].isNotEmpty) {
@@ -89,6 +91,11 @@ class _PlayPageState extends State<PlayPage> {
                                       user.setAnimateMatchHistory(false);
                                       user.animateMatchHistory = false;
                                       Future.delayed(const Duration(milliseconds: 250), () {
+                                        showCoinDropdown(
+                                            context,
+                                            user.value["user"]["coins"]-lastMatchHistory["coinsEarned"],
+                                            lastMatchHistory["coinsEarned"]
+                                        );
                                         lastGames.add(lastMatchHistory);
                                         mergedArray = List.from(filteredInGameList.reversed)
                                           ..addAll(lastGames.reversed);
@@ -104,7 +111,6 @@ class _PlayPageState extends State<PlayPage> {
                                     }
                                   }
 
-                                  var currentMatch = mergedArray[index];
                                   // if last widget is an "in game" tile, AND this one is a "match history" tile, set lastWidget to separator
                                   lastWidget = currentMatch["wins"] != null &&
                                           lastWidget == false

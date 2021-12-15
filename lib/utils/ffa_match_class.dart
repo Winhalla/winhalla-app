@@ -43,6 +43,8 @@ class FfaMatch extends ChangeNotifier {
 
     if(match["finished"] == true && !isTutorialRefresh) {
       await user.exitMatch(isOnlyLayout: true, matchHistoryAnimated:true);
+      notifyListeners();
+      return true;
     }
 
     if (match["updatedPlatforms"] != null) {

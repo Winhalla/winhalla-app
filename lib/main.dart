@@ -10,6 +10,7 @@ import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:provider/provider.dart';
+import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'config/themes/dark_theme.dart';
 
 void main() async {
@@ -22,7 +23,6 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
-
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {

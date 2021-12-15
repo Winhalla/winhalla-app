@@ -6,6 +6,7 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/store_quests_data.dart';
+import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
 
 class User extends ChangeNotifier {
@@ -193,7 +194,6 @@ class User extends ChangeNotifier {
     if (isOnlyLayout) {
       inGame = null;
       gamesPlayedInMatch = 0;
-      print(matchHistoryAnimated);
       if(matchHistoryAnimated) animateMatchHistory = true;
       notifyListeners();
       if (isFromMatchHistory) refresh(notify: false);
@@ -297,13 +297,19 @@ class User extends ChangeNotifier {
         await callApi.post("/solo/collect?id=$questId&type=$type", "{}");
     if (result["successful"] == false) return;
     try {
-      if (value["user"]["dailyChallenge"]["challenges"].firstWhere(
-              (e) => e["goal"] == "winhallaQuest",
-              orElse: () => null) !=
-          null) {
+      var dailyChallenge = value["user"]["dailyChallenge"]["challenges"].firstWhere(
+              (e) => e["goal"] == "winhallaQuest" && e["active"] == true,
+          orElse: () => null);
+      if (dailyChallenge != null) {
         refresh();
       }
     } catch (e) {}
+
+    var quest = quests["${type}Quests"].firstWhere((e) => e["id"] == questId, orElse: ()=>null);
+
+    if(quest != null){
+      showCoinDropdown(appBarKey.currentContext as BuildContext, value["user"]["coins"], quest["reward"]);
+    }
 
     quests["${type}Quests"].removeWhere((e) => e["id"] == questId);
     value["user"]["coins"] += price;
