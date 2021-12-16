@@ -24,8 +24,10 @@ class User extends ChangeNotifier {
   late CallApi callApi;
 
   var oldQuestsData;
+  var oldDailyChallengeData;
 
   Future<void> refresh({notify = true}) async {
+
     var accountData = await callApi.get("/account");
     if (accountData["successful"] == false) return;
     value = accountData["data"];
@@ -33,6 +35,19 @@ class User extends ChangeNotifier {
     var inGameData = value["user"]["inGame"];
     var currentMatch =
         inGameData.where((g) => g["isFinished"] == false).toList();
+
+
+    var newDailyChallengeData = value["user"]["dailyChallenge"]["challenges"];
+    var ssOldDailyChallengeData = await getNonNullSSData("dailyChallengeData");
+
+    oldDailyChallengeData = ssOldDailyChallengeData != "no data"
+        ? jsonDecode(ssOldDailyChallengeData)
+        : newDailyChallengeData;
+
+    await secureStorage.write(
+        key: "dailyChallengeData", value: jsonEncode(newDailyChallengeData));
+
+
     try {
       if (currentMatch.length > 0) {
         inGame = {
@@ -355,6 +370,10 @@ class User extends ChangeNotifier {
 
   void refreshOldQuestsData() async {
     oldQuestsData = jsonDecode(await getNonNullSSData("questsData"));
+  }
+
+  void refreshOldDailyChallengeData() async {
+    oldDailyChallengeData = value["user"]["dailyChallenge"]["challenges"];
   }
 
   User(this.value, this.callApi, this.keys, this.inGame);
