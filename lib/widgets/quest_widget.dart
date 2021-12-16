@@ -15,6 +15,7 @@ class QuestWidget extends StatefulWidget {
   final int reward;
   final bool showAdButton;
   final oldProgress;
+  final showClickToCollect;
   QuestWidget({
     Key? key,
     required this.name,
@@ -24,6 +25,7 @@ class QuestWidget extends StatefulWidget {
     required this.reward,
     required this.oldProgress,
     this.showAdButton = false,
+    this.showClickToCollect = true,
   }) : super(key: key);
 
   @override
@@ -52,11 +54,10 @@ class _QuestWidgetState extends State<QuestWidget>
       end: 1,
     ).animate(CurvedAnimation(
         parent: _animationController, curve: Curves.easeOutQuint));
-
   }
 
   @override
-  void didUpdateWidget (QuestWidget oldWidget) {
+  void didUpdateWidget(QuestWidget oldWidget) {
     _animationController.reset();
     _animationController.forward();
 
@@ -79,7 +80,6 @@ class _QuestWidgetState extends State<QuestWidget>
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       decoration: BoxDecoration(
           color: kBackgroundVariant, borderRadius: BorderRadius.circular(16)),
@@ -126,9 +126,7 @@ class _QuestWidgetState extends State<QuestWidget>
                               style: kBodyText4.apply(color: widget.color)),
                           secondChild: Text("Click to collect",
                               style: kBodyText4.apply(color: widget.color)),
-                          crossFadeState: !isQuestFinished
-                              ? CrossFadeState.showFirst
-                              : CrossFadeState.showSecond,
+                          crossFadeState: !isQuestFinished ? CrossFadeState.showFirst : widget.showClickToCollect == false ? CrossFadeState.showFirst : CrossFadeState.showSecond,
                           alignment: Alignment.centerLeft,
                           duration: const Duration(milliseconds: 200),
                         ),
@@ -200,7 +198,8 @@ class _QuestWidgetState extends State<QuestWidget>
                                                           widget.oldProgress) /
                                                       widget.goal *
                                                       curvedAnimation.value)) *
-                                              100 - 0.6,
+                                              100 -
+                                          0.6,
                                   width: 9),
                             ),
                           ),
