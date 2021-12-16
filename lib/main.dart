@@ -86,6 +86,9 @@ class _MyAppState extends State<MyApp> {
                         'joinDate': currentMatch[0]["joinDate"]
                       };
                     }
+                    /*Future.delayed(const Duration(milliseconds:1),(){
+                      showCoinDropdown(context, 1315.6, 100);
+                    });*/
 
                     return ChangeNotifierProvider<User>(
                         create: (_) => User(newData, callApi, keys, inGame),

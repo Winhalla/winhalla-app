@@ -10,6 +10,7 @@ class Coin extends StatelessWidget {
   final double fontSize;
   final double borderRadius;
   final EdgeInsetsGeometry padding;
+  final GlobalKey? key1;
   const Coin({
     Key? key,
     required this.nb,
@@ -18,6 +19,7 @@ class Coin extends StatelessWidget {
     this.fontSize = 30,
     this.borderRadius = 11,
     this.padding = const EdgeInsets.fromLTRB(22, 9, 21.5, 6),
+    this.key1
   }) : super(key: key);
 
   @override
@@ -42,6 +44,7 @@ class Coin extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 3),
               child: Image.asset(
                 "assets/images/coin.png",
+                key: key1,
                 height: 30,
                 width: 30,
                 color: color
