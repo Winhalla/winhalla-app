@@ -1,19 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:provider/src/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/utils/user_class.dart';
 import 'coin.dart';
 
 OverlayEntry? _previousEntry;
 
 void showTopSnackBar(
-  BuildContext context,
-  Widget child, {
-  Duration showOutAnimationDuration = const Duration(milliseconds: 1200),
-  Duration hideOutAnimationDuration = const Duration(milliseconds: 550),
-  Duration displayDuration = const Duration(milliseconds: 3000),
-  double additionalTopPadding = 16.0,
-}) async {
+    BuildContext context,
+    Widget child, {
+      Duration showOutAnimationDuration = const Duration(milliseconds: 1200),
+      Duration hideOutAnimationDuration = const Duration(milliseconds: 550),
+      Duration displayDuration = const Duration(milliseconds: 3000),
+      double additionalTopPadding = 16.0,
+    }) async {
   OverlayState overlayState;
   overlayState = Overlay.of(context) as OverlayState;
 
@@ -44,10 +46,10 @@ void showTopSnackBar(
 
 void showCoinDropdown(BuildContext context, num currentCoins, num coinsNb) {
   showTopSnackBar(
-    context,
-    InfoDropdown(showDuration: 5000, currentCoins: currentCoins, coinsNb: coinsNb),
-    displayDuration: const Duration(milliseconds: 5000),
-    additionalTopPadding: 32
+      context,
+      InfoDropdown(showDuration: 6000, currentCoins: currentCoins, coinsNb: coinsNb),
+      displayDuration: const Duration(milliseconds: 6000),
+      additionalTopPadding: 32
   );
 }
 
@@ -73,7 +75,11 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
   num coinsNb = 0;
   num currentCoins = 0;
   num removedCoinsByTick = 0;
-
+  GlobalKey coinIconKey = GlobalKey();
+  List<bool> coinsShown = [false,false,false];
+  List<List<double?>> coinPosition = [[null,null],[],[]];
+  int? waitingForBuild;
+  Offset? offset;
   @override
   void initState() {
     coinsNb = widget.coinsNb;
@@ -89,14 +95,18 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
   }
 
   void _setupAndStartAnimation() async {
+
     topPosition = -200;
     topBgPosition = -230;
 
     await Future.delayed(const Duration(milliseconds: 1));
+
     setState(() {
       topPosition = 80;
       topBgPosition = 0;
     });
+    RenderBox box = coinIconKey.currentContext?.findRenderObject() as RenderBox;
+    offset = box.localToGlobal(Offset.zero);
 
 
     Future.delayed(Duration(milliseconds: widget.showDuration-352),(){
@@ -108,24 +118,52 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
       }
     });
 
-    for(int i = 0; i<3; i++){
-      await Future.delayed(const Duration(milliseconds: 750), () {
+    for(int i = 0; i<4; i++){
+      await Future.delayed(const Duration(milliseconds: 200), () {
         if(!mounted) return;
-        setState(() {
-          if(i == 2){
-            // coinsNb = 0;
-            currentCoins = widget.coinsNb + widget.currentCoins;
-            return;
-          }
-          currentCoins += removedCoinsByTick;
-          // coinsNb -= removedCoinsByTick;
-        });
+        if(i != 3){
+          setState((){
+            coinPosition[i] = [null,null];
+            coinsShown[i] = true;
+            waitingForBuild = i;
+          });
+        }
+
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    if(waitingForBuild != null) {
+      WidgetsBinding.instance!.addPostFrameCallback((_){
+        setState(() {
+          coinPosition[waitingForBuild as int] = [(offset as Offset).dy+280, (offset as Offset).dx];
+          coinsShown[waitingForBuild as int] = true;
+          int i = (waitingForBuild as int) +1;
+          waitingForBuild = null;
+          Future.delayed(const Duration(milliseconds: 500),(){
+            if(i > 0){
+
+              setState(() {
+                print(coinsShown);
+                coinsShown[i-1] = false;
+                print(coinsShown);
+                if(i == 3){
+                  // coinsNb = 0;
+                  currentCoins = widget.coinsNb + widget.currentCoins;
+                  return;
+                }
+                currentCoins += removedCoinsByTick;
+                // coinsNb -= removedCoinsByTick;
+              });
+            }
+          });
+        });
+      });
+    }
+    double screenH = MediaQuery.of(context).size.height;
+    double screenW = MediaQuery.of(context).size.width;
     return DefaultTextStyle(
       style: const TextStyle(fontFamily: "bebas neue"),
       child: Stack(alignment: Alignment.center, children: [
@@ -152,31 +190,41 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
           right: 0,
         ),
         AnimatedPositioned(
-          duration: const Duration(milliseconds: 450),
-          curve: Curves.linearToEaseOut,
-          top: topPosition,
-          child: Container(
-            padding: const EdgeInsets.fromLTRB(0, 5, 25, 5),
-            decoration: BoxDecoration(
-                color: kBackgroundVariant,
-                borderRadius: BorderRadius.circular(14)
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Coin(nb: currentCoins.toStringAsFixed(0),),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(15, 7, 15, 7),
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(14)
+            duration: const Duration(milliseconds: 450),
+            curve: Curves.linear,
+            top: topPosition,
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(0, 5, 15, 5),
+              decoration: BoxDecoration(
+                  color: kBackgroundVariant,
+                  borderRadius: BorderRadius.circular(14)
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Coin(nb: currentCoins.toStringAsFixed(1),key1: coinIconKey,),
+                  Container(
+                      padding: const EdgeInsets.fromLTRB(15, 7, 15, 7),
+                      decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(14)
+                      ),
+                      child: Text("+${coinsNb.toStringAsFixed(0)}",style: kBodyText2.apply(color:kEpic, fontFamily: "Roboto condensed"),)
                   ),
-                  child: Text("+${coinsNb.toStringAsFixed(0)}",style: kBodyText2.apply(color:kEpic, fontFamily: "Roboto condensed"),)
-                ),
-              ],
-            ),
-          )
+                ],
+              ),
+            )
         ),
+        for (int i = 0; i < 3; i++)
+          if (coinsShown[i])
+            AnimatedPositioned(
+              duration: const Duration(milliseconds: 500),
+              curve: Curves.easeInToLinear,
+              top: coinPosition[i][0] ?? screenH / 4,
+              left: coinPosition[i][1] ?? screenW / 2,
+              child: Image.asset("assets/images/coin.png", height: 30, width: 30, color:kPrimary/*i==0?kGreen:i==1?kOrange:kRed*/),
+            )
+          else Container(),
       ]),
     );
   }
