@@ -18,11 +18,43 @@ class DailyChallenge extends StatefulWidget {
   State<DailyChallenge> createState() => _DailyChallengeState();
 }
 
-class _DailyChallengeState extends State<DailyChallenge> {
+class _DailyChallengeState extends State<DailyChallenge>
+    with TickerProviderStateMixin {
+  late final AnimationController _animationController;
+  var curvedAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 4000),
+    );
+
+    Future.delayed(const Duration(milliseconds: 1650), () {
+      _animationController.forward();
+    });
+
+    double beginValue = 0.15;
+
+    curvedAnimation = Tween(
+      begin: beginValue,
+      end: 1,
+    ).animate(CurvedAnimation(
+        parent: _animationController, curve: Curves.easeOutCubic));
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
-      key:context.read<User>().keys[14],
+      key: context.read<User>().keys[14],
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -62,82 +94,125 @@ class _DailyChallengeState extends State<DailyChallenge> {
                         ),
                       )),*/
                 Consumer<User>(builder: (context, user, _) {
-                  final List dailyChallengeQuests = user.value["user"]["dailyChallenge"]["challenges"];
-                  for (var quest in dailyChallengeQuests) {
-                    final textPainter = TextPainter(
-                      text: TextSpan(text: quest["name"] as String, style: kBodyText3),
-                      textDirection: TextDirection.ltr,
-                    );
-                    textPainter.layout(
-                        maxWidth:
-                        138); //maxWidth needs to be set to: DailyChallengeItem maxWidth - DailyChallengeItem X padding
-                    List lines = textPainter.computeLineMetrics();
-                    quest["lineNumber"] = lines.length;
+                  final List newDailyChallengeQuestsData =
+                      user.value["user"]["dailyChallenge"]["challenges"];
+
+                  final oldDailyChallengeData =
+                      user.oldDailyChallengeData ?? newDailyChallengeQuestsData;
+
+                  bool arraysAreTheSame() {
+                    for (var i = 0;
+                        i < newDailyChallengeQuestsData.length;
+                        i++) {
+                      if (newDailyChallengeQuestsData[i]["_id"] !=
+                          oldDailyChallengeData[i]["_id"]) {
+                        return false;
+                      }
+                    }
+                    return true;
                   }
-                  return CustomPaint(
-                    painter: TreePainter(
-                      dailyChallengeQuests: dailyChallengeQuests,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        for (int i = 0; i < dailyChallengeQuests.length; i++)
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 11.5),
-                            child: Container(
-                              key: i == 0 ? user.keys[15] : i == 1 ? user.keys[16] : null,
-                              child: dailyChallengeQuests[i]["completed"]
-                                  ? DailyChallengeItem(
-                                    name: dailyChallengeQuests[i]["name"],
-                                    completed: dailyChallengeQuests[i]["completed"],
-                                  )
-                                  : dailyChallengeQuests[i]["active"]
-                                      ? QuestWidget(
-                                          reward: dailyChallengeQuests[i]["reward"],
-                                          name: dailyChallengeQuests[i]["name"],
-                                          color: kOrange,
-                                          progress: dailyChallengeQuests[i]["progress"],
-                                          goal: dailyChallengeQuests[i]["goalNb"],
-                                          showAdButton: dailyChallengeQuests[i]["goal"] == "ad",
-                                          oldProgress: 0,
-                                      )
-                                      : Row(
-                                          mainAxisSize: MainAxisSize.max,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            DailyChallengeItem(
-                                              name: dailyChallengeQuests[i]["name"] as String,
-                                              completed:
-                                                  dailyChallengeQuests[i]["completed"] as bool,
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.only(top: 21),
-                                              child: Row(
-                                                children: [
-                                                  Text(
-                                                    dailyChallengeQuests[i]["reward"].toString(),
-                                                    style: kBodyText3,
-                                                  ),
-                                                  const SizedBox(width: 3.40),
-                                                  Image.asset(
-                                                    "assets/images/CoinText90.png",
-                                                    height: 25,
-                                                    width: 25,
-                                                  )
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                            ),
-                          )
-                      ],
-                    ),
-                  );
+
+                  var areTheSame = arraysAreTheSame();
+
+                  void computeLines(DailyChallengeData) {
+                    for (var quest in DailyChallengeData) {
+                      final textPainter = TextPainter(
+                        text: TextSpan(
+                            text: quest["name"] as String, style: kBodyText3),
+                        textDirection: TextDirection.ltr,
+                      );
+                      textPainter.layout(
+                          maxWidth:
+                              138); //maxWidth needs to be set to: DailyChallengeItem maxWidth - DailyChallengeItem X padding
+                      List lines = textPainter.computeLineMetrics();
+                      quest["lineNumber"] = lines.length;
+                    }
+                  }
+
+                  computeLines(oldDailyChallengeData);
+                  computeLines(newDailyChallengeQuestsData);
+                  user.refreshOldDailyChallengeData();
+                  return AnimatedBuilder(
+                      animation: curvedAnimation,
+                      builder: (BuildContext context, Widget? child) {
+                        var currentDailyChallengeQuestsData =
+                            oldDailyChallengeData;
+                        var hasChangedTree = false;
+                        if (curvedAnimation.value >= 0.25) {
+                          currentDailyChallengeQuestsData =
+                              newDailyChallengeQuestsData;
+                          hasChangedTree = true;
+                        }
+
+                        return CustomPaint(
+                          painter: TreePainter(
+                            dailyChallengeQuests:
+                                currentDailyChallengeQuestsData,
+                            animationProgress: areTheSame == true
+                                ? 1 //Keep opacity to 1 if the arrays are the same
+                                : hasChangedTree ==
+                                        false //check if we are at the second part of the animation
+                                    ? curvedAnimation.value > 0.15
+                                        ? 1 -
+                                            (curvedAnimation.value *
+                                                2.5) //only for opacity
+                                        : 1
+                                    : curvedAnimation.value,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              for (int i = 0;
+                                  i < newDailyChallengeQuestsData.length;
+                                  i++)
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 11.5),
+                                  child: Container(
+                                      key: i == 0
+                                          ? user.keys[15]
+                                          : i == 1
+                                              ? user.keys[16]
+                                              : null,
+                                      child: DailyChallengeItem(
+                                        name: newDailyChallengeQuestsData[i]
+                                            ["name"],
+                                        completed:
+                                            newDailyChallengeQuestsData[i]
+                                                ["completed"],
+                                        isActive: newDailyChallengeQuestsData[i]
+                                            ["active"],
+                                        wasActive: oldDailyChallengeData[i]
+                                            ["active"],
+                                        reward: newDailyChallengeQuestsData[i]
+                                            ["reward"],
+                                        progress: newDailyChallengeQuestsData[i]
+                                            ["progress"],
+                                        goal: newDailyChallengeQuestsData[i]
+                                            ["goalNb"],
+                                        showAdButton:
+                                            newDailyChallengeQuestsData[i]
+                                                    ["goal"] ==
+                                                "ad",
+                                        oldProgress: oldDailyChallengeData
+                                                    .where(
+                                                      (q) =>
+                                                          q["name"] ==
+                                                          newDailyChallengeQuestsData[
+                                                              i]["name"],
+                                                    )
+                                                    .toList()
+                                                    .length >
+                                                0 //Handle if quests are new ones
+                                            ? oldDailyChallengeData[i]
+                                                ["progress"]
+                                            : 0,
+                                      )),
+                                )
+                            ],
+                          ),
+                        );
+                      });
                 })
               ],
             )),
