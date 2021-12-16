@@ -45,8 +45,8 @@ class Coin extends StatelessWidget {
               child: Image.asset(
                 "assets/images/coin.png",
                 key: key1,
-                height: 30,
-                width: 30,
+                height: fontSize + 1.5,
+                width: fontSize > 32 ? fontSize + 2 : fontSize,
                 color: color
               ),
             ),

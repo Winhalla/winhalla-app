@@ -146,9 +146,7 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
             if(i > 0){
 
               setState(() {
-                print(coinsShown);
                 coinsShown[i-1] = false;
-                print(coinsShown);
                 if(i == 3){
                   // coinsNb = 0;
                   currentCoins = widget.coinsNb + widget.currentCoins;
@@ -194,7 +192,7 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
             curve: Curves.linear,
             top: topPosition,
             child: Container(
-              padding: const EdgeInsets.fromLTRB(0, 5, 15, 5),
+              padding: const EdgeInsets.fromLTRB(0, 7, 16, 7),
               decoration: BoxDecoration(
                   color: kBackgroundVariant,
                   borderRadius: BorderRadius.circular(14)
@@ -202,14 +200,14 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Coin(nb: currentCoins.toStringAsFixed(1),key1: coinIconKey,),
+                  Coin(nb: currentCoins.toStringAsFixed(1),key1: coinIconKey, padding: const EdgeInsets.fromLTRB(20, 9.5, 19, 6), fontSize: 34,),
                   Container(
-                      padding: const EdgeInsets.fromLTRB(15, 7, 15, 7),
+                      padding: const EdgeInsets.fromLTRB(17, 9.5, 17, 9),
                       decoration: BoxDecoration(
                           color: Colors.black,
                           borderRadius: BorderRadius.circular(14)
                       ),
-                      child: Text("+${coinsNb.toStringAsFixed(0)}",style: kBodyText2.apply(color:kEpic, fontFamily: "Roboto condensed"),)
+                      child: Text("+${coinsNb.toStringAsFixed(0)}",style: TextStyle(color:kEpic, fontFamily: "Roboto condensed", fontSize: 24.5),)
                   ),
                 ],
               ),
