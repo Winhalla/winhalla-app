@@ -110,7 +110,6 @@ class _DailyChallengeState extends State<DailyChallenge>
                   }
 
                   var areTheSame = arraysAreTheSame();
-                  print(areTheSame);
                   void computeLines(dailyChallengeData) {
                     for (var quest in dailyChallengeData) {
                       final textPainter = TextPainter(
@@ -126,8 +125,6 @@ class _DailyChallengeState extends State<DailyChallenge>
                     }
                   }
 
-                  print(oldDailyChallengeData);
-                  print(newDailyChallengeQuestsData);
                   computeLines(oldDailyChallengeData);
                   computeLines(newDailyChallengeQuestsData);
                   user.refreshOldDailyChallengeData();
@@ -192,7 +189,7 @@ class _DailyChallengeState extends State<DailyChallenge>
                                         showAdButton:
                                             newDailyChallengeQuestsData[i]
                                                     ["goal"] ==
-                                                "ad1",
+                                                "ad",
                                         oldProgress: oldDailyChallengeData
                                                     .where(
                                                       (q) =>
