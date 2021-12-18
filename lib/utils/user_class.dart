@@ -44,8 +44,8 @@ class User extends ChangeNotifier {
         ? jsonDecode(ssOldDailyChallengeData)
         : newDailyChallengeData;
 
-    await secureStorage.write(
-        key: "dailyChallengeData", value: jsonEncode(newDailyChallengeData));
+    /*await secureStorage.write(
+        key: "dailyChallengeData", value: jsonEncode(newDailyChallengeData));*/
 
 
     try {
@@ -374,9 +374,12 @@ class User extends ChangeNotifier {
 
   void refreshOldDailyChallengeData() async {
     oldDailyChallengeData = value["user"]["dailyChallenge"]["challenges"];
+    await secureStorage.write(
+        key: "dailyChallengeData", value: jsonEncode(value["user"]["dailyChallenge"]["challenges"]));
+
   }
 
-  User(this.value, this.callApi, this.keys, this.inGame);
+  User(this.value, this.callApi, this.keys, this.inGame, this.oldDailyChallengeData);
 
   void setAnimateMatchHistory(bool setTo) {
     animateMatchHistory = setTo;
@@ -397,27 +400,37 @@ Future<dynamic> initUser(context) async {
   dynamic tutorialFinished;
   dynamic tutorialStep;
   try {
-    tutorialFinished =
-        data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true
-            ? false
-            : true;
+    tutorialFinished = data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true ? false : true;
 
     if (data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true) {
       tutorialStep = 17;
-    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] ==
-        true) {
+
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] == true) {
       tutorialStep = 13;
-    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] ==
-        true) {
+
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] == true) {
       tutorialStep = 8;
+
     } else {
       tutorialStep = 0;
+
     }
   } catch (e) {}
+  dynamic oldDailyChallengeData;
+  try{
+    var newDailyChallengeData = data["data"]["user"]["dailyChallenge"]["challenges"];
+    var ssOldDailyChallengeData = await getNonNullSSData("dailyChallengeData");
+
+    oldDailyChallengeData = ssOldDailyChallengeData != "no data"
+        ? jsonDecode(ssOldDailyChallengeData)
+        : newDailyChallengeData;
+  }catch(e){}
+
   return {
     "data": data["data"],
     "authKey": storageKey,
     "callApi": caller,
+    "oldDailyChallengeData": oldDailyChallengeData,
     "tutorial": {
       "needed": tutorialFinished ?? false,
       "tutorialStep": tutorialStep ?? 0

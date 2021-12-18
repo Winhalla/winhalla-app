@@ -101,11 +101,8 @@ class _DailyChallengeState extends State<DailyChallenge>
                       user.oldDailyChallengeData ?? newDailyChallengeQuestsData;
 
                   bool arraysAreTheSame() {
-                    for (var i = 0;
-                        i < newDailyChallengeQuestsData.length;
-                        i++) {
-                      if (newDailyChallengeQuestsData[i]["_id"] !=
-                          oldDailyChallengeData[i]["_id"]) {
+                    for (var i = 0; i < newDailyChallengeQuestsData.length; i++) {
+                      if (newDailyChallengeQuestsData[i]["_id"] != oldDailyChallengeData[i]["_id"]) {
                         return false;
                       }
                     }
@@ -113,9 +110,9 @@ class _DailyChallengeState extends State<DailyChallenge>
                   }
 
                   var areTheSame = arraysAreTheSame();
-
-                  void computeLines(DailyChallengeData) {
-                    for (var quest in DailyChallengeData) {
+                  print(areTheSame);
+                  void computeLines(dailyChallengeData) {
+                    for (var quest in dailyChallengeData) {
                       final textPainter = TextPainter(
                         text: TextSpan(
                             text: quest["name"] as String, style: kBodyText3),
@@ -129,6 +126,8 @@ class _DailyChallengeState extends State<DailyChallenge>
                     }
                   }
 
+                  print(oldDailyChallengeData);
+                  print(newDailyChallengeQuestsData);
                   computeLines(oldDailyChallengeData);
                   computeLines(newDailyChallengeQuestsData);
                   user.refreshOldDailyChallengeData();
@@ -193,7 +192,7 @@ class _DailyChallengeState extends State<DailyChallenge>
                                         showAdButton:
                                             newDailyChallengeQuestsData[i]
                                                     ["goal"] ==
-                                                "ad",
+                                                "ad1",
                                         oldProgress: oldDailyChallengeData
                                                     .where(
                                                       (q) =>
