@@ -23,7 +23,7 @@ class _DailyChallengeState extends State<DailyChallenge>
     with TickerProviderStateMixin {
   late final AnimationController _animationController;
   late Animation<num> curvedAnimation;
-  bool cancelAnim = false;
+  //bool cancelAnim = false;
   @override
   void initState() {
     super.initState();
@@ -34,7 +34,7 @@ class _DailyChallengeState extends State<DailyChallenge>
     );
 
     Future.delayed(const Duration(milliseconds: 1650), () {
-      if(mounted && !cancelAnim) _animationController.forward();
+      if(mounted /*&& !cancelAnim*/) _animationController.forward();
     });
 
     double beginValue = 0.15;
@@ -94,8 +94,7 @@ class _DailyChallengeState extends State<DailyChallenge>
                   final List newDailyChallengeQuestsData =
                       user.value["user"]["dailyChallenge"]["challenges"];
 
-                  final oldDailyChallengeData =
-                      user.oldDailyChallengeData ?? newDailyChallengeQuestsData;
+                  final oldDailyChallengeData = (user.oldDailyChallengeData == null) || (user.oldDailyChallengeData[0]["name"] != newDailyChallengeQuestsData[0]["name"])  ? newDailyChallengeQuestsData : user.oldDailyChallengeData;
 
                   bool arraysAreTheSame() {
                     for (int i = 0; i < newDailyChallengeQuestsData.length; i++) {
@@ -107,7 +106,7 @@ class _DailyChallengeState extends State<DailyChallenge>
                   }
 
                   bool areTheSame = arraysAreTheSame();
-                  if(areTheSame) cancelAnim = true;
+                  //if(areTheSame) cancelAnim = true;
 
 
                   void computeLines(dailyChallengeData) {

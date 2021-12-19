@@ -220,7 +220,7 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
               curve: Curves.easeInToLinear,
               top: coinPosition[i][0] ?? screenH / 4,
               left: coinPosition[i][1] ?? screenW / 2,
-              child: Image.asset("assets/images/coin.png", height: 30, width: 30, color:kPrimary/*i==0?kGreen:i==1?kOrange:kRed*/),
+              child: Image.asset("assets/images/coin.png", height: 36, width: 36, color:kPrimary/*i==0?kGreen:i==1?kOrange:kRed*/),
             )
           else Container(),
       ]),

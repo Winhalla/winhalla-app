@@ -61,7 +61,7 @@ class _DailyChallengeItemState extends State<DailyChallengeItem> {
         crossFadeState: isActive == true
             ? CrossFadeState.showFirst
             : CrossFadeState.showSecond,
-        duration: Duration(milliseconds: 400),
+        duration: const Duration(milliseconds: 400),
         firstCurve: Curves.easeInOut,
         secondCurve: Curves.easeInOutCirc,
         firstChild: QuestWidget(
