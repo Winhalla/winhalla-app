@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/screens/ffa.dart';
 import 'package:winhalla_app/utils/user_class.dart';
+import 'package:winhalla_app/widgets/coin_dropdown.dart';
 
 class PlayPage extends StatefulWidget {
   const PlayPage({Key? key}) : super(key: key);
@@ -14,7 +15,7 @@ class PlayPage extends StatefulWidget {
 
 class _PlayPageState extends State<PlayPage> {
   var _isLoadingMatch = false;
-
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey();
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, _) {
@@ -43,6 +44,7 @@ class _PlayPageState extends State<PlayPage> {
                   height: 34,
                 ),
                 Consumer<User>(builder: (context, user, _) {
+
                   Future.delayed(
                       const Duration(milliseconds: 1),
                           () => user.setIsShown(true)
@@ -50,10 +52,16 @@ class _PlayPageState extends State<PlayPage> {
                   var filteredInGameList = user.value["user"]["inGame"];
                   /*.where((g) => g["nbOfUsersFinishing"] > 0 ? true : false)
                       .toList();*/
-
                   var lastGames = user.value["user"]["lastGames"];
-                  var lastWidget;
+                  var lastMatchHistory;
+                  if(user.animateMatchHistory && user.value["user"]["lastGames"].isNotEmpty) {
+                    lastMatchHistory = lastGames.last;
+                    lastGames.removeLast();
+                  }
+                  var mergedArray = List.from(filteredInGameList.reversed)
+                    ..addAll(lastGames.reversed);
 
+                  var lastWidget;
                   return Flexible(
                     flex: 1,
                     fit: FlexFit.tight,
@@ -68,146 +76,197 @@ class _PlayPageState extends State<PlayPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             // crossAxisAlignment: CrossAxisAlignment.start,
                           )
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            itemCount:
-                                lastGames.length + filteredInGameList.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              var mergedArray =
-                                  List.from(filteredInGameList.reversed)
-                                    ..addAll(lastGames.reversed);
-                              var currentMatch = mergedArray[index];
+                        : StatefulBuilder(
+                          builder: (context, setState) {
+                            return AnimatedList(
+                                key: _listKey,
+                                shrinkWrap: true,
+                                initialItemCount:lastGames.length + filteredInGameList.length,
+                                itemBuilder: (BuildContext context, int index, Animation<double> animation) {
 
-                              //if last widget is an "in game" tile, AND this one is a "match history" tile, set lastWidget to separator
-                              lastWidget = currentMatch["wins"] != null &&
-                                      lastWidget == false
-                                  ? "separator"
-                                  : currentMatch["wins"] != null
-                                      ? true
-                                      : false;
-                              if (currentMatch["nbOfUsersFinishing"] == 0) {
-                                currentMatch["nbOfUsersFinishing"] = 1;
-                              }
-                              return GestureDetector(
-                                onTap: () {
-                                  if (currentMatch["wins"] == null) {
-                                    user.enterMatch(
-                                        targetedMatchId: currentMatch["id"],
-                                        isFromMatchHistory: !(currentMatch["isFinished"] == false)
-                                    );
+                                  var currentMatch = mergedArray[index];
+                                  // For animation
+                                  if(index == 0) {
+                                    if (user.animateMatchHistory && user.value["user"]["lastGames"].isNotEmpty) {
+
+                                      user.setAnimateMatchHistory(false);
+                                      user.animateMatchHistory = false;
+                                      Future.delayed(const Duration(milliseconds: 250), () {
+                                        showCoinDropdown(
+                                            context,
+                                            user.value["user"]["coins"]-lastMatchHistory["coinsEarned"],
+                                            lastMatchHistory["coinsEarned"]
+                                        );
+                                        lastGames.add(lastMatchHistory);
+                                        mergedArray = List.from(filteredInGameList.reversed)
+                                          ..addAll(lastGames.reversed);
+                                        _listKey.currentState!.insertItem(
+                                            filteredInGameList.length,
+                                            duration: const Duration(milliseconds: 350)
+                                        );
+                                        // Uncomment to deactivate shadow & border after delay
+                                        /*Future.delayed(const Duration(milliseconds: 2500), () {
+                                          setState((){});
+                                        });*/
+                                      });
+                                    }
                                   }
-                                },
-                                child: Container(
-                                  key: index == 0 ? user.keys[7] : null,
-                                  decoration: BoxDecoration(
-                                      color: kBackgroundVariant,
-                                      borderRadius: BorderRadius.circular(20),
-                                      border: currentMatch["isFinished"] == false ? Border.all(
-                                        color:  kPrimary,
-                                        width: 1,
-                                      ) : null,
-                                  ),
-                                  padding:
-                                      const EdgeInsets.fromLTRB(30, 20, 30, 20),
-                                  margin: EdgeInsets.only(
-                                      left: 10,
-                                      right: 15,
-                                      top: lastWidget == "separator"
-                                          ? 30
-                                          : index == 0
-                                              ? 0
-                                              : 15),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: currentMatch["wins"] == null
-                                        ? [
-                                            RichText(
-                                              softWrap: true,
-                                              text: TextSpan(
-                                                  style: kBodyText2.apply(
-                                                      color: kText80),
-                                                  children: currentMatch["isFinished"] == false ? [
-                                                    TextSpan(
-                                                        text: "Match in progress! ", style: kBodyText2.apply(color:kText)),
-                                                  ] :[
-                                                    const TextSpan(
-                                                        text: "Waiting "),
-                                                    TextSpan(
-                                                        text: currentMatch[
-                                                                "nbOfUsersFinishing"]
-                                                            .toString(),
-                                                        style: const TextStyle(
-                                                            color: kPrimary)),
-                                                    TextSpan(
-                                                        text:
-                                                            " player${currentMatch["nbOfUsersFinishing"] > 1 ? "s" : ""}..."),
-                                                  ]),
-                                            ),
-                                            Row(
-                                              children: [
-                                                const Text(
-                                                  "x",
-                                                  style: TextStyle(
-                                                      color: kGreen,
-                                                      fontSize: 24,
-                                                      fontFamily:
-                                                          'Roboto Condensed'),
-                                                ),
-                                                const SizedBox(width: 1),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: .5),
-                                                  child: Text(
-                                                      "${(currentMatch["multiplier"] / 100).round()}",
-                                                      style: const TextStyle(
-                                                          color: kGreen,
-                                                          fontSize: 28)),
-                                                ),
-                                              ],
-                                            )
-                                          ]
-                                        : [
-                                            Row(
-                                              children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 2.85),
-                                                  child: Text(
-                                                    "${currentMatch["coinsEarned"]}",
-                                                    style: kBodyText1.apply(
-                                                        color: kPrimary),
+
+                                  // if last widget is an "in game" tile, AND this one is a "match history" tile, set lastWidget to separator
+                                  lastWidget = currentMatch["wins"] != null &&
+                                          lastWidget == false
+                                      ? "separator"
+                                      : currentMatch["wins"] != null
+                                          ? true
+                                          : false;
+                                  if (currentMatch["nbOfUsersFinishing"] == 0) {
+                                    currentMatch["nbOfUsersFinishing"] = 1;
+                                  }
+                                  bool isInTransition = currentMatch["_id"] == lastMatchHistory?["_id"] && !animation.isCompleted;
+                                  return GestureDetector(
+                                    onTap: () {
+                                      if (currentMatch["wins"] == null) {
+                                        user.enterMatch(
+                                            targetedMatchId: currentMatch["id"],
+                                            isFromMatchHistory: !(currentMatch["isFinished"] == false)
+                                        );
+                                      }
+                                    },
+                                    child: FadeTransition(
+                                      opacity: Tween(begin: 0.0, end: 1.0).animate(
+                                          CurvedAnimation(parent: animation, curve: Curves.easeInOut)),
+                                      child: SizeTransition(
+                                        sizeFactor: Tween(
+                                          begin: 0.0,
+                                          end: 1.0,
+                                        ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+                                        ),
+                                        child: Container(
+                                          key: index == 0 ? user.keys[7] : null,
+                                          decoration: BoxDecoration(
+                                              boxShadow: [
+                                                if(isInTransition)
+                                                  const BoxShadow(
+                                                    // offset: Offset(3.0, 3.0),
+                                                    blurRadius: 5.0,
+                                                    spreadRadius: 2.0,
+                                                    color: kPrimary
                                                   ),
-                                                ),
-                                                const SizedBox(
-                                                  width: 6,
-                                                ),
-                                                Image.asset(
-                                                  "assets/images/logo.png",
-                                                  width: 34,
-                                                )
                                               ],
-                                            ),
-                                            Text(
-                                              currentMatch["id"] == "tutorial"
-                                                  ? "tutorial"
-                                                  : "${currentMatch["wins"]}/7 wins",
-                                              style: kBodyText2.apply(
-                                                  color: kGray,
-                                                  fontFamily: "Bebas neue"),
-                                            ),
-                                            Text(
-                                              "#${currentMatch["rank"] + 1}",
-                                              style: kBodyText1.apply(
-                                                  fontFamily: "Bebas neue"),
-                                            )
-                                          ],
-                                  ),
-                                ),
-                              );
-                            }),
+                                              color: kBackgroundVariant,
+                                              borderRadius: BorderRadius.circular(20),
+                                              border: currentMatch["isFinished"] == false
+                                                  || isInTransition ? Border.all(
+                                                  color:  kPrimary,
+                                                  width: 1,
+                                                ) : null,
+                                          ),
+                                          padding:
+                                              const EdgeInsets.fromLTRB(30, 20, 30, 20),
+                                          margin: EdgeInsets.only(
+                                              left: 10,
+                                              right: 15,
+                                              bottom: isInTransition ? 7 : 0,
+                                              top: lastWidget == "separator"
+                                                  ? 30
+                                                  : index == 0
+                                                      ? (isInTransition ? 7 : 0)
+                                                      : 15),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: currentMatch["wins"] == null
+                                                ? [
+                                                    RichText(
+                                                      softWrap: true,
+                                                      text: TextSpan(
+                                                          style: kBodyText2.apply(
+                                                              color: kText80),
+                                                          children: currentMatch["isFinished"] == false ? [
+                                                            TextSpan(
+                                                                text: "Match in progress! ", style: kBodyText2.apply(color:kText)),
+                                                          ] :[
+                                                            const TextSpan(
+                                                                text: "Waiting "),
+                                                            TextSpan(
+                                                                text: currentMatch[
+                                                                        "nbOfUsersFinishing"]
+                                                                    .toString(),
+                                                                style: const TextStyle(
+                                                                    color: kPrimary)),
+                                                            TextSpan(
+                                                                text:
+                                                                    " player${currentMatch["nbOfUsersFinishing"] > 1 ? "s" : ""}..."),
+                                                          ]),
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        const Text(
+                                                          "x",
+                                                          style: TextStyle(
+                                                              color: kGreen,
+                                                              fontSize: 24,
+                                                              fontFamily:
+                                                                  'Roboto Condensed'),
+                                                        ),
+                                                        const SizedBox(width: 1),
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets.only(
+                                                                  top: .5),
+                                                          child: Text(
+                                                              "${(currentMatch["multiplier"] / 100).round()}",
+                                                              style: const TextStyle(
+                                                                  color: kGreen,
+                                                                  fontSize: 28)),
+                                                        ),
+                                                      ],
+                                                    )
+                                                  ]
+                                                : [
+                                                    Row(
+                                                      children: [
+                                                        Padding(
+                                                          padding:
+                                                              const EdgeInsets.only(
+                                                                  top: 2.85),
+                                                          child: Text(
+                                                            "${currentMatch["coinsEarned"]}",
+                                                            style: kBodyText1.apply(
+                                                                color: kPrimary),
+                                                          ),
+                                                        ),
+                                                        const SizedBox(
+                                                          width: 6,
+                                                        ),
+                                                        Image.asset(
+                                                          "assets/images/logo.png",
+                                                          width: 34,
+                                                        )
+                                                      ],
+                                                    ),
+                                                    Text(
+                                                      currentMatch["id"] == "tutorial"
+                                                          ? "tutorial"
+                                                          : "${currentMatch["wins"]}/7 wins",
+                                                      style: kBodyText2.apply(
+                                                          color: kGray,
+                                                          fontFamily: "Bebas neue"),
+                                                    ),
+                                                    Text(
+                                                      "#${currentMatch["rank"] + 1}",
+                                                      style: kBodyText1.apply(
+                                                          fontFamily: "Bebas neue"),
+                                                    )
+                                                  ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                });
+                          }
+                        ),
                   );
                 }),
                 const SizedBox(
@@ -275,12 +334,22 @@ class _PlayPageState extends State<PlayPage> {
     });
   }
 }
-
-class SoloMatchCreator extends StatelessWidget {
-  const SoloMatchCreator({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
+Widget _buildItem(
+    BuildContext context, String item, Animation<double> animation) {
+  TextStyle textStyle = const TextStyle(fontSize: 20, color: Colors.white);
+  return Padding(
+    padding: const EdgeInsets.all(2.0),
+    child: ScaleTransition(
+      child: SizedBox(
+        height: 100.0,
+        child: Card(
+          color: Colors.lightBlueAccent,
+          child: Center(
+            child: Text(item, style: textStyle),
+          ),
+        ),
+      ),
+      scale: animation,
+    ),
+  );
 }

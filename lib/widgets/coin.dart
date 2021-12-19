@@ -10,6 +10,7 @@ class Coin extends StatelessWidget {
   final double fontSize;
   final double borderRadius;
   final EdgeInsetsGeometry padding;
+  final GlobalKey? key1;
   const Coin({
     Key? key,
     required this.nb,
@@ -18,6 +19,7 @@ class Coin extends StatelessWidget {
     this.fontSize = 30,
     this.borderRadius = 11,
     this.padding = const EdgeInsets.fromLTRB(22, 9, 21.5, 6),
+    this.key1
   }) : super(key: key);
 
   @override
@@ -29,12 +31,7 @@ class Coin extends StatelessWidget {
         child: Row(
           children: [
             Builder(builder: (context) {
-              String text = "";
-              try{
-                text = double.parse(nb).floor().toString();
-              }catch(e){
-                text = "...";
-              }
+              String text = nb;
               return Text(
                 text,
                 style: TextStyle(color: color, fontSize: fontSize),
@@ -47,8 +44,9 @@ class Coin extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 3),
               child: Image.asset(
                 "assets/images/coin.png",
-                height: 30,
-                width: 30,
+                key: key1,
+                height: fontSize + 1.5,
+                width: fontSize > 32 ? fontSize + 2 : fontSize,
                 color: color
               ),
             ),

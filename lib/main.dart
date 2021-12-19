@@ -9,12 +9,14 @@ import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
+import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/tutorial_controller.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:provider/provider.dart';
+import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'config/themes/dark_theme.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 
@@ -54,7 +56,6 @@ class MyApp extends StatefulWidget {
   @override
   State<MyApp> createState() => _MyAppState();
 }
-
 class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
@@ -85,7 +86,7 @@ class _MyAppState extends State<MyApp> {
                     }
 
                     // Do not edit res.data directly otherwise it calls the build function again for some reason
-                    var newData = res.data as Map<String, dynamic>;
+                    Map<String, dynamic> newData = res.data as Map<String, dynamic>;
                     var callApi = res.data["callApi"];
 
                     newData["callApi"] = null;
@@ -128,9 +129,12 @@ class _MyAppState extends State<MyApp> {
                         'joinDate': currentMatch[0]["joinDate"]
                       };
                     }
+                    /*Future.delayed(const Duration(milliseconds:1),(){
+                      showCoinDropdown(context, 1315.6, 100);
+                    });*/
 
                     return ChangeNotifierProvider<User>(
-                        create: (_) => User(newData, callApi, keys, inGame),
+                        create: (_) => User(newData, callApi, keys, inGame, res.data["oldDailyChallengeData"]),
                         child: AppCore(
                           isUserDataLoaded: true,
                           tutorial: newData["tutorial"],

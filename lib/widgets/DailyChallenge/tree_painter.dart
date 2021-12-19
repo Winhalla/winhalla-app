@@ -4,9 +4,10 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 
 class TreePainter extends CustomPainter {
   final List dailyChallengeQuests;
-
+  final animationProgress;
   TreePainter({
     required this.dailyChallengeQuests,
+    required this.animationProgress,
   });
 
   @override
@@ -14,7 +15,7 @@ class TreePainter extends CustomPainter {
     final List dailyChallengeQuestsCopy = List.from(dailyChallengeQuests);
 
     Paint line = Paint()
-      ..color = kText90
+      ..color = kText90.withOpacity(animationProgress.toDouble())
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4;
@@ -28,7 +29,7 @@ class TreePainter extends CustomPainter {
     Path path = Path();
 
     void drawBottomTree() {
-      path.moveTo(currentWidth, currentHeight);
+      //path.moveTo(currentWidth, currentHeight);
       dailyChallengeQuestsCopy.removeAt(0);
 
       currentHeight = currentHeight + 3;
@@ -44,7 +45,8 @@ class TreePainter extends CustomPainter {
             degToRad(90),
             false);
 
-        path.lineTo(20, currentHeight + rectSize);
+        path.lineTo(20 + (currentWidth - currentWidth * animationProgress),
+            currentHeight + rectSize);
         path.moveTo(currentWidth, currentHeight);
 
         //Go to next position
@@ -59,7 +61,8 @@ class TreePainter extends CustomPainter {
     void drawTopTree() {
       for (var quest in List.from(dailyChallengeQuestsCopy)) {
         if (!quest["active"]) {
-          path.moveTo(20, currentHeight);
+          path.moveTo(20 + (currentWidth - currentWidth * animationProgress),
+              currentHeight);
           path.lineTo(currentWidth - rectSize, currentHeight);
 
           path.arcTo(
@@ -83,7 +86,8 @@ class TreePainter extends CustomPainter {
 
           dailyChallengeQuestsCopy.remove(quest);
         } else {
-          currentHeight += 146.5;
+          currentHeight += 146;
+          path.lineTo(currentWidth, currentHeight - 2);
           return drawBottomTree();
         }
       }
@@ -103,6 +107,6 @@ class TreePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant TreePainter oldDelegate) {
-    return false;
+    return oldDelegate.animationProgress != animationProgress;
   }
 }

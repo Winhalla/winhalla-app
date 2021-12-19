@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+import 'package:winhalla_app/utils/store_quests_data.dart';
+import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
 
 class User extends ChangeNotifier {
@@ -14,6 +16,7 @@ class User extends ChangeNotifier {
   dynamic quests;
   dynamic inGame;
   int gamesPlayedInMatch = 0;
+  bool animateMatchHistory = false;
   GlobalKey appBarKey = GlobalKey();
   int lastQuestsRefresh = 0;
   int lastShopRefresh = 0;
@@ -21,7 +24,11 @@ class User extends ChangeNotifier {
   Map<String, dynamic> keyFx = {};
   late CallApi callApi;
 
+  var oldQuestsData;
+  var oldDailyChallengeData;
+
   Future<void> refresh({notify = true}) async {
+
     var accountData = await callApi.get("/account");
     if (accountData["successful"] == false) return;
     value = accountData["data"];
@@ -29,6 +36,19 @@ class User extends ChangeNotifier {
     var inGameData = value["user"]["inGame"];
     var currentMatch =
         inGameData.where((g) => g["isFinished"] == false).toList();
+
+
+    var newDailyChallengeData = value["user"]["dailyChallenge"]["challenges"];
+    var ssOldDailyChallengeData = await getNonNullSSData("dailyChallengeData");
+
+    oldDailyChallengeData = ssOldDailyChallengeData != "no data"
+        ? jsonDecode(ssOldDailyChallengeData)
+        : newDailyChallengeData;
+
+    /*await secureStorage.write(
+        key: "dailyChallengeData", value: jsonEncode(newDailyChallengeData));*/
+
+
     try {
       if (currentMatch.length > 0) {
         inGame = {
@@ -41,21 +61,29 @@ class User extends ChangeNotifier {
         gamesPlayedInMatch = 0;
       }
     } catch (e) {}
-    if(notify)notifyListeners();
+    if (notify) notifyListeners();
   }
 
   Future<bool> refreshQuests(BuildContext context,
       {bool showInfo = false, isTutorial = false}) async {
-    var accountData = await callApi
-        .get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
+    var accountData = await callApi.get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
+
     if (accountData["successful"] == false) return true;
     var accountDataDecoded = accountData["data"]["solo"];
-    accountDataDecoded["dailyQuests"]
-        .addAll(accountDataDecoded["finished"]["daily"]);
-    accountDataDecoded["weeklyQuests"]
-        .addAll(accountDataDecoded["finished"]["weekly"]);
+
+    //Add finished quests before the other ones
+    accountDataDecoded["dailyQuests"] = [
+      ...accountDataDecoded["finished"]["daily"],
+      ...accountDataDecoded["dailyQuests"]
+    ];
+
+    accountDataDecoded["weeklyQuests"] = [
+      ...accountDataDecoded["finished"]["weekly"],
+      ...accountDataDecoded["weeklyQuests"]
+    ];
     quests = accountDataDecoded;
     notifyListeners();
+
     if (accountData["data"]["newQuests"] == true) {
 
       if (showInfo) {
@@ -77,7 +105,11 @@ class User extends ChangeNotifier {
       );
       return false;
     }
-    if (accountData["data"]["updatedPlatforms"] != null) {
+    if(accountData["data"]["updatedPlatforms"] == null) {
+      return false;
+    }
+
+    if (accountData["data"]["updatedPlatforms"].length > 0) {
       List<Widget> icons = [];
       for (int i = 0; i < accountData["data"]["updatedPlatforms"].length; i++) {
         icons.add(
@@ -156,7 +188,8 @@ class User extends ChangeNotifier {
       'id': matchId,
       'joinDate': DateTime.now().millisecondsSinceEpoch,
       'isFinished': false,
-      'showActivity': targetedMatchId != null && isFromMatchHistory ? false : null,
+      'showActivity':
+          targetedMatchId != null && isFromMatchHistory ? false : null,
       'showMatch': true,
       'isFromMatchHistory': isFromMatchHistory
     };
@@ -165,7 +198,11 @@ class User extends ChangeNotifier {
     return matchId;
   }
 
-  Future<void> exitMatch({isOnlyLayout = false, isBackButton = false, isFromMatchHistory = false}) async {
+  Future<void> exitMatch(
+      {isOnlyLayout = false,
+      isBackButton = false,
+      isFromMatchHistory = false,
+      matchHistoryAnimated = false}) async {
     FirebaseAnalytics.instance.logScreenView(screenClass: "Play");
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "Play");
     if (isBackButton) {
@@ -177,8 +214,9 @@ class User extends ChangeNotifier {
     if (isOnlyLayout) {
       inGame = null;
       gamesPlayedInMatch = 0;
+      if(matchHistoryAnimated) animateMatchHistory = true;
       notifyListeners();
-      if(isFromMatchHistory) refresh(notify:false);
+      if (isFromMatchHistory) refresh(notify: false);
       return;
     }
 
@@ -195,17 +233,34 @@ class User extends ChangeNotifier {
     if (lastQuestsRefresh + 900 * 1000 >
             DateTime.now().millisecondsSinceEpoch &&
         quests != null) {
-      return "loaded";
+      return true;
     }
     dynamic questsData = await callApi.get("/solo");
+
     if (questsData["successful"] == false) return;
     questsData = questsData["data"]["solo"];
-    questsData["dailyQuests"].addAll(questsData["finished"]["daily"]);
-    questsData["weeklyQuests"].addAll(questsData["finished"]["weekly"]);
+    //Add finished quests before the other ones
+    questsData["dailyQuests"] = [
+      ...questsData["finished"]["daily"],
+      ...questsData["dailyQuests"]
+    ];
+
+    questsData["weeklyQuests"] = [
+      ...questsData["finished"]["weekly"],
+      ...questsData["weeklyQuests"]
+    ];
     quests = questsData;
     lastQuestsRefresh = DateTime.now().millisecondsSinceEpoch;
+
+    // Handle if there is no questsData key in secure storage
+    var oldQuestsData1 = await getNonNullSSData("questsData");
+    if(oldQuestsData1 != "no data"){
+      oldQuestsData = jsonDecode(oldQuestsData1);
+    } else {
+      refreshOldQuestsData();
+    }
     notifyListeners();
-    return "loaded";
+    return false;
   }
 
   Future initShopData() async {
@@ -251,9 +306,10 @@ class User extends ChangeNotifier {
         await callApi.post("/solo/collect?id=$questId&type=$type", "{}");
     if (result["successful"] == false) return;
     try {
-      if (value["user"]["dailyChallenge"]["challenges"]
-              .firstWhere((e) => e["goal"] == "winhallaQuest", orElse: ()=>null) !=
-          null) {
+      var dailyChallenge = value["user"]["dailyChallenge"]["challenges"].firstWhere(
+              (e) => e["goal"] == "winhallaQuest" && e["active"] == true,
+          orElse: () => null);
+      if (dailyChallenge != null) {
         refresh();
         FirebaseAnalytics.instance.logEvent(
           name: "FinishDailyChallenge",
@@ -264,11 +320,19 @@ class User extends ChangeNotifier {
       }
     } catch (e) {}
 
+    var quest = quests["${type}Quests"].firstWhere((e) => e["id"] == questId, orElse: ()=>null);
+
+    if(quest != null){
+      showCoinDropdown(appBarKey.currentContext as BuildContext, value["user"]["coins"], quest["reward"]);
+    }
     FirebaseAnalytics.instance.logEvent(
       name: "CollectQuest",
     );
-    quests["${type}Quests"].removeWhere((e)=>e["id"] == questId);
+
+    quests["${type}Quests"].removeWhere((e) => e["id"] == questId);
     value["user"]["coins"] += price;
+    refreshOldQuestsData();
+    notifyListeners();
   }
 
   Future<void> setItemGoal(int itemId) async {
@@ -303,12 +367,29 @@ class User extends ChangeNotifier {
   }
 
   void setIsShown(bool isShown) {
-    if(inGame != null) {
+    if (inGame != null) {
       inGame["isShown"] = isShown;
     }
   }
 
-  User(this.value, this.callApi, this.keys, this.inGame);
+  void refreshOldQuestsData() async {
+    var questsDataStored = storeQuestsData(quests);
+    oldQuestsData = questsDataStored;
+
+  }
+
+  void refreshOldDailyChallengeData() async {
+    oldDailyChallengeData = value["user"]["dailyChallenge"]["challenges"];
+    await secureStorage.write(
+        key: "dailyChallengeData", value: jsonEncode(value["user"]["dailyChallenge"]["challenges"]));
+
+  }
+
+  User(this.value, this.callApi, this.keys, this.inGame, this.oldDailyChallengeData);
+
+  void setAnimateMatchHistory(bool setTo) {
+    animateMatchHistory = setTo;
+  }
 
 
 }
@@ -337,12 +418,24 @@ Future<dynamic> initUser(context) async {
 
     } else {
       tutorialStep = 0;
+
     }
   } catch (e) {}
+  dynamic oldDailyChallengeData;
+  try{
+    var newDailyChallengeData = data["data"]["user"]["dailyChallenge"]["challenges"];
+    var ssOldDailyChallengeData = await getNonNullSSData("dailyChallengeData");
+
+    oldDailyChallengeData = ssOldDailyChallengeData != "no data"
+        ? jsonDecode(ssOldDailyChallengeData)
+        : newDailyChallengeData;
+  }catch(e){}
+
   return {
     "data": data["data"],
     "authKey": storageKey,
     "callApi": caller,
+    "oldDailyChallengeData": oldDailyChallengeData,
     "tutorial": {
       "needed": tutorialFinished ?? false,
       "tutorialStep": tutorialStep ?? 0
