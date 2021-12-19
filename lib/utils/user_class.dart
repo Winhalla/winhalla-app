@@ -65,11 +65,11 @@ class User extends ChangeNotifier {
 
   Future<bool> refreshQuests(BuildContext context,
       {bool showInfo = false, isTutorial = false}) async {
-    var accountData = await callApi
-        .get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
+    var accountData = await callApi.get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
 
     if (accountData["successful"] == false) return true;
     var accountDataDecoded = accountData["data"]["solo"];
+
     //Add finished quests before the other ones
     accountDataDecoded["dailyQuests"] = [
       ...accountDataDecoded["finished"]["daily"],
@@ -81,19 +81,7 @@ class User extends ChangeNotifier {
       ...accountDataDecoded["weeklyQuests"]
     ];
     quests = accountDataDecoded;
-    var oldQuestsData1 = await getNonNullSSData("questsData");
-    if(oldQuestsData1 != "no data"){
-      oldQuestsData = jsonDecode(oldQuestsData1);
-    } else {
-      oldQuestsData = {
-        "dailyQuests": accountDataDecoded["dailyQuests"]
-            .map((q) => {"name": q["name"], "progress": q["progress"]})
-            .toList(),
-        "weeklyQuests": accountDataDecoded["weeklyQuests"]
-            .map((q) => {"name": q["name"], "progress": q["progress"]})
-            .toList(),
-      };
-    }
+
     notifyListeners();
 
     if (accountData["data"]["newQuests"] == true) {
@@ -108,8 +96,6 @@ class User extends ChangeNotifier {
         ),*/
         );
       }
-
-      storeQuestsData(quests);
       return false;
     }
     if(accountData["data"]["updatedPlatforms"] == null) {
@@ -137,8 +123,6 @@ class User extends ChangeNotifier {
               children: icons,
             ));
       }
-
-      storeQuestsData(quests);
       return false;
     }
     return true;
@@ -247,25 +231,14 @@ class User extends ChangeNotifier {
     quests = questsData;
     lastQuestsRefresh = DateTime.now().millisecondsSinceEpoch;
 
-    //Handle if there is no questsData key in secure storage
+    // Handle if there is no questsData key in secure storage
     var oldQuestsData1 = await getNonNullSSData("questsData");
     if(oldQuestsData1 != "no data"){
       oldQuestsData = jsonDecode(oldQuestsData1);
     } else {
-      oldQuestsData = {
-        "dailyQuests": questsData["dailyQuests"]
-            .map((q) => {"name": q["name"], "progress": q["progress"]})
-            .toList(),
-        "weeklyQuests": questsData["weeklyQuests"]
-            .map((q) => {"name": q["name"], "progress": q["progress"]})
-            .toList(),
-      };
+      refreshOldQuestsData();
     }
-
     notifyListeners();
-
-    storeQuestsData(quests);
-
     return false;
   }
 
@@ -328,6 +301,7 @@ class User extends ChangeNotifier {
 
     quests["${type}Quests"].removeWhere((e) => e["id"] == questId);
     value["user"]["coins"] += price;
+    refreshOldQuestsData();
     notifyListeners();
   }
 
@@ -369,7 +343,9 @@ class User extends ChangeNotifier {
   }
 
   void refreshOldQuestsData() async {
-    oldQuestsData = jsonDecode(await getNonNullSSData("questsData"));
+    var questsDataStored = storeQuestsData(quests);
+    oldQuestsData = questsDataStored;
+
   }
 
   void refreshOldDailyChallengeData() async {

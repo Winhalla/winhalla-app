@@ -40,6 +40,7 @@ class _DailyChallengeItemState extends State<DailyChallengeItem> {
     isActive = widget.wasActive;
 
     Future.delayed(const Duration(milliseconds: 1700), () {
+      if(!mounted) return;
       setState(() {
         isActive = widget.isActive;
       });

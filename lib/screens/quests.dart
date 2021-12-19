@@ -53,14 +53,10 @@ class Quests extends StatelessWidget {
               child: CircularProgressIndicator(),
             );
           }
-          context.read<User>().refreshOldQuestsData();
 
           return RefreshIndicator(
             onRefresh: () async {
-              var showNoRefreshQuests = await context
-                  .read<User>()
-                  .refreshQuests(context, showInfo: true);
-              context.read<User>().refreshOldQuestsData();
+              var showNoRefreshQuests = await context.read<User>().refreshQuests(context, showInfo: true);
 
               if (showNoRefreshQuests == true &&
                   await getNonNullSSData("hideNoRefreshQuests") != "true") {
@@ -106,6 +102,9 @@ class Quests extends StatelessWidget {
                   height: 32,
                 ),
                 Consumer<User>(builder: (context, user, _) {
+                  WidgetsBinding.instance?.addPostFrameCallback((_){
+                    user.refreshOldQuestsData();
+                  });
                   if (user.quests["dailyQuests"].length < 1) {
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 50.0),
@@ -192,23 +191,13 @@ class Quests extends StatelessWidget {
                                     ["progress"],
                                 goal: user.quests["dailyQuests"][index]["goal"],
                                 oldProgress: user.oldQuestsData["dailyQuests"]
-                                            .where(
+                                            .firstWhere(
                                               (q) =>
                                                   q["name"] ==
                                                   user.quests["dailyQuests"]
                                                       [index]["name"],
-                                            )
-                                            .toList()
-                                            .length > 0 //Handle if quests are new ones
-                                    ? user.oldQuestsData["dailyQuests"]
-                                        .where(
-                                          (q) =>
-                                              q["name"] ==
-                                              user.quests["dailyQuests"][index]
-                                                  ["name"],
-                                        )
-                                        .toList()[0]["progress"]
-                                    : 0,
+                                              orElse:()=>{"progress":0}
+                                            )["progress"]
                               ),
                             ));
                       },
@@ -329,22 +318,9 @@ class Quests extends StatelessWidget {
                               progress: user.quests["weeklyQuests"][index]
                                   ["progress"],
                               goal: user.quests["weeklyQuests"][index]["goal"],
-                              oldProgress: user.oldQuestsData["weeklyQuests"]
-                                          .where((q) =>
-                                              q["name"] ==
-                                              user.quests["weeklyQuests"][index]
-                                                  ["name"])
-                                          .toList()
-                                          .length > 0 //Handle if quests are new ones
-                                  ? user.oldQuestsData["weeklyQuests"]
-                                      .where(
-                                        (q) =>
-                                            q["name"] ==
-                                            user.quests["weeklyQuests"][index]
-                                                ["name"],
-                                      )
-                                      .toList()[0]["progress"]
-                                  : 0,
+                              oldProgress: user.oldQuestsData["weeklyQuests"].firstWhere(
+                                    (q) => q["name"] == user.quests["weeklyQuests"][index]["name"],
+                                    orElse: () => {"progress": 0}) ["progress"]
                             ),
                           ));
                     },

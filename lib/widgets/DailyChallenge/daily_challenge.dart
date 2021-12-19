@@ -6,6 +6,7 @@ import 'package:provider/src/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/user_class.dart';
+import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/quest_widget.dart';
 import '../coin.dart';
 import 'daily_challenge_item.dart';
@@ -21,8 +22,8 @@ class DailyChallenge extends StatefulWidget {
 class _DailyChallengeState extends State<DailyChallenge>
     with TickerProviderStateMixin {
   late final AnimationController _animationController;
-  var curvedAnimation;
-
+  late Animation<num> curvedAnimation;
+  bool cancelAnim = false;
   @override
   void initState() {
     super.initState();
@@ -33,7 +34,7 @@ class _DailyChallengeState extends State<DailyChallenge>
     );
 
     Future.delayed(const Duration(milliseconds: 1650), () {
-      _animationController.forward();
+      if(mounted && !cancelAnim) _animationController.forward();
     });
 
     double beginValue = 0.15;
@@ -63,19 +64,15 @@ class _DailyChallengeState extends State<DailyChallenge>
               "Daily challenge",
               style: kHeadline1,
             ),
-            GestureDetector(
-              // ignore: avoid_returning_null_for_void
-              onTap: () => null,
-              child: Consumer<User>(builder: (context, user, _) {
-                return Coin(
-                  nb: user.value["user"]["dailyChallenge"]["challenges"]
-                      .fold(0, (sum, item) => sum + item["reward"])
-                      .toString(),
-                  color: kOrange,
-                  padding: const EdgeInsets.fromLTRB(16, 9, 16, 6),
-                );
-              }),
-            ),
+            Consumer<User>(builder: (context, user, _) {
+              return Coin(
+                nb: user.value["user"]["dailyChallenge"]["challenges"]
+                    .fold(0, (sum, item) => sum + item["reward"])
+                    .toString(),
+                color: kOrange,
+                padding: const EdgeInsets.fromLTRB(16, 9, 16, 6),
+              );
+            }),
           ],
         ),
         Padding(
@@ -101,15 +98,18 @@ class _DailyChallengeState extends State<DailyChallenge>
                       user.oldDailyChallengeData ?? newDailyChallengeQuestsData;
 
                   bool arraysAreTheSame() {
-                    for (var i = 0; i < newDailyChallengeQuestsData.length; i++) {
-                      if (newDailyChallengeQuestsData[i]["_id"] != oldDailyChallengeData[i]["_id"]) {
+                    for (int i = 0; i < newDailyChallengeQuestsData.length; i++) {
+                      if (newDailyChallengeQuestsData[i]?["_id"] != oldDailyChallengeData[i]?["_id"]) {
                         return false;
                       }
                     }
                     return true;
                   }
 
-                  var areTheSame = arraysAreTheSame();
+                  bool areTheSame = arraysAreTheSame();
+                  if(areTheSame) cancelAnim = true;
+
+
                   void computeLines(dailyChallengeData) {
                     for (var quest in dailyChallengeData) {
                       final textPainter = TextPainter(
@@ -127,6 +127,16 @@ class _DailyChallengeState extends State<DailyChallenge>
 
                   computeLines(oldDailyChallengeData);
                   computeLines(newDailyChallengeQuestsData);
+                  if(areTheSame){
+                    for (int i = 0; i < newDailyChallengeQuestsData.length; i++){
+                      if(newDailyChallengeQuestsData[i]["completed"] == true && oldDailyChallengeData[i]["completed"] == false){
+                        Future.delayed(const Duration(milliseconds: 3000),() {
+                          showCoinDropdown(context, user.value["user"]["coins"], newDailyChallengeQuestsData[i]["reward"]);
+                        });
+                        break;
+                      }
+                    }
+                  }
                   user.refreshOldDailyChallengeData();
                   return AnimatedBuilder(
                       animation: curvedAnimation,

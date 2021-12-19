@@ -32,8 +32,7 @@ class QuestWidget extends StatefulWidget {
   State<QuestWidget> createState() => _QuestWidgetState();
 }
 
-class _QuestWidgetState extends State<QuestWidget>
-    with TickerProviderStateMixin {
+class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin {
   late final AnimationController _animationController;
   var curvedAnimation;
   @override
@@ -44,7 +43,6 @@ class _QuestWidgetState extends State<QuestWidget>
       vsync: this,
       duration: Duration(milliseconds: 3000),
     );
-    _animationController.forward();
 
     double beginValue = 0;
     if (widget.oldProgress == widget.progress) beginValue = 1;
@@ -80,6 +78,9 @@ class _QuestWidgetState extends State<QuestWidget>
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance?.addPostFrameCallback((_){
+      _animationController.forward();
+    });
     return Container(
       decoration: BoxDecoration(
           color: kBackgroundVariant, borderRadius: BorderRadius.circular(16)),
@@ -122,7 +123,7 @@ class _QuestWidgetState extends State<QuestWidget>
                       children: [
                         AnimatedCrossFade(
                           firstChild: Text(
-                              "${(widget.oldProgress + ((widget.progress - widget.oldProgress) * curvedAnimation.value).ceil())}/${widget.goal}",
+                              "${(widget.oldProgress + ((widget.progress - widget.oldProgress) * curvedAnimation.value).round())}/${widget.goal}",
                               style: kBodyText4.apply(color: widget.color)),
                           secondChild: Text("Click to collect",
                               style: kBodyText4.apply(color: widget.color)),
