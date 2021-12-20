@@ -130,7 +130,11 @@ class _DailyChallengeState extends State<DailyChallenge>
                     for (int i = 0; i < newDailyChallengeQuestsData.length; i++){
                       if(newDailyChallengeQuestsData[i]["completed"] == true && oldDailyChallengeData[i]["completed"] == false){
                         Future.delayed(const Duration(milliseconds: 3000),() {
-                          showCoinDropdown(context, user.value["user"]["coins"], newDailyChallengeQuestsData[i]["reward"]);
+                          showCoinDropdown(
+                              context,
+                              user.value["user"]["coins"] - newDailyChallengeQuestsData[i]["reward"],
+                              newDailyChallengeQuestsData[i]["reward"]
+                          );
                         });
                         break;
                       }
