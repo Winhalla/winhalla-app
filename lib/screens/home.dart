@@ -15,8 +15,23 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  bool isDailyChallengeShown = true;
+  void rebuildHomePage(){
+    setState((){
+      isDailyChallengeShown = false;
+    });
+
+  }
   @override
   Widget build(BuildContext context) {
+    context.read<User>().setKeyFx(rebuildHomePage, "rebuildHomePage");
+    if(isDailyChallengeShown == false) {
+      WidgetsBinding.instance?.addPostFrameCallback((_){
+        setState((){
+          isDailyChallengeShown = true;
+        });
+      });
+    }
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -46,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
         const SizedBox(
           height: 50,
         ),
-        const DailyChallenge()
+        if(isDailyChallengeShown) const DailyChallenge()
       ],
     );
   }
