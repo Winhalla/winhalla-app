@@ -135,7 +135,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                           const SizedBox(
                             width: 15,
                           ),
-                        if (widget.showAdButton)
+                        if (widget.showAdButton && widget.color != kGreen)
                           AdButton(
                             goal: 'dailyChallenge',
                             child: Container(

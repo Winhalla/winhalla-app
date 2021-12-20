@@ -66,7 +66,8 @@ class _AdButtonState extends State<AdButton> {
                 if (match != null) {
                   await match?.refresh(context, user);
                 } else {
-                  await user.refresh();
+                  await user.refresh(notify: false);
+                  user.keyFx["rebuildHomePage"]();
                   FirebaseAnalytics.instance.logEvent(
                       name: "FinishDailyChallenge",
                       parameters: {

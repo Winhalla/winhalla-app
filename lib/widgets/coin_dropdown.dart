@@ -136,7 +136,7 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
   @override
   Widget build(BuildContext context) {
     if(waitingForBuild != null) {
-      WidgetsBinding.instance!.addPostFrameCallback((_){
+      WidgetsBinding.instance?.addPostFrameCallback((_){
         setState(() {
           coinPosition[waitingForBuild as int] = [(offset as Offset).dy+280, (offset as Offset).dx];
           coinsShown[waitingForBuild as int] = true;
