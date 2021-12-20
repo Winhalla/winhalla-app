@@ -61,14 +61,17 @@ class _AdButtonState extends State<AdButton> {
               setState(() {
                 isAdReady = false;
               });
-              Future.delayed(const Duration(milliseconds: 500), () async {
-                if (match != null) {
+              if (match != null) {
+                Future.delayed(const Duration(milliseconds: 500), () async {
                   await match?.refresh(context, user);
-                } else {
-                  await user.refresh(notify: false);
+                });
+              } else {
+                Future.delayed(const Duration(), () async {
+                  await user.refresh();
                   user.keyFx["rebuildHomePage"]();
-                }
-              });
+                });
+              }
+
             },
           );
         },
