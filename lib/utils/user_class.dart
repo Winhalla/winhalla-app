@@ -149,7 +149,7 @@ class User extends ChangeNotifier {
 
   Future<String> enterMatch(
       {bool isTutorial = false, String? targetedMatchId, bool isFromMatchHistory = false}) async {
-    FirebaseAnalytics.instance.logScreenView(screenClass: "SoloMatch");
+    FirebaseAnalytics.instance.logScreenView(screenName: "SoloMatch");
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "SoloMatch");
     if (isTutorial) {
       inGame = {
@@ -203,7 +203,7 @@ class User extends ChangeNotifier {
       isBackButton = false,
       isFromMatchHistory = false,
       matchHistoryAnimated = false}) async {
-    FirebaseAnalytics.instance.logScreenView(screenClass: "Play");
+    FirebaseAnalytics.instance.logScreenView(screenName: "Play");
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "Play");
     if (isBackButton) {
       inGame["isShown"] = false;
