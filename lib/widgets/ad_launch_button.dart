@@ -57,31 +57,31 @@ class _AdButtonState extends State<AdButton> {
             ad.show(onUserEarnedReward: (_, __) {});
           }
           ad.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (ad) {
+            onAdDismissedFullScreenContent: (ad) async {
               _initGoogleMobileAds();
               setState(() {
                 isAdReady = false;
               });
-              Future.delayed(const Duration(milliseconds: 500), () async {
-                if (match != null) {
+              if (match != null) {
+                Future.delayed(const Duration(milliseconds: 500), () async {
                   await match?.refresh(context, user);
-                } else {
-                  await user.refresh(notify: false);
-                  user.keyFx["rebuildHomePage"]();
-                  FirebaseAnalytics.instance.logEvent(
-                      name: "FinishDailyChallenge",
-                      parameters: {
-                        "type":"Ad"
-                      }
-                  );
-                }
-                await FirebaseAnalytics.instance.logEvent(
-                    name: "AdWatched",
-                    parameters:{
-                      "goal":widget.goal,
+                });
+              } else {
+                await user.refresh();
+                user.keyFx["rebuildHomePage"]();
+                FirebaseAnalytics.instance.logEvent(
+                    name: "FinishDailyChallenge",
+                    parameters: {
+                      "type":"Ad"
                     }
                 );
-              });
+              }
+              await FirebaseAnalytics.instance.logEvent(
+                  name: "AdWatched",
+                  parameters:{
+                    "goal":widget.goal,
+                  }
+              );
             },
           );
         },
