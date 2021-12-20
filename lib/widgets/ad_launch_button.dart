@@ -56,7 +56,7 @@ class _AdButtonState extends State<AdButton> {
             ad.show(onUserEarnedReward: (_, __) {});
           }
           ad.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (ad) {
+            onAdDismissedFullScreenContent: (ad) async {
               _initGoogleMobileAds();
               setState(() {
                 isAdReady = false;
@@ -66,10 +66,8 @@ class _AdButtonState extends State<AdButton> {
                   await match?.refresh(context, user);
                 });
               } else {
-                Future.delayed(const Duration(), () async {
-                  await user.refresh();
-                  user.keyFx["rebuildHomePage"]();
-                });
+                await user.refresh();
+                user.keyFx["rebuildHomePage"]();
               }
 
             },
