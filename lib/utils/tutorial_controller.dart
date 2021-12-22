@@ -136,6 +136,7 @@ class _TutorialStackState extends State<TutorialStack> {
               }
 
               Timer.periodic(const Duration(milliseconds: 100), (timer) {
+                if(tutorial.status >= 18) timer.cancel();
                 if (user.keys[tutorial.status + 1]?.currentContext != null) {
                   tutorial.next();
                   timer.cancel();
