@@ -9,6 +9,7 @@ import 'get_uri.dart';
 class SteamLoginWebView extends StatelessWidget {
 
   final _webView = FlutterWebviewPlugin();
+  SteamLoginWebView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

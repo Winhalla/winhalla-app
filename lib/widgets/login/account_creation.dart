@@ -55,274 +55,272 @@ class _AccountCreationState extends State<AccountCreation> {
     }
     return Padding(
       padding: const EdgeInsets.fromLTRB(32, 70, 32, 0),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const Text(
-              "Link a Brawlhalla account",
-              style: TextStyle(color: kText, fontSize: 50),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            const Text(
-              "Link at least one Brawlhalla account",
-              style: TextStyle(color: kText80, fontSize: 26, fontFamily: "Roboto Condensed"),
-            ),
-            const SizedBox(
-              height: 50,
-            ),
-            AnimatedList(
-              key: listKey,
-              initialItemCount: accounts.length,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemBuilder: (BuildContext context, int index, Animation<double> animation) {
-                return Container(
-                  padding: const EdgeInsets.fromLTRB(25, 20, 25, 20),
-                  margin: EdgeInsets.only(top: index == 0 ? 0 : 20),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: kEpic,
-                      width: 1,
+      child: Column(
+        children: [
+          const Text(
+            "Link a Brawlhalla account",
+            style: TextStyle(color: kText, fontSize: 50),
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          const Text(
+            "Link at least one Brawlhalla account",
+            style: TextStyle(color: kText80, fontSize: 26, fontFamily: "Roboto Condensed"),
+          ),
+          const SizedBox(
+            height: 50,
+          ),
+          AnimatedList(
+            key: listKey,
+            initialItemCount: accounts.length,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemBuilder: (BuildContext context, int index, Animation<double> animation) {
+              return Container(
+                padding: const EdgeInsets.fromLTRB(25, 20, 25, 20),
+                margin: EdgeInsets.only(top: index == 0 ? 0 : 20),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: kEpic,
+                    width: 1,
+                  ),
+                  color: kBackgroundVariant,
+                  borderRadius: BorderRadius.circular(17),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 3.0),
+                      child: Image.asset(
+                        "assets/images/icons/pink/${accounts[index]["platformId"]}Pink.png",
+                        height: 30,
+                      ),
                     ),
-                    color: kBackgroundVariant,
-                    borderRadius: BorderRadius.circular(17),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 3.0),
-                        child: Image.asset(
-                          "assets/images/icons/pink/${accounts[index]["platformId"]}Pink.png",
-                          height: 30,
-                        ),
+                    const SizedBox(
+                      width: 18,
+                    ),
+                    Expanded(
+                      child: Text(
+                        accounts[index]["name"],
+                        style: kBodyText1.apply(color: kEpic),
                       ),
-                      const SizedBox(
-                        width: 18,
+                    ),
+                    GestureDetector(
+                        child: const Icon(Icons.clear_outlined, size: 40, color: kEpic,),
+                        onTap:(){
+                          var name = accounts[index]["name"];
+                          var fileName = accounts[index]["platformId"];
+                          setState(() {
+                            listKey.currentState?.removeItem(
+                                index, (_, animation) => animatedFakeContainer(
+                                context,
+                                index,
+                                animation,
+                                name,
+                                fileName
+                            ),
+                                duration: const Duration(milliseconds: 150));
+                            items.add({"platformId":accounts[index]["platformId"], "name":fileToName(accounts[index]["platformId"])});
+                            accounts.removeAt(index);
+                          });
+                        }
+                    )
+                  ],
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 50),
+          if (accounts.length < 3)
+            GestureDetector(
+              child: Container(
+                padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
+                decoration: BoxDecoration(
+                  color: kBackgroundVariant,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.add_circle_outline,
+                      color: kPrimary,
+                      size: 34,
+                    ),
+                    const SizedBox(
+                      width: 5,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 3),
+                      child: Text(
+                        "Add an account",
+                        style: kBodyText1.apply(color: kPrimary),
                       ),
-                      Expanded(
-                        child: Text(
-                          accounts[index]["name"],
-                          style: kBodyText1.apply(color: kEpic),
-                        ),
-                      ),
-                      GestureDetector(
-                          child: const Icon(Icons.clear_outlined, size: 40, color: kEpic,),
-                          onTap:(){
-                            var name = accounts[index]["name"];
-                            var fileName = accounts[index]["platformId"];
-                            setState(() {
-                              listKey.currentState?.removeItem(
-                                  index, (_, animation) => animatedFakeContainer(
-                                  context,
-                                  index,
-                                  animation,
-                                  name,
-                                  fileName
-                              ),
-                                  duration: const Duration(milliseconds: 150));
-                              items.add({"platformId":accounts[index]["platformId"], "name":fileToName(accounts[index]["platformId"])});
-                              accounts.removeAt(index);
-                            });
-                          }
-                      )
-                    ],
-                  ),
-                );
+                    )
+                  ],
+                ),
+              ),
+              onTap: () async {
+                var result =
+                await showDialog(context: context, builder: (context) => PopupWidget(context, items));
+                if (result != null) {
+                  setState(() {
+                    listKey.currentState?.insertItem(
+                      accounts.length,
+                    );
+                    accounts.add(result);
+                    if(result["steamId"] != null){
+                      steamId = result["steamId"];
+                    }
+                    items.removeWhere((item) => item["platformId"] == result["platformId"]);
+                  });
+                }
               },
             ),
-            const SizedBox(height: 50),
-            if (accounts.length < 3)
-              GestureDetector(
+          const Expanded(
+            child: Text(""),
+          ),
+          Row(
+            mainAxisAlignment: alreadyCreatedAccount && accounts.isNotEmpty
+                ? MainAxisAlignment.spaceBetween
+                : MainAxisAlignment.end,
+            children: [
+              if(alreadyCreatedAccount) GestureDetector(
+                onTap: (){
+                  Navigator.pop(context);
+                },
                 child: Container(
-                  padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                  margin: EdgeInsets.only(bottom: _err == null ? 50:10),
                   decoration: BoxDecoration(
                     color: kBackgroundVariant,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(
-                        Icons.add_circle_outline,
-                        color: kPrimary,
-                        size: 34,
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 3),
-                        child: Text(
-                          "Add an account",
-                          style: kBodyText1.apply(color: kPrimary),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(10,8,6,8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 1.0),
+                          child: Text(
+                            "Cancel",
+                            style: kBodyText2.apply(color: kRed),
+                          ),
                         ),
-                      )
-                    ],
+                        const SizedBox(
+                          width: 6,
+                        ),
+                        const Icon(
+                          Icons.clear_outlined,
+                          color: kRed,
+                          size: 30,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                onTap: () async {
-                  var result =
-                  await showDialog(context: context, builder: (context) => PopupWidget(context, items));
-                  if (result != null) {
-                    setState(() {
-                      listKey.currentState?.insertItem(
-                        accounts.length,
-                      );
-                      accounts.add(result);
-                      if(result["steamId"] != null){
-                        steamId = result["steamId"];
-                      }
-                      items.removeWhere((item) => item["platformId"] == result["platformId"]);
-                    });
-                  }
-                },
               ),
-            const Expanded(
-              child: Text(""),
-            ),
-            Row(
-              mainAxisAlignment: alreadyCreatedAccount && accounts.isNotEmpty
-                  ? MainAxisAlignment.spaceBetween
-                  : MainAxisAlignment.end,
-              children: [
-                if(alreadyCreatedAccount) GestureDetector(
-                  onTap: (){
+              if (accounts.isNotEmpty) GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: () async {
+                  final authKey = await secureStorage.read(key: "authKey");
+                  if (authKey == null) {
                     Navigator.pop(context);
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    margin: EdgeInsets.only(bottom: _err == null ? 50:10),
-                    decoration: BoxDecoration(
-                      color: kBackgroundVariant,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(10,8,6,8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 1.0),
-                            child: Text(
-                              "Cancel",
-                              style: kBodyText2.apply(color: kRed),
-                            ),
-                          ),
-                          const SizedBox(
-                            width: 6,
-                          ),
-                          const Icon(
-                            Icons.clear_outlined,
-                            color: kRed,
-                            size: 30,
-                          ),
-                        ],
+                    Navigator.pushNamed(context, "/login");
+                    return;
+                  }
+                  var link = await getNonNullSSData("link");
+                  CallApi callApi = CallApi(authKey: authKey , context: context);
+                  var accountData = await callApi.post(
+                      alreadyCreatedAccount?"/auth/editBrawlhallaAccounts" : '/auth/createAccount'+ (link == "no data" ? "" : '?linkId=$link'),
+                      jsonEncode(
+                        {
+                          "accounts": accounts
+                        },
                       ),
-                    ),
-                  ),
-                ),
-                if (accounts.isNotEmpty) GestureDetector(
-                  behavior: HitTestBehavior.translucent,
-                  onTap: () async {
-                    final authKey = await secureStorage.read(key: "authKey");
-                    if (authKey == null) {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, "/login");
-                      return;
-                    }
-                    var link = await getNonNullSSData("link");
-                    CallApi callApi = CallApi(authKey: authKey , context: context);
-                    var accountData = await callApi.post(
-                        alreadyCreatedAccount?"/auth/editBrawlhallaAccounts" : '/auth/createAccount'+ (link == "no data" ? "" : '?linkId=$link'),
-                        jsonEncode(
-                          {
-                            "accounts": accounts
-                          },
-                        ),
-                        showError:false
-                    );
-                    if(accountData["successful"] == false) {
+                      showError:false
+                  );
+                  if(accountData["successful"] == false) {
+                    setState(() {
+                      _err = accountData["data"];
+                    });
+                    return;
+                  }
+                  try{
+                    if (accountData["data"]["accountExists"] == true) {
                       setState(() {
-                        _err = accountData["data"];
+                        _err =
+                        "You have already created an account using this google/apple account, please contact support at contact@winhalla.app if it was not you";
                       });
                       return;
                     }
-                    try{
-                      if (accountData["data"]["accountExists"] == true) {
-                        setState(() {
-                          _err =
-                          "You have already created an account using this google/apple account, please contact support at contact@winhalla.app if it was not you";
-                        });
-                        return;
-                      }
-                    } catch(e){}
+                  } catch(e){}
 
-                    await secureStorage.write(key:'link',value: null);
-                    if (ModalRoute.of(context)?.settings.name == "/") {
-                      Navigator.pop(context, "/");
-                      Navigator.pushNamed(context, "/");
-                    } else {
-                      Navigator.pushReplacementNamed(context, "/");
+                  await secureStorage.write(key:'link',value: null);
+                  if (ModalRoute.of(context)?.settings.name == "/") {
+                    Navigator.pop(context, "/");
+                    Navigator.pushNamed(context, "/");
+                  } else {
+                    Navigator.pushReplacementNamed(context, "/");
+                  }
+                  try{
+                    if(accountData["data"]["isLinkDetected"] == true){
+                      showDialog(context: context, builder:(_)=>LinkActivatedWidget());
                     }
-                    try{
-                      if(accountData["data"]["isLinkDetected"] == true){
-                        showDialog(context: context, builder:(_)=>LinkActivatedWidget());
-                      }
-                    } catch(e){}
-                  },
-                  child: Container(
-                    padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
-                    margin: EdgeInsets.only(bottom: _err == null ? 50:10),
-                    decoration: BoxDecoration(
-                      color: kBackgroundVariant,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(10,6,6,6),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 1.0),
-                            child: Text(
-                              alreadyCreatedAccount ? "Save" : "Finish",
-                              style: kBodyText2.apply(color: kGreen),
-                            ),
+                  } catch(e){}
+                },
+                child: Container(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
+                  margin: EdgeInsets.only(bottom: _err == null ? 50:10),
+                  decoration: BoxDecoration(
+                    color: kBackgroundVariant,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(10,6,6,6),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 1.0),
+                          child: Text(
+                            alreadyCreatedAccount ? "Save" : "Finish",
+                            style: kBodyText2.apply(color: kGreen),
                           ),
-                          const SizedBox(
-                            width: 6,
+                        ),
+                        const SizedBox(
+                          width: 6,
+                        ),
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 4.75),
+                          child: Icon(
+                            Icons.check,
+                            color: kGreen,
+                            size: 30,
                           ),
-                          const Padding(
-                            padding: EdgeInsets.only(bottom: 4.75),
-                            child: Icon(
-                              Icons.check,
-                              color: kGreen,
-                              size: 30,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-              ],
-            ),
-            if(_err != null) Container(
-              margin: const EdgeInsets.only(bottom: 40),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Expanded(child: Text("Error: " + (_err as String), style: kBodyText4.apply(color: kRed),))
-                ],),
-            )
-          ],
-        ),
+              ),
+            ],
+          ),
+          if(_err != null) Container(
+            margin: const EdgeInsets.only(bottom: 40),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Expanded(child: Text("Error: " + (_err as String), style: kBodyText4.apply(color: kRed),))
+              ],),
+          )
+        ],
       ),
     );
   }
