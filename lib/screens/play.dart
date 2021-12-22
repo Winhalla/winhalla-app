@@ -1,7 +1,10 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/screens/ffa.dart';
+import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
 
@@ -15,6 +18,13 @@ class PlayPage extends StatefulWidget {
 class _PlayPageState extends State<PlayPage> {
   var _isLoadingMatch = false;
   final GlobalKey<AnimatedListState> _listKey = GlobalKey();
+
+  @override
+  void initState() {
+    /*if (!kDebugMode)*/ //_initGoogleMobileAds();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(builder: (context, user, _) {
@@ -283,7 +293,7 @@ class _PlayPageState extends State<PlayPage> {
                               .read<User>()
                               .enterMatch();
                           _isLoadingMatch = false;
-                          if (matchId == "err") _isLoadingMatch = false;
+                          //if (matchId == "err") _isLoadingMatch = false;
                         },
                         child: Container(
                           margin: const EdgeInsets.fromLTRB(8, 0, 8, 42),
