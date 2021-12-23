@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
@@ -9,6 +11,8 @@ import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/store_quests_data.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
+
+import 'ad_helper.dart';
 
 class User extends ChangeNotifier {
   dynamic value;
@@ -23,9 +27,13 @@ class User extends ChangeNotifier {
   List<GlobalKey?> keys;
   Map<String, dynamic> keyFx = {};
   late CallApi callApi;
+  bool hasAlreadyInitAdmob = false;
 
   var oldQuestsData;
   var oldDailyChallengeData;
+
+  int lastInterstitialAd = 0;
+  InterstitialAd? interstitialAd;
 
   Future<void> refresh({notify = true}) async {
 
@@ -301,7 +309,7 @@ class User extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> collectQuest(int questId, String type, int price) async {
+  Future<void> collectQuest(int questId, String type, int price, {isTutorial = false}) async {
     var result =
         await callApi.post("/solo/collect?id=$questId&type=$type", "{}");
     if (result["successful"] == false) return;
@@ -331,6 +339,10 @@ class User extends ChangeNotifier {
 
     quests["${type}Quests"].removeWhere((e) => e["id"] == questId);
     value["user"]["coins"] += price;
+    if(!isTutorial && lastInterstitialAd + 90 * 1000 < DateTime.now().millisecondsSinceEpoch) {
+      Future.delayed(const Duration(milliseconds: 1400),()=>showInterstitialAd());
+
+    }
     refreshOldQuestsData();
     notifyListeners();
   }
@@ -391,6 +403,61 @@ class User extends ChangeNotifier {
     animateMatchHistory = setTo;
   }
 
+  Future<void> showInterstitialAd() async {
+    if (kDebugMode) return;
+    if (!hasAlreadyInitAdmob) {
+      await MobileAds.instance.initialize();
+      hasAlreadyInitAdmob = true;
+    }
+    lastInterstitialAd = DateTime.now().millisecondsSinceEpoch;
+    if(interstitialAd != null){
+      interstitialAd?.show();
+      InterstitialAd.load(
+        adUnitId: AdHelper.interstitialAdUnitId,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (ad) {
+            interstitialAd = ad;
+          },
+          onAdFailedToLoad: (err) {
+            interstitialAd = null;
+            print('Failed to load an interstitial ad: ${err.message}');
+          },
+        ),
+      );
+    } else {
+      InterstitialAd.load(
+        adUnitId: AdHelper.interstitialAdUnitId,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (ad) {
+            ad.show();
+          },
+          onAdFailedToLoad: (err) {
+            print('Failed to load an interstitial ad: ${err.message}');
+          },
+        ),
+      );
+      InterstitialAd.load(
+        adUnitId: AdHelper.interstitialAdUnitId,
+        request: const AdRequest(),
+        adLoadCallback: InterstitialAdLoadCallback(
+          onAdLoaded: (ad) {
+            interstitialAd = ad;
+          },
+          onAdFailedToLoad: (err) {
+            interstitialAd = null;
+            print('Failed to load an interstitial ad: ${err.message}');
+          },
+        ),
+      );
+    }
+  }
+
+  Future<void> initAdMob() async {
+    await MobileAds.instance.initialize();
+    hasAlreadyInitAdmob = true;
+  }
 
 }
 

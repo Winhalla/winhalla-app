@@ -3,7 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
-import 'package:http/http.dart' as http;
+import 'package:winhalla_app/utils/custom_http.dart';
+// import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/steam.dart';
 

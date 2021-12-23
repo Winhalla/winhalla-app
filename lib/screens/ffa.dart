@@ -1,8 +1,10 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:provider/provider.dart';
+import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/timer_widget.dart';
@@ -11,16 +13,39 @@ import 'package:winhalla_app/widgets/ad_launch_button.dart';
 import 'package:winhalla_app/widgets/popup_no_refresh.dart';
 import 'package:winhalla_app/widgets/tip_painter.dart';
 
-class SoloMatch extends StatelessWidget {
+class SoloMatch extends StatefulWidget {
   final String matchId;
   const SoloMatch({Key? key, required this.matchId}) : super(key: key);
 
   @override
+  State<SoloMatch> createState() => _SoloMatchState();
+}
+
+class _SoloMatchState extends State<SoloMatch> {
+  bool isAdReady = false;
+
+
+
+  @override
+  void initState() {
+    User user = context.read<User>();
+    if (widget.matchId != "tutorial" &&
+        user.value["user"]["lastGames"].length >= 2 &&
+        user.inGame["isFromMatchHistory"] != true &&
+        user.lastInterstitialAd + 90 * 1000 < DateTime.now().millisecondsSinceEpoch) {
+        user.showInterstitialAd();
+    }
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
+
     return Center(
       child: FutureBuilder(
-        future: context.read<User>().callApi.get("/getMatch/$matchId"),
+        future: context.read<User>().callApi.get("/getMatch/${widget.matchId}"),
         builder: (BuildContext context, AsyncSnapshot res) {
+
           User user = context.read<User>();
           if (user.inGame["showActivity"] == false) {
             user.toggleShowMatch(false);
@@ -30,16 +55,14 @@ class SoloMatch extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           if (res.data["successful"] == false) {
-            Future.delayed(
-                const Duration(milliseconds: 1),
-                    () => user.exitMatch(isOnlyLayout: true)
-            );
+            Future.delayed(const Duration(milliseconds: 1),
+                () => user.exitMatch(isOnlyLayout: true));
 
             return const Center(child: CircularProgressIndicator());
           }
           return ChangeNotifierProvider<FfaMatch>(
-            create: (context) => FfaMatch(
-                res.data["data"], user.value["steam"]["id"]),
+            create: (context) =>
+                FfaMatch(res.data["data"], user.value["steam"]["id"]),
             child: Builder(builder: (BuildContext context) {
               return RefreshIndicator(
                 onRefresh: () async {
@@ -49,12 +72,12 @@ class SoloMatch extends StatelessWidget {
                       .refresh(context, user, showInfo: true);
                   if (hasNotChanged &&
                       await getNonNullSSData("hideNoRefreshMatch") != "true") {
-                      if(user.appBarKey.currentContext != null){
-                        showDialog(
-                            context: user.appBarKey.currentContext as BuildContext,
-                            builder: (_) => NoRefreshPopup("match"));
-                      }
-
+                    if (user.appBarKey.currentContext != null) {
+                      showDialog(
+                          context:
+                              user.appBarKey.currentContext as BuildContext,
+                          builder: (_) => NoRefreshPopup("match"));
+                    }
                   }
                   return;
                 },
@@ -98,18 +121,25 @@ class SoloMatch extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Consumer<FfaMatch>(builder: (context, match, _) {
-                                Future.delayed(const Duration(milliseconds: 1),() {
-                                  bool hasExpiredTime = match.value["userPlayer"]["joinDate"] + 3600 * 1000
-                                      <
-                                      DateTime.now().millisecondsSinceEpoch;
+                                Future.delayed(const Duration(milliseconds: 1),
+                                    () {
+                                  bool hasExpiredTime =
+                                      match.value["userPlayer"]["joinDate"] +
+                                              3600 * 1000 <
+                                          DateTime.now().millisecondsSinceEpoch;
 
-                                  if(hasExpiredTime) {
+                                  if (hasExpiredTime) {
                                     user.setGames(7);
                                   } else {
-                                    user.setGames(match.value["userPlayer"]["gamesPlayed"]);
+                                    user.setGames(match.value["userPlayer"]
+                                        ["gamesPlayed"]);
                                   }
 
-                                  if (user.inGame["showActivity"] == false && (match.value["userPlayer"]["gamesPlayed"] < 7 && !hasExpiredTime)) {
+                                  if (user.inGame["showActivity"] == false &&
+                                      (match.value["userPlayer"]
+                                                  ["gamesPlayed"] <
+                                              7 &&
+                                          !hasExpiredTime)) {
                                     user.setMatchInProgress();
                                   }
                                 });

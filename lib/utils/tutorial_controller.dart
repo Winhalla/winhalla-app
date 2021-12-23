@@ -127,8 +127,14 @@ class _TutorialStackState extends State<TutorialStack> {
                 user.keyFx["switchPage"](0);
 
               } else if (tutorial.status == 12) {
+                try{
+                  var x = user.quests["finished"]["daily"][0];
+                } on RangeError {
+                  tutorial.next();
+                  return;
+                }
                 var questData = user.quests["finished"]["daily"][0];
-                await user.collectQuest(questData["id"], "daily", questData["reward"]);
+                await user.collectQuest(questData["id"], "daily", questData["reward"], isTutorial:true);
 
               } else if (tutorial.status == 16) {
                 user.keyFx["playAd"]();
@@ -136,12 +142,14 @@ class _TutorialStackState extends State<TutorialStack> {
                 return;
               }
 
-              Timer.periodic(const Duration(milliseconds: 100), (timer) {
-                if (user.keys[tutorial.status + 1]?.currentContext != null) {
-                  tutorial.next();
-                  timer.cancel();
-                }
-              });
+              if(tutorial.status <= 17) {
+                Timer.periodic(const Duration(milliseconds: 100), (timer) {
+                  if (user.keys[tutorial.status + 1]?.currentContext != null) {
+                    tutorial.next();
+                    timer.cancel();
+                  }
+                });
+              }
             },
             child: Container(
               color: Colors.transparent,
