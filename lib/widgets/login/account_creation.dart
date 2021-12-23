@@ -167,7 +167,14 @@ class _AccountCreationState extends State<AccountCreation> {
                 var result =
                 await showDialog(context: context, builder: (context) => PopupWidget(context, items));
                 if (result != null) {
+                  if(result["error"] == true){
+                    setState(() {
+                      _err = result["errorDetails"];
+                    });
+                    return;
+                  }
                   setState(() {
+                    _err = null;
                     listKey.currentState?.insertItem(
                       accounts.length,
                     );

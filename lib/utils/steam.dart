@@ -19,7 +19,12 @@ class SteamLoginWebView extends StatelessWidget {
       if (openId.mode == 'id_res') {
         await _webView.close();
         var result = await openId.validate();
-        var accountData = jsonDecode((await http.get(getUri("/auth/getBIDFromSteamId/$result"))).body);
+        var apiResponse = await http.get(getUri("/auth/getBIDFromSteamId/$result"));
+        if(apiResponse.statusCode < 200 || apiResponse.statusCode > 299){
+          Navigator.pop(context, {"error":true,"errorDetails":apiResponse.body});
+          return;
+        }
+        var accountData = jsonDecode(apiResponse.body);
         Navigator.pop(context, {"BID":accountData["brawlhalla_id"].toString(),"name":accountData["name"],"platformId":"steam","steamId":result});
       }
     });
