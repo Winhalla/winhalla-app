@@ -71,33 +71,48 @@ class _FadeInPositionedState extends State<FadeInPositioned> {
 class TutorialStack extends StatefulWidget {
   final bool isTransition;
   final Tutorial tutorial;
+  final int status;
 
-  const TutorialStack({Key? key, required this.tutorial, this.isTransition = false}) : super(key: key);
+  const TutorialStack({Key? key, required this.tutorial, this.isTransition = false, required this.status}) : super(key: key);
   @override
   _TutorialStackState createState() => _TutorialStackState();
 }
 class _TutorialStackState extends State<TutorialStack> {
   bool _visible = true;
   bool _dontResetNextBuild = false;
+  bool _hasMadeTransition = false;
+  late int status;
+
+  @override
+  void initState(){
+    status = widget.status;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if(widget.isTransition) {
-      if(!_dontResetNextBuild){
+    if(!_dontResetNextBuild) {
+      if (status != widget.status) {
+        status = widget.status;
+        _hasMadeTransition = false;
+        print("test");
+      } else {
+        print("samenb");
+      }
+      if (widget.isTransition && !_hasMadeTransition) {
         _visible = false;
-        Future.delayed(const Duration(milliseconds: 800), () {
+        Future.delayed(const Duration(milliseconds: 500), () {
           setState(() {
             _visible = true;
             _dontResetNextBuild = true;
+            _hasMadeTransition = true;
           });
         });
-
-      } else {
-        _dontResetNextBuild = false;
       }
+    } else {
+      _dontResetNextBuild = false;
     }
     Tutorial tutorial = widget.tutorial;
-
     return AnimatedOpacity(
       opacity: _visible?1:0,
       duration: Duration(milliseconds: _visible ? 400 : 0),
@@ -244,8 +259,9 @@ class TutorialController extends ChangeNotifier{
             int i = tutorial.status;
             return SizedBox.expand(
               child: TutorialStack(
-                  tutorial: tutorial,
-                  isTransition: i == 0 || i == 2 || i == 3 || i == 7 || i == 9 || i == 14
+                status: i,
+                tutorial: tutorial,
+                isTransition: i == 0 || i == 2 || i == 3 || i == 7 || i == 9 || i == 14
               )
             );
           }),
