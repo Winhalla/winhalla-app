@@ -126,6 +126,12 @@ class _TutorialStackState extends State<TutorialStack> {
                 user.keyFx["switchPage"](0);
 
               } else if (tutorial.status == 12) {
+                try{
+                  var x = user.quests["finished"]["daily"][0];
+                } on RangeError {
+                  tutorial.next();
+                  return;
+                }
                 var questData = user.quests["finished"]["daily"][0];
                 await user.collectQuest(questData["id"], "daily", questData["reward"]);
 
