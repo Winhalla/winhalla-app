@@ -308,7 +308,10 @@ class User extends ChangeNotifier {
 
     quests["${type}Quests"].removeWhere((e) => e["id"] == questId);
     value["user"]["coins"] += price;
-    if(!isTutorial && lastInterstitialAd + 90 * 1000 < DateTime.now().millisecondsSinceEpoch) showInterstitialAd();
+    if(!isTutorial && lastInterstitialAd + 90 * 1000 < DateTime.now().millisecondsSinceEpoch) {
+      Future.delayed(const Duration(milliseconds: 1400),()=>showInterstitialAd());
+
+    }
     refreshOldQuestsData();
     notifyListeners();
   }
