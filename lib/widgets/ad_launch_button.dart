@@ -26,16 +26,15 @@ class AdButton extends StatefulWidget {
 
 class _AdButtonState extends State<AdButton> {
   bool _lastAdError = false;
-  bool hasAlreadyInitAdmob = false;
   bool isAdReady = false;
   late RewardedAd _rewardedAd;
   late User user;
   FfaMatch? match;
 
   Future<void> _initGoogleMobileAds() async {
-    if (!hasAlreadyInitAdmob) {
-      await MobileAds.instance.initialize();
-      hasAlreadyInitAdmob = true;
+    if (!user.hasAlreadyInitAdmob) {
+      await user.initAdMob();
+      user.hasAlreadyInitAdmob = true;
     }
     await RewardedAd.load(
       serverSideVerificationOptions: ServerSideVerificationOptions(

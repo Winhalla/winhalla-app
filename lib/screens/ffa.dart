@@ -22,36 +22,18 @@ class SoloMatch extends StatefulWidget {
 }
 
 class _SoloMatchState extends State<SoloMatch> {
-  bool _hasAlreadyInitAdmob = false;
   bool isAdReady = false;
 
-  Future<void> _initGoogleMobileAds() async {
-    if (!_hasAlreadyInitAdmob) {
-      await MobileAds.instance.initialize();
-      _hasAlreadyInitAdmob = true;
-    }
-    await InterstitialAd.load(
-      adUnitId: AdHelper.interstitialAdUnitId,
-      request: const AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (ad) {
-          ad.show();
-        },
-        onAdFailedToLoad: (err) {
-          print('Failed to load a rewarded ad: ${err.message}');
-        },
-      ),
-    );
-  }
+
 
   @override
   void initState() {
     User user = context.read<User>();
-
     if (widget.matchId != "tutorial" &&
-        user.value["user"]["lastGames"].length > 2 &&
-        user.inGame["isFromMatchHistory"] != true) {
-        _initGoogleMobileAds();
+        user.value["user"]["lastGames"].length >= 2 &&
+        user.inGame["isFromMatchHistory"] != true &&
+        user.lastInterstitialAd + 90 * 1000 < DateTime.now().millisecondsSinceEpoch) {
+        user.showInterstitialAd();
     }
     super.initState();
   }

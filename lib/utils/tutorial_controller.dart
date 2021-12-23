@@ -133,7 +133,7 @@ class _TutorialStackState extends State<TutorialStack> {
                   return;
                 }
                 var questData = user.quests["finished"]["daily"][0];
-                await user.collectQuest(questData["id"], "daily", questData["reward"]);
+                await user.collectQuest(questData["id"], "daily", questData["reward"], isTutorial:true);
 
               } else if (tutorial.status == 16) {
                 user.keyFx["playAd"]();
