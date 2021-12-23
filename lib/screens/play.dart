@@ -7,6 +7,7 @@ import 'package:winhalla_app/screens/ffa.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
+import 'package:winhalla_app/widgets/inherited_text_style.dart';
 
 class PlayPage extends StatefulWidget {
   const PlayPage({Key? key}) : super(key: key);
@@ -42,11 +43,11 @@ class _PlayPageState extends State<PlayPage> {
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 6, top: 4.5),
+                Padding(
+                  padding: const EdgeInsets.only(left: 6, top: 4.5),
                   child: Text(
                     "Match History:",
-                    style: kHeadline1,
+                    style: InheritedTextStyle.of(context).kHeadline1,
                   ),
                 ),
                 const SizedBox(

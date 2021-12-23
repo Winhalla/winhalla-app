@@ -23,169 +23,179 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
   @override
   Widget build(BuildContext context) {
 
-    bool isSmallScreen = MediaQuery.of(context).size.height < 750;
     return Padding(
-      padding: EdgeInsets.fromLTRB(42.5, isSmallScreen ? 84 : 120, 42.5, isSmallScreen ? 80 : 125),
+      padding: const EdgeInsets.fromLTRB(42.5, 20, 42.5, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        // mainAxisSize: MainAxisSize.max,
         children: [
-          const Text(
-            "Welcome to",
-            style: TextStyle(
-              fontSize: 60,
-              color: kText,
-            ),
-          ),
-          Row(
-            children: const [
-              Text(
-                "Winhalla",
-                style: TextStyle(fontSize: 60, color: kPrimary, height: 1),
+          Column(
+            children: [
+              const Text(
+                "Welcome to",
+                style: TextStyle(
+                  fontSize: 60,
+                  color: kText,
+                ),
               ),
-              Text(
-                "!",
-                style: TextStyle(fontSize: 60, color: kText, height: 1),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 25,
-          ),
-          Row(
-            children: const [
-              Text(
-                "Play",
-                style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
-              ),
-              SizedBox(
-                width: 7,
-              ),
-              Text(
-                "Brawlhalla,",
-                style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
-              ),
-            ],
-          ),
-          Row(
-            children: const [
-              Text(
-                "Earn",
-                style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
-              ),
-              SizedBox(
-                width: 7,
-              ),
-              Text(
-                "Rewards",
-                style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          const Expanded(child:Text("")),
-          GestureDetector(
-            onTap: () async {
-              var temp = await GoogleSignInApi.login();
-              if (temp?["auth"].accessToken == null) return;
-              dynamic idToken;
-              try {
-                idToken = await http.post(getUri("/auth/createToken"), body: {
-                  "token": temp?["auth"].accessToken,
-                  "name": temp?['account'].displayName,
-                  if (temp?['account'].photoUrl != null) "picture": temp?['account'].photoUrl
-                });
-                if(idToken.statusCode < 200 || idToken.statusCode > 299){
-                  setState((){
-                    _err = idToken.body;
-                  });
-                  return;
-                }
-                idToken = jsonDecode(idToken.body)["_id"];
-              } catch (e) {
-                setState(() {
-                  _err = e.toString();
-                });
-              }
-              await secureStorage.write(key: "authKey", value: idToken);
-              try{
-                var accountData = jsonDecode((await http.get(getUri("/account"), headers: {"authorization": idToken})).body)["user"];
-                if (accountData != null) {
-                  Navigator.pop(context);
-                  Navigator.pushNamed(context, "/");
-                  return;
-                }
-              } catch(e){}
-              var skipReferralLink = await http.get(getUri("/auth/checkDetectedLink"));
-              if(skipReferralLink.body == "true") {
-                context.read<LoginPageManager>().next();
-              }
-              context.read<LoginPageManager>().next();
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: kBlack,
-                borderRadius: BorderRadius.circular(15),
-              ),
-              padding: const EdgeInsets.fromLTRB(26.5, 20, 20, 20),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    "assets/images/google_icon.png",
-                    height: 32,
-                    width: 32,
+              Row(
+                children: const [
+                  Text(
+                    "Winhalla",
+                    style: TextStyle(fontSize: 60, color: kPrimary, height: 1),
                   ),
-                  const SizedBox(
-                    width: 18,
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 1.5),
-                    child: Text(
-                      "Sign in with Google",
-                      style: kBodyText2,
-                    ),
+                  Text(
+                    "!",
+                    style: TextStyle(fontSize: 60, color: kText, height: 1),
                   ),
                 ],
               ),
-            ),
+            ],
           ),
-          const SizedBox(
-            height: 30,
-          ),
-          GestureDetector(
-            onTap: () {
-              print("apple login");
-            },
-            child: Container(
-              decoration: BoxDecoration(
-                color: kBlack,
-                borderRadius: BorderRadius.circular(15),
-              ),
-              padding: const EdgeInsets.fromLTRB(25, 20, 20, 20),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Image.asset(
-                    "assets/images/apple_icon.png",
-                    height: 32,
-                    width: 32,
-                    color: kText90,
+          Column(
+            children: [
+              Row(
+                children: const [
+                  Text(
+                    "Play",
+                    style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
                   ),
-                  const SizedBox(
-                    width: 18,
+                  SizedBox(
+                    width: 7,
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 1.5),
-                    child: Text(
-                      "Sign in with Apple",
-                      style: kBodyText2,
-                    ),
-                  )
+                  Text(
+                    "Brawlhalla,",
+                    style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
+                  ),
                 ],
               ),
-            ),
+              Row(
+                children: const [
+                  Text(
+                    "Earn",
+                    style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
+                  ),
+                  SizedBox(
+                    width: 7,
+                  ),
+                  Text(
+                    "Rewards",
+                    style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
+                  ),
+                ],
+              ),
+            ],
+          ),
+
+          Column(
+            children: [
+              GestureDetector(
+                onTap: () async {
+                  var temp = await GoogleSignInApi.login();
+                  if (temp?["auth"].accessToken == null) return;
+                  dynamic idToken;
+                  try {
+                    idToken = await http.post(getUri("/auth/createToken"), body: {
+                      "token": temp?["auth"].accessToken,
+                      "name": temp?['account'].displayName,
+                      if (temp?['account'].photoUrl != null) "picture": temp?['account'].photoUrl
+                    });
+                    if(idToken.statusCode < 200 || idToken.statusCode > 299){
+                      setState((){
+                        _err = idToken.body;
+                      });
+                      return;
+                    }
+                    idToken = jsonDecode(idToken.body)["_id"];
+                  } catch (e) {
+                    setState(() {
+                      _err = e.toString();
+                    });
+                  }
+                  await secureStorage.write(key: "authKey", value: idToken);
+                  try{
+                    var accountData = jsonDecode((await http.get(getUri("/account"), headers: {"authorization": idToken})).body)["user"];
+                    if (accountData != null) {
+                      Navigator.pop(context);
+                      Navigator.pushNamed(context, "/");
+                      return;
+                    }
+                  } catch(e){}
+                  var skipReferralLink = await http.get(getUri("/auth/checkDetectedLink"));
+                  if(skipReferralLink.body == "true") {
+                    context.read<LoginPageManager>().next();
+                  }
+                  context.read<LoginPageManager>().next();
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: kBlack,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(26.5, 20, 20, 20),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        "assets/images/google_icon.png",
+                        height: 32,
+                        width: 32,
+                      ),
+                      const SizedBox(
+                        width: 18,
+                      ),
+                      const Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 1.5),
+                          child: Text(
+                            "Sign in with Google",
+                            style: kBodyText2,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20,),
+              GestureDetector(
+                onTap: () {
+                  print("apple login");
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: kBlack,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(25, 20, 20, 20),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        "assets/images/apple_icon.png",
+                        height: 32,
+                        width: 32,
+                        color: kText90,
+                      ),
+                      const SizedBox(
+                        width: 18,
+                      ),
+                      const Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 1.5),
+                          child: Text(
+                            "Sign in with Apple",
+                            style: kBodyText2,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
           if(_err != null) Padding(
             padding: const EdgeInsets.only(left:15.0,top:10),

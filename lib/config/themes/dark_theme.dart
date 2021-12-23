@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:responsive_sizer/responsive_sizer.dart';
 const Color kBackground = Color(0xFF0F0F12);
 const Color kBackgroundVariant = Color(0xFF1A1A28);
 
@@ -18,7 +18,7 @@ const Color kText80 = Color(0xCCFDFDFD); // 80% opacity
 const Color kText70 = Color(0xB3FDFDFD); // 70% opacity
 const Color kText60 = Color(0x99FDFDFD); // 60% opacity
 
-const TextStyle kHeadline1 = TextStyle(color: kText, fontSize: 40);
+// const TextStyle kHeadline1 = TextStyle(color: kText, fontSize: 40);
 const TextStyle kHeadline2 = TextStyle(color: kText, fontSize: 35);
 
 const TextStyle kBodyText1 = TextStyle(color: kText95, fontSize: 30, fontFamily: "Bebas Neue");

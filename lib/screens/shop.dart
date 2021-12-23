@@ -12,6 +12,7 @@ import 'package:winhalla_app/utils/user_class.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/widgets/coin.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
+import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_shop.dart';
 // This is bc we can't use context.read<User>() in the future field of FutureBuilder
 Future<dynamic> getShopData(BuildContext context) async {
@@ -30,11 +31,11 @@ class Shop extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 4),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
                 child: Text(
                   "Balance:",
-                  style: kHeadline1,
+                  style: InheritedTextStyle.of(context).kHeadline1,
                 ),
               ),
               const SizedBox(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:rive/rive.dart';
 import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
@@ -12,95 +13,109 @@ import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
+import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'config/themes/dark_theme.dart';
 
 void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-class _MyAppState extends State<MyApp> {
-  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Winhalla',
-      theme: ThemeData(fontFamily: "Bebas Neue"),
-      debugShowCheckedModeBanner: false,
-      // Start the app with the "/" named route. In this case, the app starts
-      // on the FirstScreen widget.
-      initialRoute: '/',
-      routes: {
-        '/': (context) => SafeArea(
-              child: FutureBuilder(
-                  future: initUser(context),
-                  builder: (context, AsyncSnapshot<dynamic> res) {
-                    if (!res.hasData) {
-                      return const AppCore(isUserDataLoaded: false);
-                    }
+    return ResponsiveSizer(
+      builder: (context, orientation, screenType) {
+        return InheritedTextStyle(
+          kHeadline1: TextStyle(color: kText, fontSize: 28.sp),
+          kHeadline2: TextStyle(color: kText, fontSize: 28.sp),
+          kBodyText1: TextStyle(color: kText, fontSize: 28.sp),
+          kBodyText1Roboto: TextStyle(color: kText, fontSize: 28.sp),
+          kBodyText2: TextStyle(color: kText, fontSize: 28.sp),
+          kBodyText3: TextStyle(color: kText, fontSize: 28.sp),
+          kBodyText4: TextStyle(color: kText, fontSize: 28.sp),
+          child: MaterialApp(
+            title: 'Winhalla',
+            theme: ThemeData(fontFamily: "Bebas Neue"),
+            debugShowCheckedModeBanner: false,
+            // Start the app with the "/" named route. In this case, the app starts
+            // on the FirstScreen widget.
+            initialRoute: '/',
+            routes: {
+              '/': (context) =>
+                  SafeArea(
+                    child: FutureBuilder(
+                        future: initUser(context),
+                        builder: (context, AsyncSnapshot<dynamic> res) {
+                          num isSmallScreen = MediaQuery.of(context).size.height;
+                          print(MediaQuery.of(context).devicePixelRatio);
+                          print(isSmallScreen);
+                          if (!res.hasData) {
+                            return const AppCore(isUserDataLoaded: false);
+                          }
 
-                    if (res.data == "no data" ||
-                        res.data["data"] == "" ||
-                        res.data["data"] == null) {
-                      return LoginPage(userData: res.data);
-                    }
+                          if (res.data == "no data" ||
+                              res.data["data"] == "" ||
+                              res.data["data"] == null) {
+                            return LoginPage(userData: res.data);
+                          }
 
-                    if (res.data["data"]["user"] == null) {
-                      return LoginPage(userData: res.data);
-                    }
+                          if (res.data["data"]["user"] == null) {
+                            return LoginPage(userData: res.data);
+                          }
 
-                    // Do not edit res.data directly otherwise it calls the build function again for some reason
-                    Map<String, dynamic> newData = res.data as Map<String, dynamic>;
-                    var callApi = res.data["callApi"];
+                          // Do not edit res.data directly otherwise it calls the build function again for some reason
+                          Map<String, dynamic> newData = res.data as Map<String, dynamic>;
+                          var callApi = res.data["callApi"];
 
-                    newData["callApi"] = null;
-                    newData["user"] = res.data["data"]["user"];
-                    newData["steam"] = res.data["data"]["steam"];
-                    newData["tutorial"] = res.data["tutorial"];
+                          newData["callApi"] = null;
+                          newData["user"] = res.data["data"]["user"];
+                          newData["steam"] = res.data["data"]["steam"];
+                          newData["tutorial"] = res.data["tutorial"];
 
-                    List<GlobalKey?> keys = [];
-                    for (int i = 0; i < 18; i++) {
-                      if (i == 0 ||
-                          i == 4 ||
-                          i == 5 ||
-                          i == 10 ||
-                          i == 11 ||
-                          i == 17) {
-                        keys.add(null);
-                      } else {
-                        keys.add(GlobalKey());
-                      }
-                    }
-                    var inGameData = newData["user"]["inGame"];
-                    var currentMatch = inGameData
-                        .where((g) => g["isFinished"] == false)
-                        .toList();
+                          List<GlobalKey?> keys = [];
+                          for (int i = 0; i < 18; i++) {
+                            if (i == 0 ||
+                                i == 4 ||
+                                i == 5 ||
+                                i == 10 ||
+                                i == 11 ||
+                                i == 17) {
+                              keys.add(null);
+                            } else {
+                              keys.add(GlobalKey());
+                            }
+                          }
+                          var inGameData = newData["user"]["inGame"];
+                          var currentMatch = inGameData
+                              .where((g) => g["isFinished"] == false)
+                              .toList();
 
-                    var inGame = null;
-                    if (currentMatch.length > 0) {
-                      inGame = {
-                        'id': currentMatch[0]["id"],
-                        'joinDate': currentMatch[0]["joinDate"]
-                      };
-                    }
-                    /*Future.delayed(const Duration(milliseconds:1),(){
-                      showCoinDropdown(context, 1315.6, 100);
-                    });*/
+                          var inGame = null;
+                          if (currentMatch.length > 0) {
+                            inGame = {
+                              'id': currentMatch[0]["id"],
+                              'joinDate': currentMatch[0]["joinDate"]
+                            };
+                          }
+                          /*Future.delayed(const Duration(milliseconds:1),(){
+                            showCoinDropdown(context, 1315.6, 100);
+                          });*/
 
-                    return ChangeNotifierProvider<User>(
-                        create: (_) => User(newData, callApi, keys, inGame, res.data["oldDailyChallengeData"]),
-                        child: AppCore(
-                          isUserDataLoaded: true,
-                          tutorial: newData["tutorial"],
-                        ));
-                  }),
-            ),
-        '/login': (context) => LoginPage(),
-      },
+                          return ChangeNotifierProvider<User>(
+                              create: (_) => User(newData, callApi, keys, inGame, res.data["oldDailyChallengeData"]),
+                              child: AppCore(
+                                isUserDataLoaded: true,
+                                tutorial: newData["tutorial"],
+                              ));
+                        }),
+                  ),
+              '/login': (context) => LoginPage(),
+            },
+          ),
+        );
+      }
     );
   }
 }
@@ -170,20 +185,20 @@ class _AppCoreState extends State<AppCore> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Expanded(
+                  children: [
+                    const Expanded(
                       child: RiveAnimation.asset(
                         "assets/animated/loading.riv",
                       ),
                     ),
                     Text(
                       "Loading...",
-                      style: kHeadline1,
+                      style: InheritedTextStyle.of(context).kHeadline1,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.only(right: 7.0),
                       child: CircularProgressIndicator(),
                     )
