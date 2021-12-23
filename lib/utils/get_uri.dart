@@ -19,6 +19,7 @@ class CallApi {
     try {
       result = await http.get(Uri.parse(apiUrl + path), headers: {"authorization": authKey});
     } catch (e) {
+      print(e);
       if (showError) {
         showInfoDropdown(
           context,

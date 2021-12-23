@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart' as http;
@@ -373,6 +374,7 @@ class User extends ChangeNotifier {
   }
 
   Future<void> showInterstitialAd() async {
+    if (kDebugMode) return;
     if (!hasAlreadyInitAdmob) {
       await MobileAds.instance.initialize();
       hasAlreadyInitAdmob = true;
