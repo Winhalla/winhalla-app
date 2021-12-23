@@ -363,6 +363,7 @@ class _AppCoreState extends State<AppCore> {
               }
             ));
     if (widget.tutorial?["needed"] == true) {
+      FirebaseAnalytics.instance.logTutorialBegin();
       double screenH = MediaQuery.of(context).size.height;
       double screenW = MediaQuery.of(context).size.width;
       return ChangeNotifierProvider<TutorialController>(

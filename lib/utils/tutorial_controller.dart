@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -281,6 +282,7 @@ class Tutorial extends ChangeNotifier{
     }
     if(status >= 18) {
       ctxt.read<User>().callApi.post("/finishedTutorial","{}");
+      FirebaseAnalytics.instance.logTutorialComplete();
       return ctxt.read<TutorialController>().endTutorial();
     }
     calculateNextValues();
