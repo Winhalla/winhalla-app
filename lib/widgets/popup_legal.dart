@@ -43,51 +43,53 @@ Widget LegalInfoPopup(){
       ),
 
       // contentPadding: const EdgeInsets.fromLTRB(24, 5, 24, 30),
-      content: !confirmAccountDeletion?Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text("Privacy policy: ", style: kBodyText2,),
-          GestureDetector(
-            onTap: (){
-              launchURLBrowser("https://winhalla.app/privacy");
-            },
-            child: Text("https://winhalla.app/privacy", style: kBodyText3.apply(color: Colors.blueAccent),),
-          ),
-          const SizedBox(height: 20,),
-          const Text("Terms of use: ", style: kBodyText2,),
-          GestureDetector(
-            onTap: (){
-              launchURLBrowser("https://winhalla.app/terms");
-            },
-            child: Text("https://winhalla.app/terms", style: kBodyText3.apply(color: Colors.blueAccent),),
-          ),
-          const SizedBox(height: 20,),
-          const Text("Legal mentions: ", style: kBodyText2,),
-          GestureDetector(
-            onTap: (){
-              launchURLBrowser("https://winhalla.app/legal");
-            },
-            child: Text("https://winhalla.app/legal", style: kBodyText3.apply(color: Colors.blueAccent),),
-          ),
-          const SizedBox(height: 30,),
-          GestureDetector(
-            onTap: (){
-              setState((){
-                confirmAccountDeletion = true;
-              });
-            },
-            child: Container(
-              decoration: BoxDecoration(borderRadius: BorderRadius.circular(15),color:kBackground),
-              padding: const EdgeInsets.fromLTRB(22, 9, 22, 9),
-              child: Text("Delete account",style: kBodyText4.apply(color:kRed),),
+      content: !confirmAccountDeletion?SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text("Privacy policy: ", style: kBodyText2,),
+            GestureDetector(
+              onTap: (){
+                launchURLBrowser("https://winhalla.app/privacy");
+              },
+              child: Text("https://winhalla.app/privacy", style: kBodyText3.apply(color: Colors.blueAccent),),
             ),
-          ),
-          const SizedBox(height: 20,),
-          const Text(
-            "Winhalla isn't endorsed by Blue Mammoth Games and doesn't reflect the views or opinions of Blue Mammoth Games or anyone officially involved in producing or managing Brawlhalla. Brawlhalla and Blue Mammoth Games are trademarks or registered trademarks of Blue Mammoth games. Brawlhalla © Blue Mammoth Games.",
-            style: TextStyle(color: kText80, fontSize: 14),
-          ),
-        ],
+            const SizedBox(height: 20,),
+            const Text("Terms of use: ", style: kBodyText2,),
+            GestureDetector(
+              onTap: (){
+                launchURLBrowser("https://winhalla.app/terms");
+              },
+              child: Text("https://winhalla.app/terms", style: kBodyText3.apply(color: Colors.blueAccent),),
+            ),
+            const SizedBox(height: 20,),
+            const Text("Legal mentions: ", style: kBodyText2,),
+            GestureDetector(
+              onTap: (){
+                launchURLBrowser("https://winhalla.app/legal");
+              },
+              child: Text("https://winhalla.app/legal", style: kBodyText3.apply(color: Colors.blueAccent),),
+            ),
+            const SizedBox(height: 30,),
+            GestureDetector(
+              onTap: (){
+                setState((){
+                  confirmAccountDeletion = true;
+                });
+              },
+              child: Container(
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(15),color:kBackground),
+                padding: const EdgeInsets.fromLTRB(22, 9, 22, 9),
+                child: Text("Delete account",style: kBodyText4.apply(color:kRed),),
+              ),
+            ),
+            const SizedBox(height: 20,),
+            const Text(
+              "Winhalla isn't endorsed by Blue Mammoth Games and doesn't reflect the views or opinions of Blue Mammoth Games or anyone officially involved in producing or managing Brawlhalla. Brawlhalla and Blue Mammoth Games are trademarks or registered trademarks of Blue Mammoth games. Brawlhalla © Blue Mammoth Games.",
+              style: TextStyle(color: kText80, fontSize: 14),
+            ),
+          ],
+        ),
       ) : Column(
             mainAxisSize: MainAxisSize.min,
             children: [
