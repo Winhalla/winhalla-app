@@ -116,13 +116,6 @@ class _TutorialStackState extends State<TutorialStack> {
       opacity: _visible?1:0,
       duration: Duration(milliseconds: _visible ? 400 : 0),
       child: Stack(children: [
-        for (int i = 0; i < 4; i++)
-          Positioned.fromRect(
-            rect: tutorial.currentWidgetPosition[i],
-            child: Container(
-              color: Colors.black.withOpacity(0.86),
-            ),
-          ),
         Positioned.fromRect(
           rect: tutorial.currentWidgetPosition[4],
           child: GestureDetector(
@@ -170,6 +163,13 @@ class _TutorialStackState extends State<TutorialStack> {
             ),
           ),
         ),
+        for (int i = 0; i < 4; i++)
+          Positioned.fromRect(
+            rect: tutorial.currentWidgetPosition[i],
+            child: Container(
+              color: Colors.black.withOpacity(0.86),
+            ),
+          ),
         tutorial.currentTextWidget,
         Positioned(
           bottom: 24,
