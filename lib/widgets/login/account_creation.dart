@@ -57,6 +57,7 @@ class _AccountCreationState extends State<AccountCreation> {
       padding: const EdgeInsets.fromLTRB(32, 70, 32, 0),
       child: SingleChildScrollView(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
               "Link a Brawlhalla account",
@@ -66,7 +67,7 @@ class _AccountCreationState extends State<AccountCreation> {
               height: 10,
             ),
             const Text(
-              "Link at least one Brawlhalla account",
+              "Link at least one Brawlhalla account (you can add more later)",
               style: TextStyle(color: kText80, fontSize: 26, fontFamily: "Roboto Condensed"),
             ),
             const SizedBox(
