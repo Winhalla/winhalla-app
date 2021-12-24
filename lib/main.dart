@@ -363,7 +363,6 @@ class _AppCoreState extends State<AppCore> {
               }
             ));
     if (widget.tutorial?["needed"] == true) {
-      FirebaseAnalytics.instance.logTutorialBegin();
       double screenH = MediaQuery.of(context).size.height;
       double screenW = MediaQuery.of(context).size.width;
       return ChangeNotifierProvider<TutorialController>(
@@ -384,6 +383,7 @@ class _AppCoreState extends State<AppCore> {
               if(user.inGame != null){
                 user.exitMatch(isOnlyLayout:true);
               }
+              FirebaseAnalytics.instance.logTutorialBegin();
               context.read<TutorialController>().summon(context);
             });
           }
