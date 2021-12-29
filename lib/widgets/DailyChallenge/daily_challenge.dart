@@ -114,7 +114,7 @@ class _DailyChallengeState extends State<DailyChallenge>
                     for (var quest in dailyChallengeData) {
                       final textPainter = TextPainter(
                         text: TextSpan(
-                            text: quest["name"] as String, style: kBodyText3),
+                            text: quest["name"] as String, style: InheritedTextStyle.of(context).kBodyText3),
                         textDirection: TextDirection.ltr,
                       );
                       textPainter.layout(

@@ -28,13 +28,16 @@ class MyApp extends StatelessWidget {
     return ResponsiveSizer(
       builder: (context, orientation, screenType) {
         return InheritedTextStyle(
-          kHeadline1: TextStyle(color: kText, fontSize: 28.sp),
-          kHeadline2: TextStyle(color: kText, fontSize: 28.sp),
-          kBodyText1: TextStyle(color: kText, fontSize: 28.sp),
-          kBodyText1Roboto: TextStyle(color: kText, fontSize: 28.sp),
-          kBodyText2: TextStyle(color: kText, fontSize: 28.sp),
-          kBodyText3: TextStyle(color: kText, fontSize: 28.sp),
-          kBodyText4: TextStyle(color: kText, fontSize: 28.sp),
+          kHeadline0: TextStyle(color: kText, fontSize: 45.sp > 60 ? 60 : 45.sp),
+          kHeadline1: TextStyle(color: kText, fontSize: 28.sp > 40 ? 40 : 28.sp),
+          kHeadline2: TextStyle(color: kText, fontSize: 24.5.sp > 35 ? 35 : 24.5.sp),
+          kBodyText1: TextStyle(color: kText95, fontSize: 22.35.sp > 30 ? 30 : 22.35.sp,fontFamily: "Bebas neue",),
+          kBodyText1Roboto: TextStyle(color: kText95, fontSize: 22.35.sp > 30 ? 30 : 22.35.sp, fontFamily: "Roboto Condensed"),
+          kBodyText1bis: TextStyle(color: kText95, fontSize: 21.35.sp > 26 ? 26 : 21.35.sp), //TODO: review this value (the .sp part)
+          kBodyText2: TextStyle(color: kText95, fontSize: 20.sp > 24 ? 24 : 20.sp, fontFamily: "Roboto Condensed"),
+          kBodyText2bis: TextStyle(color: kText95, fontSize: 19.sp > 22 ? 22 : 19.sp), //TODO: review this value (the .sp part)
+          kBodyText3: TextStyle(color: kText90, fontSize: 18.25.sp > 20 ? 20 : 18.25.sp,fontFamily: "Roboto Condensed"),
+          kBodyText4: TextStyle(color: kText, fontSize: 18.25.sp > 20 ? 20 : 18.25.sp),
           child: MaterialApp(
             title: 'Winhalla',
             theme: ThemeData(fontFamily: "Bebas Neue"),
@@ -48,9 +51,6 @@ class MyApp extends StatelessWidget {
                     child: FutureBuilder(
                         future: initUser(context),
                         builder: (context, AsyncSnapshot<dynamic> res) {
-                          num isSmallScreen = MediaQuery.of(context).size.height;
-                          print(MediaQuery.of(context).devicePixelRatio);
-                          print(isSmallScreen);
                           if (!res.hasData) {
                             return const AppCore(isUserDataLoaded: false);
                           }
@@ -99,9 +99,6 @@ class MyApp extends StatelessWidget {
                               'joinDate': currentMatch[0]["joinDate"]
                             };
                           }
-                          /*Future.delayed(const Duration(milliseconds:1),(){
-                            showCoinDropdown(context, 1315.6, 100);
-                          });*/
 
                           return ChangeNotifierProvider<User>(
                               create: (_) => User(newData, callApi, keys, inGame, res.data["oldDailyChallengeData"]),
@@ -351,3 +348,51 @@ class _AppCoreState extends State<AppCore> {
     }
   }
 }
+/*
+/// Text size tester
+Scaffold(
+  backgroundColor: kBackground,
+  body: Padding(
+    padding: const EdgeInsets.all(20.0),
+    child: Column(
+      children: [
+        Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kHeadline1,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kHeadline1,),
+        ],),Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kHeadline2,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kHeadline2,),
+        ],),Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kBodyText1,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kBodyText1,),
+        ],),Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kBodyText1Roboto,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kBodyText1Roboto,),
+        ],),Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kBodyText2,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kBodyText2,),
+        ],),Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kBodyText3,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kBodyText3,),
+        ],),Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kBodyText4,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kBodyText4,),
+        ],),
+      ],
+    ),
+  ),
+),*/

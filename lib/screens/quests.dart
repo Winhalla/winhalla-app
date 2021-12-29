@@ -120,9 +120,9 @@ class Quests extends StatelessWidget {
                             padding: const EdgeInsets.fromLTRB(35, 20, 35, 20),
                             child: Column(
                               children: [
-                                const Text(
+                                Text(
                                   "New quests in:",
-                                  style: kBodyText1,
+                                  style: InheritedTextStyle.of(context).kBodyText1,
                                 ),
                                 const SizedBox(
                                   height: 5,
@@ -255,9 +255,9 @@ class Quests extends StatelessWidget {
                           padding: const EdgeInsets.fromLTRB(35, 20, 35, 20),
                           child: Column(
                             children: [
-                              const Text(
+                              Text(
                                 "New quests in:",
-                                style: kBodyText1,
+                                style: InheritedTextStyle.of(context).kBodyText1,
                               ),
                               const SizedBox(
                                 height: 5,

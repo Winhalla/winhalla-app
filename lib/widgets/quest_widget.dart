@@ -3,9 +3,11 @@ import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 
 import 'ad_launch_button.dart';
+import 'inherited_text_style.dart';
 
 class QuestWidget extends StatefulWidget {
   final String name;
@@ -104,13 +106,14 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                       child: AnimatedDefaultTextStyle(
                         duration: const Duration(milliseconds: 200),
                         style: isQuestFinished
-                            ? const TextStyle(
-                                decoration: TextDecoration.lineThrough,
-                                decorationThickness: 2,
-                                color: kGray,
-                                fontSize: 24,
-                                fontFamily: "Roboto Condensed")
-                            : kBodyText2,
+                            ? TextStyle(
+                              color: kGray,
+                              fontSize: 20.sp > 24 ? 24 : 20.sp,
+                              fontFamily: "Roboto Condensed",
+                              decoration: TextDecoration.lineThrough,
+                              decorationThickness: 2,
+                            )
+                            : InheritedTextStyle.of(context).kBodyText2,
                         child: Text(
                           widget.name,
                         ),
@@ -124,9 +127,9 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                         AnimatedCrossFade(
                           firstChild: Text(
                               "${(widget.oldProgress + ((widget.progress - widget.oldProgress) * curvedAnimation.value).round())}/${widget.goal}",
-                              style: kBodyText4.apply(color: widget.color)),
+                              style: InheritedTextStyle.of(context).kBodyText4.apply(color: widget.color)),
                           secondChild: Text("Click to collect",
-                              style: kBodyText4.apply(color: widget.color)),
+                              style: InheritedTextStyle.of(context).kBodyText4.apply(color: widget.color)),
                           crossFadeState: !isQuestFinished ? CrossFadeState.showFirst : widget.showClickToCollect == false ? CrossFadeState.showFirst : CrossFadeState.showSecond,
                           alignment: Alignment.centerLeft,
                           duration: const Duration(milliseconds: 200),
@@ -157,7 +160,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                                   ),
                                   Text(
                                     "Watch",
-                                    style: kBodyText4.apply(color: kBlack),
+                                    style: InheritedTextStyle.of(context).kBodyText4.apply(color: kBlack),
                                   ),
                                 ],
                               ),
@@ -170,7 +173,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                                   const EdgeInsets.fromLTRB(15, 10, 15, 10),
                               child: Text(
                                 "Loading...",
-                                style: kBodyText4.apply(color: kBlack),
+                                style: InheritedTextStyle.of(context).kBodyText4.apply(color: kBlack),
                               ),
                             ),
                           )
@@ -218,7 +221,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                                     return Text(
                                         "$text%",
                                         style:
-                                            kBodyText4.apply(color: widget.color));
+                                            InheritedTextStyle.of(context).kBodyText4.apply(color: widget.color));
                                   }
                                 ),
                               ),
@@ -237,7 +240,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                               padding: const EdgeInsets.only(top: 1),
                               child: Text(
                                 widget.reward.toString(),
-                                style: kBodyText4.apply(color: widget.color),
+                                style: InheritedTextStyle.of(context).kBodyText4.apply(color: widget.color),
                               ),
                             ),
                             const SizedBox(

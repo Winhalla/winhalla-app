@@ -8,6 +8,8 @@ import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/steam.dart';
 
+import 'inherited_text_style.dart';
+
 Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
   final bidTextController = TextEditingController();
   String _chosenValue = items[0]["platformId"] as String;
@@ -73,7 +75,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
       titlePadding: const EdgeInsets.only(top: 26, left: 30),
       title: Text(
         step == "platformSelection" ? 'Select a platform' : "Brawlhalla Id",
-        style: kBodyText1,
+        style: InheritedTextStyle.of(context).kBodyText1,
       ),
 
       contentPadding: const EdgeInsets.fromLTRB(28, 16, 28, 8),
@@ -139,7 +141,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                               padding: const EdgeInsets.only(top: 1),
                               child: Text(
                                 value["name"] as String,
-                                style: kBodyText4,
+                                style: InheritedTextStyle.of(context).kBodyText4,
                               ),
                             ),
                           ],
@@ -160,7 +162,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                   child: TextField(
                     keyboardType: TextInputType.phone,
                     controller: bidTextController,
-                    style: const TextStyle(fontSize: 18, color: kText80, fontFamily: "Roboto Condensed"),
+                    style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.9,color: kText80),
                     decoration: InputDecoration(
                         suffixIconConstraints: const BoxConstraints(maxHeight: 37, maxWidth: 35),
                         suffixIcon: _loading
@@ -182,7 +184,8 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                                 : null,
                         border: InputBorder.none,
                         hintText: 'Type your Brawlhalla ID here',
-                        hintStyle: const TextStyle(fontSize: 17, color: kText80, fontFamily: "Roboto Condensed")),
+                        hintStyle: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.85,color: kText80)
+                    ),
                   ),
                 ),
                 if (_error != null)
@@ -194,17 +197,17 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                     padding: const EdgeInsets.only(left: 20),
                     child: Text(
                       _error as String,
-                      style: const TextStyle(color: kRed, fontSize: 16, fontFamily: "Roboto Condensed"),
+                      style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.8,color: kRed),
                     ),
                   ),
                 SizedBox(
                   height: _error == null ? 34 : 20,
                 ),
-                const Padding(
-                  padding: EdgeInsets.only(right: 10, left: 0),
+                Padding(
+                  padding: const EdgeInsets.only(right: 10, left: 0),
                   child: Text(
                     "Find your Brawlhalla ID in the top right corner of your inventory:",
-                    style: TextStyle(color: kText80, fontSize: 15, fontFamily: "Roboto Condensed"),
+                    style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.75,color: kText80),
                   ),
                 ),
                 const SizedBox(
@@ -222,14 +225,14 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("We found this account:",style: kBodyText3.apply(color: kText80),),
+                  Text("We found this account:",style: InheritedTextStyle.of(context).kBodyText3.apply(color: kText80),),
                   SizedBox(height: 10,),
                   Padding(
                     padding: const EdgeInsets.only(left: 16.0),
                     child: Row(
                             children: [
-                              const Text("Name: ",style: kBodyText3,),
-                              Text(accountData["data"]["name"].toString(), style: kBodyText3.apply(color: kPrimary))
+                              Text("Name: ",style: InheritedTextStyle.of(context).kBodyText3,),
+                              Text(accountData["data"]["name"].toString(), style: InheritedTextStyle.of(context).kBodyText3.apply(color: kPrimary))
                             ],
                     ),
                   ),
@@ -237,13 +240,13 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                     padding: const EdgeInsets.only(left: 16.0),
                     child: Row(
                             children: [
-                              const Text("Level: ",style: kBodyText3,),
-                              Text(accountData["data"]["level"].toString(), style: kBodyText3.apply(color: kPrimary))
+                              Text("Level: ",style: InheritedTextStyle.of(context).kBodyText3,),
+                              Text(accountData["data"]["level"].toString(), style: InheritedTextStyle.of(context).kBodyText3.apply(color: kPrimary))
                             ],
                     ),
                   ),
                   SizedBox(height: 10,),
-                  Text("Is it yours?",style: kBodyText2.apply(color: kPrimary),),
+                  Text("Is it yours?",style: InheritedTextStyle.of(context).kBodyText2.apply(color: kPrimary),),
                 ],
               ),
 
@@ -259,7 +262,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                 },
                 child: Text(
                   "Next",
-                  style: kBodyText2.apply(color: kPrimary),
+                  style: InheritedTextStyle.of(context).kBodyText2.apply(color: kPrimary),
                 ),
               ),
               if (step == "enterBid" || step == "confirmAccount")
@@ -274,7 +277,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                     children: [
                       Text(
                         step == "confirmAccount"?"Yes":"Next",
-                        style: kBodyText2.apply(color: kGreen),
+                        style: InheritedTextStyle.of(context).kBodyText2.apply(color: kGreen),
                       ),
                       const SizedBox(
                         width: 5,
@@ -303,7 +306,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                   children: [
                     Text(
                       "No",
-                      style: kBodyText2.apply(color: kRed),
+                      style: InheritedTextStyle.of(context).kBodyText2.apply(color: kRed),
                     ),
                     const SizedBox(
                       width: 5,

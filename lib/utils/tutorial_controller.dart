@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/user_class.dart';
+import 'package:winhalla_app/widgets/inherited_text_style.dart';
 
 class FadeInPositioned extends StatefulWidget {
   final double? top;
@@ -164,9 +166,9 @@ class _TutorialStackState extends State<TutorialStack> {
             if (tutorial.backButtonEnabled)
               TextButton(
                 onPressed: () => tutorial.previous(),
-                child: const Text(
+                child: Text(
                   "Back",
-                  style: TextStyle(fontFamily: 'Roboto condensed', fontSize: 30, color: kText80),
+                  style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color:kText80),
                 ),
               )
             else
@@ -178,8 +180,7 @@ class _TutorialStackState extends State<TutorialStack> {
                   children: [
                     Text(
                       tutorial.status == 17 ? "Finish" : "Next",
-                      style: TextStyle(
-                          fontFamily: 'Roboto condensed', fontSize: 30, color: tutorial.status == 17 ? kGreen : kOrange),
+                      style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: tutorial.status == 17 ? kGreen : kOrange),
                     ),
                     if (tutorial.status == 17)
                       const SizedBox(
@@ -361,33 +362,37 @@ class Tutorial extends ChangeNotifier{
         "widget":FadeInPositioned(
           left: 20,
           right: 20,
-          child: SizedBox(
-            width: screenW-40,
-            height: screenH-70,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 10),
-              child: Column(mainAxisAlignment:MainAxisAlignment.center, children: [
-                Text(nextStatus != null ? "Hey! Welcome back to Winhalla!" : "Hey! Welcome to Winhalla!", style: TextStyle(fontFamily: "Roboto condensed", fontSize: 40),),
-                const SizedBox(height: 20,),
-                Row(
-                  children: [
-                    Expanded(
-                      child: RichText(
-                        text: TextSpan(style: kBodyText1Roboto, children: [
-                          TextSpan(
-                              text: nextStatus != null ? "Let's take the " : "Here’s a ",
-                              style: kBodyText1Roboto
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW-40,
+                height: screenH-70,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 10),
+                  child: Column(mainAxisAlignment:MainAxisAlignment.center, children: [
+                    Text(nextStatus != null ? "Hey! Welcome back to Winhalla!" : "Hey! Welcome to Winhalla!", style: InheritedTextStyle.of(context).kHeadline1.apply(fontFamily: "Roboto Condensed"),),
+                    const SizedBox(height: 20,),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(style: InheritedTextStyle.of(context).kBodyText1Roboto, children: [
+                              TextSpan(
+                                  text: nextStatus != null ? "Let's take the " : "Here’s a ",
+                                  style: InheritedTextStyle.of(context).kBodyText1Roboto
+                              ),
+                              TextSpan(text: nextStatus != null ? "tutorial " : "quick tutorial ", style:InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary )),
+                              TextSpan(text: nextStatus != null ? "where you left it, it takes no more than " : "for you to understand the app in less than ", style: InheritedTextStyle.of(context).kBodyText1Roboto ),
+                              TextSpan(text: "a minute!", style:InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary) )
+                            ]),
                           ),
-                          TextSpan(text: nextStatus != null ? "tutorial " : "quick tutorial ", style:kBodyText1Roboto.apply(color: kPrimary )),
-                          TextSpan(text: nextStatus != null ? "where you left it, it takes no more than " : "for you to understand the app in less than ", style: kBodyText1Roboto ),
-                          TextSpan(text: "a minute!", style:kBodyText1Roboto.apply(color: kPrimary) )
-                        ]),
-                      ),
-                    ),
-                  ],
-                )
-              ],),
-            ),
+                        ),
+                      ],
+                    )
+                  ],),
+                ),
+              );
+            }
           ),
         ),
         "controlButtonsEnabled":{
@@ -407,22 +412,26 @@ class Tutorial extends ChangeNotifier{
           left: 20,
           right: 20,
           bottom: 10,
-          child: SizedBox(
-            width: screenW-40,
-            height: screenH/2,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Expanded(
-                  child: Text(
-                    "Let's jump in a match!",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontFamily: "Roboto condensed", fontSize: 35, )
-                  ),
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW-40,
+                height: screenH/2,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        "Let's jump in a match!",
+                        textAlign: TextAlign.center,
+                        style: InheritedTextStyle.of(context).kHeadline2.apply(fontFamily: "Roboto condensed")
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            }
           ),
         ),
         "controlButtonsEnabled":{
@@ -435,22 +444,26 @@ class Tutorial extends ChangeNotifier{
           left: 20,
           right: 20,
           top: 306,
-          child: SizedBox(
-            width: screenW-40,
-            height: screenH/3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Expanded(
-                  child: Text(
-                      "This is your player card",
-                      textAlign: TextAlign.center,
-                      style: kBodyText1Roboto
-                  ),
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW-40,
+                height: screenH/3,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                          "This is your player card",
+                          textAlign: TextAlign.center,
+                          style: InheritedTextStyle.of(context).kBodyText1Roboto
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            }
           ),
         ),
         "controlButtonsEnabled":{
@@ -463,21 +476,25 @@ class Tutorial extends ChangeNotifier{
           left: 40,
           right: 40,
           bottom: 10,
-          child: SizedBox(
-            width: screenW-80,
-            height: screenH/1.5,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Expanded(
-                  child: Text(
-                      "Let’s pretend you just played some Brawlhalla games.",
-                      style: kBodyText1Roboto
-                  ),
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW-80,
+                height: screenH/1.5,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                          "Let’s pretend you just played some Brawlhalla games.",
+                          style: InheritedTextStyle.of(context).kBodyText1Roboto
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            }
           ),
         ),
         "controlButtonsEnabled":{
@@ -505,11 +522,11 @@ class Tutorial extends ChangeNotifier{
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Expanded(
                             child: Text(
                               "Pull down to refresh",
-                              style: kBodyText1Roboto,
+                              style: InheritedTextStyle.of(context).kBodyText1Roboto,
                               textAlign: TextAlign.center,
                             )
                           ),
@@ -537,42 +554,46 @@ class Tutorial extends ChangeNotifier{
         "widget": FadeInPositioned(
           left: 40,
           right: 40,
-          child: SizedBox(
-            width: screenW - 80,
-            height: screenH - 70,
-            child: Padding(
-              padding:
-                  EdgeInsets.only(top: screenH/2,),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(style: kBodyText1Roboto, children: [
-                        const TextSpan(
-                            text: "Recently played ", style: kBodyText1Roboto),
-                        const TextSpan(
-                            text: "Winhalla ",
-                            style: kBodyText1Roboto),
-                        TextSpan(
-                            text:
-                                "matches ",
-                            style: kBodyText1Roboto.apply(color: kPrimary)),
-                        const TextSpan(
-                            text:
-                                "will show up there. It will display the ",
-                            style: kBodyText1Roboto),
-                        TextSpan(
-                            text: "number of coins ",
-                            style: kBodyText1Roboto.apply(color: kPrimary)),
-                        const TextSpan(
-                            text: "you earned, and your rank in the match.",
-                            style: kBodyText1Roboto)
-                      ]),
-                    ),
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW - 80,
+                height: screenH - 70,
+                child: Padding(
+                  padding:
+                      EdgeInsets.only(top: screenH/2,),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(style: InheritedTextStyle.of(context).kBodyText1Roboto, children: [
+                            TextSpan(
+                                text: "Recently played ", style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                             TextSpan(
+                                text: "Winhalla ",
+                                style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                            TextSpan(
+                                text:
+                                    "matches ",
+                                style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary)),
+                            TextSpan(
+                                text:
+                                    "will show up there. It will display the ",
+                                style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                            TextSpan(
+                                text: "number of coins ",
+                                style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary)),
+                            TextSpan(
+                                text: "you earned, and your rank in the match.",
+                                style: InheritedTextStyle.of(context).kBodyText1Roboto)
+                          ]),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            }
           ),
         ),
         "controlButtonsEnabled":{
@@ -590,29 +611,33 @@ class Tutorial extends ChangeNotifier{
           top: 86,
           left: 20,
           right: 20,
-          child: SizedBox(
-            width: screenW - 40,
-            height: screenH,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: RichText(
-                    text: TextSpan(style: kBodyText1Roboto, children: [
-                      const TextSpan(
-                          text: "Here are the quests, Complete them in ", style: kBodyText1Roboto),
-                      TextSpan(
-                          text: "any online Brawlhalla gamemode ",
-                          style: kBodyText1Roboto.apply(color: kPrimary)),
-                      const TextSpan(
-                          text:
-                              "(unless a gamemode is specified)",
-                          style: kBodyText1Roboto),
-                    ]),
-                  ),
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW - 40,
+                height: screenH,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: RichText(
+                        text: TextSpan(style: InheritedTextStyle.of(context).kBodyText1Roboto, children: [
+                          TextSpan(
+                              text: "Here are the quests, Complete them in ", style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                          TextSpan(
+                              text: "any online Brawlhalla gamemode ",
+                              style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary)),
+                          TextSpan(
+                              text:
+                                  "(unless a gamemode is specified)",
+                              style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                        ]),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            }
           ),
         ),
         "controlButtonsEnabled":{
@@ -624,21 +649,25 @@ class Tutorial extends ChangeNotifier{
           left: 40,
           right: 40,
           bottom: 10,
-          child: SizedBox(
-            width: screenW-80,
-            height: screenH/1.5,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Expanded(
-                  child: Text(
-                      "Let’s pretend you just completed one of these goals.",
-                      style: kBodyText1Roboto
-                  ),
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW-80,
+                height: screenH/1.5,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                          "Let’s pretend you just completed one of these goals.",
+                          style: InheritedTextStyle.of(context).kBodyText1Roboto
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            }
           ),
         ),
         "controlButtonsEnabled":{
@@ -664,12 +693,12 @@ class Tutorial extends ChangeNotifier{
                     children: [
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Expanded(
                             child: Text(
                               "Pull down to refresh",
                               textAlign: TextAlign.center,
-                              style: kBodyText1Roboto,
+                              style: InheritedTextStyle.of(context).kBodyText1Roboto,
                             )
                           ),
                       ],
@@ -692,32 +721,36 @@ class Tutorial extends ChangeNotifier{
           right: 40,
           top: screenH/2,
 
-          child: SizedBox(
-            width: screenW - 80,
-            height: screenH - 70,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: RichText(
-                    text: TextSpan(
-                      style: kBodyText1Roboto,
-                      children: [
-                        const TextSpan(
-                            text: "This quest is now completed. ", style: kBodyText1Roboto),
-                        TextSpan(
-                            text: "Tap it ",
-                            style: kBodyText1Roboto.apply(color: kPrimary)),
-                        const TextSpan(
-                            text:
-                                "to collect it and get the coins",
-                            style: kBodyText1Roboto),
-                      ]
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW - 80,
+                height: screenH - 70,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: RichText(
+                        text: TextSpan(
+                          style: InheritedTextStyle.of(context).kBodyText1Roboto,
+                          children: [
+                            TextSpan(
+                                text: "This quest is now completed. ", style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                            TextSpan(
+                                text: "Tap it ",
+                                style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary)),
+                            TextSpan(
+                                text:
+                                    "to collect it and get the coins",
+                                style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                          ]
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            }
           ),
         ),
         "controlButtonsEnabled":{
@@ -728,27 +761,31 @@ class Tutorial extends ChangeNotifier{
         "widget": FadeInPositioned(
           left: 20,
           right: 20,
-          child: SizedBox(
-            width: screenW - 40,
-            height: screenH,
-            child: Padding(
-              padding: EdgeInsets.only(top: screenH/2,),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(style: kBodyText1Roboto, children: [
-                        const TextSpan(
-                            text: "Now that this quest is completed, let's check the ", style: kBodyText1Roboto),
-                        TextSpan(
-                            text: "daily challenges",
-                            style: kBodyText1Roboto.apply(color: kPrimary)),
-                      ]),
-                    ),
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW - 40,
+                height: screenH,
+                child: Padding(
+                  padding: EdgeInsets.only(top: screenH/2,),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(style: InheritedTextStyle.of(context).kBodyText1Roboto, children: [
+                            TextSpan(
+                                text: "Now that this quest is completed, let's check the ", style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                            TextSpan(
+                                text: "daily challenges",
+                                style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary)),
+                          ]),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            }
           ),
         ),
         "controlButtonsEnabled":{
@@ -760,34 +797,38 @@ class Tutorial extends ChangeNotifier{
           top: 90,
           left: 24,
           right: 24,
-          child: SizedBox(
-            width: screenW - 48,
-            height: screenH - 40,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: RichText(
-                    text: TextSpan(style: kBodyText1Roboto, children: [
-                      const TextSpan(
-                          text: "These are the ",
-                          style: kBodyText1Roboto),
-                      TextSpan(
-                          text: "daily challenges: ",
-                          style: kBodyText1Roboto.apply(color: kPrimary)),
-                      const TextSpan(
-                          text:
-                          "complete them by doing different actions ",
-                          style: kBodyText1Roboto),
-                      TextSpan(
-                          text:
-                          "in the app.",
-                          style: kBodyText1Roboto.apply(color: kPrimary)),
-                    ]),
-                  ),
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW - 48,
+                height: screenH - 40,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: RichText(
+                        text: TextSpan(style: InheritedTextStyle.of(context).kBodyText1Roboto, children: [
+                          TextSpan(
+                              text: "These are the ",
+                              style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                          TextSpan(
+                              text: "daily challenges: ",
+                              style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary)),
+                          TextSpan(
+                              text:
+                              "complete them by doing different actions ",
+                              style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                          TextSpan(
+                              text:
+                              "in the app.",
+                              style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary)),
+                        ]),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              );
+            }
           ),
         ),
         "controlButtonsEnabled":{
@@ -798,27 +839,31 @@ class Tutorial extends ChangeNotifier{
         "widget": FadeInPositioned(
           left: 20,
           right: 20,
-          child: SizedBox(
-            width: screenW - 40,
-            height: screenH,
-            child: Padding(
-              padding: EdgeInsets.only(top: screenH/2,),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(style: kBodyText1Roboto, children: [
-                        const TextSpan(
-                            text: "You just completed this one, so it has updated ", style: kBodyText1Roboto),
-                        TextSpan(
-                            text: "automatically.",
-                            style: kBodyText1Roboto.apply(color: kPrimary)),
-                      ]),
-                    ),
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW - 40,
+                height: screenH,
+                child: Padding(
+                  padding: EdgeInsets.only(top: screenH/2,),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(style: InheritedTextStyle.of(context).kBodyText1Roboto, children: [
+                            TextSpan(
+                                text: "You just completed this one, so it has updated ", style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                            TextSpan(
+                                text: "automatically.",
+                                style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary)),
+                          ]),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            }
           ),
         ),
         "controlButtonsEnabled":{
@@ -830,35 +875,39 @@ class Tutorial extends ChangeNotifier{
           top: screenH/3,
           left: 20,
           right: 20,
-          child: SizedBox(
-            width: screenW - 40,
-            height: screenH,
-            child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: RichText(
-                      text: TextSpan(style: kBodyText1Roboto, children: [
-                        const TextSpan(
-                            text: "Now, ", style: kBodyText1Roboto),
-                        TextSpan(
-                            text: "this challenge ",
-                            style: kBodyText1Roboto.apply(color: kPrimary)),
-                        const TextSpan(
-                            text: "has been unlocked, ", style: kBodyText1Roboto),
-                        TextSpan(
-                            text: "complete it ",
-                            style: kBodyText1Roboto.apply(color: kPrimary)),
-                        const TextSpan(
-                            text: "to get it's ", style: kBodyText1Roboto),
-                        TextSpan(
-                            text: "reward",
-                            style: kBodyText1Roboto.apply(color: kPrimary)),
-                      ]),
-                    ),
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW - 40,
+                height: screenH,
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: RichText(
+                          text: TextSpan(style: InheritedTextStyle.of(context).kBodyText1Roboto, children: [
+                            TextSpan(
+                                text: "Now, ", style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                            TextSpan(
+                                text: "this challenge ",
+                                style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary)),
+                            TextSpan(
+                                text: "has been unlocked, ", style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                            TextSpan(
+                                text: "complete it ",
+                                style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary)),
+                            TextSpan(
+                                text: "to get it's ", style: InheritedTextStyle.of(context).kBodyText1Roboto),
+                            TextSpan(
+                                text: "reward",
+                                style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary)),
+                          ]),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+              );
+            }
           ),
         ),
         "controlButtonsEnabled":{
@@ -869,34 +918,38 @@ class Tutorial extends ChangeNotifier{
         "widget":FadeInPositioned(
           left: 20,
           right: 20,
-          child: SizedBox(
-            width: screenW-40,
-            height: screenH-70,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 10),
-              child: Column(mainAxisAlignment:MainAxisAlignment.center, children: [
-                const Text("Tutorial completed!", style: TextStyle(fontSize: 48, color: kGreen),),
-                const SizedBox(height: 28,),
-                Row(
-                  children: [
-                    Expanded(
-                      child: RichText(
-                        text: TextSpan(style: kBodyText1Roboto, children: [
-                          const TextSpan(
-                              text: "Go enjoy the app! If you’ve got any ",
-                              style: kBodyText1Roboto
+          child: Builder(
+            builder: (context) {
+              return SizedBox(
+                width: screenW-40,
+                height: screenH-70,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0,vertical: 10),
+                  child: Column(mainAxisAlignment:MainAxisAlignment.center, children: [
+                    Text("Tutorial completed!", style: InheritedTextStyle.of(context).kHeadline1.apply(fontSizeFactor: 1.2, color: kGreen),),
+                    const SizedBox(height: 28,),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: RichText(
+                            text: TextSpan(style: InheritedTextStyle.of(context).kBodyText1Roboto, children: [
+                              TextSpan(
+                                  text: "Go enjoy the app! If you’ve got any ",
+                                  style: InheritedTextStyle.of(context).kBodyText1Roboto
+                              ),
+                              TextSpan(text: "questions ", style:InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary )),
+                              TextSpan(text: "or ", style: InheritedTextStyle.of(context).kBodyText1Roboto ),
+                              TextSpan(text: "issue", style:InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary) ),
+                              TextSpan(text: ", send us a message! (on Instagram, Discord, or contact email...).", style:InheritedTextStyle.of(context).kBodyText1Roboto ),
+                            ]),
                           ),
-                          TextSpan(text: "questions ", style:kBodyText1Roboto.apply(color: kPrimary )),
-                          const TextSpan(text: "or ", style: kBodyText1Roboto ),
-                          TextSpan(text: "issue", style:kBodyText1Roboto.apply(color: kPrimary) ),
-                          const TextSpan(text: ", send us a message! (on Instagram, Discord, or contact email...).", style:kBodyText1Roboto ),
-                        ]),
-                      ),
-                    ),
-                  ],
-                )
-              ],),
-            ),
+                        ),
+                      ],
+                    )
+                  ],),
+                ),
+              );
+            }
           ),
         ),
         "controlButtonsEnabled":{

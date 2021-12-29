@@ -5,6 +5,7 @@ import 'package:provider/src/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'coin.dart';
+import 'inherited_text_style.dart';
 
 OverlayEntry? _previousEntry;
 
@@ -207,7 +208,7 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
                           color: Colors.black,
                           borderRadius: BorderRadius.circular(14)
                       ),
-                      child: Text("+${coinsNb.toStringAsFixed(0)}",style: TextStyle(color:kEpic, fontFamily: "Roboto condensed", fontSize: 24.5),)
+                      child: Text("+${coinsNb.toStringAsFixed(0)}",style: InheritedTextStyle.of(context).kBodyText2.apply(color:kEpic),)
                   ),
                 ],
               ),

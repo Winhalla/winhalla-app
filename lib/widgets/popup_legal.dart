@@ -6,6 +6,8 @@ import 'package:winhalla_app/widgets/login/google_apple_login.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/launch_url.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+
+import 'inherited_text_style.dart';
 // import 'package:http/http.dart' as http;
 
 Widget LegalInfoPopup(){
@@ -18,9 +20,9 @@ Widget LegalInfoPopup(){
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               "Legal",
-              style: kHeadline2,
+              style: InheritedTextStyle.of(context).kHeadline2,
             ),
             GestureDetector(
               onTap: () async {
@@ -46,28 +48,28 @@ Widget LegalInfoPopup(){
       content: !confirmAccountDeletion?Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text("Privacy policy: ", style: kBodyText2,),
+          Text("Privacy policy: ", style: InheritedTextStyle.of(context).kBodyText2,),
           GestureDetector(
             onTap: (){
               launchURLBrowser("https://winhalla.app/privacy");
             },
-            child: Text("https://winhalla.app/privacy", style: kBodyText3.apply(color: Colors.blueAccent),),
+            child: Text("https://winhalla.app/privacy", style: InheritedTextStyle.of(context).kBodyText3.apply(color: Colors.blueAccent),),
           ),
           const SizedBox(height: 20,),
-          const Text("Terms of use: ", style: kBodyText2,),
+          Text("Terms of use: ", style: InheritedTextStyle.of(context).kBodyText2,),
           GestureDetector(
             onTap: (){
               launchURLBrowser("https://winhalla.app/terms");
             },
-            child: Text("https://winhalla.app/terms", style: kBodyText3.apply(color: Colors.blueAccent),),
+            child: Text("https://winhalla.app/terms", style: InheritedTextStyle.of(context).kBodyText3.apply(color: Colors.blueAccent),),
           ),
           const SizedBox(height: 20,),
-          const Text("Legal mentions: ", style: kBodyText2,),
+          Text("Legal mentions: ", style: InheritedTextStyle.of(context).kBodyText2,),
           GestureDetector(
             onTap: (){
               launchURLBrowser("https://winhalla.app/legal");
             },
-            child: Text("https://winhalla.app/legal", style: kBodyText3.apply(color: Colors.blueAccent),),
+            child: Text("https://winhalla.app/legal", style: InheritedTextStyle.of(context).kBodyText3.apply(color: Colors.blueAccent),),
           ),
           const SizedBox(height: 30,),
           GestureDetector(
@@ -79,21 +81,21 @@ Widget LegalInfoPopup(){
             child: Container(
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(15),color:kBackground),
               padding: const EdgeInsets.fromLTRB(22, 9, 22, 9),
-              child: Text("Delete account",style: kBodyText4.apply(color:kRed),),
+              child: Text("Delete account",style: InheritedTextStyle.of(context).kBodyText4.apply(color:kRed),),
             ),
           ),
           const SizedBox(height: 20,),
-          const Text(
+          Text(
             "Winhalla isn't endorsed by Blue Mammoth Games and doesn't reflect the views or opinions of Blue Mammoth Games or anyone officially involved in producing or managing Brawlhalla. Brawlhalla and Blue Mammoth Games are trademarks or registered trademarks of Blue Mammoth games. Brawlhalla © Blue Mammoth Games.",
-            style: TextStyle(color: kText80, fontSize: 14),
+            style: InheritedTextStyle.of(context).kBodyText4.apply(fontSizeFactor: 0.7,color: kText80),
           ),
         ],
       ) : Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text("Are you sure you want to delete your account?",style: kBodyText2,),
+              Text("Are you sure you want to delete your account?",style: InheritedTextStyle.of(context).kBodyText2,),
               const SizedBox(height: 7,),
-              Text("This action is not reversible",style: kBodyText3.apply(color:kText80),),
+              Text("This action is not reversible",style: InheritedTextStyle.of(context).kBodyText3.apply(color:kText80),),
               const SizedBox(height: 15,),
               GestureDetector(
                 onTap: () async {
@@ -107,7 +109,7 @@ Widget LegalInfoPopup(){
                 child: Container(
                   decoration: BoxDecoration(borderRadius: BorderRadius.circular(15),color:kRed),
                   padding: const EdgeInsets.fromLTRB(22, 9, 22, 9),
-                  child: const Text("Delete account",style: kBodyText4,),
+                  child: Text("Delete account",style: InheritedTextStyle.of(context).kBodyText4,),
                 ),
               ),
             ],
@@ -118,7 +120,7 @@ Widget LegalInfoPopup(){
           padding: const EdgeInsets.only(right:8.0),
           child: TextButton(
               onPressed: ()=>showLicensePage(context: context),
-              child: Text("Show licences", style: kBodyText4.apply(color:kPrimary),),
+              child: Text("Show licences", style: InheritedTextStyle.of(context).kBodyText4.apply(color:kPrimary),),
           ),
         )
       ],

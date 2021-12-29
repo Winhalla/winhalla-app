@@ -157,7 +157,7 @@ class ShopItem extends StatelessWidget {
                     padding: const EdgeInsets.only(top: .9),
                     child: Text(
                       nickname,
-                      style: const TextStyle(color: kText, fontSize: 35),
+                      style: InheritedTextStyle.of(context).kHeadline2,
                     ),
                   ),
                   Price(
@@ -179,7 +179,7 @@ class ShopItem extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(14),color: kEpic),
-              child: const Text("Set As Goal",style: kBodyText4,),
+              child: const Text("Set As Goal",style: InheritedTextStyle.of(context).kBodyText4,),
             ),
           ),
         ),*/
@@ -253,7 +253,7 @@ class _PaypalCreditState extends State<PaypalCredit> {
                 },
                 child: AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 300),
-                  style: kBodyText1.apply(
+                  style: InheritedTextStyle.of(context).kBodyText1.apply(
                       color: i == _selectedItem ? kText : kText80),
                   child: Text(
                   items[i]["displayName"],
@@ -314,9 +314,9 @@ class _PaypalCreditState extends State<PaypalCredit> {
                         const SizedBox(
                           width: 10,
                         ),
-                        const Text(
+                        Text(
                           "Paypal",
-                          style: TextStyle(fontSize: 30, color: kText),
+                          style: InheritedTextStyle.of(context).kBodyText1,
                         ),
                       ],
                     ),
@@ -343,14 +343,14 @@ class _PaypalCreditState extends State<PaypalCredit> {
                           LengthLimitingTextInputFormatter(2),
                         ],
                         controller: textAmount,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: "1",
                           suffixText: "€",
-                          suffixStyle: kBodyText3,
+                          suffixStyle: InheritedTextStyle.of(context).kBodyText3,
                           border: InputBorder.none,
                         ),
                         keyboardType: TextInputType.phone,
-                        style: kBodyText3,
+                        style: InheritedTextStyle.of(context).kBodyText3,
                       ),
                     ),
                   ),
@@ -429,7 +429,7 @@ class Price extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .bodyText2
-                    ?.merge(const TextStyle(color: kText, fontSize: 24)),
+                    ?.merge(InheritedTextStyle.of(context).kBodyText2.apply(color: kText)),
               ));
           context.read<User>().addCoins(-int.parse(cost));
         }

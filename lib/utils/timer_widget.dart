@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/widgets/inherited_text_style.dart';
 
 class TimerWidget extends StatefulWidget {
   final int numberOfSeconds;
@@ -111,7 +112,7 @@ class _TimerWidgetState extends State<TimerWidget> {
       }
       return Text(
         timer == "" ? "Loading..." : timer,
-        style: TextStyle(color: color, fontSize: widget.fontSize),
+        style: InheritedTextStyle.of(context).kBodyText4.apply(fontSizeFactor: widget.fontSize/20,color:color),
       );
     });
   }

@@ -10,6 +10,8 @@ import 'package:winhalla_app/utils/get_uri.dart';
 // import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 
+import '../inherited_text_style.dart';
+
 class GoogleAppleLogin extends StatefulWidget {
   const GoogleAppleLogin({Key? key}) : super(key: key);
 
@@ -32,22 +34,19 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
         children: [
           Column(
             children: [
-              const Text(
+              Text(
                 "Welcome to",
-                style: TextStyle(
-                  fontSize: 60,
-                  color: kText,
-                ),
+                style: InheritedTextStyle.of(context).kHeadline0,
               ),
               Row(
-                children: const [
+                children: [
                   Text(
                     "Winhalla",
-                    style: TextStyle(fontSize: 60, color: kPrimary, height: 1),
+                    style: InheritedTextStyle.of(context).kHeadline0.apply(color: kPrimary),
                   ),
                   Text(
                     "!",
-                    style: TextStyle(fontSize: 60, color: kText, height: 1),
+                    style: InheritedTextStyle.of(context).kHeadline0,
                   ),
                 ],
               ),
@@ -56,32 +55,32 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
           Column(
             children: [
               Row(
-                children: const [
+                children: [
                   Text(
                     "Play",
-                    style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
+                    style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kRed),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 7,
                   ),
                   Text(
                     "Brawlhalla,",
-                    style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
+                    style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kText),
                   ),
                 ],
               ),
               Row(
-                children: const [
+                children: [
                   Text(
                     "Earn",
-                    style: TextStyle(fontSize: 30, color: kRed, fontFamily: "Roboto condensed"),
+                    style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kRed),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     width: 7,
                   ),
                   Text(
                     "Rewards",
-                    style: TextStyle(fontSize: 30, color: kText, fontFamily: "Roboto condensed"),
+                    style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kText),
                   ),
                 ],
               ),
@@ -145,12 +144,12 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
                       const SizedBox(
                         width: 18,
                       ),
-                      const Expanded(
+                      Expanded(
                         child: Padding(
-                          padding: EdgeInsets.only(top: 1.5),
+                          padding: const EdgeInsets.only(top: 1.5),
                           child: Text(
                             "Sign in with Google",
-                            style: kBodyText2,
+                            style: InheritedTextStyle.of(context).kBodyText2,
                           ),
                         ),
                       ),
@@ -182,12 +181,12 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
                       const SizedBox(
                         width: 18,
                       ),
-                      const Expanded(
+                      Expanded(
                         child: Padding(
-                          padding: EdgeInsets.only(top: 1.5),
+                          padding: const EdgeInsets.only(top: 1.5),
                           child: Text(
                             "Sign in with Apple",
-                            style: kBodyText2,
+                            style: InheritedTextStyle.of(context).kBodyText2,
                           ),
                         ),
                       )
@@ -202,7 +201,7 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                Expanded(child: Text("Error: " + (_err as String), style: kBodyText4.apply(color: kRed),))
+                Expanded(child: Text("Error: " + (_err as String), style: InheritedTextStyle.of(context).kBodyText4.apply(color: kRed),))
               ],),
           ),
         ],

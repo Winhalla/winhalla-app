@@ -8,6 +8,8 @@ import 'package:winhalla_app/widgets/account_edit_warning.dart';
 import 'package:winhalla_app/widgets/popup_legal.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
 
+import 'inherited_text_style.dart';
+
 class MyAppBar extends StatefulWidget {
   final bool isUserDataLoaded;
   final int currentPage;
@@ -52,16 +54,16 @@ class _MyAppBarState extends State<MyAppBar> {
                               isFromMatchHistory: user.inGame["isFromMatchHistory"] == true
                           );
                         },
-                        child: Row(children: const <Widget>[
-                          Icon(
+                        child: Row(children: [
+                          const Icon(
                             Icons.exit_to_app_rounded,
                             size: 30,
                             color: kPrimary,
                           ),
-                          SizedBox(width: 6),
+                          const SizedBox(width: 6),
                           Text(
                             'Back',
-                            style: kBodyText3,
+                            style: InheritedTextStyle.of(context).kBodyText3,
                           ),
                         ]),
                       ),
@@ -72,16 +74,16 @@ class _MyAppBarState extends State<MyAppBar> {
                           user.enterMatch();
                         },
                         child: Row(
-                          children: const <Widget>[
-                            Icon(
+                          children: [
+                            const Icon(
                               Icons.open_in_new_rounded,
                               size: 30,
                               color: kGreen,
                             ),
-                            SizedBox(width: 6),
+                            const SizedBox(width: 6),
                             Text(
                               'New match',
-                              style: kBodyText3,
+                              style: InheritedTextStyle.of(context).kBodyText3,
                             ),
                           ],
                         ),
@@ -95,16 +97,16 @@ class _MyAppBarState extends State<MyAppBar> {
                     user.exitMatch();
                   },
                   child: Row(
-                    children: const <Widget>[
-                      Icon(
+                    children: [
+                      const Icon(
                         Icons.exit_to_app_rounded,
                         size: 30,
                         color: kPrimary,
                       ),
-                      SizedBox(width: 6),
+                      const SizedBox(width: 6),
                       Text(
                         'Leave',
-                        style: kBodyText3,
+                        style: InheritedTextStyle.of(context).kBodyText3,
                       ),
                     ],
                   ),
@@ -182,7 +184,7 @@ class _MyAppBarState extends State<MyAppBar> {
                                               ),
                                               Text(
                                                 "Logout",
-                                                style: kBodyText2.apply(
+                                                style: InheritedTextStyle.of(context).kBodyText2.apply(
                                                     fontFamily: "Bebas Neue"),
                                               ),
                                             ],
@@ -213,7 +215,7 @@ class _MyAppBarState extends State<MyAppBar> {
                                               ),
                                               Text(
                                                 "Add Account",
-                                                style: kBodyText2.apply(
+                                                style: InheritedTextStyle.of(context).kBodyText2.apply(
                                                     fontFamily: "Bebas Neue"),
                                               ),
                                             ],
@@ -246,7 +248,7 @@ class _MyAppBarState extends State<MyAppBar> {
                                               ),
                                               Text(
                                                 "Referral link",
-                                                style: kBodyText2.apply(
+                                                style: InheritedTextStyle.of(context).kBodyText2.apply(
                                                     fontFamily: "Bebas Neue"),
                                               ),
                                             ],
@@ -283,7 +285,7 @@ class _MyAppBarState extends State<MyAppBar> {
                                               ),
                                               Text(
                                                 "Legal",
-                                                style: kBodyText3.apply(
+                                                style: InheritedTextStyle.of(context).kBodyText3.apply(
                                                     fontFamily: "Bebas Neue",
                                                     color: kText80),
                                               ),
