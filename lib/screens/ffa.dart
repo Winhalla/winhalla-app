@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
@@ -165,7 +166,7 @@ class _SoloMatchState extends State<SoloMatch> {
                                 padding: const EdgeInsets.only(bottom: 3),
                                 child: Text(
                                   "Reward",
-                                  style: InheritedTextStyle.of(context).kBodyText2.apply(color: kText),
+                                  style: InheritedTextStyle.of(context).kBodyText2.apply(color: kText, fontFamily: "Bebas neue"),
                                 ),
                               )
                             ],
@@ -369,49 +370,50 @@ class _SoloMatchState extends State<SoloMatch> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 18.0),
                                 child: Column(
-                                  children: [
-                                    SizedBox(
-                                      width: 200,
-                                      child: RichText(
-                                        text: TextSpan(
-                                            style: InheritedTextStyle.of(context).kBodyText3,
-                                            children: const [
-                                              TextSpan(text: "Start "),
-                                              TextSpan(
-                                                  text: "playing ",
-                                                  style: TextStyle(
-                                                      color: kPrimary)),
-                                              TextSpan(
-                                                  text:
-                                                      "Brawlhalla! (only ranked games)")
-                                            ]),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 19,
-                                    ),
-                                    SizedBox(
-                                      width: 200,
-                                      child: RichText(
-                                        softWrap: true,
-                                        text: TextSpan(
-                                            style: InheritedTextStyle.of(context).kBodyText3,
-                                            children: const [
-                                              TextSpan(
-                                                  text: "Drag down ",
-                                                  style: TextStyle(
-                                                      color: kPrimary)),
-                                              TextSpan(text: "to "),
-                                              TextSpan(
-                                                  text: "sync ",
-                                                  style: TextStyle(
-                                                      color: kPrimary)),
-                                              TextSpan(text: "your stats"),
-                                            ]),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(
+                                              width: 50.h,
+                                              child: RichText(
+                                                text: TextSpan(
+                                                    style: InheritedTextStyle.of(context).kBodyText3,
+                                                    children: const [
+                                                      TextSpan(text: "Start "),
+                                                      TextSpan(
+                                                          text: "playing ",
+                                                          style: TextStyle(
+                                                              color: kPrimary)),
+                                                      TextSpan(
+                                                          text:
+                                                              "Brawlhalla! (only ranked games)")
+                                                    ]),
+                                              ),
+                                            ),
+                                        const SizedBox(
+                                          height: 25,
+                                        ),
+                                        SizedBox(
+                                          width: 50.h,
+                                          child: RichText(
+                                            softWrap: true,
+                                            text: TextSpan(
+                                                style: InheritedTextStyle.of(context).kBodyText3,
+                                                children: const [
+                                                  TextSpan(
+                                                      text: "Drag down ",
+                                                      style: TextStyle(
+                                                          color: kPrimary)),
+                                                  TextSpan(text: "to "),
+                                                  TextSpan(
+                                                      text: "sync ",
+                                                      style: TextStyle(
+                                                          color: kPrimary)),
+                                                  TextSpan(text: "your stats"),
+                                                ]),
+                                          ),
+                                        ),
+                                      ],
+                                    )
                               )
                             ],
                           ),

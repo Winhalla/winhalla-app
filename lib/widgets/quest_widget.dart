@@ -102,7 +102,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: 173,
+                      width: 30.w,
                       child: AnimatedDefaultTextStyle(
                         duration: const Duration(milliseconds: 200),
                         style: isQuestFinished
@@ -136,7 +136,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                         ),
                         if (widget.showAdButton)
                           const SizedBox(
-                            width: 15,
+                            width: 10,
                           ),
                         if (widget.showAdButton && widget.color != kGreen)
                           AdButton(

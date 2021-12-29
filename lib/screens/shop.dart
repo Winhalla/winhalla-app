@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/user_class.dart';
@@ -262,26 +263,34 @@ class _PaypalCreditState extends State<PaypalCredit> {
               )),
             );
           }
-          return Stack(
+          return Column(
             children: [
-              AnimatedPositioned(
-                curve: Curves.easeInOut,
-                duration: const Duration(milliseconds: 225),
-                bottom: 3,
-                left: _selectedItem == 0 ? 8.75 : _selectedItem == 1 ? 101 : 207,
-                child: Container(
-                  width: 23,
-                  height: 3,
-                  color: kPrimary,
-              )),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: itemsWidget
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: itemsWidget
                 ),
               ),
-              
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  for (int i = 0; i < itemsWidget.length; i++)
+                    Padding(
+                      padding: const EdgeInsets.only(left:3.5,right: 22.0),
+                      child: AnimatedOpacity(
+                        curve: Curves.easeInOut,
+                        duration: const Duration(milliseconds: 225),
+                        opacity: i == _selectedItem ? 1 : 0,
+                        child: Container(
+                          width: 23,
+                          height: 3,
+                          color: kPrimary,
+                        )
+                      ),
+                    ),
+                ],
+              ),
             ],
           );
         }),

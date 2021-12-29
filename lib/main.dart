@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
     return ResponsiveSizer(
       builder: (context, orientation, screenType) {
         return InheritedTextStyle(
-          kHeadline0: TextStyle(color: kText, fontSize: 45.sp > 60 ? 60 : 45.sp),
+          kHeadline0: TextStyle(color: kText, fontSize: 33.sp > 60 ? 60 : 33.sp),
           kHeadline1: TextStyle(color: kText, fontSize: 28.sp > 40 ? 40 : 28.sp),
           kHeadline2: TextStyle(color: kText, fontSize: 24.5.sp > 35 ? 35 : 24.5.sp),
           kBodyText1: TextStyle(color: kText95, fontSize: 22.35.sp > 30 ? 30 : 22.35.sp,fontFamily: "Bebas neue",),
@@ -162,19 +162,19 @@ class _AppCoreState extends State<AppCore> {
         appBar: !widget.isUserDataLoaded
             ? null
             : PreferredSize(
-                preferredSize: const Size.fromHeight(134),
+                preferredSize: Size.fromHeight(18.h),
                 child: MyAppBar(widget.isUserDataLoaded, _selectedIndex)),
         body: widget.isUserDataLoaded
             ? _selectedIndex == 2 ||
                     _selectedIndex ==
                         1 // If the page is a solo match or quest, do not make it scrollable by default, because it's already a ListView
                 ? Padding(
-                    padding: const EdgeInsets.fromLTRB(32, 15, 32, 0),
+                    padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
                     child: screenList[_selectedIndex],
                   )
                 : SingleChildScrollView(
                     child: Padding(
-                    padding: const EdgeInsets.fromLTRB(32, 15, 32, 0),
+                    padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
                     child: screenList[_selectedIndex],
                   ))
             : Padding(

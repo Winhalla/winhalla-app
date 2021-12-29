@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/widgets/tip_painter.dart';
 import 'package:share/share.dart';
@@ -134,7 +135,7 @@ Widget LinkInfoWidget(String linkId){
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
-                        width: 180,
+                        width: 40.w,
                         child: RichText(
                           text: TextSpan(style: InheritedTextStyle.of(context).kBodyText3, children: const [
                             TextSpan(text: "Get "),
@@ -147,7 +148,7 @@ Widget LinkInfoWidget(String linkId){
                         height: 19,
                       ),
                       SizedBox(
-                        width: 180,
+                        width: 40.w,
                         child: RichText(
                           softWrap: true,
                           text: TextSpan(style: InheritedTextStyle.of(context).kBodyText3, children: const [

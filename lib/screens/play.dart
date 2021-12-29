@@ -51,8 +51,8 @@ class _PlayPageState extends State<PlayPage> {
                     style: InheritedTextStyle.of(context).kHeadline1,
                   ),
                 ),
-                const SizedBox(
-                  height: 34,
+                SizedBox(
+                  height: 4.8.h,
                 ),
                 Consumer<User>(builder: (context, user, _) {
 
@@ -278,8 +278,8 @@ class _PlayPageState extends State<PlayPage> {
                         ),
                   );
                 }),
-                const SizedBox(
-                  height: 34,
+                SizedBox(
+                  height: 4.5.h,
                 ),
                 Row(
                   children: [
@@ -296,10 +296,10 @@ class _PlayPageState extends State<PlayPage> {
                           //if (matchId == "err") _isLoadingMatch = false;
                         },
                         child: Container(
-                          margin: const EdgeInsets.fromLTRB(8, 0, 8, 42),
+                          margin: EdgeInsets.fromLTRB(8, 0, 8, 5.h),
                           decoration: BoxDecoration(
                               color: kPrimary,
-                              borderRadius: BorderRadius.circular(20)),
+                              borderRadius: BorderRadius.circular(18)),
                           child: Padding(
                             key: user.keys[2],
                             padding: const EdgeInsets.fromLTRB(12, 12, 25, 12),
@@ -317,10 +317,10 @@ class _PlayPageState extends State<PlayPage> {
                                     ),
                                   ),
                                 ) :
-                                const Icon(
+                                Icon(
                                   Icons.play_arrow_outlined,
                                   color: kText,
-                                  size: 50,
+                                  size: 28.sp,
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 3.5, left: 1),
