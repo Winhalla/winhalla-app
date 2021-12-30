@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:responsive_sizer/responsive_sizer.dart';
 const Color kBackground = Color(0xFF0F0F12);
 const Color kBackgroundVariant = Color(0xFF1A1A28);
 

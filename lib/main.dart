@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:rive/rive.dart';
 import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
@@ -12,95 +13,106 @@ import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
+import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'config/themes/dark_theme.dart';
 
 void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-class _MyAppState extends State<MyApp> {
-  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Winhalla',
-      theme: ThemeData(fontFamily: "Bebas Neue"),
-      debugShowCheckedModeBanner: false,
-      // Start the app with the "/" named route. In this case, the app starts
-      // on the FirstScreen widget.
-      initialRoute: '/',
-      routes: {
-        '/': (context) => SafeArea(
-              child: FutureBuilder(
-                  future: initUser(context),
-                  builder: (context, AsyncSnapshot<dynamic> res) {
-                    if (!res.hasData) {
-                      return const AppCore(isUserDataLoaded: false);
-                    }
+    return ResponsiveSizer(
+      builder: (context, orientation, screenType) {
+        return InheritedTextStyle(
+          kHeadline0: TextStyle(color: kText, fontSize: 33.sp > 60 ? 60 : 33.sp),
+          kHeadline1: TextStyle(color: kText, fontSize: 28.sp > 40 ? 40 : 28.sp),
+          kHeadline2: TextStyle(color: kText, fontSize: 24.5.sp > 35 ? 35 : 24.5.sp),
+          kBodyText1: TextStyle(color: kText95, fontSize: 22.35.sp > 30 ? 30 : 22.35.sp,fontFamily: "Bebas neue",),
+          kBodyText1Roboto: TextStyle(color: kText95, fontSize: 22.35.sp > 30 ? 30 : 22.35.sp, fontFamily: "Roboto Condensed"),
+          kBodyText1bis: TextStyle(color: kText95, fontSize: 21.35.sp > 26 ? 26 : 21.35.sp), //TODO: review this value (the .sp part)
+          kBodyText2: TextStyle(color: kText95, fontSize: 20.sp > 24 ? 24 : 20.sp, fontFamily: "Roboto Condensed"),
+          kBodyText2bis: TextStyle(color: kText95, fontSize: 19.sp > 22 ? 22 : 19.sp), //TODO: review this value (the .sp part)
+          kBodyText3: TextStyle(color: kText90, fontSize: 18.25.sp > 20 ? 20 : 18.25.sp,fontFamily: "Roboto Condensed"),
+          kBodyText4: TextStyle(color: kText, fontSize: 18.25.sp > 20 ? 20 : 18.25.sp),
+          child: MaterialApp(
+            title: 'Winhalla',
+            theme: ThemeData(fontFamily: "Bebas Neue"),
+            debugShowCheckedModeBanner: false,
+            // Start the app with the "/" named route. In this case, the app starts
+            // on the FirstScreen widget.
+            initialRoute: '/',
+            routes: {
+              '/': (context) =>
+                  SafeArea(
+                    child: FutureBuilder(
+                        future: initUser(context),
+                        builder: (context, AsyncSnapshot<dynamic> res) {
+                          if (!res.hasData) {
+                            return const AppCore(isUserDataLoaded: false);
+                          }
 
-                    if (res.data == "no data" ||
-                        res.data["data"] == "" ||
-                        res.data["data"] == null) {
-                      return LoginPage(userData: res.data);
-                    }
+                          if (res.data == "no data" ||
+                              res.data["data"] == "" ||
+                              res.data["data"] == null) {
+                            return LoginPage(userData: res.data);
+                          }
 
-                    if (res.data["data"]["user"] == null) {
-                      return LoginPage(userData: res.data);
-                    }
+                          if (res.data["data"]["user"] == null) {
+                            return LoginPage(userData: res.data);
+                          }
 
-                    // Do not edit res.data directly otherwise it calls the build function again for some reason
-                    Map<String, dynamic> newData = res.data as Map<String, dynamic>;
-                    var callApi = res.data["callApi"];
+                          // Do not edit res.data directly otherwise it calls the build function again for some reason
+                          Map<String, dynamic> newData = res.data as Map<String, dynamic>;
+                          var callApi = res.data["callApi"];
 
-                    newData["callApi"] = null;
-                    newData["user"] = res.data["data"]["user"];
-                    newData["steam"] = res.data["data"]["steam"];
-                    newData["tutorial"] = res.data["tutorial"];
+                          newData["callApi"] = null;
+                          newData["user"] = res.data["data"]["user"];
+                          newData["steam"] = res.data["data"]["steam"];
+                          newData["tutorial"] = res.data["tutorial"];
 
-                    List<GlobalKey?> keys = [];
-                    for (int i = 0; i < 18; i++) {
-                      if (i == 0 ||
-                          i == 4 ||
-                          i == 5 ||
-                          i == 10 ||
-                          i == 11 ||
-                          i == 17) {
-                        keys.add(null);
-                      } else {
-                        keys.add(GlobalKey());
-                      }
-                    }
-                    var inGameData = newData["user"]["inGame"];
-                    var currentMatch = inGameData
-                        .where((g) => g["isFinished"] == false)
-                        .toList();
+                          List<GlobalKey?> keys = [];
+                          for (int i = 0; i < 18; i++) {
+                            if (i == 0 ||
+                                i == 4 ||
+                                i == 5 ||
+                                i == 10 ||
+                                i == 11 ||
+                                i == 17) {
+                              keys.add(null);
+                            } else {
+                              keys.add(GlobalKey());
+                            }
+                          }
+                          var inGameData = newData["user"]["inGame"];
+                          var currentMatch = inGameData
+                              .where((g) => g["isFinished"] == false)
+                              .toList();
 
-                    var inGame = null;
-                    if (currentMatch.length > 0) {
-                      inGame = {
-                        'id': currentMatch[0]["id"],
-                        'joinDate': currentMatch[0]["joinDate"]
-                      };
-                    }
-                    /*Future.delayed(const Duration(milliseconds:1),(){
-                      showCoinDropdown(context, 1315.6, 100);
-                    });*/
+                          var inGame = null;
+                          if (currentMatch.length > 0) {
+                            inGame = {
+                              'id': currentMatch[0]["id"],
+                              'joinDate': currentMatch[0]["joinDate"]
+                            };
+                          }
 
-                    return ChangeNotifierProvider<User>(
-                        create: (_) => User(newData, callApi, keys, inGame, res.data["oldDailyChallengeData"]),
-                        child: AppCore(
-                          isUserDataLoaded: true,
-                          tutorial: newData["tutorial"],
-                        ));
-                  }),
-            ),
-        '/login': (context) => LoginPage(),
-      },
+                          return ChangeNotifierProvider<User>(
+                              create: (_) => User(newData, callApi, keys, inGame, res.data["oldDailyChallengeData"]),
+                              child: AppCore(
+                                isUserDataLoaded: true,
+                                tutorial: newData["tutorial"],
+                              ));
+                        }),
+                  ),
+              '/login': (context) => LoginPage(),
+            },
+          ),
+        );
+      }
     );
   }
 }
@@ -150,19 +162,19 @@ class _AppCoreState extends State<AppCore> {
         appBar: !widget.isUserDataLoaded
             ? null
             : PreferredSize(
-                preferredSize: const Size.fromHeight(134),
+                preferredSize: Size.fromHeight(18.h),
                 child: MyAppBar(widget.isUserDataLoaded, _selectedIndex)),
         body: widget.isUserDataLoaded
             ? _selectedIndex == 2 ||
                     _selectedIndex ==
                         1 // If the page is a solo match or quest, do not make it scrollable by default, because it's already a ListView
                 ? Padding(
-                    padding: const EdgeInsets.fromLTRB(32, 15, 32, 0),
+                    padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
                     child: screenList[_selectedIndex],
                   )
                 : SingleChildScrollView(
                     child: Padding(
-                    padding: const EdgeInsets.fromLTRB(32, 15, 32, 0),
+                    padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
                     child: screenList[_selectedIndex],
                   ))
             : Padding(
@@ -170,20 +182,20 @@ class _AppCoreState extends State<AppCore> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Expanded(
+                  children: [
+                    const Expanded(
                       child: RiveAnimation.asset(
                         "assets/animated/loading.riv",
                       ),
                     ),
                     Text(
                       "Loading...",
-                      style: kHeadline1,
+                      style: InheritedTextStyle.of(context).kHeadline1,
                     ),
-                    SizedBox(
+                    const SizedBox(
                       height: 15,
                     ),
-                    Padding(
+                    const Padding(
                       padding: EdgeInsets.only(right: 7.0),
                       child: CircularProgressIndicator(),
                     )
@@ -336,3 +348,51 @@ class _AppCoreState extends State<AppCore> {
     }
   }
 }
+/*
+/// Text size tester
+Scaffold(
+  backgroundColor: kBackground,
+  body: Padding(
+    padding: const EdgeInsets.all(20.0),
+    child: Column(
+      children: [
+        Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kHeadline1,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kHeadline1,),
+        ],),Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kHeadline2,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kHeadline2,),
+        ],),Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kBodyText1,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kBodyText1,),
+        ],),Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kBodyText1Roboto,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kBodyText1Roboto,),
+        ],),Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kBodyText2,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kBodyText2,),
+        ],),Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kBodyText3,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kBodyText3,),
+        ],),Row(
+          children: [
+            Text("TEST text", style: InheritedTextStyle.of(context).kBodyText4,),
+            const SizedBox(width: 10,),
+            Text("TEST text", style: kBodyText4,),
+        ],),
+      ],
+    ),
+  ),
+),*/

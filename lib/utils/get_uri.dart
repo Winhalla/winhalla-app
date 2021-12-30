@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
+import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'custom_http.dart';
-const String apiUrl = "http://192.168.1.27:4000";
+const String apiUrl = "http://192.168.1.33:4000";
 
 Uri getUri (String path,){
   return Uri.parse(apiUrl+path); // 192.168.1.33:4000
@@ -30,7 +31,7 @@ class CallApi {
             style: Theme.of(context)
                 .textTheme
                 .bodyText2
-                ?.merge(const TextStyle(color: kText, fontSize: 20)),
+                ?.merge(InheritedTextStyle.of(context).kBodyText4),
           ),
           fontSize: 25,
           column: true,
@@ -54,7 +55,7 @@ class CallApi {
             style: Theme.of(context)
                 .textTheme
                 .bodyText2
-                ?.merge(const TextStyle(color: kText, fontSize: 20)),
+                ?.merge(InheritedTextStyle.of(context).kBodyText4),
           ),
           fontSize: 25,
           column: true,
@@ -96,7 +97,7 @@ class CallApi {
                 .of(context)
                 .textTheme
                 .bodyText2
-                ?.merge(const TextStyle(color: kText, fontSize: 20)),
+                ?.merge(InheritedTextStyle.of(context).kBodyText4),
           ),
           fontSize: 25,
           column: true,
@@ -122,7 +123,7 @@ class CallApi {
                 .of(context)
                 .textTheme
                 .bodyText2
-                ?.merge(const TextStyle(color: kText, fontSize: 20)),
+                ?.merge(InheritedTextStyle.of(context).kBodyText4),
           ),
           fontSize: 25,
           column: true,

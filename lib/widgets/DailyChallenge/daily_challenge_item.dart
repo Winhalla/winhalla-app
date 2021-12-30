@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 
+import '../inherited_text_style.dart';
 import '../quest_widget.dart';
 
 class DailyChallengeItem extends StatefulWidget {
@@ -88,7 +89,7 @@ class _DailyChallengeItemState extends State<DailyChallengeItem> {
                       children: [
                         Text(
                           widget.reward.toString(),
-                          style: kBodyText3,
+                          style: InheritedTextStyle.of(context).kBodyText3,
                         ),
                         const SizedBox(width: 3.40),
                         Image.asset(
@@ -152,8 +153,8 @@ class ClosedDailyChallengeItem extends StatelessWidget {
                   child: Text(
                     name,
                     style: completed
-                        ? kBodyText3.apply(color: kText80)
-                        : kBodyText3,
+                        ? InheritedTextStyle.of(context).kBodyText3.apply(color: kText80)
+                        : InheritedTextStyle.of(context).kBodyText3,
                   ),
                 ),
                 const SizedBox(

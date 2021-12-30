@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
@@ -10,6 +11,7 @@ import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/timer_widget.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/ad_launch_button.dart';
+import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_no_refresh.dart';
 import 'package:winhalla_app/widgets/tip_painter.dart';
 
@@ -85,9 +87,9 @@ class _SoloMatchState extends State<SoloMatch> {
                   children: [
                     Row(
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.only(top: 5),
-                          child: Text('Solo Match', style: kHeadline1),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Text('Solo Match', style: InheritedTextStyle.of(context).kHeadline1),
                         ),
                         Container(
                             decoration: BoxDecoration(
@@ -149,22 +151,22 @@ class _SoloMatchState extends State<SoloMatch> {
                                 if (match.value["finished"] == true) {
                                   return Text(
                                       "x${(match.value["userPlayer"]["multiplier"]).round()}",
-                                      style: const TextStyle(
-                                          color: kGreen, fontSize: 34));
+                                      style: InheritedTextStyle.of(context).kHeadline2.apply(color: kGreen)
+                                  );
                                 }
                                 return Text(
                                     "x${(match.value["userPlayer"]["multiplier"] / 100).round()}",
-                                    style: const TextStyle(
-                                        color: kGreen, fontSize: 34));
+                                    style: InheritedTextStyle.of(context).kHeadline2.apply(color: kGreen)
+                                );
                               }),
                               const SizedBox(
                                 width: 9,
                               ),
-                              const Padding(
-                                padding: EdgeInsets.only(bottom: 3),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 3),
                                 child: Text(
                                   "Reward",
-                                  style: TextStyle(color: kText, fontSize: 25),
+                                  style: InheritedTextStyle.of(context).kBodyText2.apply(color: kText, fontFamily: "Bebas neue"),
                                 ),
                               )
                             ],
@@ -179,7 +181,7 @@ class _SoloMatchState extends State<SoloMatch> {
                                     borderRadius: BorderRadius.circular(12)),
                                 child: Text(
                                   "Max ads reached",
-                                  style: kBodyText4.apply(color: kText),
+                                  style: InheritedTextStyle.of(context).kBodyText4.apply(color: kText),
                                 ),
                               );
                             }
@@ -190,7 +192,7 @@ class _SoloMatchState extends State<SoloMatch> {
                                       19, 11.5, 19, 8.5),
                                   child: Text(
                                     "Ad loading...",
-                                    style: kBodyText4.apply(color: kText),
+                                    style: InheritedTextStyle.of(context).kBodyText4.apply(color: kText),
                                   ),
                                   decoration: BoxDecoration(
                                       color: kText60,
@@ -213,7 +215,7 @@ class _SoloMatchState extends State<SoloMatch> {
                                       ),
                                       Text(
                                         "Boost it",
-                                        style: kBodyText4.apply(
+                                        style: InheritedTextStyle.of(context).kBodyText4.apply(
                                             color: kBackground),
                                       ),
                                     ],
@@ -255,14 +257,14 @@ class _SoloMatchState extends State<SoloMatch> {
                         children: [
                           Text(
                             "${match.value["players"].length}",
-                            style: kBodyText3.apply(color: kPrimary),
+                            style: InheritedTextStyle.of(context).kBodyText3.apply(color: kPrimary),
                           ),
                           const SizedBox(
                             width: 5,
                           ),
                           Text(
                             "other player${match.value["players"].length > 1 ? "s" : ""} in this match...",
-                            style: kBodyText3,
+                            style: InheritedTextStyle.of(context).kBodyText3,
                           ),
                           const SizedBox(
                             width: 5,
@@ -270,7 +272,7 @@ class _SoloMatchState extends State<SoloMatch> {
                           GestureDetector(
                             child: Text(
                               match.areOtherPlayersShown ? "HIDE" : "SHOW",
-                              style: kBodyText2.apply(
+                              style: InheritedTextStyle.of(context).kBodyText2.apply(
                                   fontFamily: "Bebas Neue", color: kText80),
                             ),
                             onTap: () {
@@ -324,29 +326,23 @@ class _SoloMatchState extends State<SoloMatch> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const Padding(
-                                padding: EdgeInsets.only(top: 3.0),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 3.0),
                                 child: Text(
                                   "You can",
-                                  style: TextStyle(
-                                    color: kText80,
-                                    fontSize: 22,
-                                  ),
+                                  style: InheritedTextStyle.of(context).kBodyText2bis.apply(color: kText80)
                                 ),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(right: 20),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: const [
+                                  children: [
                                     Padding(
                                       padding: EdgeInsets.only(top: 3.0),
                                       child: Text(
                                         "TIP",
-                                        style: TextStyle(
-                                          color: kGreen,
-                                          fontSize: 22,
-                                        ),
+                                        style: InheritedTextStyle.of(context).kBodyText2bis.apply(color: kGreen)
                                       ),
                                     ),
                                     SizedBox(
@@ -374,49 +370,50 @@ class _SoloMatchState extends State<SoloMatch> {
                               Padding(
                                 padding: const EdgeInsets.only(top: 18.0),
                                 child: Column(
-                                  children: [
-                                    SizedBox(
-                                      width: 200,
-                                      child: RichText(
-                                        text: const TextSpan(
-                                            style: kBodyText3,
-                                            children: [
-                                              TextSpan(text: "Start "),
-                                              TextSpan(
-                                                  text: "playing ",
-                                                  style: TextStyle(
-                                                      color: kPrimary)),
-                                              TextSpan(
-                                                  text:
-                                                      "Brawlhalla! (only ranked games)")
-                                            ]),
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      height: 19,
-                                    ),
-                                    SizedBox(
-                                      width: 200,
-                                      child: RichText(
-                                        softWrap: true,
-                                        text: const TextSpan(
-                                            style: kBodyText3,
-                                            children: [
-                                              TextSpan(
-                                                  text: "Drag down ",
-                                                  style: TextStyle(
-                                                      color: kPrimary)),
-                                              TextSpan(text: "to "),
-                                              TextSpan(
-                                                  text: "sync ",
-                                                  style: TextStyle(
-                                                      color: kPrimary)),
-                                              TextSpan(text: "your stats"),
-                                            ]),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        SizedBox(
+                                              width: 50.h,
+                                              child: RichText(
+                                                text: TextSpan(
+                                                    style: InheritedTextStyle.of(context).kBodyText3,
+                                                    children: const [
+                                                      TextSpan(text: "Start "),
+                                                      TextSpan(
+                                                          text: "playing ",
+                                                          style: TextStyle(
+                                                              color: kPrimary)),
+                                                      TextSpan(
+                                                          text:
+                                                              "Brawlhalla! (only ranked games)")
+                                                    ]),
+                                              ),
+                                            ),
+                                        const SizedBox(
+                                          height: 25,
+                                        ),
+                                        SizedBox(
+                                          width: 50.h,
+                                          child: RichText(
+                                            softWrap: true,
+                                            text: TextSpan(
+                                                style: InheritedTextStyle.of(context).kBodyText3,
+                                                children: const [
+                                                  TextSpan(
+                                                      text: "Drag down ",
+                                                      style: TextStyle(
+                                                          color: kPrimary)),
+                                                  TextSpan(text: "to "),
+                                                  TextSpan(
+                                                      text: "sync ",
+                                                      style: TextStyle(
+                                                          color: kPrimary)),
+                                                  TextSpan(text: "your stats"),
+                                                ]),
+                                          ),
+                                        ),
+                                      ],
+                                    )
                               )
                             ],
                           ),
@@ -436,12 +433,13 @@ class _SoloMatchState extends State<SoloMatch> {
 
 class PlayerWidget extends StatelessWidget {
   const PlayerWidget({
+    Key? key,
     required this.isUser,
     required this.avatarUrl,
     required this.games,
     this.wins,
     required this.name,
-  });
+  }) : super(key:key);
 
   final bool isUser;
   final String avatarUrl;
@@ -469,11 +467,11 @@ class PlayerWidget extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 1.5),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 1.5),
                         child: Text(
                           "Games played:",
-                          style: TextStyle(color: kText, fontSize: 22),
+                          style: InheritedTextStyle.of(context).kBodyText2bis.apply(color: kText),
                         ),
                       ),
                       const SizedBox(
@@ -481,8 +479,7 @@ class PlayerWidget extends StatelessWidget {
                       ),
                       Text(
                         "$games/7",
-                        style: TextStyle(
-                            color: isUser ? kEpic : kPrimary, fontSize: 26),
+                        style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: isUser ? kEpic : kPrimary),
                       )
                     ],
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -493,17 +490,18 @@ class PlayerWidget extends StatelessWidget {
                   if (isUser == true)
                     Row(
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.only(bottom: 1.5),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 1.5),
                           child: Text("Games won:",
-                              style: TextStyle(color: kText, fontSize: 22)),
+                              style: InheritedTextStyle.of(context).kBodyText2bis.apply(color: kText),
+                          )
                         ),
                         const SizedBox(
                           width: 10,
                         ),
                         Text(
                           "$wins/7",
-                          style: const TextStyle(color: kEpic, fontSize: 26),
+                          style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: kEpic),
                         )
                       ],
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -522,7 +520,7 @@ class PlayerWidget extends StatelessWidget {
         Positioned(
           left: 35,
           bottom: isUser ? 110 : 83.5,
-          child: Text(name, style: const TextStyle(color: kGray, fontSize: 19)),
+          child: Text(name, style: InheritedTextStyle.of(context).kBodyText4),
         ),
       ],
       clipBehavior: Clip.none,

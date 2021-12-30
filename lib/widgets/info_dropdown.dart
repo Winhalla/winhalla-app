@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 
+import 'inherited_text_style.dart';
+
 OverlayEntry? _previousEntry;
 void showTopSnackBar(
     BuildContext context,
@@ -150,7 +152,9 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
                       padding: const EdgeInsets.fromLTRB(8,16,8,0),
                       child: Text(
                         widget.head,
-                        style: Theme.of(context).textTheme.bodyText2?.merge(TextStyle(color: widget.color, fontSize:widget.fontSize)),
+                        style: Theme.of(context).textTheme.bodyText2?.merge(
+                            InheritedTextStyle.of(context).kBodyText4.apply(fontSizeFactor: widget.fontSize/20,color:widget.color)
+                        ),
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -166,7 +170,9 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
                       children: [
                         Text(
                           widget.head,
-                          style: Theme.of(context).textTheme.bodyText2?.merge(TextStyle(color: widget.color, fontSize: 32)),
+                          style: Theme.of(context).textTheme.bodyText2?.merge(
+                              InheritedTextStyle.of(context).kBodyText4.apply(fontSizeFactor: 1.6,color:widget.color)
+                          ),
                           textAlign: TextAlign.center,
                         ),
                         if(widget.body != null)const SizedBox(width: 20,),

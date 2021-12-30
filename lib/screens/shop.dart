@@ -6,12 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/widgets/coin.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
+import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_shop.dart';
 // This is bc we can't use context.read<User>() in the future field of FutureBuilder
 Future<dynamic> getShopData(BuildContext context) async {
@@ -30,11 +32,11 @@ class Shop extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 4),
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
                 child: Text(
                   "Balance:",
-                  style: kHeadline1,
+                  style: InheritedTextStyle.of(context).kHeadline1,
                 ),
               ),
               const SizedBox(
@@ -156,7 +158,7 @@ class ShopItem extends StatelessWidget {
                     padding: const EdgeInsets.only(top: .9),
                     child: Text(
                       nickname,
-                      style: const TextStyle(color: kText, fontSize: 35),
+                      style: InheritedTextStyle.of(context).kHeadline2,
                     ),
                   ),
                   Price(
@@ -178,7 +180,7 @@ class ShopItem extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.fromLTRB(10, 5, 10, 5),
               decoration: BoxDecoration(borderRadius: BorderRadius.circular(14),color: kEpic),
-              child: const Text("Set As Goal",style: kBodyText4,),
+              child: const Text("Set As Goal",style: InheritedTextStyle.of(context).kBodyText4,),
             ),
           ),
         ),*/
@@ -252,7 +254,7 @@ class _PaypalCreditState extends State<PaypalCredit> {
                 },
                 child: AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 300),
-                  style: kBodyText1.apply(
+                  style: InheritedTextStyle.of(context).kBodyText1.apply(
                       color: i == _selectedItem ? kText : kText80),
                   child: Text(
                   items[i]["displayName"],
@@ -261,26 +263,34 @@ class _PaypalCreditState extends State<PaypalCredit> {
               )),
             );
           }
-          return Stack(
+          return Column(
             children: [
-              AnimatedPositioned(
-                curve: Curves.easeInOut,
-                duration: const Duration(milliseconds: 225),
-                bottom: 3,
-                left: _selectedItem == 0 ? 8.75 : _selectedItem == 1 ? 101 : 207,
-                child: Container(
-                  width: 23,
-                  height: 3,
-                  color: kPrimary,
-              )),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: itemsWidget
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: itemsWidget
                 ),
               ),
-              
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  for (int i = 0; i < itemsWidget.length; i++)
+                    Padding(
+                      padding: const EdgeInsets.only(left:3.5,right: 22.0),
+                      child: AnimatedOpacity(
+                        curve: Curves.easeInOut,
+                        duration: const Duration(milliseconds: 225),
+                        opacity: i == _selectedItem ? 1 : 0,
+                        child: Container(
+                          width: 23,
+                          height: 3,
+                          color: kPrimary,
+                        )
+                      ),
+                    ),
+                ],
+              ),
             ],
           );
         }),
@@ -313,9 +323,9 @@ class _PaypalCreditState extends State<PaypalCredit> {
                         const SizedBox(
                           width: 10,
                         ),
-                        const Text(
+                        Text(
                           "Paypal",
-                          style: TextStyle(fontSize: 30, color: kText),
+                          style: InheritedTextStyle.of(context).kBodyText1,
                         ),
                       ],
                     ),
@@ -342,14 +352,14 @@ class _PaypalCreditState extends State<PaypalCredit> {
                           LengthLimitingTextInputFormatter(2),
                         ],
                         controller: textAmount,
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                           hintText: "1",
                           suffixText: "€",
-                          suffixStyle: kBodyText3,
+                          suffixStyle: InheritedTextStyle.of(context).kBodyText3,
                           border: InputBorder.none,
                         ),
                         keyboardType: TextInputType.phone,
-                        style: kBodyText3,
+                        style: InheritedTextStyle.of(context).kBodyText3,
                       ),
                     ),
                   ),
@@ -428,7 +438,7 @@ class Price extends StatelessWidget {
                 style: Theme.of(context)
                     .textTheme
                     .bodyText2
-                    ?.merge(const TextStyle(color: kText, fontSize: 24)),
+                    ?.merge(InheritedTextStyle.of(context).kBodyText2.apply(color: kText)),
               ));
           context.read<User>().addCoins(-int.parse(cost));
         }

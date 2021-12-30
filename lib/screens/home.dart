@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/DailyChallenge/daily_challenge.dart';
 import 'package:winhalla_app/widgets/coin.dart';
+import 'package:winhalla_app/widgets/inherited_text_style.dart';
 
 class MyHomePage extends StatefulWidget {
   final switchPage;
@@ -37,11 +39,11 @@ class _MyHomePageState extends State<MyHomePage> {
       children: <Widget>[
         Row(
           children: [
-            const Padding(
-              padding: EdgeInsets.only(top: 4.0),
+            Padding(
+              padding: const EdgeInsets.only(top: 4.0),
               child: Text(
                 "Balance:",
-                style: kHeadline1,
+                style: InheritedTextStyle.of(context).kHeadline1,
               ),
             ),
             const SizedBox(

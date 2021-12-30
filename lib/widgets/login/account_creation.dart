@@ -1,8 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+import '../inherited_text_style.dart';
 import '../popup.dart';
 import '../popup_link.dart';
 
@@ -57,18 +59,17 @@ class _AccountCreationState extends State<AccountCreation> {
       padding: const EdgeInsets.fromLTRB(32, 70, 32, 0),
       child: SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               "Link a Brawlhalla account",
-              style: TextStyle(color: kText, fontSize: 50),
+              style: InheritedTextStyle.of(context).kHeadline1.apply(fontSizeFactor: 1.15) // 50 of font size
             ),
             const SizedBox(
               height: 10,
             ),
-            const Text(
-              "Link at least one Brawlhalla account (you can add more later)",
-              style: TextStyle(color: kText80, fontSize: 26, fontFamily: "Roboto Condensed"),
+            Text(
+              "Link at least one Brawlhalla account",
+              style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: kText80, fontFamily: "Roboto Condensed"),
             ),
             const SizedBox(
               height: 50,
@@ -107,7 +108,7 @@ class _AccountCreationState extends State<AccountCreation> {
                       Expanded(
                         child: Text(
                           accounts[index]["name"],
-                          style: kBodyText1.apply(color: kEpic),
+                          style: InheritedTextStyle.of(context).kBodyText1.apply(color: kEpic),
                         ),
                       ),
                       GestureDetector(
@@ -159,7 +160,7 @@ class _AccountCreationState extends State<AccountCreation> {
                         padding: const EdgeInsets.only(top: 3),
                         child: Text(
                           "Add an account",
-                          style: kBodyText1.apply(color: kPrimary),
+                          style: InheritedTextStyle.of(context).kBodyText1.apply(color: kPrimary),
                         ),
                       )
                     ],
@@ -195,7 +196,7 @@ class _AccountCreationState extends State<AccountCreation> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Expanded(child: Text("Error: " + (_err as String), style: kBodyText4.apply(color: kRed),))
+                  Expanded(child: Text("Error: " + (_err as String), style: InheritedTextStyle.of(context).kBodyText4.apply(color: kRed),))
                 ],),
             ),
             Row(
@@ -224,7 +225,7 @@ class _AccountCreationState extends State<AccountCreation> {
                             padding: const EdgeInsets.only(top: 1.0),
                             child: Text(
                               "Cancel",
-                              style: kBodyText2.apply(color: kRed),
+                              style: InheritedTextStyle.of(context).kBodyText2.apply(color: kRed),
                             ),
                           ),
                           const SizedBox(
@@ -307,7 +308,7 @@ class _AccountCreationState extends State<AccountCreation> {
                             padding: const EdgeInsets.only(top: 1.0),
                             child: Text(
                               alreadyCreatedAccount ? "Save" : "Finish",
-                              style: kBodyText2.apply(color: kGreen),
+                              style: InheritedTextStyle.of(context).kBodyText2.apply(color: kGreen),
                             ),
                           ),
                           const SizedBox(
@@ -370,9 +371,13 @@ Widget animatedFakeContainer(item, int index, Animation<double> animation, Strin
                 width: 18,
               ),
               Expanded(
-                child: Text(
-                  name,
-                  style: kBodyText1.apply(color: kEpic),
+                child: Builder(
+                  builder: (context) {
+                    return Text(
+                      name,
+                      style: InheritedTextStyle.of(context).kBodyText1.apply(color: kEpic),
+                    );
+                  }
                 ),
               ),
               const Icon(Icons.clear_outlined, size: 40, color: kEpic,),

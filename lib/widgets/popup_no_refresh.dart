@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 
+import 'inherited_text_style.dart';
+
 Widget NoRefreshPopup(String type){
   return Builder(
       builder: (context) {
@@ -18,10 +20,10 @@ Widget NoRefreshPopup(String type){
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Expanded(
+                Expanded(
                   child: Text(
                     "Sometimes...",
-                    style: kHeadline2,
+                    style: InheritedTextStyle.of(context).kHeadline2,
                   ),
                 ),
                 GestureDetector(
@@ -47,7 +49,7 @@ Widget NoRefreshPopup(String type){
           content: Padding(
             padding: const EdgeInsets.fromLTRB(6,0,4,0),
             child: RichText(
-              text: TextSpan(style: kBodyText3, children: [
+              text: TextSpan(style: InheritedTextStyle.of(context).kBodyText3, children: [
                 const TextSpan(text: "...data ", style: TextStyle(height: 1.3)),
                 const TextSpan(text: "doesn't refresh ", style: TextStyle(color: kPrimary,height: 1.3)),
                 const TextSpan(text: "instantly. This is due to the ", style: TextStyle(height: 1.3)),
@@ -65,9 +67,9 @@ Widget NoRefreshPopup(String type){
                     await secureStorage.write(key: type == "quests" ? "hideNoRefreshQuests":"hideNoRefreshMatch", value: "true");
                     Navigator.pop(context);
                   },
-                  child: const Padding(
-                    padding: EdgeInsets.fromLTRB(19,0,0,14),
-                    child: Text("Don't show again", style: TextStyle(color: kText70, fontSize: 16, fontFamily: "Roboto condensed"),),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(19,0,0,14),
+                    child: Text("Don't show again", style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.80,color: kText70),),
                   ),
                 ),
                 GestureDetector(
@@ -78,7 +80,7 @@ Widget NoRefreshPopup(String type){
                     padding: const EdgeInsets.fromLTRB(0,0,19,14),
                     child: Row(
                       children: [
-                        Text("Ok", style: kBodyText2.apply(color:kGreen),),
+                        Text("Ok", style: InheritedTextStyle.of(context).kBodyText2.apply(color:kGreen),),
                         const SizedBox(width: 7,),
                         const Icon(Icons.check,color: kGreen,),
                       ],),

@@ -9,6 +9,7 @@ import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/quest_widget.dart';
 import '../coin.dart';
+import '../inherited_text_style.dart';
 import 'daily_challenge_item.dart';
 import 'tree_painter.dart';
 
@@ -60,9 +61,9 @@ class _DailyChallengeState extends State<DailyChallenge>
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               "Daily challenge",
-              style: kHeadline1,
+              style: InheritedTextStyle.of(context).kHeadline1,
             ),
             Consumer<User>(builder: (context, user, _) {
               return Coin(
@@ -113,7 +114,7 @@ class _DailyChallengeState extends State<DailyChallenge>
                     for (var quest in dailyChallengeData) {
                       final textPainter = TextPainter(
                         text: TextSpan(
-                            text: quest["name"] as String, style: kBodyText3),
+                            text: quest["name"] as String, style: InheritedTextStyle.of(context).kBodyText3),
                         textDirection: TextDirection.ltr,
                       );
                       textPainter.layout(

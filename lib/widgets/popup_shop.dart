@@ -9,7 +9,9 @@ import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/steam.dart';
-RegExp emailChecker = new RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
+
+import 'inherited_text_style.dart';
+RegExp emailChecker = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 Widget PopupWidget(BuildContext context,String email,int itemId,{int? amount}) {
   final TextEditingController emailTextController = TextEditingController(text:email);
   bool isEmailValid = true;
@@ -28,11 +30,11 @@ Widget PopupWidget(BuildContext context,String email,int itemId,{int? amount}) {
     });
     return AlertDialog(
       elevation: 10,
-      title: const Padding(
-        padding: EdgeInsets.fromLTRB(4,0,4,0),
+      title: Padding(
+        padding: const EdgeInsets.fromLTRB(4,0,4,0),
         child: Text(
           "Confirm Purchase",
-          style: kBodyText1,
+          style: InheritedTextStyle.of(context).kBodyText1,
         ),
       ),
       contentPadding: EdgeInsets.fromLTRB(24,18,24,isEmailValid?7:1),
@@ -44,7 +46,7 @@ Widget PopupWidget(BuildContext context,String email,int itemId,{int? amount}) {
           children: [
             Padding(
               padding: const EdgeInsets.only(left:2 ),
-              child: Text('Item will be sent to:',style: kBodyText3,),
+              child: Text('Item will be sent to:',style: InheritedTextStyle.of(context).kBodyText3,),
             ),
             SizedBox(height: 10,),
             Container(
@@ -53,23 +55,23 @@ Widget PopupWidget(BuildContext context,String email,int itemId,{int? amount}) {
               child: TextField(
                 keyboardType: TextInputType.emailAddress,
                 controller: emailTextController,
-                style: TextStyle(fontSize: 18, color: kText80, fontFamily: "Roboto Condensed"),
+                style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.9,color: kText80),
                 decoration: InputDecoration(
                     suffixIconConstraints: BoxConstraints(maxHeight: 30, maxWidth: 30),
                     suffixIcon: !isEmailValid?Icon(Icons.clear_outlined,color: kRed,size: 30,):
                     null,
                     border: InputBorder.none,
                     hintText: 'Email',
-                    hintStyle: TextStyle(fontSize: 17, color: kText80, fontFamily: "Roboto Condensed")),
+                    hintStyle: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.85,color: kText80)),
               ),
             ),
             if(!isEmailValid) Padding(
               padding: const EdgeInsets.fromLTRB(16,6,0,0),
-              child: Text("Invalid Email",style: TextStyle(color: kRed,fontFamily: "Roboto Condensed",fontSize: 14),),
+              child: Text("Invalid Email",style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.7,color: kRed),),
             ),
             if(_err != null) Padding(
-              padding: const EdgeInsets.fromLTRB(16,6,0,0),
-              child: Text(_err as String,style: TextStyle(color: kRed,fontFamily: "Roboto Condensed",fontSize: 14),),
+              padding: EdgeInsets.fromLTRB(16,6,0,0),
+              child: Text(_err as String,style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.7,color: kRed),),
             )
           ],
         ),
@@ -81,8 +83,9 @@ Widget PopupWidget(BuildContext context,String email,int itemId,{int? amount}) {
             else {
               var result = await http.post(getUri("/buy/$itemId?email=${emailTextController.text}"+(amount != null?"&number=$amount":"")),
                   headers: {"authorization": await getNonNullSSData("authKey")});
-              if(result.body == "OK") Navigator.pop(context,{"success":true});
-              else {
+              if(result.body == "OK") {
+                Navigator.pop(context,{"success":true});
+              } else {
                 setState((){
                   _err = result.body;
                 });
@@ -98,7 +101,7 @@ Widget PopupWidget(BuildContext context,String email,int itemId,{int? amount}) {
               children: [
                 Text(
                   "Send",
-                  style: kBodyText2.apply(color: isEmailValid?kGreen:kText80),
+                  style: InheritedTextStyle.of(context).kBodyText2.apply(color: isEmailValid?kGreen:kText80),
                 ),
                 const SizedBox(
                   width: 5,
