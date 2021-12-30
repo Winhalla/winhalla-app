@@ -86,7 +86,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
     return Container(
       decoration: BoxDecoration(
           color: kBackgroundVariant, borderRadius: BorderRadius.circular(16)),
-      padding: const EdgeInsets.fromLTRB(30, 18, 20, 18),
+      padding: EdgeInsets.fromLTRB(30, 18, 20, 18),
       child: AnimatedBuilder(
           animation: curvedAnimation,
           builder: (BuildContext context, Widget? child) {
@@ -102,7 +102,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
-                      width: 30.w,
+                      width: 41.w,
                       child: AnimatedDefaultTextStyle(
                         duration: const Duration(milliseconds: 200),
                         style: isQuestFinished

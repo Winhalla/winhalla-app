@@ -173,7 +173,7 @@ class _PlayPageState extends State<PlayPage> {
                                                 ) : null,
                                           ),
                                           padding:
-                                              const EdgeInsets.fromLTRB(30, 20, 30, 20),
+                                              EdgeInsets.fromLTRB(8.w, 5.2.w, 8.w, 5.2.w),
                                           margin: EdgeInsets.only(
                                               left: 10,
                                               right: 15,
@@ -250,7 +250,7 @@ class _PlayPageState extends State<PlayPage> {
                                                         ),
                                                         Image.asset(
                                                           "assets/images/logo.png",
-                                                          width: 34,
+                                                          width: 25.sp,
                                                         )
                                                       ],
                                                     ),

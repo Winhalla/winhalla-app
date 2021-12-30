@@ -33,7 +33,7 @@ class _MyAppBarState extends State<MyAppBar> {
   Widget build(BuildContext context) {
     return Container(
       key: context.read<User>().appBarKey,
-      padding: EdgeInsets.fromLTRB(30, 4.5.h, 38, 3.5.h),
+      padding: EdgeInsets.fromLTRB(30, 3.5.h, 38, 3.5.h),
       color: kBackground,
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <
           Widget> [

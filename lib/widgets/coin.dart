@@ -20,7 +20,7 @@ class Coin extends StatelessWidget {
     this.bgColor = kBackgroundVariant,
     this.fontSize = 30,
     this.borderRadius = 11,
-    this.padding = const EdgeInsets.fromLTRB(22, 9, 21.5, 6),
+    this.padding = const EdgeInsets.fromLTRB(21, 10.25, 21, 7.25),
     this.key1
   }) : super(key: key);
 

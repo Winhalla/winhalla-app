@@ -447,9 +447,9 @@ class Price extends StatelessWidget {
         nb:cost,
         color:kText,
         bgColor: kPrimary,
-        fontSize: 24,
+        fontSize: 26,
         borderRadius: 14,
-        padding: const EdgeInsets.fromLTRB(16, 9, 16, 6),
+        padding: EdgeInsets.fromLTRB(5.w, 9.5, 5.w, 6.5),
       )
     );
   }

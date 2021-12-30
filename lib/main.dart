@@ -162,19 +162,19 @@ class _AppCoreState extends State<AppCore> {
         appBar: !widget.isUserDataLoaded
             ? null
             : PreferredSize(
-                preferredSize: Size.fromHeight(18.h),
+                preferredSize: Size.fromHeight(14.5.h),
                 child: MyAppBar(widget.isUserDataLoaded, _selectedIndex)),
         body: widget.isUserDataLoaded
             ? _selectedIndex == 2 ||
                     _selectedIndex ==
                         1 // If the page is a solo match or quest, do not make it scrollable by default, because it's already a ListView
                 ? Padding(
-                    padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+                    padding: EdgeInsets.fromLTRB(32, 1.25.h, 32, 0),
                     child: screenList[_selectedIndex],
                   )
                 : SingleChildScrollView(
                     child: Padding(
-                    padding: const EdgeInsets.fromLTRB(32, 0, 32, 0),
+                    padding: EdgeInsets.fromLTRB(32, 1.25.h, 32, 0),
                     child: screenList[_selectedIndex],
                   ))
             : Padding(
