@@ -1,12 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 // import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 
@@ -22,6 +25,80 @@ class GoogleAppleLogin extends StatefulWidget {
 class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
   String? _err;
 
+  void login(String loginMethod) async {
+    bool isGoogleLogin = loginMethod == "google";
+    dynamic credential;
+    if(isGoogleLogin){
+      credential = await GoogleSignInApi.login();
+    } else {
+      credential = await SignInWithApple.getAppleIDCredential(
+        scopes: [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        webAuthenticationOptions: WebAuthenticationOptions(
+          // TODO: Set the `clientId` and `redirectUri` arguments to the values you entered in the Apple Developer portal during the setup
+          clientId:'com.winhalla.app.serviceid',
+          redirectUri:Uri.parse('https://api.winhalla.app/auth/redirect/apple'),
+          // For web your redirect URI needs to be the host of the "current page",
+          // while for Android you will be using the API server that redirects back into your app via a deep link
+        ),
+      );
+      await http.post(getUri("/auth/createToken"), body: {
+        "token": credential.authorizationCode,
+        "name": credential.familyName != null && credential.givenName != null
+            ? (credential.givenName as String) + (credential.familyName as String)
+            : "",
+        "mode": "apple",
+        'useBundleId':Platform.isIOS ? "true"
+            : "false",
+      });
+    }
+
+    if (isGoogleLogin ? credential["auth"].accessToken == null : credential.authorizationCode == null) return;
+
+    dynamic idToken;
+    try {
+      idToken = await http.post(getUri("/auth/createToken"), body: {
+        "token": isGoogleLogin ? credential["auth"].accessToken : credential.authorizationCode,
+        "name": isGoogleLogin
+            ? credential['account'].displayName
+            : credential.familyName != null && credential.givenName != null
+              ? (credential.givenName as String) + (credential.familyName as String)
+              : "",
+        if (isGoogleLogin) if (credential['account'].photoUrl != null) "picture": credential['account'].photoUrl,
+        "mode": loginMethod,
+        'useBundleId':Platform.isIOS ? "true"
+            : "false",
+      });
+      if(idToken.statusCode < 200 || idToken.statusCode > 299){
+        setState((){
+          _err = idToken.body;
+        });
+        return;
+      }
+      idToken = jsonDecode(idToken.body)["_id"];
+    } catch (e) {
+      setState(() {
+        _err = e.toString();
+      });
+    }
+    await secureStorage.write(key: "authKey", value: idToken);
+    try{
+      var accountData = jsonDecode((await http.get(getUri("/account"), headers: {"authorization": idToken})).body)["user"];
+      if (accountData != null) {
+        Navigator.pop(context);
+        Navigator.pushNamed(context, "/");
+        return;
+      }
+    } catch(e){}
+    var skipReferralLink = await http.get(getUri("/auth/checkDetectedLink"));
+    if(skipReferralLink.body == "true") {
+      context.read<LoginPageManager>().next();
+    }
+    context.read<LoginPageManager>().next();
+  }
+
   @override
   Widget build(BuildContext context) {
 
@@ -33,6 +110,7 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
         // mainAxisSize: MainAxisSize.max,
         children: [
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 "Welcome to",
@@ -50,10 +128,7 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
                   ),
                 ],
               ),
-            ],
-          ),
-          Column(
-            children: [
+              SizedBox(height: 5.h,),
               Row(
                 children: [
                   Text(
@@ -86,47 +161,10 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
               ),
             ],
           ),
-
           Column(
             children: [
               GestureDetector(
-                onTap: () async {
-                  var temp = await GoogleSignInApi.login();
-                  if (temp?["auth"].accessToken == null) return;
-                  dynamic idToken;
-                  try {
-                    idToken = await http.post(getUri("/auth/createToken"), body: {
-                      "token": temp?["auth"].accessToken,
-                      "name": temp?['account'].displayName,
-                      if (temp?['account'].photoUrl != null) "picture": temp?['account'].photoUrl
-                    });
-                    if(idToken.statusCode < 200 || idToken.statusCode > 299){
-                      setState((){
-                        _err = idToken.body;
-                      });
-                      return;
-                    }
-                    idToken = jsonDecode(idToken.body)["_id"];
-                  } catch (e) {
-                    setState(() {
-                      _err = e.toString();
-                    });
-                  }
-                  await secureStorage.write(key: "authKey", value: idToken);
-                  try{
-                    var accountData = jsonDecode((await http.get(getUri("/account"), headers: {"authorization": idToken})).body)["user"];
-                    if (accountData != null) {
-                      Navigator.pop(context);
-                      Navigator.pushNamed(context, "/");
-                      return;
-                    }
-                  } catch(e){}
-                  var skipReferralLink = await http.get(getUri("/auth/checkDetectedLink"));
-                  if(skipReferralLink.body == "true") {
-                    context.read<LoginPageManager>().next();
-                  }
-                  context.read<LoginPageManager>().next();
-                },
+                onTap: () => login("google"),
                 child: Container(
                   decoration: BoxDecoration(
                     color: kBlack,
@@ -159,8 +197,8 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
               ),
               const SizedBox(height: 20,),
               GestureDetector(
-                onTap: () {
-                  print("apple login");
+                onTap: () async {
+                  login('apple');
                 },
                 child: Container(
                   decoration: BoxDecoration(
