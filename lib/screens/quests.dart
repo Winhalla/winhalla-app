@@ -8,6 +8,7 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/timer_widget.dart';
 import 'package:winhalla_app/utils/user_class.dart';
+import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_no_refresh.dart';
 import 'package:winhalla_app/widgets/quest_widget.dart';
 
@@ -72,9 +73,9 @@ class Quests extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.fromLTRB(6.0, 3, 0, 0),
-                        child: Text('Daily', style: kHeadline1),
+                        child: Text('Daily', style: InheritedTextStyle.of(context).kHeadline1),
                       ),
                       Consumer<User>(builder: (context, user, _) {
                         if (user.quests["dailyQuests"].length < 1) {
@@ -119,9 +120,9 @@ class Quests extends StatelessWidget {
                             padding: const EdgeInsets.fromLTRB(35, 20, 35, 20),
                             child: Column(
                               children: [
-                                const Text(
+                                Text(
                                   "New quests in:",
-                                  style: kBodyText1,
+                                  style: InheritedTextStyle.of(context).kBodyText1,
                                 ),
                                 const SizedBox(
                                   height: 5,
@@ -212,13 +213,14 @@ class Quests extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Padding(
-                        padding: EdgeInsets.fromLTRB(6.0, 3, 0, 0),
-                        child: Text('Weekly', style: kHeadline1),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(6.0, 3, 0, 0),
+                        child: Text('Weekly', style: InheritedTextStyle.of(context).kHeadline1),
                       ),
                       Consumer<User>(builder: (context, user, _) {
-                        if (user.quests["weeklyQuests"].length < 1)
+                        if (user.quests["weeklyQuests"].length < 1) {
                           return Container();
+                        }
                         return Container(
                             decoration: BoxDecoration(
                                 color: kBackgroundVariant,
@@ -253,9 +255,9 @@ class Quests extends StatelessWidget {
                           padding: const EdgeInsets.fromLTRB(35, 20, 35, 20),
                           child: Column(
                             children: [
-                              const Text(
+                              Text(
                                 "New quests in:",
-                                style: kBodyText1,
+                                style: InheritedTextStyle.of(context).kBodyText1,
                               ),
                               const SizedBox(
                                 height: 5,

@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 
+import 'inherited_text_style.dart';
+
 class Coin extends StatelessWidget {
   final String nb;
   final Color color;
@@ -18,7 +20,7 @@ class Coin extends StatelessWidget {
     this.bgColor = kBackgroundVariant,
     this.fontSize = 30,
     this.borderRadius = 11,
-    this.padding = const EdgeInsets.fromLTRB(22, 9, 21.5, 6),
+    this.padding = const EdgeInsets.fromLTRB(21, 10.25, 21, 7.25),
     this.key1
   }) : super(key: key);
 
@@ -34,7 +36,7 @@ class Coin extends StatelessWidget {
               String text = nb;
               return Text(
                 text,
-                style: TextStyle(color: color, fontSize: fontSize),
+                style: InheritedTextStyle.of(context).kBodyText4.apply(fontSizeFactor: fontSize/20,color:color)
               );
             }),
             const SizedBox(

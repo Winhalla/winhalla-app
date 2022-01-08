@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/screens/login.dart';
 
+import 'inherited_text_style.dart';
+
 Widget AccountEditWarning(accounts){
     return Builder(
       builder: (context) {
@@ -13,7 +15,7 @@ Widget AccountEditWarning(accounts){
             padding: const EdgeInsets.fromLTRB(4,0,4,0),
             child: Text(
               "Warning",
-              style: kBodyText1.apply(color: kRed),
+              style: InheritedTextStyle.of(context).kBodyText1.apply(color: kRed),
             ),
           ),
 
@@ -23,12 +25,12 @@ Widget AccountEditWarning(accounts){
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Text("Changing linked accounts will reset the progression of your quests, and change their goals.", style: kBodyText3,),
-                SizedBox(height: 15,),
+              children: [
+                Text("Changing linked accounts will reset the progression of your quests, and change their goals.", style: InheritedTextStyle.of(context).kBodyText3,),
+                const SizedBox(height: 15,),
                 Text(
                   "You cannot change linked accounts if you are in a match",
-                  style: TextStyle(fontSize: 16, color: kText80, fontFamily: "Roboto Condensed"),
+                  style: InheritedTextStyle.of(context).kBodyText4.apply(fontSizeFactor: 0.8,color: kText80, fontFamily: "Roboto Condensed"),
                 ),
               ],
             ),
@@ -49,7 +51,7 @@ Widget AccountEditWarning(accounts){
                   children: [
                     Text(
                       "Cancel",
-                      style: kBodyText3.apply(color: kGray),
+                      style: InheritedTextStyle.of(context).kBodyText3.apply(color: kGray),
                     ),
                   ],
                 ),
@@ -73,7 +75,7 @@ Widget AccountEditWarning(accounts){
                   children: [
                     Text(
                       "Next",
-                      style: kBodyText3.apply(color: kGreen),
+                      style: InheritedTextStyle.of(context).kBodyText3.apply(color: kGreen),
                     ),
                   ],
                 ),

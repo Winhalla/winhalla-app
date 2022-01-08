@@ -8,6 +8,8 @@ import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 
+import '../inherited_text_style.dart';
+
 class EnterLink extends StatefulWidget {
   const EnterLink({Key? key}) : super(key: key);
 
@@ -33,16 +35,14 @@ class _EnterLinkState extends State<EnterLink> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
+          Text(
             "Referral link",
-            style: TextStyle(
-              fontSize: 60,
-              color: kText,
-            ),),
+            style: InheritedTextStyle.of(context).kHeadline0
+          ),
           const SizedBox(height: 20,),
           Text(
             "If a friend shared the app with you, enter his link here. \nIf not, skip this step.",
-            style: kBodyText2.apply(color:kText80),
+            style: InheritedTextStyle.of(context).kBodyText2.apply(color:kText80),
           ),
           const SizedBox(height: 50,),
           Container(
@@ -81,7 +81,7 @@ class _EnterLinkState extends State<EnterLink> {
                   });
                 }
               },
-              style: const TextStyle(fontSize: 18, color:kText,fontFamily: "Roboto condensed"),
+              style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.9,color: kText),
               decoration: InputDecoration(
                   suffixIconConstraints: const BoxConstraints(maxHeight: 37, maxWidth: 35),
                   suffixIcon: loading == true
@@ -111,17 +111,17 @@ class _EnterLinkState extends State<EnterLink> {
                   ):null,
                   border: InputBorder.none,
                   hintText: 'Paste your referral link here',
-                  hintStyle: const TextStyle(fontSize: 18, color: kText80, fontFamily: "Roboto Condensed")),
+                  hintStyle: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.9,color: kText80)),
             ),
           ),
 
-          if(linkValid == false) const Padding(
-            padding: EdgeInsets.only(left: 8.0, top:8),
-            child: Text("This link doesn't exist", style: TextStyle(color: kRed, fontSize: 17, fontFamily: "Roboto condensed"),),
+          if(linkValid == false) Padding(
+            padding: const EdgeInsets.only(left: 8.0, top:8),
+            child: Text("This link doesn't exist", style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.85,color: kRed),),
           )
-          else if(linkValid == true) const Padding(
-            padding: EdgeInsets.only(left: 8.0, top:8),
-            child: Text("Link valid and boost applied!", style: TextStyle(color: kGreen, fontSize: 17, fontFamily: "Roboto condensed"),),
+          else if(linkValid == true) Padding(
+            padding: const EdgeInsets.only(left: 8.0, top:8),
+            child: Text("Link valid and boost applied!", style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.85,color: kGreen),),
           ),
 
           const Expanded(child:Text("")),
@@ -152,7 +152,7 @@ class _EnterLinkState extends State<EnterLink> {
                     child:Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text(linkValid == true ? "Next" : "Skip", style: kBodyText2.apply(color:kPrimary),),
+                        Text(linkValid == true ? "Next" : "Skip", style: InheritedTextStyle.of(context).kBodyText2.apply(color:kPrimary),),
                         const SizedBox(width: 7,),
                         const Icon(Icons.arrow_forward, color:kPrimary)
                       ],

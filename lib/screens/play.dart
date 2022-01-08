@@ -3,11 +3,13 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/screens/ffa.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
+import 'package:winhalla_app/widgets/inherited_text_style.dart';
 
 class PlayPage extends StatefulWidget {
   const PlayPage({Key? key}) : super(key: key);
@@ -43,15 +45,15 @@ class _PlayPageState extends State<PlayPage> {
           ? Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 6, top: 4.5),
+                Padding(
+                  padding: const EdgeInsets.only(left: 6, top: 4.5),
                   child: Text(
                     "Match History:",
-                    style: kHeadline1,
+                    style: InheritedTextStyle.of(context).kHeadline1,
                   ),
                 ),
-                const SizedBox(
-                  height: 34,
+                SizedBox(
+                  height: 4.8.h,
                 ),
                 Consumer<User>(builder: (context, user, _) {
 
@@ -80,7 +82,7 @@ class _PlayPageState extends State<PlayPage> {
                             children: [
                               Text(
                                 "Nothing here for now...",
-                                style: kBodyText2.apply(color: kText80),
+                                style: InheritedTextStyle.of(context).kBodyText2.apply(color: kText80),
                               )
                             ],
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -172,7 +174,7 @@ class _PlayPageState extends State<PlayPage> {
                                                 ) : null,
                                           ),
                                           padding:
-                                              const EdgeInsets.fromLTRB(30, 20, 30, 20),
+                                              EdgeInsets.fromLTRB(8.w, 5.2.w, 8.w, 5.2.w),
                                           margin: EdgeInsets.only(
                                               left: 10,
                                               right: 15,
@@ -190,11 +192,11 @@ class _PlayPageState extends State<PlayPage> {
                                                     RichText(
                                                       softWrap: true,
                                                       text: TextSpan(
-                                                          style: kBodyText2.apply(
+                                                          style: InheritedTextStyle.of(context).kBodyText2.apply(
                                                               color: kText80),
                                                           children: currentMatch["isFinished"] == false ? [
                                                             TextSpan(
-                                                                text: "Match in progress! ", style: kBodyText2.apply(color:kText)),
+                                                                text: "Match in progress! ", style: InheritedTextStyle.of(context).kBodyText2.apply(color:kText)),
                                                           ] :[
                                                             const TextSpan(
                                                                 text: "Waiting "),
@@ -211,13 +213,9 @@ class _PlayPageState extends State<PlayPage> {
                                                     ),
                                                     Row(
                                                       children: [
-                                                        const Text(
+                                                        Text(
                                                           "x",
-                                                          style: TextStyle(
-                                                              color: kGreen,
-                                                              fontSize: 24,
-                                                              fontFamily:
-                                                                  'Roboto Condensed'),
+                                                          style: InheritedTextStyle.of(context).kBodyText2.apply(color: kGreen,),
                                                         ),
                                                         const SizedBox(width: 1),
                                                         Padding(
@@ -225,10 +223,12 @@ class _PlayPageState extends State<PlayPage> {
                                                               const EdgeInsets.only(
                                                                   top: .5),
                                                           child: Text(
-                                                              "${(currentMatch["multiplier"] / 100).round()}",
-                                                              style: const TextStyle(
-                                                                  color: kGreen,
-                                                                  fontSize: 28)),
+                                                            "${(currentMatch["multiplier"] / 100).round()}",
+                                                            style: InheritedTextStyle.of(context).kBodyText4.apply(
+                                                                color: kGreen,
+                                                                fontSizeFactor: 1.4   // Equivalent to 28 of font size
+                                                            )
+                                                          ),
                                                         ),
                                                       ],
                                                     )
@@ -242,7 +242,7 @@ class _PlayPageState extends State<PlayPage> {
                                                                   top: 2.85),
                                                           child: Text(
                                                             "${currentMatch["coinsEarned"]}",
-                                                            style: kBodyText1.apply(
+                                                            style: InheritedTextStyle.of(context).kBodyText1.apply(
                                                                 color: kPrimary),
                                                           ),
                                                         ),
@@ -251,7 +251,7 @@ class _PlayPageState extends State<PlayPage> {
                                                         ),
                                                         Image.asset(
                                                           "assets/images/logo.png",
-                                                          width: 34,
+                                                          width: 25.sp,
                                                         )
                                                       ],
                                                     ),
@@ -259,13 +259,13 @@ class _PlayPageState extends State<PlayPage> {
                                                       currentMatch["id"] == "tutorial"
                                                           ? "tutorial"
                                                           : "${currentMatch["wins"]}/7 wins",
-                                                      style: kBodyText2.apply(
+                                                      style: InheritedTextStyle.of(context).kBodyText2.apply(
                                                           color: kGray,
                                                           fontFamily: "Bebas neue"),
                                                     ),
                                                     Text(
                                                       "#${currentMatch["rank"] + 1}",
-                                                      style: kBodyText1.apply(
+                                                      style: InheritedTextStyle.of(context).kBodyText1.apply(
                                                           fontFamily: "Bebas neue"),
                                                     )
                                                   ],
@@ -279,8 +279,8 @@ class _PlayPageState extends State<PlayPage> {
                         ),
                   );
                 }),
-                const SizedBox(
-                  height: 34,
+                SizedBox(
+                  height: 4.5.h,
                 ),
                 Row(
                   children: [
@@ -297,10 +297,10 @@ class _PlayPageState extends State<PlayPage> {
                           //if (matchId == "err") _isLoadingMatch = false;
                         },
                         child: Container(
-                          margin: const EdgeInsets.fromLTRB(8, 0, 8, 42),
+                          margin: EdgeInsets.fromLTRB(8, 0, 8, 5.h),
                           decoration: BoxDecoration(
                               color: kPrimary,
-                              borderRadius: BorderRadius.circular(20)),
+                              borderRadius: BorderRadius.circular(18)),
                           child: Padding(
                             key: user.keys[2],
                             padding: const EdgeInsets.fromLTRB(12, 12, 25, 12),
@@ -318,16 +318,16 @@ class _PlayPageState extends State<PlayPage> {
                                     ),
                                   ),
                                 ) :
-                                const Icon(
+                                Icon(
                                   Icons.play_arrow_outlined,
                                   color: kText,
-                                  size: 50,
+                                  size: 28.sp,
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(top: 3.5, left: 1),
                                   child: Text(
                                     hasMatchInProgress? "Go to match" :"Start a match",
-                                    style: kBodyText1,
+                                    style: InheritedTextStyle.of(context).kBodyText1,
                                   ),
                                 ),
                               ],
@@ -343,23 +343,4 @@ class _PlayPageState extends State<PlayPage> {
           : SoloMatch(matchId: user.inGame['id']);
     });
   }
-}
-Widget _buildItem(
-    BuildContext context, String item, Animation<double> animation) {
-  TextStyle textStyle = const TextStyle(fontSize: 20, color: Colors.white);
-  return Padding(
-    padding: const EdgeInsets.all(2.0),
-    child: ScaleTransition(
-      child: SizedBox(
-        height: 100.0,
-        child: Card(
-          color: Colors.lightBlueAccent,
-          child: Center(
-            child: Text(item, style: textStyle),
-          ),
-        ),
-      ),
-      scale: animation,
-    ),
-  );
 }

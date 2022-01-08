@@ -85,7 +85,7 @@ class _AdButtonState extends State<AdButton> {
           );
         },
         onAdFailedToLoad: (err) {
-          print('Failed to load a rewarded ad: ${err.message}');
+          print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
           setState(() {
             _lastAdError = true;
           });
@@ -110,7 +110,7 @@ class _AdButtonState extends State<AdButton> {
     if (widget.goal == "earnMoreSoloMatch") {
       match = context.read<FfaMatch>();
     }
-    if (!kDebugMode) _initGoogleMobileAds();
+    if (true) _initGoogleMobileAds();
     super.initState();
   }
 

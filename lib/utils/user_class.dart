@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/store_quests_data.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 
 import 'ad_helper.dart';
 
@@ -36,7 +38,6 @@ class User extends ChangeNotifier {
   InterstitialAd? interstitialAd;
 
   Future<void> refresh({notify = true}) async {
-
     var accountData = await callApi.get("/account");
     if (accountData["successful"] == false) return;
     value = accountData["data"];
@@ -44,7 +45,6 @@ class User extends ChangeNotifier {
     var inGameData = value["user"]["inGame"];
     var currentMatch =
         inGameData.where((g) => g["isFinished"] == false).toList();
-
 
     var newDailyChallengeData = value["user"]["dailyChallenge"]["challenges"];
     var ssOldDailyChallengeData = await getNonNullSSData("dailyChallengeData");
@@ -55,7 +55,6 @@ class User extends ChangeNotifier {
 
     /*await secureStorage.write(
         key: "dailyChallengeData", value: jsonEncode(newDailyChallengeData));*/
-
 
     try {
       if (currentMatch.length > 0) {
@@ -74,7 +73,8 @@ class User extends ChangeNotifier {
 
   Future<bool> refreshQuests(BuildContext context,
       {bool showInfo = false, isTutorial = false}) async {
-    var accountData = await callApi.get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
+    var accountData = await callApi
+        .get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
 
     if (accountData["successful"] == false) return true;
     var accountDataDecoded = accountData["data"]["solo"];
@@ -113,7 +113,7 @@ class User extends ChangeNotifier {
       );
       return false;
     }
-    if(accountData["data"]["updatedPlatforms"] == null) {
+    if (accountData["data"]["updatedPlatforms"] == null) {
       return false;
     }
 
@@ -222,7 +222,7 @@ class User extends ChangeNotifier {
     if (isOnlyLayout) {
       inGame = null;
       gamesPlayedInMatch = 0;
-      if(matchHistoryAnimated) animateMatchHistory = true;
+      if (matchHistoryAnimated) animateMatchHistory = true;
       notifyListeners();
       if (isFromMatchHistory) refresh(notify: false);
       return;
@@ -262,7 +262,7 @@ class User extends ChangeNotifier {
 
     // Handle if there is no questsData key in secure storage
     var oldQuestsData1 = await getNonNullSSData("questsData");
-    if(oldQuestsData1 != "no data"){
+    if (oldQuestsData1 != "no data") {
       oldQuestsData = jsonDecode(oldQuestsData1);
     } else {
       refreshOldQuestsData();
@@ -309,14 +309,16 @@ class User extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> collectQuest(int questId, String type, int price, {isTutorial = false}) async {
+  Future<void> collectQuest(int questId, String type, int price,
+      {isTutorial = false}) async {
     var result =
         await callApi.post("/solo/collect?id=$questId&type=$type", "{}");
     if (result["successful"] == false) return;
     try {
-      var dailyChallenge = value["user"]["dailyChallenge"]["challenges"].firstWhere(
+      var dailyChallenge = value["user"]["dailyChallenge"]["challenges"]
+          .firstWhere(
               (e) => e["goal"] == "winhallaQuest" && e["active"] == true,
-          orElse: () => null);
+              orElse: () => null);
       if (dailyChallenge != null) {
         refresh();
         FirebaseAnalytics.instance.logEvent(
@@ -328,10 +330,12 @@ class User extends ChangeNotifier {
       }
     } catch (e) {}
 
-    var quest = quests["${type}Quests"].firstWhere((e) => e["id"] == questId, orElse: ()=>null);
+    var quest = quests["${type}Quests"]
+        .firstWhere((e) => e["id"] == questId, orElse: () => null);
 
-    if(quest != null){
-      showCoinDropdown(appBarKey.currentContext as BuildContext, value["user"]["coins"], quest["reward"]);
+    if (quest != null) {
+      showCoinDropdown(appBarKey.currentContext as BuildContext,
+          value["user"]["coins"], quest["reward"]);
     }
     FirebaseAnalytics.instance.logEvent(
       name: "CollectQuest",
@@ -339,9 +343,11 @@ class User extends ChangeNotifier {
 
     quests["${type}Quests"].removeWhere((e) => e["id"] == questId);
     value["user"]["coins"] += price;
-    if(!isTutorial && lastInterstitialAd + 90 * 1000 < DateTime.now().millisecondsSinceEpoch) {
-      Future.delayed(const Duration(milliseconds: 1400),()=>showInterstitialAd());
-
+    if (!isTutorial &&
+        lastInterstitialAd + 90 * 1000 <
+            DateTime.now().millisecondsSinceEpoch) {
+      Future.delayed(
+          const Duration(milliseconds: 1400), () => showInterstitialAd());
     }
     refreshOldQuestsData();
     notifyListeners();
@@ -387,30 +393,30 @@ class User extends ChangeNotifier {
   void refreshOldQuestsData() async {
     var questsDataStored = storeQuestsData(quests);
     oldQuestsData = questsDataStored;
-
   }
 
   void refreshOldDailyChallengeData() async {
     oldDailyChallengeData = value["user"]["dailyChallenge"]["challenges"];
     await secureStorage.write(
-        key: "dailyChallengeData", value: jsonEncode(value["user"]["dailyChallenge"]["challenges"]));
-
+        key: "dailyChallengeData",
+        value: jsonEncode(value["user"]["dailyChallenge"]["challenges"]));
   }
 
-  User(this.value, this.callApi, this.keys, this.inGame, this.oldDailyChallengeData);
+  User(this.value, this.callApi, this.keys, this.inGame,
+      this.oldDailyChallengeData);
 
   void setAnimateMatchHistory(bool setTo) {
     animateMatchHistory = setTo;
   }
 
   Future<void> showInterstitialAd() async {
-    if (kDebugMode) return;
+    //if (kDebugMode) return;
     if (!hasAlreadyInitAdmob) {
       await MobileAds.instance.initialize();
       hasAlreadyInitAdmob = true;
     }
     lastInterstitialAd = DateTime.now().millisecondsSinceEpoch;
-    if(interstitialAd != null){
+    if (interstitialAd != null) {
       interstitialAd?.show();
       InterstitialAd.load(
         adUnitId: AdHelper.interstitialAdUnitId,
@@ -458,7 +464,6 @@ class User extends ChangeNotifier {
     await MobileAds.instance.initialize();
     hasAlreadyInitAdmob = true;
   }
-
 }
 
 Future<dynamic> initUser(context) async {
@@ -472,32 +477,38 @@ Future<dynamic> initUser(context) async {
   dynamic tutorialFinished;
   dynamic tutorialStep;
   try {
-    tutorialFinished = data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true ? false : true;
+    tutorialFinished =
+        data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true
+            ? false
+            : true;
 
     if (data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true) {
       tutorialStep = 17;
-
-    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] == true) {
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] ==
+        true) {
       tutorialStep = 13;
-
-    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] == true) {
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] ==
+        true) {
       tutorialStep = 8;
-
     } else {
       tutorialStep = 0;
-
     }
   } catch (e) {}
   dynamic oldDailyChallengeData;
-  try{
-    var newDailyChallengeData = data["data"]["user"]["dailyChallenge"]["challenges"];
+  try {
+    var newDailyChallengeData =
+        data["data"]["user"]["dailyChallenge"]["challenges"];
     var ssOldDailyChallengeData = await getNonNullSSData("dailyChallengeData");
 
     oldDailyChallengeData = ssOldDailyChallengeData != "no data"
         ? jsonDecode(ssOldDailyChallengeData)
         : newDailyChallengeData;
-  }catch(e){}
-
+  } catch (e) {}
+  if (await AppTrackingTransparency.trackingAuthorizationStatus ==
+          TrackingStatus.notDetermined &&
+      Platform.isIOS) {
+    await AppTrackingTransparency.requestTrackingAuthorization();
+  }
   return {
     "data": data["data"],
     "authKey": storageKey,

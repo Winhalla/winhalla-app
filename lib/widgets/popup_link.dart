@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/widgets/tip_painter.dart';
 import 'package:share/share.dart';
+
+import 'inherited_text_style.dart';
 
 Widget LinkActivatedWidget(){
   return Builder(
@@ -18,10 +21,10 @@ Widget LinkActivatedWidget(){
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Expanded(
+              Expanded(
                 child: Text(
                   "Referral boost activated",
-                  style: kHeadline2,
+                  style: InheritedTextStyle.of(context).kHeadline2,
                 ),
               ),
               GestureDetector(
@@ -47,7 +50,7 @@ Widget LinkActivatedWidget(){
         content: Padding(
           padding: const EdgeInsets.fromLTRB(6,0,4,0),
           child: RichText(
-            text: const TextSpan(style: kBodyText3, children: [
+            text: TextSpan(style: InheritedTextStyle.of(context).kBodyText3, children: const [
               TextSpan(text: "We detected a friend shared the app to you: you have a ", style: TextStyle(height: 1.3)),
               TextSpan(text: "20% coin boost", style: TextStyle(color: kPrimary,height: 1.3)),
               TextSpan(text: " for 2 weeks!", style: TextStyle(height: 1.3))
@@ -64,7 +67,7 @@ Widget LinkActivatedWidget(){
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  Text("Got it", style: kBodyText2.apply(color:kGreen),),
+                  Text("Got it", style: InheritedTextStyle.of(context).kBodyText2.apply(color:kGreen),),
                   const SizedBox(width: 7,),
                   const Icon(Icons.check,color: kGreen,),
               ],),
@@ -86,9 +89,9 @@ Widget LinkInfoWidget(String linkId){
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
+            Text(
               "Share the app",
-              style: kHeadline2,
+              style: InheritedTextStyle.of(context).kHeadline2,
             ),
             GestureDetector(
               onTap: () async {
@@ -132,9 +135,9 @@ Widget LinkInfoWidget(String linkId){
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       SizedBox(
-                        width: 180,
+                        width: 40.w,
                         child: RichText(
-                          text: const TextSpan(style: kBodyText3, children: [
+                          text: TextSpan(style: InheritedTextStyle.of(context).kBodyText3, children: const [
                             TextSpan(text: "Get "),
                             TextSpan(text: "20% ", style: TextStyle(color: kPrimary)),
                             TextSpan(text: "of your friend's rewards")
@@ -145,10 +148,10 @@ Widget LinkInfoWidget(String linkId){
                         height: 19,
                       ),
                       SizedBox(
-                        width: 180,
+                        width: 40.w,
                         child: RichText(
                           softWrap: true,
-                          text: const TextSpan(style: kBodyText3, children: [
+                          text: TextSpan(style: InheritedTextStyle.of(context).kBodyText3, children: const [
                             TextSpan(text: "Each of your friends gets a  "),
                             TextSpan(text: "20% boost ",style: TextStyle(color: kPrimary)),
                           ]),
@@ -170,12 +173,12 @@ Widget LinkInfoWidget(String linkId){
                 padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Icon(Icons.share,color: kText,size: 30,),
-                    SizedBox(width: 6,),
+                  children: [
+                    const Icon(Icons.share,color: kText,size: 30,),
+                    const SizedBox(width: 6,),
                     Padding(
-                      padding: EdgeInsets.only(top: 2.5),
-                      child: Text("Share", style: kBodyText1,),
+                      padding: const EdgeInsets.only(top: 2.5),
+                      child: Text("Share", style: InheritedTextStyle.of(context).kBodyText1,),
                     )
                 ],)
               )
