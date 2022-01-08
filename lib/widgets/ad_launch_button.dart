@@ -68,12 +68,11 @@ class _AdButtonState extends State<AdButton> {
                 await user.refresh();
                 user.keyFx["rebuildHomePage"]();
               }
-
             },
           );
         },
         onAdFailedToLoad: (err) {
-          print('Failed to load a rewarded ad: ${err.message}');
+          print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
           setState(() {
             _lastAdError = true;
           });

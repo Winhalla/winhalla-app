@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -475,7 +476,8 @@ Future<dynamic> initUser(context) async {
         : newDailyChallengeData;
   } catch (e) {}
   if (await AppTrackingTransparency.trackingAuthorizationStatus ==
-      TrackingStatus.notDetermined) {
+          TrackingStatus.notDetermined &&
+      Platform.isIOS) {
     await AppTrackingTransparency.requestTrackingAuthorization();
   }
   return {
