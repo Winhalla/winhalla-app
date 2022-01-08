@@ -93,7 +93,7 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
       FirebaseAnalytics.instance.setUserId(
           id: accountData["steam"]["id"]
       );
-      if (accountData != null) {
+      if (accountData["user"] != null) {
         Navigator.pop(context);
         Navigator.pushNamed(context, "/");
         return;
