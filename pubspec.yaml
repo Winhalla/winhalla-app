@@ -49,6 +49,7 @@ dependencies:
   firebase_core: ^1.10.0
   responsive_sizer: ^3.0.4+4
   sign_in_with_apple: ^3.3.0
+  app_tracking_transparency: ^2.0.2+1
 
 dev_dependencies:
   flutter_test:
@@ -72,7 +73,6 @@ flutter:
     - assets/animated/
     - assets/images/icons/
     - assets/images/icons/pink/
-    - assets/images/shopItems/
   fonts:
     - family: Bebas Neue
       fonts:
