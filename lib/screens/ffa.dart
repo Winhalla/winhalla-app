@@ -75,10 +75,7 @@ class _SoloMatchState extends State<SoloMatch> {
                   if (hasNotChanged &&
                       await getNonNullSSData("hideNoRefreshMatch") != "true") {
                     if (user.appBarKey.currentContext != null) {
-                      showDialog(
-                          context:
-                              user.appBarKey.currentContext as BuildContext,
-                          builder: (_) => NoRefreshPopup("match"));
+                      showDialog(context: user.appBarKey.currentContext as BuildContext, builder: (_) => NoRefreshPopup("match"));
                     }
                   }
                   return;
@@ -339,16 +336,16 @@ class _SoloMatchState extends State<SoloMatch> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsets.only(top: 3.0),
+                                      padding: const EdgeInsets.only(top: 3.0),
                                       child: Text(
                                         "TIP",
                                         style: InheritedTextStyle.of(context).kBodyText2bis.apply(color: kGreen)
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       width: 5,
                                     ),
-                                    Icon(
+                                    const Icon(
                                       Icons.lightbulb_outline_sharp,
                                       color: kGreen,
                                     )
@@ -373,7 +370,7 @@ class _SoloMatchState extends State<SoloMatch> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         SizedBox(
-                                              width: 50.h,
+                                              width: 28.h,
                                               child: RichText(
                                                 text: TextSpan(
                                                     style: InheritedTextStyle.of(context).kBodyText3,
@@ -393,7 +390,7 @@ class _SoloMatchState extends State<SoloMatch> {
                                           height: 25,
                                         ),
                                         SizedBox(
-                                          width: 50.h,
+                                          width: 28.h,
                                           child: RichText(
                                             softWrap: true,
                                             text: TextSpan(

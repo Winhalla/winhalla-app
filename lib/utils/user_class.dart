@@ -380,7 +380,7 @@ class User extends ChangeNotifier {
   }
 
   Future<void> showInterstitialAd() async {
-    //if (kDebugMode) return;
+    if (kDebugMode) return;
     if (!hasAlreadyInitAdmob) {
       await MobileAds.instance.initialize();
       hasAlreadyInitAdmob = true;
