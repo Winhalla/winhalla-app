@@ -87,7 +87,8 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
     }
     await secureStorage.write(key: "authKey", value: idToken);
     try{
-      var accountData = jsonDecode((await http.get(getUri("/account"), headers: {"authorization": idToken})).body)["user"];
+      var accountData = jsonDecode((await http.get(getUri("/account"), headers: {"authorization": idToken})).body);
+      print(accountData);
       FirebaseCrashlytics.instance.setUserIdentifier(accountData["steam"]["id"]);
       FirebaseAnalytics.instance.setUserId(
           id: accountData["steam"]["id"]
