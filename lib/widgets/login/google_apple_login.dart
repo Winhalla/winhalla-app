@@ -88,6 +88,10 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
     await secureStorage.write(key: "authKey", value: idToken);
     try{
       var accountData = jsonDecode((await http.get(getUri("/account"), headers: {"authorization": idToken})).body)["user"];
+      FirebaseCrashlytics.instance.setUserIdentifier(accountData["steam"]["id"]);
+      FirebaseAnalytics.instance.setUserId(
+          id: accountData["steam"]["id"]
+      );
       if (accountData != null) {
         Navigator.pop(context);
         Navigator.pushNamed(context, "/");
@@ -105,10 +109,7 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
           "method":loginMethod
         }
     );
-    FirebaseCrashlytics.instance.setUserIdentifier(accountData["steam"]["id"]);
-    FirebaseAnalytics.instance.setUserId(
-        id: accountData["steam"]["id"]
-    );
+
   }
 
   @override
