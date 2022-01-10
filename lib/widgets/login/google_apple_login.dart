@@ -44,15 +44,6 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
           // while for Android you will be using the API server that redirects back into your app via a deep link
         ),
       );
-      await http.post(getUri("/auth/createToken"), body: {
-        "token": credential.authorizationCode,
-        "name": credential.familyName != null && credential.givenName != null
-            ? (credential.givenName as String) + (credential.familyName as String)
-            : "",
-        "mode": "apple",
-        'useBundleId':Platform.isIOS ? "true"
-            : "false",
-      });
     }
 
     if (isGoogleLogin ? credential["auth"].accessToken == null : credential.authorizationCode == null) return;
