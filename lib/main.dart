@@ -14,6 +14,7 @@ import 'package:winhalla_app/screens/login.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
+import 'package:winhalla_app/widgets/popup_leave_match.dart';
 import 'config/themes/dark_theme.dart';
 
 void main() async {
@@ -99,7 +100,9 @@ class MyApp extends StatelessWidget {
                               'joinDate': currentMatch[0]["joinDate"]
                             };
                           }
-
+                          Future.delayed(const Duration(milliseconds: 1),(){
+                            showDialog(context: context, builder: (_)=>LeaveMatchPopup());
+                          });
                           return ChangeNotifierProvider<User>(
                               create: (_) => User(newData, callApi, keys, inGame, res.data["oldDailyChallengeData"]),
                               child: AppCore(
