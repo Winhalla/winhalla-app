@@ -434,7 +434,7 @@ class Price extends StatelessWidget {
         if (result["success"] == true) {
           showInfoDropdown(context, kGreen, "Gift sent!",
               body: Text(
-                "check your mails",
+                "Check your mails",
                 style: Theme.of(context)
                     .textTheme
                     .bodyText2
