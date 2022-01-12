@@ -12,7 +12,7 @@ import 'package:winhalla_app/utils/steam.dart';
 
 import 'inherited_text_style.dart';
 RegExp emailChecker = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
-Widget PopupWidget(BuildContext context,String email,int itemId,{int? amount}) {
+Widget PopupWidget(BuildContext context,String email,int itemId,{num? amount}) {
   final TextEditingController emailTextController = TextEditingController(text:email);
   bool isEmailValid = true;
   String? _err;
