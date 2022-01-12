@@ -100,9 +100,7 @@ class MyApp extends StatelessWidget {
                               'joinDate': currentMatch[0]["joinDate"]
                             };
                           }
-                          Future.delayed(const Duration(milliseconds: 1),(){
-                            showDialog(context: context, builder: (_)=>LeaveMatchPopup());
-                          });
+
                           return ChangeNotifierProvider<User>(
                               create: (_) => User(newData, callApi, keys, inGame, res.data["oldDailyChallengeData"]),
                               child: AppCore(
