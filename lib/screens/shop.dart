@@ -219,7 +219,7 @@ class _PaypalCreditState extends State<PaypalCredit> {
   void _addressControllerListener() {
     try {
       setState(() {
-        amount = int.parse(textAmount.text);
+        amount = double.parse(textAmount.text);
       });
     } catch (e) {
       setState(() {
@@ -335,7 +335,7 @@ class _PaypalCreditState extends State<PaypalCredit> {
                     cost:
                         "${(widget.cost * items[_selectedItem]["amount"]).toInt()}",
                     itemId: widget.itemId,
-                    amount: amount.runtimeType == String ? null : amount,
+                    amount: items[_selectedItem]["amount"],
                   ),
                 ],
               )
@@ -350,7 +350,7 @@ class _PaypalCreditState extends State<PaypalCredit> {
                       width: 35,
                       child: TextField(
                         inputFormatters: [
-                          LengthLimitingTextInputFormatter(2),
+                          LengthLimitingTextInputFormatter(4),
                         ],
                         controller: textAmount,
                         decoration: InputDecoration(
@@ -398,7 +398,7 @@ class _PaypalCreditState extends State<PaypalCredit> {
 class Price extends StatelessWidget {
   final String cost;
   final int itemId;
-  final int? amount;
+  final num? amount;
   const Price({Key? key, required this.cost, required this.itemId, this.amount})
       : super(key: key);
 
@@ -408,7 +408,7 @@ class Price extends StatelessWidget {
       onTap: () async {
         var userInfo = context.read<User>().value["user"];
         try {
-          if (userInfo["coins"] < int.parse(cost)) {
+          if (userInfo["coins"] < double.parse(cost)) {
             FirebaseAnalytics.instance.logEvent(
                 name: "ClickedShopItemPrice",
                 parameters: {
@@ -449,7 +449,7 @@ class Price extends StatelessWidget {
         if (result["success"] == true) {
           showInfoDropdown(context, kGreen, "Gift sent!",
               body: Text(
-                "check your mails",
+                "Check your mails",
                 style: Theme.of(context)
                     .textTheme
                     .bodyText2

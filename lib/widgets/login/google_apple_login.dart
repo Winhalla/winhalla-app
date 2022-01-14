@@ -185,9 +185,13 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
                 child: Container(
                   decoration: BoxDecoration(
                     color: kBlack,
+                    border: Border.all(
+                      color: kPrimary,
+                      width: 1,
+                    ),
                     borderRadius: BorderRadius.circular(15),
                   ),
-                  padding: const EdgeInsets.fromLTRB(26.5, 20, 20, 20),
+                  padding: const EdgeInsets.fromLTRB(25.5, 19, 19, 19),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -221,8 +225,12 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
                   decoration: BoxDecoration(
                     color: kBlack,
                     borderRadius: BorderRadius.circular(15),
+                    border: Border.all(
+                      color: kPrimary,
+                      width: 1,
+                    ),
                   ),
-                  padding: const EdgeInsets.fromLTRB(25, 20, 20, 20),
+                  padding: const EdgeInsets.fromLTRB(24, 19, 19, 19),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
