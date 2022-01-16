@@ -45,7 +45,10 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
         ),
       );
     }
-
+    try{
+      if (isGoogleLogin && credential["auth"] == null) return;
+    } catch(e){}
+    
     if (isGoogleLogin ? credential["auth"].accessToken == null : credential.authorizationCode == null) return;
 
     dynamic idToken;
