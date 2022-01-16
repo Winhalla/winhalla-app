@@ -358,7 +358,7 @@ class _PaypalCreditState extends State<PaypalCredit> {
                           suffixStyle: InheritedTextStyle.of(context).kBodyText3,
                           border: InputBorder.none,
                         ),
-                        keyboardType: TextInputType.phone,
+                        keyboardType: TextInputType.number,
                         style: InheritedTextStyle.of(context).kBodyText3,
                       ),
                     ),
