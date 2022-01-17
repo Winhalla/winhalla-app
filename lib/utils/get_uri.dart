@@ -5,11 +5,15 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'custom_http.dart';
-const String apiUrl = "https://api.winhalla.app";
 
-Uri getUri (String path,){
-  return Uri.parse(apiUrl+path); // 192.168.1.33:4000
+const String apiUrl = "http://192.168.1.27:4000";
+
+Uri getUri(
+  String path,
+) {
+  return Uri.parse(apiUrl + path); // 192.168.1.33:4000
 }
+
 class CallApi {
   String authKey;
   BuildContext context;
@@ -18,7 +22,8 @@ class CallApi {
   Future get(String path, {bool showError = true}) async {
     late Response result;
     try {
-      result = await http.get(Uri.parse(apiUrl + path), headers: {"authorization": authKey});
+      result = await http
+          .get(Uri.parse(apiUrl + path), headers: {"authorization": authKey});
     } catch (e) {
       print(e);
       if (showError) {
@@ -83,8 +88,7 @@ class CallApi {
             "authorization": authKey,
             "Content-Type": "application/json"
           },
-          body: body
-      );
+          body: body);
     } catch (e) {
       if (showError) {
         showInfoDropdown(
@@ -93,8 +97,7 @@ class CallApi {
           "Error:",
           body: Text(
             "Winhalla's servers are unreachable, please check your internet connection or try again later",
-            style: Theme
-                .of(context)
+            style: Theme.of(context)
                 .textTheme
                 .bodyText2
                 ?.merge(InheritedTextStyle.of(context).kBodyText4),
@@ -105,7 +108,7 @@ class CallApi {
       }
       return {
         "data":
-        "Winhalla's servers are unreachable, please check your internet connection or try again later",
+            "Winhalla's servers are unreachable, please check your internet connection or try again later",
         "successful": false,
         "addText": false
       };
@@ -119,8 +122,7 @@ class CallApi {
           "Error:",
           body: Text(
             result.body.toString(),
-            style: Theme
-                .of(context)
+            style: Theme.of(context)
                 .textTheme
                 .bodyText2
                 ?.merge(InheritedTextStyle.of(context).kBodyText4),

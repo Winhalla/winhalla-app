@@ -2,7 +2,7 @@
     package="com.winhalla.app">
     <uses-permission android:name="android.permission.INTERNET" />
     <application
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/app_icon"
         android:label="Winhalla">
         <activity
             android:name="com.aboutyou.dart_packages.sign_in_with_apple.SignInWithAppleCallback"

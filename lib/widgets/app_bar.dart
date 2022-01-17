@@ -6,6 +6,7 @@ import 'package:winhalla_app/widgets/login/google_apple_login.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/account_edit_warning.dart';
+import 'package:winhalla_app/widgets/popup_leave_match.dart';
 import 'package:winhalla_app/widgets/popup_legal.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
 
@@ -94,8 +95,14 @@ class _MyAppBarState extends State<MyAppBar> {
                 }
                 return GestureDetector(
                   behavior: HitTestBehavior.translucent,
-                  onTap: () {
-                    user.exitMatch();
+                  onTap: () async {
+                    bool shouldQuit = true;
+                    if (await getNonNullSSData ("hideLeaveMatchPopup") != "true") {
+                      shouldQuit = await showDialog(
+                          context: context,
+                          builder: (_) => LeaveMatchPopup()) ?? true;
+                    }
+                    if (shouldQuit) user.exitMatch();
                   },
                   child: Row(
                     children: [
