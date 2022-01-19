@@ -73,9 +73,11 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
       }
       idToken = jsonDecode(idToken.body)["_id"];
     } catch (e) {
-      setState(() {
-        _err = e.toString();
-      });
+      if(mounted) {
+        setState(() {
+          _err = e.toString();
+        });
+      }
     }
     await secureStorage.write(key: "authKey", value: idToken);
     try{

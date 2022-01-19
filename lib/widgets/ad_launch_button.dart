@@ -9,12 +9,17 @@ import 'package:winhalla_app/utils/user_class.dart';
 class AdButton extends StatefulWidget {
   final Widget child;
   final Widget adNotReadyChild;
+  final Widget adErrorChild;
   final String goal;
   const AdButton(
       {Key? key,
       required this.child,
       required this.goal,
       this.adNotReadyChild = const SizedBox(
+        height: 0,
+        width: 0,
+      ),
+      this.adErrorChild = const SizedBox(
         height: 0,
         width: 0,
       )})
@@ -105,7 +110,7 @@ class _AdButtonState extends State<AdButton> {
   Widget build(BuildContext context) {
     return GestureDetector(
         behavior: HitTestBehavior.translucent,
-        child: isAdReady ? widget.child : widget.adNotReadyChild,
+        child: isAdReady ? widget.child : _lastAdError ? widget.adErrorChild : widget.adNotReadyChild,
         onTap: playAd);
   }
 }
