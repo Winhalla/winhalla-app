@@ -277,7 +277,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "$PODS_ROOT/FirebaseCrashlytics/upload-symbols --build-phase --validate -ai 1:715775621317:ios:232bef053acc2092dcd8ac  \n$PODS_ROOT/FirebaseCrashlytics/upload-symbols --build-phase -ai 1:715775621317:ios:232bef053acc2092dcd8ac\n";
+			shellScript = "${PODS_ROOT}/FirebaseCrashlytics/run\n$PODS_ROOT/FirebaseCrashlytics/upload-symbols --build-phase --validate -ai 1:715775621317:ios:232bef053acc2092dcd8ac  \n$PODS_ROOT/FirebaseCrashlytics/upload-symbols --build-phase -ai 1:715775621317:ios:232bef053acc2092dcd8ac\n";
 		};
 		9740EEB61CF901F6004384FC /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -291,7 +291,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
 		};
 		FB75B0B9EE3F92444418CB5C /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -532,6 +532,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Runner/RunnerDebug.entitlements;
 				CURRENT_PROJECT_VERSION = "$(FLUTTER_BUILD_NUMBER)";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 8HVJN2V9Y6;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
