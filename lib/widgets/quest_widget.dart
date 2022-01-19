@@ -165,6 +165,18 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                                 ],
                               ),
                             ),
+
+                            adErrorChild: Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color: kText80),
+                              padding:
+                              const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                              child: Text(
+                                "Ad Error.",
+                                style: InheritedTextStyle.of(context).kBodyText4.apply(color: kBlack),
+                              ),
+                            ),
                             adNotReadyChild: Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(15),

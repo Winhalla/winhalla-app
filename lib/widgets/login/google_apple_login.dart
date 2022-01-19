@@ -47,7 +47,10 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
         ),
       );
     }
-
+    try{
+      if (isGoogleLogin && credential["auth"] == null) return;
+    } catch(e){}
+    
     if (isGoogleLogin ? credential["auth"].accessToken == null : credential.authorizationCode == null) return;
 
     dynamic idToken;
@@ -72,9 +75,11 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
       }
       idToken = jsonDecode(idToken.body)["_id"];
     } catch (e) {
-      setState(() {
-        _err = e.toString();
-      });
+      if(mounted) {
+        setState(() {
+          _err = e.toString();
+        });
+      }
     }
     await secureStorage.write(key: "authKey", value: idToken);
     try{

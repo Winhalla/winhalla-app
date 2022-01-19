@@ -194,6 +194,16 @@ class _SoloMatchState extends State<SoloMatch> {
                                   decoration: BoxDecoration(
                                       color: kText60,
                                       borderRadius: BorderRadius.circular(12))),
+                              adErrorChild: Container(
+                                  padding: const EdgeInsets.fromLTRB(
+                                      19, 11.5, 19, 8.5),
+                                  child: Text(
+                                    "Ad Error.",
+                                    style: InheritedTextStyle.of(context).kBodyText4.apply(color: kText),
+                                  ),
+                                  decoration: BoxDecoration(
+                                      color: kText60,
+                                      borderRadius: BorderRadius.circular(12))),
                               child: Container(
                                   padding: const EdgeInsets.fromLTRB(
                                       19, 11.5, 19, 8.5),

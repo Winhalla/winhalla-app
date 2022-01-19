@@ -8,6 +8,7 @@ import 'custom_http.dart';
 
 const String apiUrl = "https://api.winhalla.app";
 
+
 Uri getUri(
   String path,
 ) {
