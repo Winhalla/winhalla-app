@@ -19,19 +19,19 @@ class _ContactPageState extends State<ContactPage> {
     final List supportWays = [
       {
         "quote": RichText(
-          text: TextSpan(style: InheritedTextStyle.of(context).kBodyText2, children: [
+          text: TextSpan(style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 1.07), children: [
             const TextSpan(
               text: "Contact our support on ",
             ),
             TextSpan(
               text: "Discord",
-              style:InheritedTextStyle.of(context).kBodyText2.apply(color: kPrimary, decoration: TextDecoration.underline),
+              style: const TextStyle(color: kPrimary, decoration: TextDecoration.underline),
               recognizer: TapGestureRecognizer()..onTap = () => launchURLBrowser("https://discord.gg/Yb3vNASfXf"),
             ),
             const TextSpan(text: ", or send us an ", ),
             TextSpan(
               text: "email",
-              style:InheritedTextStyle.of(context).kBodyText2.apply(color: kPrimary, decoration: TextDecoration.underline) ,
+              style: const TextStyle(color: kPrimary, decoration: TextDecoration.underline) ,
               recognizer: TapGestureRecognizer()..onTap = () => launchMailto("contact@winhalla.app"),
             ),
             const TextSpan(text: " describing your issue.")
@@ -41,19 +41,19 @@ class _ContactPageState extends State<ContactPage> {
       },
       {
         "quote": RichText(
-          text: TextSpan(style: InheritedTextStyle.of(context).kBodyText2, children: [
+          text: TextSpan(style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 1.07), children: [
             const TextSpan(
               text: "If you have a question or a suggestion, contact us on ",
             ),
             TextSpan(
               text: "Discord",
-              style:InheritedTextStyle.of(context).kBodyText2.apply(color: kPrimary, decoration: TextDecoration.underline),
+              style: const TextStyle(color: kPrimary, decoration: TextDecoration.underline),
               recognizer: TapGestureRecognizer()..onTap = () => launchURLBrowser("https://discord.gg/Yb3vNASfXf"),
             ),
             const TextSpan(text: " or ", ),
             TextSpan(
               text: "Instagram",
-              style: InheritedTextStyle.of(context).kBodyText2.apply(color: kPrimary, decoration: TextDecoration.underline),
+              style: const TextStyle(color: kPrimary, decoration: TextDecoration.underline),
               recognizer: TapGestureRecognizer()..onTap = () => launchURLBrowser("https://www.instagram.com/winhalla/"),
             ),
             const TextSpan(text: "!")
@@ -63,13 +63,13 @@ class _ContactPageState extends State<ContactPage> {
       },
       {
         "quote": RichText(
-          text: TextSpan(style: InheritedTextStyle.of(context).kBodyText2, children: [
+          text: TextSpan(style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 1.07), children: [
             const TextSpan(
               text: "You are a content creator interested in promoting Winhalla, or you want to discuss with our commercial team? Send us an ",
             ),
             TextSpan(
               text: "email",
-              style:InheritedTextStyle.of(context).kBodyText2.apply(color: kPrimary,decoration: TextDecoration.underline),
+              style: const TextStyle(color: kPrimary,decoration: TextDecoration.underline),
               recognizer: TapGestureRecognizer()..onTap = () => launchMailto("contact@winhalla.app"),
             ),
             const TextSpan(text: ".", ),
@@ -108,20 +108,21 @@ class _ContactPageState extends State<ContactPage> {
                 shrinkWrap: true,
                 padding: EdgeInsets.only(bottom: 3.h,),
                 itemCount: supportWays.length,
-                itemBuilder: (BuildContext context, int index) {
+                itemBuilder: (BuildContext context, int i) {
                   return IconTheme(
                     data: IconThemeData(size: InheritedTextStyle.of(context).kHeadline1.apply(color:kText80).fontSize), // Edit this to change the dropdown icon size
                     child: ExpansionTile(
-                      initiallyExpanded: index == 0,
+                      childrenPadding: EdgeInsets.only(bottom: 3.5.h),
+                      initiallyExpanded: i == 0,
                       iconColor: kText,
                       collapsedIconColor: kText,
                       title: Text(
-                        supportWays[index]['author'],
+                        supportWays[i]['author'],
                         style: InheritedTextStyle.of(context).kBodyText1.apply(color:kText80),
                       ),
                       children: <Widget>[
                         ListTile(
-                          title: supportWays[index]['quote'],
+                          title: supportWays[i]['quote'],
                         )
                       ],
                     ),
