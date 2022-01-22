@@ -243,7 +243,7 @@ class _MyAppBarState extends State<MyAppBar> {
                                         children: [
                                           const Icon(
                                             Icons.share,
-                                            color: kOrange,
+                                            color: kPrimary,
                                             size: 30,
                                           ),
                                           const SizedBox(
@@ -251,6 +251,37 @@ class _MyAppBarState extends State<MyAppBar> {
                                           ),
                                           Text(
                                             "Referral link",
+                                            style: InheritedTextStyle.of(context).kBodyText2.apply(
+                                                fontFamily: "Bebas Neue"),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    behavior: HitTestBehavior.translucent,
+                                    onTap: () async {
+                                      Navigator.of(context).pushNamed("/contact");
+
+                                      await Future.delayed(
+                                          const Duration(milliseconds: 100));
+                                      overlayEntry.remove();
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.fromLTRB(
+                                          24, 0, 24, 19),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.contact_support_outlined,
+                                            color: kPrimary,
+                                            size: 30,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            "Contact",
                                             style: InheritedTextStyle.of(context).kBodyText2.apply(
                                                 fontFamily: "Bebas Neue"),
                                           ),

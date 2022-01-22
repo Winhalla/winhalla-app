@@ -73,6 +73,7 @@ flutter:
     - assets/animated/
     - assets/images/icons/
     - assets/images/icons/pink/
+    - assets/images/icons/socialIcons/
   fonts:
     - family: Bebas Neue
       fonts:

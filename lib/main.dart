@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:rive/rive.dart';
+import 'package:winhalla_app/screens/contact.dart';
 import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
@@ -132,7 +133,8 @@ class MyApp extends StatelessWidget {
                               ));
                         }),
                   ),
-              '/login': (context) => LoginPage(),
+              '/login': (context) => SafeArea(child: LoginPage()),
+              '/contact': (context) => const SafeArea(child: ContactPage()),
             },
           
         ),
