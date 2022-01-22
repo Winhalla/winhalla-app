@@ -99,7 +99,7 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
   Widget build(BuildContext context) {
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(42.5, 20, 42.5, 20),
+      padding: const EdgeInsets.fromLTRB(42.5, 0, 42.5, 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceAround,
