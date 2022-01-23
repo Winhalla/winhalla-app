@@ -12,6 +12,7 @@ import 'package:winhalla_app/utils/store_quests_data.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:winhalla_app/widgets/popup_link.dart';
 
 import 'ad_helper.dart';
 
@@ -445,6 +446,7 @@ Future<dynamic> initUser(context) async {
   if (data["successful"] == false) {
     return null;
   }
+  // Tutorial
   dynamic tutorialFinished;
   dynamic tutorialStep;
   try {
@@ -465,6 +467,7 @@ Future<dynamic> initUser(context) async {
       tutorialStep = 0;
     }
   } catch (e) {}
+  // Daily challenge
   dynamic oldDailyChallengeData;
   try {
     var newDailyChallengeData =
@@ -475,11 +478,38 @@ Future<dynamic> initUser(context) async {
         ? jsonDecode(ssOldDailyChallengeData)
         : newDailyChallengeData;
   } catch (e) {}
-  if (await AppTrackingTransparency.trackingAuthorizationStatus ==
-          TrackingStatus.notDetermined &&
-      Platform.isIOS) {
+  // App tracking transparency IOS
+  if (Platform.isIOS &&
+      await AppTrackingTransparency.trackingAuthorizationStatus ==
+          TrackingStatus.notDetermined) {
     await AppTrackingTransparency.requestTrackingAuthorization();
   }
+  // Referral link
+  try{
+    if(!kDebugMode){
+      String? timesOpened = await secureStorage.read(key: "timesOpened");
+      String? notFirstTime = await secureStorage.read(key: "hasShownLinkPopup");
+      print(timesOpened);
+      if(timesOpened == null){
+        await secureStorage.write(key: "timesOpened",value: "1");
+      } else {
+        int timesOpenInt = int.parse(timesOpened);
+        String linkId = data["data"]["user"]["linkId"];
+        int neededAppOpensToDisplayLinkAlert = notFirstTime == "true" ? 15 : 3;
+
+        if(timesOpenInt >= neededAppOpensToDisplayLinkAlert) {
+          showDialog(context: context, builder: (_)=> LinkInfoWidget(linkId));
+          await secureStorage.write(key: "timesOpened",value: "0");
+          if(notFirstTime == null) await secureStorage.write(key: "hasShownLinkPopup", value:"true");
+
+        } else {
+          await secureStorage.write(key: "timesOpened",value: "${timesOpenInt+1}");
+        }
+      }
+    }
+  }catch(e){}
+
+
   return {
     "data": data["data"],
     "authKey": storageKey,

@@ -152,8 +152,8 @@ Widget LinkInfoWidget(String linkId){
                         child: RichText(
                           softWrap: true,
                           text: TextSpan(style: InheritedTextStyle.of(context).kBodyText3, children: const [
-                            TextSpan(text: "Each of your friends gets a  "),
-                            TextSpan(text: "20% boost ",style: TextStyle(color: kPrimary)),
+                            TextSpan(text: "Each of your friends gets a "),
+                            TextSpan(text: "40% boost ",style: TextStyle(color: kPrimary)),
                           ]),
                         ),
                       ),
