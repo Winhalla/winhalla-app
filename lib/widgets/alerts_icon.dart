@@ -10,13 +10,10 @@ class AlertsIcon extends StatelessWidget {
   const AlertsIcon({Key? key, required this.severity, required this.infosList}) : super(key: key);
 
   Color severityToColor(severity){
-    switch (severity){
-      case 2:
-        return kRed;
-      case 1:
-        return kOrange;
-      default:
-        return kPrimary;
+    if(severity < 1 || severity == null) return kPrimary;
+    else if(severity == 1) return kOrange;
+    else {
+      return kRed;
     }
   }
   @override
@@ -27,6 +24,7 @@ class AlertsIcon extends StatelessWidget {
         late OverlayEntry overlayEntry;
         overlayEntry = OverlayEntry(
           builder: (context) {
+            ScrollController _scrollController = ScrollController();
             return DefaultTextStyle(
               style: const TextStyle(fontFamily: "Bebas neue"),
               child: Stack(
@@ -41,7 +39,7 @@ class AlertsIcon extends StatelessWidget {
                         ),
                       )),
                   Positioned(
-                    top: 125,
+                    top: 17.h,
                     left: 20,
                     child: Container(
                       padding: EdgeInsets.fromLTRB(3.25.h, 6.5.w, 3.25.h, 6.5.w),
@@ -59,11 +57,13 @@ class AlertsIcon extends StatelessWidget {
                         ],
                       ),
                       child: RawScrollbar(
+                        controller: _scrollController,
                         isAlwaysShown: true,
-                        radius: Radius.circular(10),
+                        radius: const Radius.circular(10),
                         thumbColor: kBackground,
-                        thickness: 5,
+                        thickness: 7,
                         child: SingleChildScrollView(
+                          controller: _scrollController,
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             mainAxisSize: MainAxisSize.min,
