@@ -47,7 +47,11 @@ class _MyAppBarState extends State<MyAppBar> {
                       builder: (context, user, _) {
                         var info = List.from(user.value["informations"]);
                         if(info.length == 0) return Container();
-                        info.sort((a, b) => b["severity"].compareTo(a["severity"]));
+                        info.sort((a, b) {
+                          if(b["severity"] == null) b["severity"] = 0;
+                          if(a["severity"] == null) a["severity"] = 0;
+                          return b["severity"].compareTo(a["severity"]);
+                        });
                         info.asMap().forEach((index, value) => value["index"] = index);
                         return AlertsIcon(severity: info[0]["severity"], infosList: info);
                       }
