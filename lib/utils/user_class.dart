@@ -509,7 +509,6 @@ Future<dynamic> initUser(context) async {
     }
   }catch(e){}
 
-
   return {
     "data": data["data"],
     "authKey": storageKey,

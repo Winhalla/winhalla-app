@@ -96,6 +96,7 @@ class MyApp extends StatelessWidget {
                           newData["callApi"] = null;
                           newData["user"] = res.data["data"]["user"];
                           newData["steam"] = res.data["data"]["steam"];
+                          newData["informations"] = res.data["data"]["informations"];
                           newData["tutorial"] = res.data["tutorial"];
 
                           List<GlobalKey?> keys = [];

@@ -10,6 +10,7 @@ import 'package:winhalla_app/widgets/popup_leave_match.dart';
 import 'package:winhalla_app/widgets/popup_legal.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
 
+import 'alerts_icon.dart';
 import 'inherited_text_style.dart';
 
 class MyAppBar extends StatefulWidget {
@@ -34,15 +35,23 @@ class _MyAppBarState extends State<MyAppBar> {
   Widget build(BuildContext context) {
     return Container(
       key: context.read<User>().appBarKey,
-      padding: EdgeInsets.fromLTRB(30, 3.5.h, 38, 3.5.h),
+      padding: EdgeInsets.fromLTRB(29, 3.5.h, 32, 3.5.h),
       color: kBackground,
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <
-          Widget> [
+          Widget>  [
             if (widget.currentPage == 2)
               Consumer<User>(builder: (context, user, _) {
                 user.setKeyFx(rebuildNavbar, "rebuildNavbar");
                 if (user.inGame == null || user.inGame["joinDate"] + 3600 * 1000 < DateTime.now().millisecondsSinceEpoch || user.inGame["isShown"] == false) {
-                  return const Text("");
+                  return Consumer<User>(
+                      builder: (context, user, _) {
+                        var info = List.from(user.value["informations"]);
+                        if(info.length == 0) return Container();
+                        info.sort((a, b) => b["severity"].compareTo(a["severity"]));
+                        info.asMap().forEach((index, value) => value["index"] = index);
+                        return AlertsIcon(severity: info[0]["severity"], infosList: info);
+                      }
+                  );
                 }
 
                 if (user.gamesPlayedInMatch > 0) {
@@ -119,8 +128,18 @@ class _MyAppBarState extends State<MyAppBar> {
                     ],
                   ),
                 );
-              }),
-            const Text(""),
+              })
+            else
+              Consumer<User>(
+                builder: (context, user, _) {
+                  var info = List.from(user.value["informations"]);
+                  if(info.length == 0) return Container();
+                  info.sort((a, b) => b["severity"].compareTo(a["severity"]));
+                  info.asMap().forEach((index, value) => value["index"] = index);
+                  return AlertsIcon(severity: info[0]["severity"], infosList: info);
+                }
+              ),
+            // const Text(""),
             GestureDetector(
               onTap: () {
                 var user = context.read<User>().value;
@@ -149,12 +168,12 @@ class _MyAppBarState extends State<MyAppBar> {
                               decoration: BoxDecoration(
                                 color: kBackgroundVariant,
                                 borderRadius: BorderRadius.circular(20),
-                                boxShadow: [
+                                boxShadow: const [
                                   BoxShadow(
-                                    color: Colors.black
-                                        .withOpacity(0.8), //color of shadow
-                                    spreadRadius: 5, //spread radius
-                                    blurRadius: 8, // blur radius
+                                    color: Colors.black, //color of shadow
+                                    offset: Offset(4,4),
+                                    spreadRadius: 0, //spread radius
+                                    blurRadius: 14, // blur radius
                                   ),
                                 ],
                               ),
@@ -345,17 +364,29 @@ class _MyAppBarState extends State<MyAppBar> {
                           "assets/images/logoMini.png",
                         );
                       } else {
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            ClipRRect(
-                              borderRadius:BorderRadius.circular(8),
-                              child: Image.network(
-                                user.value["steam"]["picture"],
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 3),
+                          decoration: BoxDecoration(
+                            color: kBackgroundVariant,
+                            borderRadius: BorderRadius.circular(8)
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Container(
+                                child: ClipRRect(
+                                  borderRadius:BorderRadius.circular(8),
+                                  child: Image.network(
+                                    user.value["steam"]["picture"],
+                                  ),
+                                ),
                               ),
-                            ),
-                            Icon(Icons.arrow_drop_down, color: kText, size: 9.w,)
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                child: Icon(Icons.arrow_drop_down_rounded, color: kText, size: 11.w,),
+                              )
+                            ],
+                          ),
                         );
                       }
                     })
