@@ -5,9 +5,7 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'custom_http.dart';
-
 const String apiUrl = "https://api.winhalla.app";
-
 
 Uri getUri(
   String path,

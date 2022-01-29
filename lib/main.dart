@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:rive/rive.dart';
+import 'package:winhalla_app/screens/contact.dart';
 import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
@@ -127,6 +128,7 @@ class MyApp extends StatelessWidget {
                           newData["callApi"] = null;
                           newData["user"] = res.data["data"]["user"];
                           newData["steam"] = res.data["data"]["steam"];
+                          newData["informations"] = res.data["data"]["informations"];
                           newData["tutorial"] = res.data["tutorial"];
 
                           List<GlobalKey?> keys = [];
@@ -175,7 +177,8 @@ class MyApp extends StatelessWidget {
                               ));
                         }),
                   ),
-              '/login': (context) => LoginPage(),
+              '/login': (context) => SafeArea(child: LoginPage()),
+              '/contact': (context) => const SafeArea(child: ContactPage()),
             },
           
         ),

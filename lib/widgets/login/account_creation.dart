@@ -65,7 +65,7 @@ class _AccountCreationState extends State<AccountCreation> {
       alreadyCreatedAccount = true;
     }
     return Padding(
-      padding: const EdgeInsets.fromLTRB(32, 70, 32, 0),
+      padding: const EdgeInsets.fromLTRB(32, 50, 32, 0),
       child: SingleChildScrollView(
         child: Column(
           children: [

@@ -31,7 +31,7 @@ class _EnterLinkState extends State<EnterLink> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(42.5, 60, 42.5, 0),
+      padding: const EdgeInsets.fromLTRB(42.5, 40, 42.5, 0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
