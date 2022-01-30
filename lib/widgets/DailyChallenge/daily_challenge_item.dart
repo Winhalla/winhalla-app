@@ -66,6 +66,7 @@ class _DailyChallengeItemState extends State<DailyChallengeItem> {
         firstCurve: Curves.easeInOut,
         secondCurve: Curves.easeInOutCirc,
         firstChild: QuestWidget(
+          isActive: isActive,
           name: widget.name,
           color: color,
           reward: widget.reward,

@@ -16,6 +16,7 @@ class QuestWidget extends StatefulWidget {
   int goal;
   final int reward;
   final bool showAdButton;
+  final bool isActive;
   final oldProgress;
   final showClickToCollect;
   QuestWidget({
@@ -27,6 +28,7 @@ class QuestWidget extends StatefulWidget {
     required this.reward,
     required this.oldProgress,
     this.showAdButton = false,
+    this.isActive = true,
     this.showClickToCollect = true,
   }) : super(key: key);
 
@@ -134,11 +136,11 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                           alignment: Alignment.centerLeft,
                           duration: const Duration(milliseconds: 200),
                         ),
-                        if (widget.showAdButton)
+                        if (widget.showAdButton && widget.isActive && widget.color != kGreen)
                           const SizedBox(
                             width: 10,
                           ),
-                        if (widget.showAdButton && widget.color != kGreen)
+                        if (widget.showAdButton && widget.isActive && widget.color != kGreen)
                           AdButton(
                             goal: 'dailyChallenge',
                             child: Container(
