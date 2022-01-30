@@ -382,10 +382,6 @@ class User extends ChangeNotifier {
 
   Future<void> showInterstitialAd() async {
     if (kDebugMode) return;
-    if (!hasAlreadyInitAdmob) {
-      await MobileAds.instance.initialize();
-      hasAlreadyInitAdmob = true;
-    }
     lastInterstitialAd = DateTime.now().millisecondsSinceEpoch;
     if (interstitialAd != null) {
       interstitialAd?.show();
@@ -430,14 +426,10 @@ class User extends ChangeNotifier {
       );
     }
   }
-
-  Future<void> initAdMob() async {
-    await MobileAds.instance.initialize();
-    hasAlreadyInitAdmob = true;
-  }
 }
 
 Future<dynamic> initUser(context) async {
+  await MobileAds.instance.initialize();
   await Firebase.initializeApp();
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";

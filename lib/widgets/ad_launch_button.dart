@@ -37,10 +37,6 @@ class _AdButtonState extends State<AdButton> {
   FfaMatch? match;
 
   Future<void> _initGoogleMobileAds() async {
-    if (!user.hasAlreadyInitAdmob) {
-      await user.initAdMob();
-      user.hasAlreadyInitAdmob = true;
-    }
     await RewardedAd.load(
       serverSideVerificationOptions: ServerSideVerificationOptions(
           userId: user.value["steam"]["id"],
@@ -77,6 +73,7 @@ class _AdButtonState extends State<AdButton> {
           );
         },
         onAdFailedToLoad: (err) {
+          print(err);
           print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
           setState(() {
             _lastAdError = true;
@@ -102,7 +99,7 @@ class _AdButtonState extends State<AdButton> {
     if (widget.goal == "earnMoreSoloMatch") {
       match = context.read<FfaMatch>();
     }
-    if (!kDebugMode) _initGoogleMobileAds();
+    if (!kDebugMode|| true) _initGoogleMobileAds();
     super.initState();
   }
 
