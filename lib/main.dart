@@ -1,7 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:intl/intl.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:rive/rive.dart';
+import 'package:rive/rive.dart' as Rive;
 import 'package:winhalla_app/screens/contact.dart';
 import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
@@ -18,9 +20,11 @@ import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_leave_match.dart';
 import 'config/themes/dark_theme.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   runApp(const MyApp());
+  initializeDateFormatting(Platform.localeName);
 }
 
 class MyApp extends StatelessWidget {
@@ -125,7 +129,6 @@ class MyApp extends StatelessWidget {
                               'joinDate': currentMatch[0]["joinDate"]
                             };
                           }
-
                           return ChangeNotifierProvider<User>(
                               create: (_) => User(newData, callApi, keys,
                                   inGame, res.data["oldDailyChallengeData"]),
@@ -164,6 +167,7 @@ class _AppCoreState extends State<AppCore> {
       context.read<User>().resetInGame();
     }
     setState(() {
+      selectedShopTab = "shop";
       _selectedIndex = index;
     });
   }
@@ -182,7 +186,7 @@ class _AppCoreState extends State<AppCore> {
   }
 
   bool hasSummonedTutorial = false;
-
+  String selectedShopTab = "shop";
   @override
   Widget build(BuildContext context) {
     Widget child = GestureDetector(
@@ -192,166 +196,246 @@ class _AppCoreState extends State<AppCore> {
             currentFocus.unfocus();
           }
         },
-        child: Scaffold(
-        backgroundColor: kBackground,
-        appBar: !widget.isUserDataLoaded
-            ? null
-            : PreferredSize(
-                preferredSize: Size.fromHeight(14.5.h),
-                child: MyAppBar(widget.isUserDataLoaded, _selectedIndex)),
-        body: widget.isUserDataLoaded
-            ? _selectedIndex == 2 ||
-                    _selectedIndex ==
-                        1 // If the page is a solo match or quest, do not make it scrollable by default, because it's already a ListView
-                ? Padding(
-                    padding: EdgeInsets.fromLTRB(32, 1.25.h, 32, 0),
-                    child: screenList[_selectedIndex],
-                  )
-                : SingleChildScrollView(
-                    child: Padding(
-                    padding: EdgeInsets.fromLTRB(32, 1.25.h, 32, 0),
-                    child: screenList[_selectedIndex],
-                  ))
-            : Padding(
-                padding: const EdgeInsets.only(left: 40, right: 40, bottom: 40),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Expanded(
-                      child: RiveAnimation.asset(
-                        "assets/animated/loading.riv",
+        child: Stack(
+          children: [
+            Scaffold(
+            backgroundColor: kBackground,
+            appBar: !widget.isUserDataLoaded
+                ? null
+                : PreferredSize(
+                    preferredSize: Size.fromHeight(14.5.h),
+                    child: MyAppBar(widget.isUserDataLoaded, _selectedIndex)),
+            body:
+                widget.isUserDataLoaded
+                    ? _selectedIndex == 2 ||
+                            _selectedIndex ==
+                                1 // If the page is a solo match or quest, do not make it scrollable by default, because it's already a ListView
+                        ? Padding(
+                            padding: EdgeInsets.fromLTRB(8.25.w, 1.25.h, 8.25.w, 0),
+                            child: screenList[_selectedIndex],
+                          )
+                        : SingleChildScrollView(
+                            child: Padding(
+                            padding: EdgeInsets.fromLTRB(8.25.w, 1.25.h, 8.25.w, 0),
+                            child: screenList[_selectedIndex],
+                          ))
+                    : Padding(
+                        padding: const EdgeInsets.only(left: 40, right: 40, bottom: 40),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Expanded(
+                              child: Rive.RiveAnimation.asset(
+                                "assets/animated/loading.riv",
+                              ),
+                            ),
+                            Text(
+                              "Loading...",
+                              style: InheritedTextStyle.of(context).kHeadline1,
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.only(right: 7.0),
+                              child: CircularProgressIndicator(),
+                            )
+                          ],
+                        ),
                       ),
-                    ),
-                    Text(
-                      "Loading...",
-                      style: InheritedTextStyle.of(context).kHeadline1,
-                    ),
-                    const SizedBox(
-                      height: 15,
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(right: 7.0),
-                      child: CircularProgressIndicator(),
+            bottomNavigationBar: !widget.isUserDataLoaded
+                ? null
+                : StatefulBuilder(builder: (context, setState) {
+                    void rebuildBottomNavbar() {
+                      setState(() {});
+                    }
+
+                    context
+                        .read<User>()
+                        .setKeyFx(rebuildBottomNavbar, "rebuildBottomNavbar");
+                    return Container(
+                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                      decoration: const BoxDecoration(
+                        color: kBackground,
+                        /*boxShadow: [
+                                        BoxShadow(
+                                          offset: Offset(0, -8),
+                                          blurRadius: 8,
+                                          color: Colors.black.withOpacity(0.20)
+                                        )
+                                      ]*/
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.translucent,
+                              onTap: () {
+                                switchPage(0);
+                              },
+                              child: SizedBox(
+                                height: 90,
+                                child: Icon(
+                                  Icons.home_outlined,
+                                  key: context.read<User>().keys[13],
+                                  color: _selectedIndex == 0 ? kPrimary : kText95,
+                                  size: 34,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.translucent,
+                              onTap: () {
+                                switchPage(1);
+                              },
+                              child: SizedBox(
+                                height: 90,
+                                child: Icon(
+                                  Icons.check_box_outlined,
+                                  key: context.read<User>().keys[8],
+                                  color: _selectedIndex == 1 ? kPrimary : kText95,
+                                  size: 34,
+                                ),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.translucent,
+                              onTap: () {
+                                switchPage(2);
+                              },
+                              child: SizedBox(
+                                height: 90,
+                                child: Consumer<User>(builder: (context, user, _) {
+                                  /*if (user.inGame == false) {
+                                        Future.delayed(Duration(milliseconds: 1), () {
+                                          switchPage(0);
+                                        });
+                                      }*/
+                                  return Icon(
+                                    Icons.play_circle_outline_outlined,
+                                    key: user.keys[1],
+                                    color: _selectedIndex == 2
+                                        ? kPrimary
+                                        : user.inGame != null &&
+                                                user.inGame["showActivity"] !=
+                                                    false &&
+                                                user.inGame != false &&
+                                                user.inGame["joinDate"] +
+                                                        3600 * 1000 >
+                                                    DateTime.now()
+                                                        .millisecondsSinceEpoch
+                                            ? kOrange
+                                            : kText95,
+                                    size: 34,
+                                  );
+                                }),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: GestureDetector(
+                              behavior: HitTestBehavior.translucent,
+                              onTap: () {
+                                switchPage(3);
+                              },
+                              child: SizedBox(
+                                height: 90,
+                                child: Icon(
+                                  Icons.card_giftcard,
+                                  color: _selectedIndex == 3 ? kPrimary : kText95,
+                                  size: 34,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  })),
+            if (_selectedIndex == 3) Positioned(
+              bottom: 89,
+              left: 0,
+              child: Container(
+                decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        stops: const [0,0.7,1],
+                        colors: [
+                          kBackground,
+                          kBackground.withOpacity(0.67),
+                          kBackground.withOpacity(0.0)
+                        ]
                     )
-                  ],
+                ),
+                child: SizedBox(height: 15.h,width: 100.w,),
+              ),
+            ),
+            if (_selectedIndex == 3) Positioned(
+              left: 18.w,
+              right: 18.w,
+              bottom: 2.5.h+89,
+              child: Container(
+                padding: EdgeInsets.symmetric(horizontal: 2.5.w, vertical: 3),
+                decoration: BoxDecoration(
+                    border: Border.all(color: kBlack, width: 1),
+                    borderRadius: BorderRadius.circular(14),
+                    color: kBackgroundVariant
+                ),
+                child: StatefulBuilder(
+                    builder: (BuildContext context, StateSetter setState) {
+                      return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            MaterialButton(
+                              minWidth: 27.5.w,
+                              elevation: 0,
+                              color: kBackgroundVariant,
+                              disabledColor: kBackground,
+                              onPressed:selectedShopTab != "shop" ? () {
+                                context.read<User>().keyFx["switchShopTab"]("shop");
+                                setState(() => selectedShopTab = "shop");
+                              } : null,
+                              padding: EdgeInsets.fromLTRB(6.w, 0.75.h, 6.w, 0.5.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14.0),
+                              ),
+                              child: Text(
+                                  "Shop",
+                                  style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: selectedShopTab != "shop"? kGray : null)
+                              ),
+                            ),
+                            SizedBox(width: 2.5.w),
+                            MaterialButton(
+                              minWidth: 27.5.w,
+                              elevation: 0,
+                              color: kBackgroundVariant,
+                              disabledColor: kBackground,
+                              onPressed: selectedShopTab == "shop" ? () {
+                                context.read<User>().keyFx["switchShopTab"]("orders");
+                                setState(() => selectedShopTab = "orders");
+                              } : null,
+                              padding: EdgeInsets.fromLTRB(6.w, 0.75.h, 6.w, 0.5.h),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14.0),
+                              ),
+                              child: Text("Orders", style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: selectedShopTab == "shop"? kGray : null)),
+                            ),
+                          ]
+                      );
+                    }
                 ),
               ),
-        bottomNavigationBar: !widget.isUserDataLoaded
-            ? null
-            : StatefulBuilder(builder: (context, setState) {
-                void rebuildBottomNavbar() {
-                  setState(() {});
-                }
-
-                context
-                    .read<User>()
-                    .setKeyFx(rebuildBottomNavbar, "rebuildBottomNavbar");
-                return Container(
-                  padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                  decoration: const BoxDecoration(
-                    color: kBackground,
-                    /*boxShadow: [
-                                    BoxShadow(
-                                      offset: Offset(0, -8),
-                                      blurRadius: 8,
-                                      color: Colors.black.withOpacity(0.20)
-                                    )
-                                  ]*/
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: () {
-                            switchPage(0);
-                          },
-                          child: SizedBox(
-                            height: 90,
-                            child: Icon(
-                              Icons.home_outlined,
-                              key: context.read<User>().keys[13],
-                              color: _selectedIndex == 0 ? kPrimary : kText95,
-                              size: 34,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: () {
-                            switchPage(1);
-                          },
-                          child: SizedBox(
-                            height: 90,
-                            child: Icon(
-                              Icons.check_box_outlined,
-                              key: context.read<User>().keys[8],
-                              color: _selectedIndex == 1 ? kPrimary : kText95,
-                              size: 34,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: () {
-                            switchPage(2);
-                          },
-                          child: SizedBox(
-                            height: 90,
-                            child: Consumer<User>(builder: (context, user, _) {
-                              /*if (user.inGame == false) {
-                                    Future.delayed(Duration(milliseconds: 1), () {
-                                      switchPage(0);
-                                    });
-                                  }*/
-                              return Icon(
-                                Icons.play_circle_outline_outlined,
-                                key: user.keys[1],
-                                color: _selectedIndex == 2
-                                    ? kPrimary
-                                    : user.inGame != null &&
-                                            user.inGame["showActivity"] !=
-                                                false &&
-                                            user.inGame != false &&
-                                            user.inGame["joinDate"] +
-                                                    3600 * 1000 >
-                                                DateTime.now()
-                                                    .millisecondsSinceEpoch
-                                        ? kOrange
-                                        : kText95,
-                                size: 34,
-                              );
-                            }),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: GestureDetector(
-                          behavior: HitTestBehavior.translucent,
-                          onTap: () {
-                            switchPage(3);
-                          },
-                          child: SizedBox(
-                            height: 90,
-                            child: Icon(
-                              Icons.card_giftcard,
-                              color: _selectedIndex == 3 ? kPrimary : kText95,
-                              size: 34,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              })));
+            )
+          ],
+        ));
     if (widget.tutorial?["needed"] == true) {
       double screenH = MediaQuery.of(context).size.height;
       double screenW = MediaQuery.of(context).size.width;

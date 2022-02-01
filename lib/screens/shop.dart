@@ -1,10 +1,12 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -21,83 +23,246 @@ Future<dynamic> getShopData(BuildContext context) async {
   return await userData.initShopData();
 }
 
-class Shop extends StatelessWidget {
+class Shop extends StatefulWidget {
   const Shop({Key? key}) : super(key: key);
 
   @override
+  State<Shop> createState() => _ShopState();
+}
+
+class _ShopState extends State<Shop> {
+  String _selectedTab = "shop";
+  void switchTab(String tabName){
+    setState(() {
+      if(tabName == "shop"){
+        _selectedTab = "shop";
+      }
+      else {
+        _selectedTab = "orders";
+      }
+    });
+  }
+
+  String statusToText(int status, String mode){
+    if (mode == "paypal"){
+      if (status == 0) {
+        return "Delivering...";
+      } else {
+        return "Delivered";
+      }
+    }
+    switch (status){
+      case 0:
+        return "Sending Steam friend request...";
+      case 1:
+        return "Awaiting acceptance of friend request...";
+      case 2:
+        return "Awaiting Steam's delay for gifts...";
+      case 3:
+        return "Delivered.";
+      default:
+        return "Delivering...";
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 14),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: Text(
-                  "Balance:",
-                  style: InheritedTextStyle.of(context).kHeadline1,
+    context.read<User>().setKeyFx(switchTab, "switchShopTab");
+    if(_selectedTab == "shop") {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 14),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    "Balance:",
+                    style: InheritedTextStyle.of(context).kHeadline1,
+                  ),
                 ),
-              ),
-              const SizedBox(
-                width: 25,
-              ),
-              Consumer<User>(
-                builder: (context, user, _) {
-                  return Coin(nb: ((user.value["user"]["coins"]*10).round()/10).toString(),);
-                }
-              )
-            ],
+                const SizedBox(
+                  width: 25,
+                ),
+                Consumer<User>(
+                  builder: (context, user, _) {
+                    return Coin(nb: ((user.value["user"]["coins"]*10).round()/10).toString(),);
+                  }
+                )
+              ],
+            ),
+            const SizedBox(
+              height: 50,
+            ),
+            FutureBuilder(
+                future: getShopData(context),
+                builder: (context, AsyncSnapshot<dynamic> res) {
+                  if (!res.hasData) {
+                    return Column(
+                      children: [
+                        const Center(child: CircularProgressIndicator()),
+                        SizedBox(width: 100.w, height: 100.h,)
+                      ],
+                    );
+                  }
+                  return Column(
+                    children: [
+                      ShopItem(
+                        cost: res.data["featuredItem"]["cost"],
+                        itemId: res.data["featuredItem"]["id"],
+                        name: res.data["featuredItem"]["name"],
+                        nickname: res.data["featuredItem"]["nickname"],
+                      ),
+                      const SizedBox(
+                        height: 60,
+                      ),
+                      PaypalCredit(
+                          cost: res.data["paypalData"]["cost"],
+                          itemId: res.data["paypalData"]["id"]),
+                      const SizedBox(
+                        height: 60,
+                      ),
+                      ListView.builder(
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, int index) {
+                          var item = res.data["items"][index];
+                          return Container(
+                            margin: EdgeInsets.only(top: index == 0 ? 0 : 40.0),
+                            child: ShopItem(
+                              itemId: item["id"],
+                              cost: item["cost"],
+                              name: item["name"],
+                              nickname: item["nickname"],
+                            ),
+                          );
+                        },
+                        itemCount: res.data["items"].length,
+                      ),
+                      SizedBox(height: 14.h,)
+                    ],
+                  );
+                }),
+          ],
+        ),
+      );
+    } else {
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 14),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 4.0),
+            child: Text(
+              "Orders:",
+              style: InheritedTextStyle.of(context).kHeadline1,
+            ),
           ),
-          const SizedBox(
-            height: 50,
-          ),
-          FutureBuilder(
-              future: getShopData(context),
-              builder: (context, AsyncSnapshot<dynamic> res) {
-                if (!res.hasData) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-                return Column(
-                  children: [
-                    ShopItem(
-                      cost: res.data["featuredItem"]["cost"],
-                      itemId: res.data["featuredItem"]["id"],
-                      name: res.data["featuredItem"]["name"],
-                      nickname: res.data["featuredItem"]["nickname"],
+          SizedBox(height: 4.h,),
+          FutureBuilder(future: context.read<User>().callApi.get("/commands"),builder: (BuildContext context, AsyncSnapshot res){
+            if(!res.hasData || res.data["successful"] == false) {
+              return Column(
+                children: [
+                  const CircularProgressIndicator(),
+                  SizedBox(height: 100.h, width: 100.w,)
+                ],
+              );
+            }
+            if(res.data["data"].length == 0){
+              return Padding(
+                padding: EdgeInsets.only(top: 2.h),
+                child: Center(
+                  child: Text(
+                    "Your orders and their status will appear here.",
+                    style: InheritedTextStyle.of(context).kBodyText2.apply(color: kText80),
+                  ),
+                ),
+              );
+            }
+            return ListView.builder(itemCount: res.data["data"].length, shrinkWrap: true, itemBuilder: (context, int i){
+              var item = res.data["data"][i];
+              return Container(
+                constraints: BoxConstraints(maxHeight: 10.h),
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                  color: kBackgroundVariant,
+                ),
+                margin: EdgeInsets.only(bottom: 3.h),
+                child: Row(children: [
+                  if (item["type"] != "paypal") Container(
+                    decoration: BoxDecoration(
+                        color: kBackgroundVariant,
+                        borderRadius: const BorderRadius.only(
+                            bottomLeft: Radius.circular(15),
+                            topLeft: Radius.circular(15)),
+                        image: DecorationImage(
+                            image: NetworkImage(
+                                apiUrl+"/assets/shopItems/${item["product"].toLowerCase().replaceAll(" ", "-")}.jpg"),
+                            fit: BoxFit.fill)
                     ),
-                    const SizedBox(
-                      height: 60,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        SizedBox(
+                          height: 10.h,width: 35.w,
+                        ),
+                      ],
                     ),
-                    PaypalCredit(
-                        cost: res.data["paypalData"]["cost"],
-                        itemId: res.data["paypalData"]["id"]),
-                    const SizedBox(
-                      height: 60,
+                  ) else Container(
+                    width: 32.w,
+                    height: 7.8.h,
+                    margin: EdgeInsets.only(top: 1.1.h, bottom: 1.1.h, left: 3.w),
+                    padding: EdgeInsets.symmetric(horizontal: 0.5.w),
+                    decoration: const BoxDecoration(
+                      color: kBackground,
+                      borderRadius: BorderRadius.all(Radius.circular(15)),
                     ),
-                    ListView.builder(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      itemBuilder: (context, int index) {
-                        var item = res.data["items"][index];
-                        return Container(
-                          margin: EdgeInsets.only(top: index == 0 ? 0 : 40.0),
-                          child: ShopItem(
-                            itemId: item["id"],
-                            cost: item["cost"],
-                            name: item["name"],
-                            nickname: item["nickname"],
-                          ),
-                        );
-                      },
-                      itemCount: res.data["items"].length,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Image.asset(
+                            "assets/images/icons/paypal_logo_big.png",
+                            height: 5.h,
+                            // width: 15.w,
+                        ),
+                        Text("${item['number']}€", style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: kText80),)
+                      ],
                     ),
-                  ],
-                );
-              }),
-        ],
-      ),
-    );
+                  ),
+                  Container(
+                    width: 48.5.w,
+                    padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                      FittedBox(
+                        fit: BoxFit.fitWidth,
+                        child: Text(
+                          statusToText(item["state"], item["type"] ?? ""),
+                          style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: kEpic),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 0.25.h),
+                        child: Row(
+                          // crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text("Claimed: ", style: InheritedTextStyle.of(context).kBodyText3.apply(color: kText80, fontSizeFactor: 0.8)),
+                            Text(DateFormat.yMd(Platform.localeName).format(DateTime.fromMillisecondsSinceEpoch(item["date"])), style: InheritedTextStyle.of(context).kBodyText4.apply(color: kText)),
+                          ],
+                        ),
+                      )
+                    ],),
+                  )
+                ],),
+              );
+            });
+          }),
+
+          //! Don't remove this otherwise an error flashes when switching between shop and orders
+          const SizedBox()
+
+        ],),
+      );
+    }
   }
 }
 
@@ -315,7 +480,7 @@ class _PaypalCreditState extends State<PaypalCredit> {
                         Padding(
                           padding: const EdgeInsets.only(bottom: 4.0),
                           child: Image.asset(
-                            "assets/images/icons/paypal_logo.png",
+                            "assets/images/icons/paypal_logo_big.png",
                             height: 35,
                             width: 35,
                           ),

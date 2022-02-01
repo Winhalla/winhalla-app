@@ -50,6 +50,7 @@ dependencies:
   responsive_sizer: ^3.0.4+4
   sign_in_with_apple: ^3.3.0
   app_tracking_transparency: ^2.0.2+1
+  intl: ^0.17.0
 
 dev_dependencies:
   flutter_test:

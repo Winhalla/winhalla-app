@@ -96,9 +96,6 @@ class _TutorialStackState extends State<TutorialStack> {
       if (status != widget.status) {
         status = widget.status;
         _hasMadeTransition = false;
-        print("test");
-      } else {
-        print("samenb");
       }
       if (widget.isTransition && !_hasMadeTransition) {
         _visible = false;
