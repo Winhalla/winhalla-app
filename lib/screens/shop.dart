@@ -163,7 +163,6 @@ class _ShopState extends State<Shop> {
                 style: InheritedTextStyle.of(context).kHeadline1,
               ),
             ),
-          ),
           SizedBox(height: 4.h,),
           FutureBuilder(future: context.read<User>().callApi.get("/commands"), builder: (BuildContext context, AsyncSnapshot res){
             if(!res.hasData || res.data["successful"] == false) {
