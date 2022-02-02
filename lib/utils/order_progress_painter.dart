@@ -9,13 +9,14 @@ import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/tip_painter.dart';
 
 class OrderProgressPainter extends CustomPainter {
-  OrderProgressPainter(this.context, this.status);
+  OrderProgressPainter(this.context, this.status, this.type);
   final BuildContext context;
   final int status;
+  final String type;
 
   TextPainter renderText(i){
     final textSpan = TextSpan(
-        text: kOrdersStatuses[i],
+        text: type == "paypal" ? kPaypalStatuses[i] : kOrdersStatuses[i],
         style: InheritedTextStyle.of(context).kBodyText4.apply(fontSizeFactor: 0.9)
     );
     final textPainter = TextPainter(
@@ -53,9 +54,10 @@ class OrderProgressPainter extends CustomPainter {
 
     canvas.drawCircle(const Offset(0,0), 1.h, paint);
     TextPainter text = renderText(0);
-    text.paint(canvas, Offset(10.w, -text.height/2.5));
+    text.paint(canvas, Offset(9.w, -text.height/2.5));
+    int length = type == "paypal" ? kPaypalStatuses.length-1 : kOrdersStatuses.length-1;
 
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < length; i++) {
       if(status == i) paint.color = kGray;
       canvas.drawLine(Offset(0, (i * lineLength + 1).h), Offset(0, ((i + 1) * lineLength).h), paint);
       canvas.drawCircle(Offset(0, ((i + 1) * lineLength).h), 1.h, paint);
@@ -63,7 +65,7 @@ class OrderProgressPainter extends CustomPainter {
       TextPainter text = renderText(i+1);
       text.paint(canvas, Offset(9.w, ((i + 1) * lineLength).h-text.height/2.5));
 
-      if(i == 0){
+      if(i == 0 && type != "paypal"){
         canvas.drawRRect(
             RRect.fromRectAndRadius(
                 Rect.fromLTWH(
