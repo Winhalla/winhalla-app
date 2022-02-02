@@ -54,25 +54,13 @@ class _ShopState extends State<Shop> {
   }
 
   String statusToText(int status, String mode){
-    if (mode == "paypal"){
-      if (status == 0) {
-        return "Delivering...";
-      } else {
-        return "Delivered";
-      }
+    String statusFound;
+    try{
+      statusFound = mode == "paypal" ? kPaypalStatuses[status] : kOrdersStatuses[status];
+    }catch(e){
+      statusFound = "Delivering...";
     }
-    switch (status){
-      case 0:
-        return "Sending Steam friend request...";
-      case 1:
-        return "Awaiting acceptance of friend request...";
-      case 2:
-        return "Awaiting Steam's delay for gifts...";
-      case 3:
-        return "Delivered.";
-      default:
-        return "Delivering...";
-    }
+    return statusFound;
   }
 
   @override
@@ -169,7 +157,7 @@ class _ShopState extends State<Shop> {
             ),
           ),
           SizedBox(height: 4.h,),
-          FutureBuilder(future: context.read<User>().callApi.get("/commands"),builder: (BuildContext context, AsyncSnapshot res){
+          FutureBuilder(future: context.read<User>().callApi.get("/commands"), builder: (BuildContext context, AsyncSnapshot res){
             if(!res.hasData || res.data["successful"] == false) {
               return Column(
                 children: [
@@ -189,7 +177,11 @@ class _ShopState extends State<Shop> {
                 ),
               );
             }
-            return ListView.builder(itemCount: res.data["data"].length, shrinkWrap: true, itemBuilder: (context, int i){
+            return ListView.builder(
+                itemCount: res.data["data"].length,
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemBuilder: (context, int i){
               var item = res.data["data"][i];
               // Computes if a smaller font is needed for the pink text
               final textPainter = TextPainter(
@@ -204,24 +196,32 @@ class _ShopState extends State<Shop> {
               bool needsSmallFont = false;
               if(lines.length > 1) needsSmallFont = true;
 
+              Function? rebuildTitle;
+              bool isExpanded = false;
               return Container(
                 margin: EdgeInsets.only(bottom: 3.h),
                 child: CustomExpansionTile(
+                  onExpansionChanged: (bool expandStatus){
+                    isExpanded = expandStatus;
+                    if(rebuildTitle != null){
+                      rebuildTitle!();
+                    }
+                  },
                   children: [
                     ListTile(
                       minVerticalPadding: 0,
                       contentPadding: EdgeInsets.zero,
                       title: Container(
-                        height: 20.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
+                        height: item["type"] == "paypal" ? 12.6.h : 21.h,
+                        decoration: const BoxDecoration(
+                          borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
                           color: kBackgroundVariant,
                         ),
                         child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                           Padding(
-                            padding: EdgeInsets.only(top: 3.7.h, left: 10.w),
+                            padding: EdgeInsets.only(top: 4.2.h, left: 9.w),
                             child: CustomPaint(
-                              painter: OrderProgressPainter(context),
+                              painter: OrderProgressPainter(context, item["state"], item["type"] ?? ""),
                             ),
                           ),
                           /*Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -235,100 +235,111 @@ class _ShopState extends State<Shop> {
                       ),
                     )
                   ],
-                  title: Container(
-                    constraints: BoxConstraints(maxHeight: 10.h),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: kBackgroundVariant,
-                    ),
-                    child: Row(children: [
-                      if (item["type"] != "paypal") Container(
+                  title: StatefulBuilder(
+                    builder: (context, setState) {
+                      void rebuild(){
+                        setState((){});
+                      }
+                      rebuildTitle = rebuild;
+                      return Container(
+                        constraints: BoxConstraints(maxHeight: 10.h),
                         decoration: BoxDecoration(
-                            color: kBackgroundVariant,
-                            borderRadius: const BorderRadius.only(
-                                bottomLeft: Radius.circular(15),
-                                topLeft: Radius.circular(15)),
-                            image: DecorationImage(
-                                image: NetworkImage(
-                                    apiUrl+"/assets/shopItems/${item["product"].toLowerCase().replaceAll(" ", "-")}.jpg"),
-                                fit: BoxFit.fill)
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.max,
-                          children: [
-                            SizedBox(
-                              height: 10.h,width: 35.w,
-                            ),
-                          ],
-                        ),
-                      ) else Container(
-                        width: 32.w,
-                        height: 7.8.h,
-                        margin: EdgeInsets.only(top: 1.1.h, bottom: 1.1.h, left: 3.w),
-                        padding: EdgeInsets.symmetric(horizontal: 0.5.w),
-                        decoration: const BoxDecoration(
-                          color: kBackground,
-                          borderRadius: BorderRadius.all(Radius.circular(15)),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Image.asset(
-                                "assets/images/icons/paypal_logo_big.png",
-                                height: 5.h,
-                                // width: 15.w,
-                            ),
-                            Text("${item['number']}€", style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: kText80),)
-                          ],
-                        ),
-                      ),
-                      Container(
-                        width: 48.5.w,
-                        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
-                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                          Row(
-                            children: [
-                              SizedBox(
-                                width:30.w,
-                                child: Text(
-                                  statusToText(item["state"], item["type"] ?? ""),
-                                  overflow: TextOverflow.ellipsis,
-                                  style: needsSmallFont
-                                      ? InheritedTextStyle.of(context).kBodyText4.apply(color: kEpic)
-                                      : InheritedTextStyle.of(context).kBodyText1bis.apply(color: kEpic),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 10.5.w,
-                                child: Icon(
-                                  Icons.expand_more,
-                                  color: kEpic,
-                                  size: InheritedTextStyle.of(context).kHeadline2.fontSize,
-                                ),
-                              ),
-                            ],
+                          borderRadius: BorderRadius.vertical(
+                            top: const Radius.circular(15),
+                            bottom: isExpanded ? Radius.zero : const Radius.circular(15),
                           ),
-                          Padding(
-                            padding: EdgeInsets.only(top: 0.25.h),
+                          color: kBackgroundVariant,
+                        ),
+                        child: Row(children: [
+                          if (item["type"] != "paypal") Container(
+                            decoration: BoxDecoration(
+                                color: kBackgroundVariant,
+                                borderRadius: BorderRadius.only(
+                                    topLeft: const Radius.circular(15),
+                                    bottomLeft: const Radius.circular(15),
+                                    bottomRight: isExpanded ? const Radius.circular(15) : Radius.zero
+                                ),
+                                image: DecorationImage(
+                                    image: NetworkImage(
+                                        apiUrl+"/assets/shopItems/${item["product"].toLowerCase().replaceAll(" ", "-")}.jpg"),
+                                    fit: BoxFit.fill)
+                            ),
                             child: Row(
-                              // crossAxisAlignment: CrossAxisAlignment.end,
+                              mainAxisSize: MainAxisSize.max,
                               children: [
-                                Text("Claimed: ", style: InheritedTextStyle.of(context).kBodyText3.apply(color: kText80, fontSizeFactor: 0.8)),
-                                Text(formatToLocalDateyMd(DateTime.fromMillisecondsSinceEpoch(item["date"])), style: InheritedTextStyle.of(context).kBodyText4.apply(color: kText)),
+                                SizedBox(
+                                  height: 10.h,width: 35.w,
+                                ),
                               ],
                             ),
+                          ) else Container(
+                            width: 32.w,
+                            height: 7.8.h,
+                            margin: EdgeInsets.only(top: 1.1.h, bottom: 1.1.h, left: 3.w),
+                            padding: EdgeInsets.symmetric(horizontal: 0.5.w),
+                            decoration: const BoxDecoration(
+                              color: kBackground,
+                              borderRadius: BorderRadius.all(Radius.circular(15)),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Image.asset(
+                                    "assets/images/icons/paypal_logo_big.png",
+                                    height: 5.h,
+                                    // width: 15.w,
+                                ),
+                                Text("${item['number']}€", style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: kText80),)
+                              ],
+                            ),
+                          ),
+                          Container(
+                            width: 48.5.w,
+                            padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+                            child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                              Row(
+                                children: [
+                                  SizedBox(
+                                    width:30.w,
+                                    child: Text(
+                                      statusToText(item["state"], item["type"] ?? ""),
+                                      overflow: TextOverflow.ellipsis,
+                                      style: needsSmallFont
+                                          ? InheritedTextStyle.of(context).kBodyText4.apply(color: kEpic)
+                                          : InheritedTextStyle.of(context).kBodyText1bis.apply(color: kEpic),
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    width: 10.5.w,
+                                    child: Icon(
+                                      Icons.expand_more,
+                                      color: kEpic,
+                                      size: InheritedTextStyle.of(context).kHeadline2.fontSize,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Padding(
+                                padding: EdgeInsets.only(top: 0.25.h),
+                                child: Row(
+                                  // crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text("Claimed: ", style: InheritedTextStyle.of(context).kBodyText3.apply(color: kText80, fontSizeFactor: 0.8)),
+                                    Text(formatToLocalDateyMd(DateTime.fromMillisecondsSinceEpoch(item["date"])), style: InheritedTextStyle.of(context).kBodyText4.apply(color: kText)),
+                                  ],
+                                ),
+                              )
+                            ],),
                           )
                         ],),
-                      )
-                    ],),
+                      );
+                    }
                   ),
                 ),
               );
             });
           }),
-
-          //! Don't remove this otherwise an error flashes when switching between shop and orders
-          const SizedBox()
+          SizedBox(height: 8.h,)
 
         ],),
       );

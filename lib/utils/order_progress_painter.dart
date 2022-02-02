@@ -9,12 +9,14 @@ import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/tip_painter.dart';
 
 class OrderProgressPainter extends CustomPainter {
-  OrderProgressPainter(this.context);
+  OrderProgressPainter(this.context, this.status, this.type);
   final BuildContext context;
+  final int status;
+  final String type;
 
   TextPainter renderText(i){
     final textSpan = TextSpan(
-        text: kOrdersStatuses[i],
+        text: type == "paypal" ? kPaypalStatuses[i] : kOrdersStatuses[i],
         style: InheritedTextStyle.of(context).kBodyText4.apply(fontSizeFactor: 0.9)
     );
     final textPainter = TextPainter(
@@ -27,26 +29,24 @@ class OrderProgressPainter extends CustomPainter {
 
   double degToRad(num deg) => (deg * (pi / 180.0)).toDouble();
   final num lineLength = 4.2;
+
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = kGray
+    Paint paint = Paint()
+      ..color = kPrimary // changes when status == i
       ..style = PaintingStyle.fill
-      ..strokeWidth = 3;
-    final paintPrimary = Paint()
+      ..strokeWidth = 2;
+    final Paint paintPrimary = Paint()
       ..color = kPrimary
       ..style = PaintingStyle.fill
-      ..strokeWidth = 3;
-    /*final paint = Paint()
-      ..color = kText80
-    // ..strokeCap = StrokeCap.round
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 3;*/
-    final textSpan = TextSpan(
+      ..strokeWidth = 2;
+
+    // "You" textbox
+    final TextSpan textSpan = TextSpan(
         text: "You",
         style: InheritedTextStyle.of(context).kBodyText4.apply(fontSizeFactor: 0.8)
     );
-    final textPainter = TextPainter(
+    final TextPainter textPainter = TextPainter(
       text: textSpan,
       textDirection: TextDirection.ltr,
     );
@@ -54,17 +54,22 @@ class OrderProgressPainter extends CustomPainter {
 
     canvas.drawCircle(const Offset(0,0), 1.h, paint);
     TextPainter text = renderText(0);
-    text.paint(canvas, Offset(10.w, -text.height/2.5));
-    for (int i = 0; i < 3; i++) {
-      canvas.drawLine(Offset(0, (i * lineLength).h), Offset(0, ((i + 1) * lineLength).h), paint);
+    text.paint(canvas, Offset(9.w, -text.height/2.5));
+    int length = type == "paypal" ? kPaypalStatuses.length-1 : kOrdersStatuses.length-1;
+
+    for (int i = 0; i < length; i++) {
+      if(status == i) paint.color = kGray;
+      canvas.drawLine(Offset(0, (i * lineLength + 1).h), Offset(0, ((i + 1) * lineLength).h), paint);
       canvas.drawCircle(Offset(0, ((i + 1) * lineLength).h), 1.h, paint);
+
       TextPainter text = renderText(i+1);
-      text.paint(canvas, Offset(10.w, ((i + 1) * lineLength).h-text.height/2.5));
-      if(i == 0){
+      text.paint(canvas, Offset(9.w, ((i + 1) * lineLength).h-text.height/2.5));
+
+      if(i == 0 && type != "paypal"){
         canvas.drawRRect(
             RRect.fromRectAndRadius(
                 Rect.fromLTWH(
-                    11.w+text.width,
+                    12.w+text.width,
                     ((i + 1) * lineLength).h-textPainter.height/2.8-0.25.h-1,
                     textPainter.width+6.w,
                     textPainter.height+0.5.h
@@ -73,12 +78,11 @@ class OrderProgressPainter extends CustomPainter {
             ),
             paintPrimary,
         );
-        textPainter.paint(canvas, Offset(14.w+text.width, ((i + 1) * lineLength).h-textPainter.height/2.8));
+        textPainter.paint(canvas, Offset(15.w+text.width, ((i + 1) * lineLength).h-textPainter.height/2.8));
       }
+
     }
   }
-
-  //5
   @override
   bool shouldRepaint(OrderProgressPainter oldDelegate) {
     return false;
