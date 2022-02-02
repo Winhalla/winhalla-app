@@ -1,23 +1,31 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
-import 'package:flutter/animation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
+import 'package:winhalla_app/utils/order_progress_painter.dart';
 import 'package:winhalla_app/utils/user_class.dart';
-import 'package:http/http.dart' as http;
 import 'package:winhalla_app/widgets/coin.dart';
+import 'package:winhalla_app/widgets/custom_expansion_tile.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_shop.dart';
 // This is bc we can't use context.read<User>() in the future field of FutureBuilder
+const List<String> kOrdersStatuses = [
+  "Sending steam friend request",
+  "Accept the friend request",
+  "Awaiting Steam's delay for gifts",
+  "Delivered"
+];
+
+const List<String> kPaypalStatuses = [
+  "Delivering...",
+  "Delivered."
+];
+
 Future<dynamic> getShopData(BuildContext context) async {
   var userData = context.read<User>();
   return await userData.initShopData();
@@ -31,6 +39,8 @@ class Shop extends StatefulWidget {
 }
 
 class _ShopState extends State<Shop> {
+
+
   String _selectedTab = "shop";
   void switchTab(String tabName){
     setState(() {
@@ -181,78 +191,138 @@ class _ShopState extends State<Shop> {
             }
             return ListView.builder(itemCount: res.data["data"].length, shrinkWrap: true, itemBuilder: (context, int i){
               var item = res.data["data"][i];
+              // Computes if a smaller font is needed for the pink text
+              final textPainter = TextPainter(
+                text: TextSpan(
+                    text: statusToText(item["state"], item["type"] ?? ""), style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: kEpic)),
+                textDirection: TextDirection.ltr,
+              );
+              textPainter.layout(
+                  maxWidth:
+                  35.w);
+              List lines = textPainter.computeLineMetrics();
+              bool needsSmallFont = false;
+              if(lines.length > 1) needsSmallFont = true;
+
               return Container(
-                constraints: BoxConstraints(maxHeight: 10.h),
-                decoration: const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(15)),
-                  color: kBackgroundVariant,
-                ),
                 margin: EdgeInsets.only(bottom: 3.h),
-                child: Row(children: [
-                  if (item["type"] != "paypal") Container(
-                    decoration: BoxDecoration(
-                        color: kBackgroundVariant,
-                        borderRadius: const BorderRadius.only(
-                            bottomLeft: Radius.circular(15),
-                            topLeft: Radius.circular(15)),
-                        image: DecorationImage(
-                            image: NetworkImage(
-                                apiUrl+"/assets/shopItems/${item["product"].toLowerCase().replaceAll(" ", "-")}.jpg"),
-                            fit: BoxFit.fill)
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.max,
-                      children: [
-                        SizedBox(
-                          height: 10.h,width: 35.w,
+                child: CustomExpansionTile(
+                  children: [
+                    ListTile(
+                      minVerticalPadding: 0,
+                      contentPadding: EdgeInsets.zero,
+                      title: Container(
+                        height: 20.h,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15),
+                          color: kBackgroundVariant,
                         ),
-                      ],
-                    ),
-                  ) else Container(
-                    width: 32.w,
-                    height: 7.8.h,
-                    margin: EdgeInsets.only(top: 1.1.h, bottom: 1.1.h, left: 3.w),
-                    padding: EdgeInsets.symmetric(horizontal: 0.5.w),
-                    decoration: const BoxDecoration(
-                      color: kBackground,
-                      borderRadius: BorderRadius.all(Radius.circular(15)),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Image.asset(
-                            "assets/images/icons/paypal_logo_big.png",
-                            height: 5.h,
-                            // width: 15.w,
-                        ),
-                        Text("${item['number']}€", style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: kText80),)
-                      ],
-                    ),
-                  ),
-                  Container(
-                    width: 48.5.w,
-                    padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
-                    child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                      FittedBox(
-                        fit: BoxFit.fitWidth,
-                        child: Text(
-                          statusToText(item["state"], item["type"] ?? ""),
-                          style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: kEpic),
-                        ),
+                        child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                          Padding(
+                            padding: EdgeInsets.only(top: 3.7.h, left: 10.w),
+                            child: CustomPaint(
+                              painter: OrderProgressPainter(context),
+                            ),
+                          ),
+                          /*Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                            for (String i in kOrdersStatuses)
+                              Padding(
+                                padding: EdgeInsets.only(top: 1.h, bottom: 1.h, left: 15.w),
+                                child: Text(i, style: InheritedTextStyle.of(context).kBodyText4.apply(fontSizeFactor: 0.9)),
+                              )
+                          ],)*/
+                        ],),
                       ),
-                      Padding(
-                        padding: EdgeInsets.only(top: 0.25.h),
+                    )
+                  ],
+                  title: Container(
+                    constraints: BoxConstraints(maxHeight: 10.h),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: kBackgroundVariant,
+                    ),
+                    child: Row(children: [
+                      if (item["type"] != "paypal") Container(
+                        decoration: BoxDecoration(
+                            color: kBackgroundVariant,
+                            borderRadius: const BorderRadius.only(
+                                bottomLeft: Radius.circular(15),
+                                topLeft: Radius.circular(15)),
+                            image: DecorationImage(
+                                image: NetworkImage(
+                                    apiUrl+"/assets/shopItems/${item["product"].toLowerCase().replaceAll(" ", "-")}.jpg"),
+                                fit: BoxFit.fill)
+                        ),
                         child: Row(
-                          // crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.max,
                           children: [
-                            Text("Claimed: ", style: InheritedTextStyle.of(context).kBodyText3.apply(color: kText80, fontSizeFactor: 0.8)),
-                            Text(DateFormat.yMd(Platform.localeName).format(DateTime.fromMillisecondsSinceEpoch(item["date"])), style: InheritedTextStyle.of(context).kBodyText4.apply(color: kText)),
+                            SizedBox(
+                              height: 10.h,width: 35.w,
+                            ),
                           ],
                         ),
+                      ) else Container(
+                        width: 32.w,
+                        height: 7.8.h,
+                        margin: EdgeInsets.only(top: 1.1.h, bottom: 1.1.h, left: 3.w),
+                        padding: EdgeInsets.symmetric(horizontal: 0.5.w),
+                        decoration: const BoxDecoration(
+                          color: kBackground,
+                          borderRadius: BorderRadius.all(Radius.circular(15)),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Image.asset(
+                                "assets/images/icons/paypal_logo_big.png",
+                                height: 5.h,
+                                // width: 15.w,
+                            ),
+                            Text("${item['number']}€", style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: kText80),)
+                          ],
+                        ),
+                      ),
+                      Container(
+                        width: 48.5.w,
+                        padding: EdgeInsets.symmetric(horizontal: 4.w, vertical: 1.h),
+                        child: Column(crossAxisAlignment: CrossAxisAlignment.start, mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                          Row(
+                            children: [
+                              SizedBox(
+                                width:30.w,
+                                child: Text(
+                                  statusToText(item["state"], item["type"] ?? ""),
+                                  overflow: TextOverflow.ellipsis,
+                                  style: needsSmallFont
+                                      ? InheritedTextStyle.of(context).kBodyText4.apply(color: kEpic)
+                                      : InheritedTextStyle.of(context).kBodyText1bis.apply(color: kEpic),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 10.5.w,
+                                child: Icon(
+                                  Icons.expand_more,
+                                  color: kEpic,
+                                  size: InheritedTextStyle.of(context).kHeadline2.fontSize,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 0.25.h),
+                            child: Row(
+                              // crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text("Claimed: ", style: InheritedTextStyle.of(context).kBodyText3.apply(color: kText80, fontSizeFactor: 0.8)),
+                                Text(formatToLocalDateyMd(DateTime.fromMillisecondsSinceEpoch(item["date"])), style: InheritedTextStyle.of(context).kBodyText4.apply(color: kText)),
+                              ],
+                            ),
+                          )
+                        ],),
                       )
                     ],),
-                  )
-                ],),
+                  ),
+                ),
               );
             });
           }),

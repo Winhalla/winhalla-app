@@ -65,8 +65,10 @@ class MyApp extends StatelessWidget {
             color: kText90,
             fontSize: 18.25.sp > 20 ? 20 : 18.25.sp,
             fontFamily: "Roboto Condensed"),
-        kBodyText4:
-            TextStyle(color: kText, fontSize: 18.25.sp > 20 ? 20 : 18.25.sp),
+        kBodyText4: TextStyle(
+              color: kText, fontSize: 18.25.sp > 20 ? 20 : 18.25.sp,
+              fontFamily: "Bebas neue",
+        ),
         child:  MaterialApp(
             title: 'Winhalla',
             theme: ThemeData(fontFamily: "Bebas Neue"),
