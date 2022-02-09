@@ -20,6 +20,9 @@
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-7852842965403016~9742643639"/>
+        <meta-data 
+            android:name="applovin.sdk.key"
+            android:value="seN8k_vH1lOOkrUm4k_qQQruK0XbypmqiZE1yweS0q52rOUHT3AyhDTprxse1JhqLi31fBigBGDeQRGTBS3Xgv"/>
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"

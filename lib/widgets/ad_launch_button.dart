@@ -6,6 +6,8 @@ import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 
+import 'package:flutter_applovin_max/flutter_applovin_max.dart';
+
 class AdButton extends StatefulWidget {
   final Widget child;
   final Widget adNotReadyChild;
@@ -35,6 +37,8 @@ class _AdButtonState extends State<AdButton> {
   late RewardedAd _rewardedAd;
   late User user;
   FfaMatch? match;
+
+  bool isMAXRewardedVideoAvailable = false;
 
   Future<void> _initGoogleMobileAds() async {
     await RewardedAd.load(
@@ -72,12 +76,17 @@ class _AdButtonState extends State<AdButton> {
             },
           );
         },
-        onAdFailedToLoad: (err) {
-          print(err);
+        onAdFailedToLoad: (err) async {
           print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
-          setState(() {
-            _lastAdError = true;
-          });
+
+          isMAXRewardedVideoAvailable =
+              (await FlutterApplovinMax.isRewardLoaded(maxEventListner))!;
+
+          if (isMAXRewardedVideoAvailable) {
+            setState(() {
+              isMAXRewardedVideoAvailable = true;
+            });
+          }
         },
       ),
     );
@@ -85,7 +94,10 @@ class _AdButtonState extends State<AdButton> {
 
   Future<void> playAd() async {
     if (user.inGame?["showActivity"] == false) user.toggleShowMatch(true);
-    if (_lastAdError) {
+    if (isMAXRewardedVideoAvailable) {
+      FlutterApplovinMax.showRewardVideo(
+          (AppLovinAdListener? event) => maxEventListner(event));
+    } else if (_lastAdError) {
       _initGoogleMobileAds();
     } else if (isAdReady) {
       _rewardedAd.show(onUserEarnedReward: (rewardedAd, rewardItem) {});
@@ -94,20 +106,46 @@ class _AdButtonState extends State<AdButton> {
 
   @override
   void initState() {
+    FlutterApplovinMax.initRewardAd('e4781c6fa48968ce');
     user = context.read<User>();
     user.setKeyFx(playAd, "playAd");
     if (widget.goal == "earnMoreSoloMatch") {
       match = context.read<FfaMatch>();
     }
-    if (!kDebugMode) _initGoogleMobileAds();
+    /*if (!kDebugMode)*/ _initGoogleMobileAds();
     super.initState();
+  }
+
+  void maxEventListner(AppLovinAdListener? event) {
+
+    if (event == AppLovinAdListener.adLoaded) {
+      setState(() {
+        isMAXRewardedVideoAvailable = true;
+      });
+    }
+    
+    if (event == AppLovinAdListener.onUserRewarded) {
+      return setState(() {
+        isMAXRewardedVideoAvailable = false;
+      });
+    }
+
+    if (event == AppLovinAdListener.adLoadFailed) {
+      return setState(() {
+        _lastAdError = true;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
         behavior: HitTestBehavior.translucent,
-        child: isAdReady ? widget.child : _lastAdError ? widget.adErrorChild : widget.adNotReadyChild,
+        child: isAdReady || isMAXRewardedVideoAvailable
+            ? widget.child
+            : _lastAdError
+                ? widget.adErrorChild
+                : widget.adNotReadyChild,
         onTap: playAd);
   }
 }
