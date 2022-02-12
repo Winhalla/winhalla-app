@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -9,6 +10,7 @@ import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
+import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/tutorial_controller.dart';
@@ -19,6 +21,7 @@ import 'package:provider/provider.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_leave_match.dart';
+import 'package:winhalla_app/widgets/popups/popup_ad.dart';
 import 'config/themes/dark_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -131,6 +134,24 @@ class MyApp extends StatelessWidget {
                               'joinDate': currentMatch[0]["joinDate"]
                             };
                           }
+                          Future.delayed(const Duration(milliseconds: 0), () async {
+                            /*await RewardedAd.load(
+                              serverSideVerificationOptions: ServerSideVerificationOptions(
+                                  userId: "0",
+                                  customData: "0"),
+                              adUnitId: AdHelper.rewardedAdUnitId,
+                              request: const AdRequest(),
+                              rewardedAdLoadCallback: RewardedAdLoadCallback(
+                                onAdLoaded: (ad) {
+                                  ad.show;
+                                },
+                                onAdFailedToLoad: (err) async {
+                                  print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
+                                },
+                              ),
+                            );*/
+                            showDialog(context: context, builder: (context) => AdPopupWidget());
+                          });
                           return ChangeNotifierProvider<User>(
                               create: (_) => User(newData, callApi, keys,
                                   inGame, res.data["oldDailyChallengeData"]),
