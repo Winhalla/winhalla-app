@@ -20,7 +20,7 @@ Widget AdPopupWidget(){
             "Double your reward",
             style: InheritedTextStyle.of(context).kHeadline2,
           ),
-          contentPadding: EdgeInsets.fromLTRB(7.w, 3.h, 7.w, 2.5.h),
+          contentPadding: EdgeInsets.fromLTRB(7.w, 2.75.h, 7.w, 2.5.h),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
