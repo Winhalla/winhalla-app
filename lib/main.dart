@@ -134,24 +134,6 @@ class MyApp extends StatelessWidget {
                               'joinDate': currentMatch[0]["joinDate"]
                             };
                           }
-                          Future.delayed(const Duration(milliseconds: 0), () async {
-                            /*await RewardedAd.load(
-                              serverSideVerificationOptions: ServerSideVerificationOptions(
-                                  userId: "0",
-                                  customData: "0"),
-                              adUnitId: AdHelper.rewardedAdUnitId,
-                              request: const AdRequest(),
-                              rewardedAdLoadCallback: RewardedAdLoadCallback(
-                                onAdLoaded: (ad) {
-                                  ad.show;
-                                },
-                                onAdFailedToLoad: (err) async {
-                                  print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
-                                },
-                              ),
-                            );*/
-                            showDialog(context: context, builder: (context) => AdPopupWidget());
-                          });
                           return ChangeNotifierProvider<User>(
                               create: (_) => User(newData, callApi, keys,
                                   inGame, res.data["oldDailyChallengeData"]),
