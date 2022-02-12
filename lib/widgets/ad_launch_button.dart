@@ -4,6 +4,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/src/provider.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
+import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
@@ -116,18 +117,31 @@ class _AdButtonState extends State<AdButton> {
     super.initState();
   }
 
-  void maxEventListner(AppLovinAdListener? event) {
-
+  void maxEventListner(AppLovinAdListener? event) async {
     if (event == AppLovinAdListener.adLoaded) {
       setState(() {
         isMAXRewardedVideoAvailable = true;
       });
     }
-    
+
     if (event == AppLovinAdListener.onUserRewarded) {
-      return setState(() {
+      setState(() {
         isMAXRewardedVideoAvailable = false;
       });
+
+      user.callApi
+          .get(
+              "/applovin/getReward?user_id=${user.value["steam"]["id"]}&custom_data=${widget.goal == "earnMoreSoloMatch" ? match?.value["_id"] : widget.goal}");
+
+      //refresh UI
+      if (match != null) {
+        Future.delayed(const Duration(milliseconds: 500), () async {
+          await match?.refresh(context, user);
+        });
+      } else {
+        await user.refresh();
+        user.keyFx["rebuildHomePage"]();
+      }
     }
 
     if (event == AppLovinAdListener.adLoadFailed) {
