@@ -131,7 +131,7 @@ class _AdButtonState extends State<AdButton> {
 
       user.callApi
           .get(
-              "/applovin/getReward?user_id=${user.value["steam"]["id"]}&custom_data=${widget.goal == "earnMoreSoloMatch" ? match?.value["_id"] : widget.goal}");
+              "/admob/getReward?user_id=${user.value["steam"]["id"]}&custom_data=${widget.goal == "earnMoreSoloMatch" ? match?.value["_id"] : widget.goal}");
 
       //refresh UI
       if (match != null) {
