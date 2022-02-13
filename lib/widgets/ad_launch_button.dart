@@ -80,7 +80,10 @@ class _AdButtonState extends State<AdButton> {
         onAdFailedToLoad: (err) async {
           print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
           await FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
-          isMAXRewardedVideoAvailable = (await FlutterApplovinMax.isRewardLoaded(maxEventListner)) ?? false;
+          bool isReady = await FlutterApplovinMax.isRewardLoaded(maxEventListner) ?? false;
+          setState(() {
+            isMAXRewardedVideoAvailable = isReady;
+          });
         },
       ),
     );
@@ -105,11 +108,12 @@ class _AdButtonState extends State<AdButton> {
     if (widget.goal == "earnMoreSoloMatch") {
       match = context.read<FfaMatch>();
     }
-    if (!kDebugMode) _initGoogleMobileAds();
+    if (!kDebugMode || true) _initGoogleMobileAds();
     super.initState();
   }
 
   void maxEventListner(AppLovinAdListener? event) async {
+    print("--------------------------$event-----------------------------");
     if (event == AppLovinAdListener.adLoaded) {
       setState(() {
         isMAXRewardedVideoAvailable = true;
@@ -138,7 +142,6 @@ class _AdButtonState extends State<AdButton> {
 
     if (event == AppLovinAdListener.adLoadFailed) {
       return setState(() {
-        print("😎😎😎test");
         _lastAdError = true;
       });
     }

@@ -316,7 +316,7 @@ class User extends ChangeNotifier {
     quests["${type}Quests"].removeWhere((e) => e["id"] == questId);
     value["user"]["coins"] += price;
 
-    if (!isTutorial && lastInterstitialAd + 90 * 1000 < DateTime.now().millisecondsSinceEpoch) {
+    if (!isTutorial) {
       Future.delayed(const Duration(milliseconds: 1400), () => showInterstitialAd());
     }
     refreshOldQuestsData();
@@ -382,7 +382,7 @@ class User extends ChangeNotifier {
   Future<void> showInterstitialAd() async {
 
     // if (kDebugMode) return;
-    if(lastInterstitialAd + 10 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
+    if(lastInterstitialAd + 90 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
     lastInterstitialAd = DateTime.now().millisecondsSinceEpoch;
     if (interstitialAd != null) {
       interstitialAd?.show();
