@@ -11,6 +11,7 @@ import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/timer_widget.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/ad_launch_button.dart';
+import 'package:winhalla_app/widgets/coin.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_no_refresh.dart';
 import 'package:winhalla_app/widgets/tip_painter.dart';
@@ -112,7 +113,8 @@ class _SoloMatchState extends State<SoloMatch> {
                     const SizedBox(
                       height: 35,
                     ),
-                    Container(
+
+                    /*Container(
                       padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
                       child: Row(
                         children: [
@@ -238,7 +240,59 @@ class _SoloMatchState extends State<SoloMatch> {
                       decoration: BoxDecoration(
                           color: kBackgroundVariant,
                           borderRadius: BorderRadius.circular(20)),
+                    ),*/
+
+                    Container(
+                      padding: const EdgeInsets.fromLTRB(32, 17.25, 14, 17.25),
+                      child: Row(
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 1.45),
+                                    child: Text("Estimated reward:", style: InheritedTextStyle.of(context).kBodyText2.apply(fontSizeFactor: 0.95, color: kText90)),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 1.95),
+                                    child: Text("Based on current stats",
+                                        style: InheritedTextStyle.of(context)
+                                            .kBodyText3
+                                            .apply(
+                                                fontStyle: FontStyle.italic,
+                                                fontSizeFactor: 0.75,
+                                                color: kGray)),
+                                  ),
+                                ],
+                              ),
+
+                              SizedBox(width: 3.65.w,),
+                              Consumer<FfaMatch>(builder: (context, match, _) {
+                                return Coin(
+                                  nb: match.value["estimatedReward"]["reward"].toString(),
+                                  color: kText,
+                                  bgColor: kBlack,
+                                  padding:
+                                      const EdgeInsets.fromLTRB(18.5, 10.5, 18.5, 7.5),
+                                  fontSize: 28,
+                                );
+                              })
+                            ],
+                          ),
+                        ],
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      ),
+                      decoration: BoxDecoration(
+                          color: kBackgroundVariant,
+                          borderRadius: BorderRadius.circular(20)),
                     ),
+
+
                     const SizedBox(
                       height: 60,
                     ),
