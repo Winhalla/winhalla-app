@@ -1,12 +1,25 @@
+// ignore_for_file: non_constant_identifier_names
+
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/utils/ffa_match_class.dart';
 import 'package:winhalla_app/widgets/coin.dart';
 
 import '../inherited_text_style.dart';
-// ignore: non_constant_identifier_names
-Widget AdPopupWidget(){
+// Must be called in a place where an FfaMatch ChangeNotifierProvider is present
+void showAdPopupWidget(BuildContext context){
+  FfaMatch match = context.read<FfaMatch>();
+  showDialog(
+      context: context,
+      builder: (BuildContext context) =>
+          AdPopupWidget(match.value["estimatedReward"]["reward"], match.value["estimatedReward"]["rewardNextAd"])
+  );
+}
+
+Widget AdPopupWidget(int reward, int nextReward){
   return Builder(
       builder: (context) {
         return AlertDialog(
@@ -32,11 +45,11 @@ Widget AdPopupWidget(){
                 children: [
                   Text("Estimated reward:", style: InheritedTextStyle.of(context).kBodyText2.apply(fontSizeFactor: 0.95, color: kText90)),
                   SizedBox(width: 2.w,),
-                  const Coin(
-                    nb: "25",
+                  Coin(
+                    nb: reward.toString(),
                     color: kText,
                     bgColor: kBlack,
-                    padding: EdgeInsets.fromLTRB(15, 8.25, 15, 5.25),
+                    padding: const EdgeInsets.fromLTRB(15, 8.25, 15, 5.25),
                     fontSize: 25,
                   )
                 ],
@@ -63,14 +76,14 @@ Widget AdPopupWidget(){
               children: [
                 GestureDetector(
                     onTap: (){
-                      // FlutterApplovinMax.showRewardVideo((listener) => print("HI"));
                       Navigator.pop(context);
+                      FlutterApplovinMax.showRewardVideo((listener) => print("HI"));
                     },
-                    child: const Coin(
-                      nb: "50",
+                    child: Coin(
+                      nb: nextReward.toString(),
                       color: kText,
                       bgColor: kRed,
-                      padding: EdgeInsets.fromLTRB(18, 8, 18, 5),
+                      padding: const EdgeInsets.fromLTRB(18, 8, 18, 5),
                       fontSize: 28,
                     )
                 ),
@@ -78,11 +91,11 @@ Widget AdPopupWidget(){
                     onTap: (){
                       Navigator.pop(context);
                     },
-                    child: const Coin(
-                      nb: "25",
+                    child: Coin(
+                      nb: reward.toString(),
                       color: kText,
                       bgColor: kBlack,
-                      padding: EdgeInsets.fromLTRB(18, 8, 18, 5),
+                      padding: const EdgeInsets.fromLTRB(18, 8, 18, 5),
                       fontSize: 28,
                     )
                 ),
