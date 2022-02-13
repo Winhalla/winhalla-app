@@ -21,4 +21,7 @@ class AdHelper {
       throw UnsupportedError("Unsupported platform");
     }
   }
+  static String get rewardedApplovinUnitId {
+    return "e4781c6fa48968ce";
+  }
 }

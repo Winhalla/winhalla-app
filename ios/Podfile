@@ -9,6 +9,9 @@ project 'Runner', {
   'Profile' => :release,
   'Release' => :release,
 }
+
+pod 'AppLovinSDK'
+
 # pod 'GoogleMobileAdsMediationAppLovin'
 def flutter_root
   generated_xcode_build_settings_path = File.expand_path(File.join('..', 'Flutter', 'Generated.xcconfig'), __FILE__)
