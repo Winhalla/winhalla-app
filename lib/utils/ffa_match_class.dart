@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
+import 'package:winhalla_app/widgets/popups/popup_ad.dart';
 
 class FfaMatch extends ChangeNotifier {
   dynamic value;
   bool areOtherPlayersShown = false;
+  late int lastAdPopup;
 
   Future<bool> refresh(BuildContext context, User user,
       {bool showInfo = false,
@@ -42,7 +44,9 @@ class FfaMatch extends ChangeNotifier {
       notifyListeners();
       return false;
     }
-
+    if(lastAdPopup + 0 * 1000 < DateTime.now().millisecondsSinceEpoch && !isTutorial){
+      showAdPopupWidget(context, this);
+    }
     if (match["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < match["updatedPlatforms"].length; i++) {
@@ -85,6 +89,7 @@ class FfaMatch extends ChangeNotifier {
         match["players"].where((e) => e["steamId"] != steamId).toList();
     value = match;
     areOtherPlayersShown = false;
+    lastAdPopup = match["Date"];
     notifyListeners();
   }
 }

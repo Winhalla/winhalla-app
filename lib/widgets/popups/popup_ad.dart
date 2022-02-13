@@ -2,24 +2,73 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
+import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/coin.dart';
 
 import '../inherited_text_style.dart';
+
+void adCallback(FfaMatch match, BuildContext context, User user) async {
+  await user.callApi.get("/admob/getReward?user_id=${user.value["steam"]["id"]}&custom_data=${match.value["_id"]}");
+  Future.delayed(const Duration(milliseconds: 500), () async {
+    await match.refresh(context, user);
+  });
+}
 // Must be called in a place where an FfaMatch ChangeNotifierProvider is present
-void showAdPopupWidget(BuildContext context){
-  FfaMatch match = context.read<FfaMatch>();
-  showDialog(
-      context: context,
-      builder: (BuildContext context) =>
-          AdPopupWidget(match.value["estimatedReward"]["reward"], match.value["estimatedReward"]["rewardNextAd"])
+Future<void> showAdPopupWidget(BuildContext context, FfaMatch match, ) async {
+
+  await RewardedAd.load(
+    serverSideVerificationOptions: ServerSideVerificationOptions(
+        userId: match.value["userPlayer"]["steamId"],
+        customData: "earnMoreSoloMatch",
+    ),
+    adUnitId: AdHelper.rewardedAdUnitId,
+    request: const AdRequest(),
+    rewardedAdLoadCallback: RewardedAdLoadCallback(
+      onAdLoaded: (RewardedAd ad) {
+        showDialog(
+            context: context,
+            builder: (_) =>
+            AdPopupWidget(
+                match.value["estimatedReward"]["reward"],
+                match.value["estimatedReward"]["rewardNextAd"],
+                true,
+                match,
+                context,
+                admobAd: ad
+            )
+        );
+      },
+      onAdFailedToLoad: (err) async {
+        print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
+        await FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
+        bool? isAdLoaded = await FlutterApplovinMax.isRewardLoaded((listener) => null);
+        if(isAdLoaded == true) {
+          showDialog(
+            context: context,
+            builder: (_) =>
+                AdPopupWidget(
+                    match.value["estimatedReward"]["reward"],
+                    match.value["estimatedReward"]["rewardNextAd"],
+                    false,
+                    match,
+                    context
+                )
+        );
+        }
+      },
+    ),
   );
+
 }
 
-Widget AdPopupWidget(int reward, int nextReward){
+Widget AdPopupWidget(int reward, int nextReward, bool isAdmobAd, FfaMatch match, BuildContext context, {RewardedAd? admobAd}){
+  User user = context.read<User>();
   return Builder(
       builder: (context) {
         return AlertDialog(
@@ -77,7 +126,17 @@ Widget AdPopupWidget(int reward, int nextReward){
                 GestureDetector(
                     onTap: (){
                       Navigator.pop(context);
-                      FlutterApplovinMax.showRewardVideo((listener) => print("HI"));
+                      if(isAdmobAd && admobAd == null) return;
+
+                      if(isAdmobAd && admobAd != null) {
+                        admobAd.show(onUserEarnedReward: (RewardedAd ad, RewardItem reward) => adCallback(match, context, user));
+                      } else {
+                        FlutterApplovinMax.showRewardVideo((event) {
+                          if (event == AppLovinAdListener.onUserRewarded) {
+                            adCallback(match, context, user);
+                          }
+                        },);
+                      }
                     },
                     child: Coin(
                       nb: nextReward.toString(),

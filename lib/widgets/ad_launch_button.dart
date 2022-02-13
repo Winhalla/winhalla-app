@@ -79,6 +79,8 @@ class _AdButtonState extends State<AdButton> {
         },
         onAdFailedToLoad: (err) async {
           print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
+          await FlutterApplovinMax.initSDK();
+          await FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
 
           isMAXRewardedVideoAvailable =
               (await FlutterApplovinMax.isRewardLoaded(maxEventListner))!;
@@ -107,13 +109,12 @@ class _AdButtonState extends State<AdButton> {
 
   @override
   void initState() {
-    FlutterApplovinMax.initRewardAd('e4781c6fa48968ce');
     user = context.read<User>();
     user.setKeyFx(playAd, "playAd");
     if (widget.goal == "earnMoreSoloMatch") {
       match = context.read<FfaMatch>();
     }
-    /*if (!kDebugMode)*/ _initGoogleMobileAds();
+    if (!kDebugMode || true) _initGoogleMobileAds();
     super.initState();
   }
 
