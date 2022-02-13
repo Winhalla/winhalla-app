@@ -24,4 +24,7 @@ class AdHelper {
   static String get rewardedApplovinUnitId {
     return "e4781c6fa48968ce";
   }
+  static String get interstitialApplovinUnitId {
+    return "3170fb7b5c6632f3";
+  }
 }

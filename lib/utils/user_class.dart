@@ -380,7 +380,9 @@ class User extends ChangeNotifier {
   }
 
   Future<void> showInterstitialAd() async {
-    if (kDebugMode) return;
+
+    // if (kDebugMode) return;
+    if(lastInterstitialAd + 10 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
     lastInterstitialAd = DateTime.now().millisecondsSinceEpoch;
     if (interstitialAd != null) {
       interstitialAd?.show();
@@ -392,7 +394,12 @@ class User extends ChangeNotifier {
             interstitialAd = ad;
           },
           onAdFailedToLoad: (err) {
-            interstitialAd = null;
+            FlutterApplovinMax.showInterstitialVideo((AppLovinAdListener? event) {
+              print("--------------------------$event-----------------------------");
+              if(event == AppLovinAdListener.adHidden){
+                FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
+              }
+            });
             print('Failed to load an interstitial ad: ${err.message}');
           },
         ),
@@ -404,13 +411,32 @@ class User extends ChangeNotifier {
         adLoadCallback: InterstitialAdLoadCallback(
           onAdLoaded: (ad) {
             ad.show();
+            /*InterstitialAd.load(
+              adUnitId: AdHelper.interstitialAdUnitId,
+              request: const AdRequest(),
+              adLoadCallback: InterstitialAdLoadCallback(
+                onAdLoaded: (ad) {
+                  interstitialAd = ad;
+                },
+                onAdFailedToLoad: (err) {
+                  // interstitialAd = null;
+                  print('Failed to load an interstitial ad: ${err.message}');
+                },
+              ),
+            );*/
           },
-          onAdFailedToLoad: (err) {
+          onAdFailedToLoad: (err) async {
             print('Failed to load an interstitial ad: ${err.message}');
+            FlutterApplovinMax.showInterstitialVideo((AppLovinAdListener? event) {
+              print("--------------------------$event-----------------------------");
+              if(event == AppLovinAdListener.adHidden){
+                FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
+              }
+            });
           },
         ),
       );
-      InterstitialAd.load(
+      /*InterstitialAd.load(
         adUnitId: AdHelper.interstitialAdUnitId,
         request: const AdRequest(),
         adLoadCallback: InterstitialAdLoadCallback(
@@ -422,7 +448,7 @@ class User extends ChangeNotifier {
             print('Failed to load an interstitial ad: ${err.message}');
           },
         ),
-      );
+      );*/
     }
   }
 }

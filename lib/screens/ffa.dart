@@ -34,8 +34,7 @@ class _SoloMatchState extends State<SoloMatch> {
     User user = context.read<User>();
     if (widget.matchId != "tutorial" &&
         user.value["user"]["lastGames"].length >= 2 &&
-        user.inGame["isFromMatchHistory"] != true &&
-        user.lastInterstitialAd + 90 * 1000 < DateTime.now().millisecondsSinceEpoch) {
+        user.inGame["isFromMatchHistory"] != true) {
         user.showInterstitialAd();
     }
     super.initState();
