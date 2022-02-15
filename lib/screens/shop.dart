@@ -178,7 +178,7 @@ class _ShopState extends State<Shop> {
                 padding: EdgeInsets.only(top: 2.h),
                 child: Center(
                   child: Text(
-                    "Your orders and their status will appear here.",
+                    "Your orders and their status will appear here once you order them.",
                     style: InheritedTextStyle.of(context).kBodyText2.apply(color: kText80),
                   ),
                 ),

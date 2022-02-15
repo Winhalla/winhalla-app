@@ -44,7 +44,8 @@ class FfaMatch extends ChangeNotifier {
       notifyListeners();
       return false;
     }
-    if(lastAdPopup + 0 * 1000 < DateTime.now().millisecondsSinceEpoch && !isTutorial){
+
+    if(lastAdPopup + 240 * 1000 < DateTime.now().millisecondsSinceEpoch && !isTutorial){
       showAdPopupWidget(context, this);
     }
     if (match["updatedPlatforms"] != null) {
@@ -89,7 +90,7 @@ class FfaMatch extends ChangeNotifier {
         match["players"].where((e) => e["steamId"] != steamId).toList();
     value = match;
     areOtherPlayersShown = false;
-    lastAdPopup = match["Date"];
+    lastAdPopup = match["userPlayer"]["joinDate"];
     notifyListeners();
   }
 }

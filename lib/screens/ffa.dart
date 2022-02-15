@@ -66,6 +66,7 @@ class _SoloMatchState extends State<SoloMatch> {
             create: (context) =>
                 FfaMatch(res.data["data"], user.value["steam"]["id"]),
             child: Builder(builder: (BuildContext context) {
+
               return RefreshIndicator(
                 onRefresh: () async {
                   var user = context.read<User>();
@@ -143,9 +144,7 @@ class _SoloMatchState extends State<SoloMatch> {
                                     user.setMatchInProgress();
                                   }
                                 });
-                                context
-                                    .read<User>()
-                                    .setKeyFx(match.refresh, "refreshMatch");
+
                                 if (match.value["finished"] == true) {
                                   return Text(
                                       "x${(match.value["userPlayer"]["multiplier"]).round()}",
@@ -272,6 +271,9 @@ class _SoloMatchState extends State<SoloMatch> {
 
                               SizedBox(width: 3.65.w,),
                               Consumer<FfaMatch>(builder: (context, match, _) {
+                                context
+                                    .read<User>()
+                                    .setKeyFx(match.refresh, "refreshMatch");
                                 return Coin(
                                   nb: match.value["estimatedReward"]["reward"].toString(),
                                   color: kText,

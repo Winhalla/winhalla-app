@@ -110,13 +110,13 @@ class MyApp extends StatelessWidget {
                           newData["tutorial"] = res.data["tutorial"];
 
                           List<GlobalKey?> keys = [];
-                          for (int i = 0; i < 18; i++) {
+                          for (int i = 0; i < 17; i++) {
                             if (i == 0 ||
                                 i == 4 ||
                                 i == 5 ||
                                 i == 10 ||
                                 i == 11 ||
-                                i == 17) {
+                                i == 16) {
                               keys.add(null);
                             } else {
                               keys.add(GlobalKey());

@@ -79,11 +79,20 @@ class _AdButtonState extends State<AdButton> {
         },
         onAdFailedToLoad: (err) async {
           print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
-          await FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
-          bool isReady = await FlutterApplovinMax.isRewardLoaded(maxEventListner) ?? false;
-          setState(() {
-            isMAXRewardedVideoAvailable = isReady;
+          loadApplovinRewarded((_){
+            if (mounted) {
+              setState(() {
+              isMAXRewardedVideoAvailable = true;
+            });
+            }
+          }, errorCallback:(){
+            if (mounted) {
+              setState(() {
+              _lastAdError = true;
+            });
+            }
           });
+
         },
       ),
     );
@@ -92,8 +101,7 @@ class _AdButtonState extends State<AdButton> {
   Future<void> playAd() async {
     if (user.inGame?["showActivity"] == false) user.toggleShowMatch(true);
     if (isMAXRewardedVideoAvailable) {
-      FlutterApplovinMax.showRewardVideo(
-          (AppLovinAdListener? event) => maxEventListner(event));
+      FlutterApplovinMax.showRewardVideo((AppLovinAdListener? event) => maxEventListner(event));
     } else if (_lastAdError) {
       _initGoogleMobileAds();
     } else if (isAdReady) {
@@ -103,27 +111,34 @@ class _AdButtonState extends State<AdButton> {
 
   @override
   void initState() {
+
     user = context.read<User>();
     user.setKeyFx(playAd, "playAd");
     if (widget.goal == "earnMoreSoloMatch") {
       match = context.read<FfaMatch>();
     }
-    if (!kDebugMode || true) _initGoogleMobileAds();
+    if (!kDebugMode || true) {
+      _initGoogleMobileAds();
+    }
     super.initState();
   }
 
   void maxEventListner(AppLovinAdListener? event) async {
-    print("--------------------------$event-----------------------------");
+    // print("--------------------------$event-----------------------------");
     if (event == AppLovinAdListener.adLoaded) {
-      setState(() {
+      if (mounted) {
+        setState(() {
         isMAXRewardedVideoAvailable = true;
       });
+      }
     }
 
     if (event == AppLovinAdListener.onUserRewarded) {
-      setState(() {
-        isMAXRewardedVideoAvailable = false;
-      });
+      if(mounted) {
+        setState(() {
+          isMAXRewardedVideoAvailable = false;
+        });
+      }
 
       await user.callApi
           .get(

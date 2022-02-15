@@ -301,7 +301,7 @@ class Tutorial extends ChangeNotifier{
       status = nextStatus as int;
       nextStatus = null;
     }
-    if(status >= 18) {
+    if(status >= 17) {
       ctxt.read<User>().callApi.post("/finishedTutorial","{}");
       return ctxt.read<TutorialController>().endTutorial();
     }
@@ -421,24 +421,44 @@ class Tutorial extends ChangeNotifier{
         },
       }, {
         "widget":FadeInPositioned(
-          // top: 10,
+          top: 40.h,
           left: 20,
           right: 20,
-          bottom: 10,
+          // bottom: 10,
           child: Builder(
             builder: (context) {
               return SizedBox(
                 width: screenW-40,
                 height: screenH/2,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Column(
                   children: [
-                    Expanded(
-                      child: Text(
-                        "Let's jump in a match!",
-                        textAlign: TextAlign.center,
-                        style: InheritedTextStyle.of(context).kHeadline2.apply(fontFamily: "Roboto condensed")
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "Let's jump in a match!",
+                            textAlign: TextAlign.center,
+                            style: InheritedTextStyle.of(context).kHeadline2.apply(fontFamily: "Roboto condensed")
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(8.w, 2.h, 8.w, 0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                                "Matches are the fastest way to earn Coins, you just have to start one when you start a Brawlhalla ranked games session, refresh after 7 games and you will earn coins!",
+                                textAlign: TextAlign.left,
+                                style: InheritedTextStyle.of(context).kBodyText3.apply(color: kText80)
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
@@ -883,7 +903,7 @@ class Tutorial extends ChangeNotifier{
           "back":false,
           "next":true
         },
-      },{ // 17th item ; index : 16
+      }/*,{ // 17th item ; index : 16
         "widget": FadeInPositioned(
           top: screenH/3,
           left: 20,
@@ -912,8 +932,11 @@ class Tutorial extends ChangeNotifier{
                             TextSpan(
                                 text: "to get it's ", style: InheritedTextStyle.of(context).kBodyText1Roboto),
                             TextSpan(
-                                text: "reward",
+                                text: "reward.",
                                 style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kPrimary)),
+                            TextSpan(
+                                text: "\n You can also skip this for now if you want (\"Next\" button on the bottom-right corner)",
+                                style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: kText80, fontSizeFactor: 0.9)),
                           ]),
                         ),
                       ),
@@ -927,7 +950,7 @@ class Tutorial extends ChangeNotifier{
           "back":false,
           "next":true
         },
-      },{ // index : 17
+      }*/,{ // index : 17
         "widget":FadeInPositioned(
           left: 20,
           right: 20,

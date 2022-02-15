@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
@@ -381,7 +382,7 @@ class User extends ChangeNotifier {
 
   Future<void> showInterstitialAd() async {
 
-    // if (kDebugMode) return;
+    if (kDebugMode) return;
     if(lastInterstitialAd + 90 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
     lastInterstitialAd = DateTime.now().millisecondsSinceEpoch;
     if (interstitialAd != null) {
@@ -394,12 +395,7 @@ class User extends ChangeNotifier {
             interstitialAd = ad;
           },
           onAdFailedToLoad: (err) {
-            FlutterApplovinMax.showInterstitialVideo((AppLovinAdListener? event) {
-              print("--------------------------$event-----------------------------");
-              if(event == AppLovinAdListener.adHidden){
-                FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
-              }
-            });
+            showApplovinInterstitial();
             print('Failed to load an interstitial ad: ${err.message}');
           },
         ),
@@ -427,12 +423,7 @@ class User extends ChangeNotifier {
           },
           onAdFailedToLoad: (err) async {
             print('Failed to load an interstitial ad: ${err.message}');
-            FlutterApplovinMax.showInterstitialVideo((AppLovinAdListener? event) {
-              print("--------------------------$event-----------------------------");
-              if(event == AppLovinAdListener.adHidden){
-                FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
-              }
-            });
+            showApplovinInterstitial();
           },
         ),
       );
@@ -459,7 +450,7 @@ Future<dynamic> initUser(context) async {
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
   CallApi caller = CallApi(authKey: storageKey, context: context);
-  var data = await caller.get("/account");
+  var data = await caller.get("/account?apple=${Platform.isIOS}");
   if (data["successful"] == false) {
     return null;
   }
@@ -525,7 +516,13 @@ Future<dynamic> initUser(context) async {
       }
     }
   }catch(e){}
-
+  // Pre-load ads
+  if(!kDebugMode) {
+    try{
+      FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
+      FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
+    }catch(e){}
+  }
   return {
     "data": data["data"],
     "authKey": storageKey,
