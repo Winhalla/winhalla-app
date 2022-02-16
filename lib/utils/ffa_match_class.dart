@@ -129,9 +129,6 @@ class FfaMatch extends ChangeNotifier {
     value = match;
     areOtherPlayersShown = false;
     lastAdPopup = match["userPlayer"]["joinDate"];
-    FirebaseAnalytics.instance.logEvent(
-      name: "JoinSoloMatch",
-    );
     notifyListeners();
   }
 }

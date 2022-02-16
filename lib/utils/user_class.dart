@@ -172,6 +172,7 @@ class User extends ChangeNotifier {
       return "tutorial";
     }
 
+
     if (inGame != null) {
       inGame = null;
       gamesPlayedInMatch = 0;
@@ -187,6 +188,10 @@ class User extends ChangeNotifier {
       if (matchId["successful"] == false) return "err";
       matchId = matchId["data"];
     }
+
+    FirebaseAnalytics.instance.logEvent(
+      name: "JoinSoloMatch",
+    );
 
     dynamic accountData = await callApi.get("/account", showError: false);
     if (accountData["successful"] == false) return matchId;
@@ -475,6 +480,7 @@ class User extends ChangeNotifier {
 }
 
 Future<dynamic> initUser(context) async {
+  MobileAds.instance.initialize();
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
   CallApi caller = CallApi(authKey: storageKey, context: context);
