@@ -111,7 +111,7 @@ class TreePainter extends CustomPainter {
 
           dailyChallengeQuestsCopy.remove(quest);
         } else {
-          currentHeight += 3.h + 3.h + 2.h + 1.5.h + 20.w + 17;
+          currentHeight += 3.h + 3.h + 2.h + 1.5.h + 20.w + 15;
           path.lineTo(currentWidth, currentHeight - 2);
           return drawBottomTree();
         }
