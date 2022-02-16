@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/user_class.dart';
@@ -32,13 +34,10 @@ class Coin extends StatelessWidget {
         padding: padding,
         child: Row(
           children: [
-            Builder(builder: (context) {
-              String text = nb;
-              return Text(
-                text,
+            Text(
+                nb,
                 style: InheritedTextStyle.of(context).kBodyText4.apply(fontSizeFactor: fontSize/20,color:color)
-              );
-            }),
+              ),
             const SizedBox(
               width: 6.25,
             ),
@@ -55,4 +54,8 @@ class Coin extends StatelessWidget {
           ],
         ));
   }
+}
+
+String formatToLocalDateyMd(DateTime date){
+  return DateFormat.yMd(Platform.localeName).format(date);
 }

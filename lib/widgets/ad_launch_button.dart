@@ -5,7 +5,10 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/src/provider.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
+import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/user_class.dart';
+
+import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 
 class AdButton extends StatefulWidget {
   final Widget child;
@@ -37,11 +40,9 @@ class _AdButtonState extends State<AdButton> {
   late User user;
   FfaMatch? match;
 
+  bool isMAXRewardedVideoAvailable = false;
+
   Future<void> _initGoogleMobileAds() async {
-    if (!user.hasAlreadyInitAdmob) {
-      await user.initAdMob();
-      user.hasAlreadyInitAdmob = true;
-    }
     await RewardedAd.load(
       serverSideVerificationOptions: ServerSideVerificationOptions(
           userId: user.value["steam"]["id"],
@@ -89,11 +90,22 @@ class _AdButtonState extends State<AdButton> {
             },
           );
         },
-        onAdFailedToLoad: (err) {
+        onAdFailedToLoad: (err) async {
           print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
-          setState(() {
-            _lastAdError = true;
+          loadApplovinRewarded((_){
+            if (mounted) {
+              setState(() {
+              isMAXRewardedVideoAvailable = true;
+            });
+            }
+          }, errorCallback:(){
+            if (mounted) {
+              setState(() {
+              _lastAdError = true;
+            });
+            }
           });
+
         },
       ),
     );
@@ -101,7 +113,9 @@ class _AdButtonState extends State<AdButton> {
 
   Future<void> playAd() async {
     if (user.inGame?["showActivity"] == false) user.toggleShowMatch(true);
-    if (_lastAdError) {
+    if (isMAXRewardedVideoAvailable) {
+      FlutterApplovinMax.showRewardVideo((AppLovinAdListener? event) => maxEventListner(event));
+    } else if (_lastAdError) {
       _initGoogleMobileAds();
     } else if (isAdReady) {
       _rewardedAd.show(onUserEarnedReward: (rewardedAd, rewardItem) {});
@@ -110,20 +124,66 @@ class _AdButtonState extends State<AdButton> {
 
   @override
   void initState() {
+
     user = context.read<User>();
     user.setKeyFx(playAd, "playAd");
     if (widget.goal == "earnMoreSoloMatch") {
       match = context.read<FfaMatch>();
     }
-    if (!kDebugMode) _initGoogleMobileAds();
+    if (!kDebugMode || true) {
+      _initGoogleMobileAds();
+    }
     super.initState();
+  }
+
+  void maxEventListner(AppLovinAdListener? event) async {
+    // print("--------------------------$event-----------------------------");
+    if (event == AppLovinAdListener.adLoaded) {
+      if (mounted) {
+        setState(() {
+        isMAXRewardedVideoAvailable = true;
+      });
+      }
+    }
+
+    if (event == AppLovinAdListener.onUserRewarded) {
+      if(mounted) {
+        setState(() {
+          isMAXRewardedVideoAvailable = false;
+        });
+      }
+
+      await user.callApi
+          .get(
+              "/admob/getReward?user_id=${user.value["steam"]["id"]}&custom_data=${widget.goal == "earnMoreSoloMatch" ? match?.value["_id"] : widget.goal}");
+
+      //refresh UI
+      if (match != null) {
+        Future.delayed(const Duration(milliseconds: 500), () async {
+          await match?.refresh(context, user);
+        });
+      } else {
+        await user.refresh();
+        user.keyFx["rebuildHomePage"]();
+      }
+    }
+
+    if (event == AppLovinAdListener.adLoadFailed) {
+      return setState(() {
+        _lastAdError = true;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
         behavior: HitTestBehavior.translucent,
-        child: isAdReady ? widget.child : _lastAdError ? widget.adErrorChild : widget.adNotReadyChild,
+        child: isAdReady || isMAXRewardedVideoAvailable
+            ? widget.child
+            : _lastAdError
+                ? widget.adErrorChild
+                : widget.adNotReadyChild,
         onTap: playAd);
   }
 }

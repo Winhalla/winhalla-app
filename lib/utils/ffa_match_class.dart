@@ -1,14 +1,14 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
-import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
+import 'package:winhalla_app/widgets/popups/popup_ad.dart';
 
 class FfaMatch extends ChangeNotifier {
   dynamic value;
   bool areOtherPlayersShown = false;
+  late int lastAdPopup;
 
   Future<bool> refresh(BuildContext context, User user,
       {bool showInfo = false,
@@ -67,6 +67,9 @@ class FfaMatch extends ChangeNotifier {
       return false;
     }
 
+    if(lastAdPopup + 240 * 1000 < DateTime.now().millisecondsSinceEpoch && !isTutorial){
+      showAdPopupWidget(context, this);
+    }
     if (match["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < match["updatedPlatforms"].length; i++) {
@@ -109,6 +112,10 @@ class FfaMatch extends ChangeNotifier {
     return true;
   }
 
+  void setAdPopupDate(){
+    lastAdPopup = DateTime.now().millisecondsSinceEpoch;
+  }
+
   void togglePlayerShown() {
     areOtherPlayersShown = !areOtherPlayersShown;
     notifyListeners();
@@ -121,6 +128,7 @@ class FfaMatch extends ChangeNotifier {
         match["players"].where((e) => e["steamId"] != steamId).toList();
     value = match;
     areOtherPlayersShown = false;
+    lastAdPopup = match["userPlayer"]["joinDate"];
     FirebaseAnalytics.instance.logEvent(
       name: "JoinSoloMatch",
     );

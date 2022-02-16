@@ -1,9 +1,11 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -344,11 +346,9 @@ class User extends ChangeNotifier {
 
     quests["${type}Quests"].removeWhere((e) => e["id"] == questId);
     value["user"]["coins"] += price;
-    if (!isTutorial &&
-        lastInterstitialAd + 90 * 1000 <
-            DateTime.now().millisecondsSinceEpoch) {
-      Future.delayed(
-          const Duration(milliseconds: 1400), () => showInterstitialAd());
+
+    if (!isTutorial) {
+      Future.delayed(const Duration(milliseconds: 1400), () => showInterstitialAd());
     }
     refreshOldQuestsData();
     notifyListeners();
@@ -411,11 +411,9 @@ class User extends ChangeNotifier {
   }
 
   Future<void> showInterstitialAd() async {
+
     if (kDebugMode) return;
-    if (!hasAlreadyInitAdmob) {
-      await MobileAds.instance.initialize();
-      hasAlreadyInitAdmob = true;
-    }
+    if(lastInterstitialAd + 90 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
     lastInterstitialAd = DateTime.now().millisecondsSinceEpoch;
     if (interstitialAd != null) {
       interstitialAd?.show();
@@ -427,7 +425,7 @@ class User extends ChangeNotifier {
             interstitialAd = ad;
           },
           onAdFailedToLoad: (err) {
-            interstitialAd = null;
+            showApplovinInterstitial();
             print('Failed to load an interstitial ad: ${err.message}');
           },
         ),
@@ -439,13 +437,27 @@ class User extends ChangeNotifier {
         adLoadCallback: InterstitialAdLoadCallback(
           onAdLoaded: (ad) {
             ad.show();
+            /*InterstitialAd.load(
+              adUnitId: AdHelper.interstitialAdUnitId,
+              request: const AdRequest(),
+              adLoadCallback: InterstitialAdLoadCallback(
+                onAdLoaded: (ad) {
+                  interstitialAd = ad;
+                },
+                onAdFailedToLoad: (err) {
+                  // interstitialAd = null;
+                  print('Failed to load an interstitial ad: ${err.message}');
+                },
+              ),
+            );*/
           },
-          onAdFailedToLoad: (err) {
+          onAdFailedToLoad: (err) async {
             print('Failed to load an interstitial ad: ${err.message}');
+            showApplovinInterstitial();
           },
         ),
       );
-      InterstitialAd.load(
+      /*InterstitialAd.load(
         adUnitId: AdHelper.interstitialAdUnitId,
         request: const AdRequest(),
         adLoadCallback: InterstitialAdLoadCallback(
@@ -457,13 +469,8 @@ class User extends ChangeNotifier {
             print('Failed to load an interstitial ad: ${err.message}');
           },
         ),
-      );
+      );*/
     }
-  }
-
-  Future<void> initAdMob() async {
-    await MobileAds.instance.initialize();
-    hasAlreadyInitAdmob = true;
   }
 }
 
@@ -471,7 +478,7 @@ Future<dynamic> initUser(context) async {
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
   CallApi caller = CallApi(authKey: storageKey, context: context);
-  var data = await caller.get("/account");
+  var data = await caller.get("/account?apple=${Platform.isIOS}");
   if (data["successful"] == false) {
     return null;
   }
@@ -537,7 +544,13 @@ Future<dynamic> initUser(context) async {
       }
     }
   }catch(e){}
-
+  // Pre-load ads
+  if(!kDebugMode) {
+    try{
+      FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
+      FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
+    }catch(e){}
+  }
   return {
     "data": data["data"],
     "authKey": storageKey,

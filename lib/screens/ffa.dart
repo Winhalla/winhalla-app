@@ -1,16 +1,12 @@
-import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:provider/provider.dart';
-import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/timer_widget.dart';
 import 'package:winhalla_app/utils/user_class.dart';
-import 'package:winhalla_app/widgets/ad_launch_button.dart';
+import 'package:winhalla_app/widgets/coin.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_no_refresh.dart';
 import 'package:winhalla_app/widgets/tip_painter.dart';
@@ -33,8 +29,7 @@ class _SoloMatchState extends State<SoloMatch> {
     User user = context.read<User>();
     if (widget.matchId != "tutorial" &&
         user.value["user"]["lastGames"].length >= 2 &&
-        user.inGame["isFromMatchHistory"] != true &&
-        user.lastInterstitialAd + 90 * 1000 < DateTime.now().millisecondsSinceEpoch) {
+        user.inGame["isFromMatchHistory"] != true) {
         user.showInterstitialAd();
     }
     super.initState();
@@ -66,6 +61,7 @@ class _SoloMatchState extends State<SoloMatch> {
             create: (context) =>
                 FfaMatch(res.data["data"], user.value["steam"]["id"]),
             child: Builder(builder: (BuildContext context) {
+
               return RefreshIndicator(
                 onRefresh: () async {
                   var user = context.read<User>();
@@ -109,10 +105,11 @@ class _SoloMatchState extends State<SoloMatch> {
                       ],
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     ),
-                    const SizedBox(
-                      height: 35,
+                    SizedBox(
+                      height: 3.75.h,
                     ),
-                    Container(
+
+                    /*Container(
                       padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
                       child: Row(
                         children: [
@@ -120,31 +117,8 @@ class _SoloMatchState extends State<SoloMatch> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Consumer<FfaMatch>(builder: (context, match, _) {
-                                Future.delayed(const Duration(milliseconds: 1),
-                                    () {
-                                  bool hasExpiredTime =
-                                      match.value["userPlayer"]["joinDate"] +
-                                              3600 * 1000 <
-                                          DateTime.now().millisecondsSinceEpoch;
 
-                                  if (hasExpiredTime) {
-                                    user.setGames(7);
-                                  } else {
-                                    user.setGames(match.value["userPlayer"]
-                                        ["gamesPlayed"]);
-                                  }
 
-                                  if (user.inGame["showActivity"] == false &&
-                                      (match.value["userPlayer"]
-                                                  ["gamesPlayed"] <
-                                              7 &&
-                                          !hasExpiredTime)) {
-                                    user.setMatchInProgress();
-                                  }
-                                });
-                                context
-                                    .read<User>()
-                                    .setKeyFx(match.refresh, "refreshMatch");
                                 if (match.value["finished"] == true) {
                                   return Text(
                                       "x${(match.value["userPlayer"]["multiplier"]).round()}",
@@ -238,9 +212,79 @@ class _SoloMatchState extends State<SoloMatch> {
                       decoration: BoxDecoration(
                           color: kBackgroundVariant,
                           borderRadius: BorderRadius.circular(20)),
+                    ),*/
+
+                    Container(
+                      padding: EdgeInsets.fromLTRB(6.w, 3.h, 6.w, 3.h),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.only(top: 1.45),
+                                child: Text("Estimated reward:", style: InheritedTextStyle.of(context).kBodyText2.apply(fontSizeFactor: 0.95, color: kText90)),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 1.95),
+                                child: Text("Based on current stats",
+                                    style: InheritedTextStyle.of(context)
+                                        .kBodyText3
+                                        .apply(
+                                            fontStyle: FontStyle.italic,
+                                            fontSizeFactor: 0.8,
+                                            color: kGray)),
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(width: 3.65.w,),
+                          Consumer<FfaMatch>(builder: (context, match, _) {
+                            context
+                                .read<User>()
+                                .setKeyFx(match.refresh, "refreshMatch");
+                            Future.delayed(const Duration(milliseconds: 1),
+                                    () {
+                                  bool hasExpiredTime =
+                                      match.value["userPlayer"]["joinDate"] +
+                                          3600 * 1000 <
+                                          DateTime.now().millisecondsSinceEpoch;
+
+                                  if (hasExpiredTime) {
+                                    user.setGames(7);
+                                  } else {
+                                    user.setGames(match.value["userPlayer"]
+                                    ["gamesPlayed"]);
+                                  }
+
+                                  if (user.inGame["showActivity"] == false &&
+                                      (match.value["userPlayer"]
+                                      ["gamesPlayed"] <
+                                          7 &&
+                                          !hasExpiredTime)) {
+                                    user.setMatchInProgress();
+                                  }
+                                });
+                            return Coin(
+                              nb: match.value["estimatedReward"]["reward"].toString(),
+                              color: kText,
+                              bgColor: kBlack,
+                              padding:
+                                  const EdgeInsets.fromLTRB(18.5, 10.5, 18.5, 7.5),
+                              fontSize: 28,
+                            );
+                          })
+                        ],
+                      ),
+                      decoration: BoxDecoration(
+                          color: kBackgroundVariant,
+                          borderRadius: BorderRadius.circular(20)),
                     ),
-                    const SizedBox(
-                      height: 60,
+
+
+                    SizedBox(
+                      height: 7.25.h,
                     ),
                     Consumer<FfaMatch>(builder: (context, match, _) {
                       final player = match.value["userPlayer"];
@@ -255,8 +299,8 @@ class _SoloMatchState extends State<SoloMatch> {
                         ),
                       );
                     }),
-                    const SizedBox(
-                      height: 15,
+                    SizedBox(
+                      height: 1.8.h,
                     ),
                     Consumer<FfaMatch>(builder: (context, match, _) {
                       return Row(
@@ -318,8 +362,8 @@ class _SoloMatchState extends State<SoloMatch> {
                         return Container();
                       }
                     }),
-                    const SizedBox(
-                      height: 50,
+                    SizedBox(
+                      height: 6.1.h,
                     ),
                     Container(
                       padding: const EdgeInsets.fromLTRB(28, 22, 0, 24.5),

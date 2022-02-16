@@ -16,6 +16,7 @@ class QuestWidget extends StatefulWidget {
   int goal;
   final int reward;
   final bool showAdButton;
+  final bool isActive;
   final oldProgress;
   final showClickToCollect;
   QuestWidget({
@@ -27,6 +28,7 @@ class QuestWidget extends StatefulWidget {
     required this.reward,
     required this.oldProgress,
     this.showAdButton = false,
+    this.isActive = true,
     this.showClickToCollect = true,
   }) : super(key: key);
 
@@ -86,7 +88,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
     return Container(
       decoration: BoxDecoration(
           color: kBackgroundVariant, borderRadius: BorderRadius.circular(16)),
-      padding: EdgeInsets.fromLTRB(30, 18, 20, 18),
+      padding: EdgeInsets.fromLTRB(7.75.w, 3.h, 5.75.w, 3.h),
       child: AnimatedBuilder(
           animation: curvedAnimation,
           builder: (BuildContext context, Widget? child) {
@@ -134,11 +136,11 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                           alignment: Alignment.centerLeft,
                           duration: const Duration(milliseconds: 200),
                         ),
-                        if (widget.showAdButton)
+                        if (widget.showAdButton && widget.isActive && widget.color != kGreen)
                           const SizedBox(
                             width: 10,
                           ),
-                        if (widget.showAdButton && widget.color != kGreen)
+                        if (widget.showAdButton && widget.isActive && widget.color != kGreen)
                           AdButton(
                             goal: 'dailyChallenge',
                             child: Container(
@@ -196,14 +198,14 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                 Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16), color: kBlack),
-                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 10),
+                  padding: EdgeInsets.fromLTRB(4.w, 2.h, 4.w, 1.5.h),
                   child: Column(
                     children: [
                       Stack(
                         children: [
                           SizedBox(
-                            width: 70,
-                            height: 70,
+                            width: 20.w,
+                            height: 20.w,
                             child: CustomPaint(
                               foregroundPainter: ProgressPainter(
                                   progressColor: widget.color,
