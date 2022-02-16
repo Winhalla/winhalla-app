@@ -72,7 +72,7 @@ Future<void> showAdPopupWidget(BuildContext context, FfaMatch match, ) async {
 
 }
 
-Widget AdPopupWidget(int reward, int nextReward, bool isAdmobAd, FfaMatch match, BuildContext context, {RewardedAd? admobAd}){
+Widget AdPopupWidget(double reward, double nextReward, bool isAdmobAd, FfaMatch match, BuildContext context, {RewardedAd? admobAd}){
   User user = context.read<User>();
   return Builder(
       builder: (context) {

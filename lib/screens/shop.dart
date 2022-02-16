@@ -249,7 +249,7 @@ class _ShopState extends State<Shop> {
                       }
                       rebuildTitle = rebuild;
                       return Container(
-                        constraints: BoxConstraints(maxHeight: 10.h),
+                        constraints: BoxConstraints(maxHeight: 11.h),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.vertical(
                             top: const Radius.circular(15),
@@ -281,7 +281,7 @@ class _ShopState extends State<Shop> {
                             ),
                           ) else Container(
                             width: 32.w,
-                            height: 7.8.h,
+                            height: 8.8.h,
                             margin: EdgeInsets.only(top: 1.1.h, bottom: 1.1.h, left: 3.w),
                             padding: EdgeInsets.symmetric(horizontal: 0.5.w),
                             decoration: const BoxDecoration(
