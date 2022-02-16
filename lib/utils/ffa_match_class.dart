@@ -78,6 +78,10 @@ class FfaMatch extends ChangeNotifier {
     return true;
   }
 
+  void setAdPopupDate(){
+    lastAdPopup = DateTime.now().millisecondsSinceEpoch;
+  }
+
   void togglePlayerShown() {
     areOtherPlayersShown = !areOtherPlayersShown;
     notifyListeners();

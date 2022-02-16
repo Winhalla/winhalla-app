@@ -132,6 +132,7 @@ Widget AdPopupWidget(int reward, int nextReward, bool isAdmobAd, FfaMatch match,
                     onTap: (){
                       Navigator.pop(context);
                       if(isAdmobAd && admobAd == null) return;
+                      match.setAdPopupDate();
 
                       if(isAdmobAd && admobAd != null) {
                         admobAd.show(onUserEarnedReward: (RewardedAd ad, RewardItem reward) => adCallback(match, context, user));
