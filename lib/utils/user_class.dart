@@ -38,6 +38,8 @@ class User extends ChangeNotifier {
   var oldDailyChallengeData;
 
   int lastInterstitialAd = 0;
+  int lastMatchInterstitial = 0;
+  int lastQuestsInterstitial = 0;
   InterstitialAd? interstitialAd;
 
   Future<void> refresh({notify = true}) async {
@@ -353,7 +355,7 @@ class User extends ChangeNotifier {
     value["user"]["coins"] += price;
 
     if (!isTutorial) {
-      Future.delayed(const Duration(milliseconds: 1400), () => showInterstitialAd());
+      Future.delayed(const Duration(milliseconds: 1400), () => showInterstitialAd(InterstitialType.quests));
     }
     refreshOldQuestsData();
     notifyListeners();
@@ -414,12 +416,18 @@ class User extends ChangeNotifier {
   void setAnimateMatchHistory(bool setTo) {
     animateMatchHistory = setTo;
   }
-
-  Future<void> showInterstitialAd() async {
+  Future<void> showInterstitialAd(InterstitialType type) async {
 
     if (kDebugMode) return;
-    if(lastInterstitialAd + 90 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
+    // Not more than an inter per minute and one for each type each 3 minutes
+    if(lastInterstitialAd + 60 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
+    if(type == InterstitialType.match && lastMatchInterstitial + 180 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
+    if(type == InterstitialType.quests && lastQuestsInterstitial + 180 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
+
     lastInterstitialAd = DateTime.now().millisecondsSinceEpoch;
+    if(type == InterstitialType.match) lastMatchInterstitial = DateTime.now().millisecondsSinceEpoch;
+    if(type == InterstitialType.quests) lastQuestsInterstitial = DateTime.now().millisecondsSinceEpoch;
+
     if (interstitialAd != null) {
       interstitialAd?.show();
       InterstitialAd.load(
@@ -477,6 +485,11 @@ class User extends ChangeNotifier {
       );*/
     }
   }
+}
+
+enum InterstitialType {
+  match,
+  quests
 }
 
 Future<dynamic> initUser(context) async {

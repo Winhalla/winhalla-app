@@ -30,7 +30,7 @@ class _SoloMatchState extends State<SoloMatch> {
     if (widget.matchId != "tutorial" &&
         user.value["user"]["lastGames"].length >= 2 &&
         user.inGame["isFromMatchHistory"] != true) {
-        user.showInterstitialAd();
+        user.showInterstitialAd(InterstitialType.match);
     }
     super.initState();
   }
