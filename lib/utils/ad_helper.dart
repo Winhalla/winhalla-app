@@ -25,10 +25,22 @@ class AdHelper {
     }
   }
   static String get rewardedApplovinUnitId {
-    return "e4781c6fa48968ce";
+    if (Platform.isAndroid) {
+      return "e4781c6fa48968ce";
+    } else if (Platform.isIOS) {
+      return "5108a8032a9f6142";
+    } else {
+      throw UnsupportedError("Unsupported platform");
+    }
   }
   static String get interstitialApplovinUnitId {
-    return "3170fb7b5c6632f3";
+    if (Platform.isAndroid) {
+      return "3170fb7b5c6632f3";
+    } else if (Platform.isIOS) {
+      return "d33b6eaa76bbf870";
+    } else {
+      throw UnsupportedError("Unsupported platform");
+    }
   }
 }
 
