@@ -44,7 +44,5 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
-android/gradle.propreties
-android/gradle.properties
 node_modules
 /obfuscated_stacktraces/
