@@ -68,7 +68,6 @@ void loadApplovinRewarded(Function(Timer?) callback, {Function? errorCallback}) 
     }
   }
   timerCallback(null);
-  //! convert to a function to call it before the first timer call
   Timer.periodic(const Duration(milliseconds: 333), timerCallback);
 }
 
