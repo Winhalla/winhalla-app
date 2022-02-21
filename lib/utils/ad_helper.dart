@@ -73,7 +73,7 @@ void loadApplovinRewarded(Function(Timer?) callback, {Function? errorCallback}) 
 }
 
 void showApplovinInterstitial() async {
-  await FlutterApplovinMax.initInterstitialAd(AdHelper.rewardedApplovinUnitId);
+  await FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
   int times = 0;
   bool hasShownPopup = false;
   void timerCallback(Timer? timer) async {
