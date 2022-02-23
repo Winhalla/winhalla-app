@@ -74,12 +74,6 @@ class _AdButtonState extends State<AdButton> {
               } else {
                 await user.refresh();
                 user.keyFx["rebuildHomePage"]();
-                FirebaseAnalytics.instance.logEvent(
-                    name: "FinishDailyChallenge",
-                    parameters: {
-                      "type":"Ad"
-                    }
-                );
               }
               await FirebaseAnalytics.instance.logEvent(
                   name: "AdWatched",
@@ -145,7 +139,9 @@ class _AdButtonState extends State<AdButton> {
       });
       }
     }
-
+    if(event == AppLovinAdListener.adDisplayed){
+      FirebaseAnalytics.instance.logAdImpression(adFormat: "Rewarded", adPlatform: "AppLovin", adUnitName: "adLaunchButton_"+widget.goal);
+    }
     if (event == AppLovinAdListener.onUserRewarded) {
       if(mounted) {
         setState(() {

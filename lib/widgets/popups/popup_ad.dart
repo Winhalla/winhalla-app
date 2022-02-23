@@ -2,6 +2,7 @@
 
 import 'dart:async';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -33,6 +34,9 @@ Future<void> showAdPopupWidget(BuildContext context, FfaMatch match, ) async {
     request: const AdRequest(),
     rewardedAdLoadCallback: RewardedAdLoadCallback(
       onAdLoaded: (RewardedAd ad) {
+        FirebaseAnalytics.instance.logEvent(
+          name: "AdPopupDisplayed",
+        );
         showDialog(
             context: context,
             builder: (_) =>
@@ -50,6 +54,9 @@ Future<void> showAdPopupWidget(BuildContext context, FfaMatch match, ) async {
         print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
         loadApplovinRewarded((Timer? timer){
           try{
+            FirebaseAnalytics.instance.logEvent(
+              name: "AdPopupDisplayed",
+            );
             showDialog(
                 context: context,
                 builder: (_) =>
@@ -130,6 +137,9 @@ Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match,
               children: [
                 GestureDetector(
                     onTap: (){
+                      FirebaseAnalytics.instance.logEvent(
+                          name: "AdPopupAccepted",
+                      );
                       Navigator.pop(context);
                       if(isAdmobAd && admobAd == null) return;
                       match.setAdPopupDate();
@@ -138,6 +148,9 @@ Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match,
                         admobAd.show(onUserEarnedReward: (RewardedAd ad, RewardItem reward) => adCallback(match, context, user));
                       } else {
                         FlutterApplovinMax.showRewardVideo((event) {
+                          if(event == AppLovinAdListener.adDisplayed){
+                            FirebaseAnalytics.instance.logAdImpression(adFormat: "Rewarded", adPlatform: "AppLovin", adUnitName: "adPopupFfa");
+                          }
                           if (event == AppLovinAdListener.onUserRewarded) {
                             adCallback(match, context, user);
                           }

@@ -258,7 +258,7 @@ class _MyAppBarState extends State<MyAppBar> {
                                       showDialog(
                                           context: context,
                                           builder: (BuildContext context) =>
-                                              LinkInfoWidget(linkId));
+                                              LinkInfoWidget(linkId, false));
                                       await Future.delayed(
                                           const Duration(milliseconds: 100));
                                       overlayEntry.remove();

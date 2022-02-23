@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -78,7 +79,7 @@ Widget LinkActivatedWidget(){
   );
 }
 
-Widget LinkInfoWidget(String linkId){
+Widget LinkInfoWidget(String linkId, bool isForced){
 
   return StatefulBuilder(builder: (context, setState) {
     return AlertDialog(
@@ -165,6 +166,9 @@ Widget LinkInfoWidget(String linkId){
             GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: (){
+                FirebaseAnalytics.instance.logEvent(name: "SharedReferralLink", parameters: {
+                  "isForcedPopupShow": isForced
+                });
                 Share.share('https://winhalla.app/link/$linkId');
               },
               child: Container(

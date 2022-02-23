@@ -692,13 +692,6 @@ class Price extends StatelessWidget {
         var userInfo = context.read<User>().value["user"];
         try {
           if (userInfo["coins"] < double.parse(cost)) {
-            FirebaseAnalytics.instance.logEvent(
-                name: "ClickedShopItemPrice",
-                parameters: {
-                  "item":itemId,
-                  "enoughCoins":false
-                }
-            );
             showInfoDropdown(
               context,
               kRed,
@@ -716,13 +709,6 @@ class Price extends StatelessWidget {
         } on FormatException {
           return;
         }
-        FirebaseAnalytics.instance.logEvent(
-            name: "ClickedShopItemPrice",
-            parameters: {
-              "item":itemId,
-              "enoughCoins":true
-            }
-        );
         var result = await showDialog(
             context: context,
             builder: (context) => PopupWidget(

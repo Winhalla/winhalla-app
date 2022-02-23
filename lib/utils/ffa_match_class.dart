@@ -32,23 +32,6 @@ class FfaMatch extends ChangeNotifier {
 
     if (match["userPlayer"]["gamesPlayed"] >= 7) {
       user.inGame["isFinished"] = true;
-      FirebaseAnalytics.instance.logEvent(
-        name: "FinishedSoloMatch",
-      );
-      try{
-        if(user.value["user"]["dailyChallenge"]["challenges"].firstWhere((e)=>e["goal"] == "winhallaMatch",orElse:()=>null) != null){
-          FirebaseAnalytics.instance.logEvent(
-              name: "FinishDailyChallenge",
-              parameters: {
-                "type":"Match"
-              }
-          );
-        }
-      } catch(e){
-
-      }
-
-
     }
 
     /*if(isTutorialRefresh){
@@ -67,7 +50,7 @@ class FfaMatch extends ChangeNotifier {
       return false;
     }
 
-    if(lastAdPopup + 240 * 1000 < DateTime.now().millisecondsSinceEpoch && !isTutorial){
+    if(lastAdPopup + 0 * 1000 < DateTime.now().millisecondsSinceEpoch && !isTutorial && showInfo){
       showAdPopupWidget(context, this);
     }
     if (match["updatedPlatforms"] != null) {
@@ -102,12 +85,15 @@ class FfaMatch extends ChangeNotifier {
       );
       return false;
     }
-    FirebaseAnalytics.instance.logEvent(
+    // Only send analytics if the refresh is made by user
+    if(showInfo) {
+      FirebaseAnalytics.instance.logEvent(
         name: "MatchRefresh",
         parameters:{
           "updated":false
         }
     );
+    }
     notifyListeners();
     return true;
   }

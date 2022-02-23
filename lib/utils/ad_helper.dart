@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 
 class AdHelper {
@@ -71,7 +72,7 @@ void loadApplovinRewarded(Function(Timer?) callback, {Function? errorCallback}) 
   Timer.periodic(const Duration(milliseconds: 333), timerCallback);
 }
 
-void showApplovinInterstitial() async {
+void showApplovinInterstitial(String adUnitName) async {
   await FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
   int times = 0;
   bool hasShownPopup = false;
@@ -86,6 +87,9 @@ void showApplovinInterstitial() async {
       try{
         await FlutterApplovinMax.showInterstitialVideo((AppLovinAdListener? event) {
           print("--------------------------$event-----------------------------");
+          if(event == AppLovinAdListener.adDisplayed){
+            FirebaseAnalytics.instance.logAdImpression(adFormat: "Interstitial", adPlatform: "AppLovin", adUnitName: adUnitName);
+          }
           if(event == AppLovinAdListener.adHidden){
             FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
           }

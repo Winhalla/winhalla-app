@@ -162,7 +162,6 @@ class User extends ChangeNotifier {
 
   Future<String> enterMatch(
       {bool isTutorial = false, String? targetedMatchId, bool isFromMatchHistory = false}) async {
-    FirebaseAnalytics.instance.logScreenView(screenName: "SoloMatch");
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "SoloMatch");
     if (isTutorial) {
       inGame = {
@@ -221,7 +220,6 @@ class User extends ChangeNotifier {
       isBackButton = false,
       isFromMatchHistory = false,
       matchHistoryAnimated = false}) async {
-    FirebaseAnalytics.instance.logScreenView(screenName: "Play");
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "Play");
     if (isBackButton) {
       inGame["isShown"] = false;
@@ -331,12 +329,6 @@ class User extends ChangeNotifier {
               orElse: () => null);
       if (dailyChallenge != null) {
         refresh();
-        FirebaseAnalytics.instance.logEvent(
-          name: "FinishDailyChallenge",
-          parameters: {
-            "type":"Quests"
-          }
-        );
       }
     } catch (e) {}
 
@@ -438,7 +430,11 @@ class User extends ChangeNotifier {
             interstitialAd = ad;
           },
           onAdFailedToLoad: (err) {
-            showApplovinInterstitial();
+            showApplovinInterstitial(type == InterstitialType.match
+                ? "pre-match"
+                : type == InterstitialType.quests
+                ? "after-quests"
+                : "other");
             print('Failed to load an interstitial ad: ${err.message}');
           },
         ),
@@ -466,7 +462,11 @@ class User extends ChangeNotifier {
           },
           onAdFailedToLoad: (err) async {
             print('Failed to load an interstitial ad: ${err.message}');
-            showApplovinInterstitial();
+            showApplovinInterstitial(type == InterstitialType.match
+                ? "pre-match"
+                : type == InterstitialType.quests
+                    ? "after-quests"
+                    : "other");
           },
         ),
       );
@@ -553,7 +553,7 @@ Future<dynamic> initUser(context) async {
         int neededAppOpensToDisplayLinkAlert = notFirstTime == "true" ? 15 : 3;
 
         if(timesOpenInt >= neededAppOpensToDisplayLinkAlert) {
-          showDialog(context: context, builder: (_)=> LinkInfoWidget(linkId));
+          showDialog(context: context, builder: (_)=> LinkInfoWidget(linkId, true));
           await secureStorage.write(key: "timesOpened",value: "0");
           if(notFirstTime == null) await secureStorage.write(key: "hasShownLinkPopup", value:"true");
 

@@ -231,7 +231,6 @@ class _AppCoreState extends State<AppCore> {
       selectedShopTab = "shop";
       _selectedIndex = index;
     });
-    FirebaseAnalytics.instance.logScreenView(screenName: indexToScreenName(index));
     FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(index));
   }
 
