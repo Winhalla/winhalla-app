@@ -162,7 +162,7 @@ class User extends ChangeNotifier {
 
   Future<String> enterMatch(
       {bool isTutorial = false, String? targetedMatchId, bool isFromMatchHistory = false}) async {
-    FirebaseAnalytics.instance.setCurrentScreen(screenName: "SoloMatch");
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: "SoloMatch", screenClassOverride: "MainActivity");
     if (isTutorial) {
       inGame = {
         'id': "tutorial",
@@ -190,9 +190,7 @@ class User extends ChangeNotifier {
       matchId = matchId["data"];
     }
 
-    FirebaseAnalytics.instance.logEvent(
-      name: "JoinSoloMatch",
-    );
+
 
     dynamic accountData = await callApi.get("/account", showError: false);
     if (accountData["successful"] == false) return matchId;
@@ -220,7 +218,7 @@ class User extends ChangeNotifier {
       isBackButton = false,
       isFromMatchHistory = false,
       matchHistoryAnimated = false}) async {
-    FirebaseAnalytics.instance.setCurrentScreen(screenName: "Play");
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: "Play", screenClassOverride: "MainActivity");
     if (isBackButton) {
       inGame["isShown"] = false;
       notifyListeners();

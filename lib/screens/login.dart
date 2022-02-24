@@ -46,7 +46,7 @@ class LoginPageManager extends ChangeNotifier {
   int page = 0;
 
   void next() {
-    FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(page));
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(page), screenClassOverride: "MainActivity");
     if(page >= 2){
       page = 2;
       notifyListeners();
@@ -57,7 +57,7 @@ class LoginPageManager extends ChangeNotifier {
   }
 
   LoginPageManager(this.page){
-    FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(page));
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(page), screenClassOverride: "MainActivity");
   }
 }
 

@@ -57,6 +57,7 @@ void main() {
       }
 
       runApp(const MyApp());
+      FirebaseAnalytics.instance.logAppOpen();
     }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack)
   );
 }
@@ -69,126 +70,99 @@ class MyApp extends StatelessWidget {
     return ResponsiveSizer(builder: (context, orientation, screenType) {
       return InheritedTextStyle(
         kHeadline0: TextStyle(color: kText, fontSize: 33.sp > 60 ? 60 : 33.sp),
+
         kHeadline1: TextStyle(color: kText, fontSize: 28.sp > 40 ? 40 : 28.sp),
-        kHeadline2:
-            TextStyle(color: kText, fontSize: 24.5.sp > 35 ? 35 : 24.5.sp),
+
+        kHeadline2: TextStyle(color: kText, fontSize: 24.5.sp > 35 ? 35 : 24.5.sp),
+
         kBodyText1: TextStyle(
           color: kText95,
           fontSize: 22.35.sp > 30 ? 30 : 22.35.sp,
           fontFamily: "Bebas neue",
         ),
-        kBodyText1Roboto: TextStyle(
-            color: kText95,
-            fontSize: 22.35.sp > 30 ? 30 : 22.35.sp,
-            fontFamily: "Roboto Condensed"),
-        kBodyText1bis: TextStyle(
-            color: kText95,
-            fontSize: 21.35.sp > 26
-                ? 26
-                : 21.35.sp), //TODO: review this value (the .sp part)
-        kBodyText2: TextStyle(
-            color: kText95,
-            fontSize: 20.sp > 24 ? 24 : 20.sp,
-            fontFamily: "Roboto Condensed"),
-        kBodyText2bis: TextStyle(
-            color: kText95,
-            fontSize: 19.sp > 22
-                ? 22
-                : 19.sp), //TODO: review this value (the .sp part)
-        kBodyText3: TextStyle(
-            color: kText90,
-            fontSize: 18.25.sp > 20 ? 20 : 18.25.sp,
-            fontFamily: "Roboto Condensed"),
+
+        kBodyText1Roboto: TextStyle(color: kText95, fontSize: 22.35.sp > 30 ? 30 : 22.35.sp, fontFamily: "Roboto Condensed"),
+
+        kBodyText1bis: TextStyle(color: kText95, fontSize: 21.35.sp > 26 ? 26 : 21.35.sp),
+
+        kBodyText2: TextStyle(color: kText95, fontSize: 20.sp > 24 ? 24 : 20.sp, fontFamily: "Roboto Condensed"),
+
+        kBodyText2bis: TextStyle(color: kText95, fontSize: 19.sp > 22 ? 22 : 19.sp),
+
+        kBodyText3: TextStyle(color: kText90, fontSize: 18.25.sp > 20 ? 20 : 18.25.sp, fontFamily: "Roboto Condensed"),
+
         kBodyText4: TextStyle(
-              color: kText, fontSize: 18.25.sp > 20 ? 20 : 18.25.sp,
-              fontFamily: "Bebas neue",
+          color: kText,
+          fontSize: 18.25.sp > 20 ? 20 : 18.25.sp,
+          fontFamily: "Bebas neue",
         ),
-        child:  MaterialApp(
-            title: 'Winhalla',
-            theme: ThemeData(fontFamily: "Bebas Neue"),
-            debugShowCheckedModeBanner: false,
-            // Start the app with the "/" named route. In this case, the app starts
-            // on the FirstScreen widget.
-            initialRoute: '/',
-            routes: {
-              '/': (context) => SafeArea(
-                    child: FutureBuilder(
-                        future: initUser(context),
-                        builder: (context, AsyncSnapshot<dynamic> res) {
-                          if (!res.hasData) {
-                            return const AppCore(isUserDataLoaded: false);
+
+        child: MaterialApp(
+          title: 'Winhalla',
+          theme: ThemeData(fontFamily: "Bebas Neue"),
+          debugShowCheckedModeBanner: false,
+          // Start the app with the "/" named route. In this case, the app starts
+          // on the FirstScreen widget.
+          initialRoute: '/',
+          routes: {
+            '/': (context) => SafeArea(
+                  child: FutureBuilder(
+                      future: initUser(context),
+                      builder: (context, AsyncSnapshot<dynamic> res) {
+                        if (!res.hasData) {
+                          return const AppCore(isUserDataLoaded: false);
+                        }
+
+                        if (res.data == "no data" || res.data["data"] == "" || res.data["data"] == null) {
+                          return LoginPage(userData: res.data);
+                        }
+
+                        if (res.data["data"]["user"] == null) {
+                          return LoginPage(userData: res.data);
+                        }
+
+                        // Do not edit res.data directly otherwise it calls the build function again for some reason
+                        Map<String, dynamic> newData = res.data as Map<String, dynamic>;
+                        var callApi = res.data["callApi"];
+
+                        newData["callApi"] = null;
+                        newData["user"] = res.data["data"]["user"];
+                        newData["steam"] = res.data["data"]["steam"];
+                        newData["informations"] = res.data["data"]["informations"];
+                        newData["tutorial"] = res.data["tutorial"];
+
+                        List<GlobalKey?> keys = [];
+                        for (int i = 0; i < 17; i++) {
+                          if (i == 0 || i == 4 || i == 5 || i == 10 || i == 11 || i == 16) {
+                            keys.add(null);
+                          } else {
+                            keys.add(GlobalKey());
                           }
+                        }
+                        var inGameData = newData["user"]["inGame"];
+                        var currentMatch = inGameData.where((g) => g["isFinished"] == false).toList();
 
-                          if (res.data == "no data" ||
-                              res.data["data"] == "" ||
-                              res.data["data"] == null) {
-                            return LoginPage(userData: res.data);
-                          }
+                        try {
+                          FirebaseCrashlytics.instance.setUserIdentifier(newData["steam"]["id"]);
+                          FirebaseAnalytics.instance.setUserId(id: newData["steam"]["id"]);
+                        } catch (e) {}
 
-                          if (res.data["data"]["user"] == null) {
-                            return LoginPage(userData: res.data);
-                          }
+                        var inGame;
+                        if (currentMatch.length > 0) {
+                          inGame = {'id': currentMatch[0]["id"], 'joinDate': currentMatch[0]["joinDate"]};
+                        }
 
-                          // Do not edit res.data directly otherwise it calls the build function again for some reason
-                          Map<String, dynamic> newData =
-                              res.data as Map<String, dynamic>;
-                          var callApi = res.data["callApi"];
-
-                          newData["callApi"] = null;
-                          newData["user"] = res.data["data"]["user"];
-                          newData["steam"] = res.data["data"]["steam"];
-                          newData["informations"] = res.data["data"]["informations"];
-                          newData["tutorial"] = res.data["tutorial"];
-
-                          List<GlobalKey?> keys = [];
-                          for (int i = 0; i < 17; i++) {
-                            if (i == 0 ||
-                                i == 4 ||
-                                i == 5 ||
-                                i == 10 ||
-                                i == 11 ||
-                                i == 16) {
-                              keys.add(null);
-                            } else {
-                              keys.add(GlobalKey());
-                            }
-                          }
-                          var inGameData = newData["user"]["inGame"];
-                          var currentMatch = inGameData
-                              .where((g) => g["isFinished"] == false)
-                              .toList();
-
-                          try{
-                      FirebaseAnalytics.instance.logAppOpen();
-                      FirebaseCrashlytics.instance.setUserIdentifier(newData["steam"]["id"]);
-                      FirebaseAnalytics.instance.setUserId(
-                          id: newData["steam"]["id"]
-                      );
-                    } catch(e){}
-
-
-
-                    var inGame = null;
-                    if (currentMatch.length > 0) {
-                      inGame = {
-                        'id': currentMatch[0]["id"],
-                        'joinDate': currentMatch[0]["joinDate"]
-                      };
-                    }
-
-                          return ChangeNotifierProvider<User>(
-                              create: (_) => User(newData, callApi, keys,
-                                  inGame, res.data["oldDailyChallengeData"]),
-                              child: AppCore(
-                                isUserDataLoaded: true,
-                                tutorial: newData["tutorial"],
-                              ));
-                        }),
-                  ),
-              '/login': (context) => SafeArea(child: LoginPage()),
-              '/contact': (context) => const SafeArea(child: ContactPage()),
-            },
-          
+                        return ChangeNotifierProvider<User>(
+                            create: (_) => User(newData, callApi, keys, inGame, res.data["oldDailyChallengeData"]),
+                            child: AppCore(
+                              isUserDataLoaded: true,
+                              tutorial: newData["tutorial"],
+                            ));
+                      }),
+                ),
+            '/login': (context) => SafeArea(child: LoginPage()),
+            '/contact': (context) => const SafeArea(child: ContactPage()),
+          },
         ),
       );
     });
@@ -231,11 +205,11 @@ class _AppCoreState extends State<AppCore> {
       selectedShopTab = "shop";
       _selectedIndex = index;
     });
-    FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(index));
   }
 
   @override
   void initState() {
+    FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(0), screenClassOverride: "MainActivity");
     screenList = [
       MyHomePage(
         switchPage: switchPage,
@@ -245,6 +219,8 @@ class _AppCoreState extends State<AppCore> {
       const Shop()
     ];
     super.initState();
+    FirebaseAnalytics.instance
+        .setCurrentScreen(screenName: "Home", screenClassOverride: "MainActivity");
   }
 
   bool hasSummonedTutorial = false;
@@ -461,8 +437,9 @@ class _AppCoreState extends State<AppCore> {
                               elevation: 0,
                               color: kBackgroundVariant,
                               disabledColor: kBackground,
-                              onPressed:selectedShopTab != "shop" ? () {
+                              onPressed: selectedShopTab != "shop" ? () {
                                 context.read<User>().keyFx["switchShopTab"]("shop");
+                                FirebaseAnalytics.instance.setCurrentScreen(screenName: "Shop", screenClassOverride: "MainActivity");
                                 setState(() => selectedShopTab = "shop");
                               } : null,
                               padding: EdgeInsets.fromLTRB(6.w, 0.75.h, 6.w, 0.5.h),
@@ -482,6 +459,7 @@ class _AppCoreState extends State<AppCore> {
                               disabledColor: kBackground,
                               onPressed: selectedShopTab == "shop" ? () {
                                 context.read<User>().keyFx["switchShopTab"]("orders");
+                                FirebaseAnalytics.instance.setCurrentScreen(screenName: "Orders", screenClassOverride: "MainActivity");
                                 setState(() => selectedShopTab = "orders");
                               } : null,
                               padding: EdgeInsets.fromLTRB(6.w, 0.75.h, 6.w, 0.5.h),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -129,6 +130,12 @@ class _DailyChallengeState extends State<DailyChallenge>
                   if(areTheSame){
                     for (int i = 0; i < newDailyChallengeQuestsData.length; i++){
                       if(newDailyChallengeQuestsData[i]["completed"] == true && oldDailyChallengeData[i]["completed"] == false){
+                        if(i == 0){
+                          FirebaseAnalytics.instance.logEvent(name: "AdChallengeDisplayed");
+                        }
+                        if(i == 1){
+                          FirebaseAnalytics.instance.logEvent(name: "AdChallengeFinished");
+                        }
                         Future.delayed(const Duration(milliseconds: 3000),() {
                           showCoinDropdown(
                               context,
