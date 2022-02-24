@@ -114,7 +114,7 @@ class _SoloMatchState extends State<SoloMatch> {
                       height: 35,
                     ),
 
-                    /*Container(
+                    Container(
                       padding: const EdgeInsets.fromLTRB(30, 20, 30, 20),
                       child: Row(
                         children: [
@@ -240,7 +240,7 @@ class _SoloMatchState extends State<SoloMatch> {
                       decoration: BoxDecoration(
                           color: kBackgroundVariant,
                           borderRadius: BorderRadius.circular(20)),
-                    ),*/
+                    ),
 
                     Container(
                       padding: const EdgeInsets.fromLTRB(32, 17.25, 14, 17.25),
