@@ -125,7 +125,7 @@ Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match,
                 text: TextSpan(style: InheritedTextStyle.of(context).kBodyText3, children: const [
                   TextSpan(text: "To ", style: TextStyle(height: 1.3)),
                   TextSpan(text: "BOOST ", style: TextStyle(color: kPrimary,height: 1.3)),
-                  TextSpan(text: "your reward, tap the red button below!", style: TextStyle(height: 1.3))
+                  TextSpan(text: "your reward, tap the red button below! (will launch an ad)", style: TextStyle(height: 1.3))
                 ]),
               ),
             ],
