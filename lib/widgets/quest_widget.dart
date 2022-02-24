@@ -175,7 +175,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                               padding:
                               const EdgeInsets.fromLTRB(15, 10, 15, 10),
                               child: Text(
-                                "Ad Error.",
+                                "Not available.",
                                 style: InheritedTextStyle.of(context).kBodyText4.apply(color: kBlack),
                               ),
                             ),

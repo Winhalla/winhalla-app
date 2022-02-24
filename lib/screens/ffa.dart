@@ -172,7 +172,7 @@ class _SoloMatchState extends State<SoloMatch> {
                                   padding: const EdgeInsets.fromLTRB(
                                       19, 11.5, 19, 8.5),
                                   child: Text(
-                                    "Ad Error.",
+                                    "Not available.",
                                     style: InheritedTextStyle.of(context).kBodyText4.apply(color: kText),
                                   ),
                                   decoration: BoxDecoration(
