@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -259,6 +260,7 @@ class _MyAppBarState extends State<MyAppBar> {
                                           context: context,
                                           builder: (BuildContext context) =>
                                               LinkInfoWidget(linkId, false));
+                                      FirebaseAnalytics.instance.logEvent(name: "ShownReferralLinkPopup");
                                       await Future.delayed(
                                           const Duration(milliseconds: 100));
                                       overlayEntry.remove();

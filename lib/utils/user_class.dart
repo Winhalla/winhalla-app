@@ -558,6 +558,7 @@ Future<dynamic> initUser(context) async {
 
         if(timesOpenInt >= neededAppOpensToDisplayLinkAlert) {
           showDialog(context: context, builder: (_)=> LinkInfoWidget(linkId, true));
+          FirebaseAnalytics.instance.logEvent(name: "ShownReferralLinkPopup");
           await secureStorage.write(key: "timesOpened",value: "0");
           if(notFirstTime == null) await secureStorage.write(key: "hasShownLinkPopup", value:"true");
 
