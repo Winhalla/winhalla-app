@@ -44,6 +44,17 @@ class FfaMatch extends ChangeNotifier {
 
     await user.refresh();
 
+    if(match["updatedPlatforms"] != null){
+      if(match["updatedPlatforms"].isNotEmpty && match["userPlayer"]["hasAlreadySuccessfullyRefreshed"] != true) {
+        FirebaseAnalytics.instance.logEvent(
+            name: "SuccessfulMatchRefresh",
+            parameters:{
+              "isMatchRefreshUserFired": showInfo == true ? "true" : false // Stringify like this to avoid the basic stringify function which only returns 0 or 1
+            }
+        );
+      }
+    }
+
     if(match["finished"] == true && !isTutorialRefresh) {
       await user.exitMatch(isOnlyLayout: true, matchHistoryAnimated:true);
       notifyListeners();
@@ -77,22 +88,7 @@ class FfaMatch extends ChangeNotifier {
         );
       }
       notifyListeners();
-      FirebaseAnalytics.instance.logEvent(
-          name: "MatchRefresh",
-          parameters:{
-            "updated":true
-          }
-      );
       return false;
-    }
-    // Only send analytics if the refresh is made by user
-    if(showInfo) {
-      FirebaseAnalytics.instance.logEvent(
-        name: "MatchRefresh",
-        parameters:{
-          "updated":false
-        }
-    );
     }
     notifyListeners();
     return true;

@@ -190,7 +190,9 @@ class User extends ChangeNotifier {
       matchId = matchId["data"];
     }
 
-
+    FirebaseAnalytics.instance.logEvent(
+      name: "JoinSoloMatch",
+    );
 
     dynamic accountData = await callApi.get("/account", showError: false);
     if (accountData["successful"] == false) return matchId;
