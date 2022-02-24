@@ -1,5 +1,7 @@
 // ignore_for_file: non_constant_identifier_names
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -46,28 +48,31 @@ Future<void> showAdPopupWidget(BuildContext context, FfaMatch match, ) async {
       },
       onAdFailedToLoad: (err) async {
         print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
-        await FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
-        bool? isAdLoaded = await FlutterApplovinMax.isRewardLoaded((listener) => null);
-        if(isAdLoaded == true) {
-          showDialog(
-            context: context,
-            builder: (_) =>
-                AdPopupWidget(
-                    match.value["estimatedReward"]["reward"],
-                    match.value["estimatedReward"]["rewardNextAd"],
-                    false,
-                    match,
-                    context
-                )
-        );
-        }
+        loadApplovinRewarded((Timer? timer){
+          try{
+            showDialog(
+                context: context,
+                builder: (_) =>
+                    AdPopupWidget(
+                        match.value["estimatedReward"]["reward"],
+                        match.value["estimatedReward"]["rewardNextAd"],
+                        false,
+                        match,
+                        context
+                    )
+            );
+          } catch(e){
+            timer?.cancel();
+          }
+        });
+
       },
     ),
   );
 
 }
 
-Widget AdPopupWidget(int reward, int nextReward, bool isAdmobAd, FfaMatch match, BuildContext context, {RewardedAd? admobAd}){
+Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match, BuildContext context, {RewardedAd? admobAd}){
   User user = context.read<User>();
   return Builder(
       builder: (context) {
@@ -127,6 +132,7 @@ Widget AdPopupWidget(int reward, int nextReward, bool isAdmobAd, FfaMatch match,
                     onTap: (){
                       Navigator.pop(context);
                       if(isAdmobAd && admobAd == null) return;
+                      match.setAdPopupDate();
 
                       if(isAdmobAd && admobAd != null) {
                         admobAd.show(onUserEarnedReward: (RewardedAd ad, RewardItem reward) => adCallback(match, context, user));

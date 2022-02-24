@@ -88,7 +88,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
     return Container(
       decoration: BoxDecoration(
           color: kBackgroundVariant, borderRadius: BorderRadius.circular(16)),
-      padding: EdgeInsets.fromLTRB(30, 18, 20, 18),
+      padding: EdgeInsets.fromLTRB(7.75.w, 3.h, 5.75.w, 3.h),
       child: AnimatedBuilder(
           animation: curvedAnimation,
           builder: (BuildContext context, Widget? child) {
@@ -198,14 +198,14 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                 Container(
                   decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16), color: kBlack),
-                  padding: const EdgeInsets.fromLTRB(15, 15, 15, 10),
+                  padding: EdgeInsets.fromLTRB(4.w, 2.h, 4.w, 1.5.h),
                   child: Column(
                     children: [
                       Stack(
                         children: [
                           SizedBox(
-                            width: 70,
-                            height: 70,
+                            width: 20.w,
+                            height: 20.w,
                             child: CustomPaint(
                               foregroundPainter: ProgressPainter(
                                   progressColor: widget.color,

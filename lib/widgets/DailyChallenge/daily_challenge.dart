@@ -155,6 +155,7 @@ class _DailyChallengeState extends State<DailyChallenge>
 
                         return CustomPaint(
                           painter: TreePainter(
+                            context: context,
                             dailyChallengeQuests:
                                 currentDailyChallengeQuestsData,
                             animationProgress: areTheSame == true
