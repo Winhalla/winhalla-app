@@ -45,7 +45,7 @@ class FfaMatch extends ChangeNotifier {
       return false;
     }
 
-    if(lastAdPopup + 240 * 1000 < DateTime.now().millisecondsSinceEpoch && !isTutorial){
+    if(lastAdPopup + 180 * 1000 < DateTime.now().millisecondsSinceEpoch && !isTutorial){
       showAdPopupWidget(context, this);
     }
     if (match["updatedPlatforms"] != null) {
