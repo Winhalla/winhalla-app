@@ -411,14 +411,14 @@ class User extends ChangeNotifier {
   Future<void> showInterstitialAd(InterstitialType type) async {
 
     if (kDebugMode) return;
-    try{
+    /*try{
       if(value["steam"]["id"] == "google100943440915784958511" || value["steam"]["id"] == "google102386642559331245430") return;
-    }catch(e){}
+    }catch(e){}*/
 
     // Not more than an inter per minute and one for each type each 3 minutes
     if(lastInterstitialAd + 60 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
-    if(type == InterstitialType.match && lastMatchInterstitial + 180 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
-    if(type == InterstitialType.quests && lastQuestsInterstitial + 180 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
+    if(type == InterstitialType.match && lastMatchInterstitial + 120 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
+    if(type == InterstitialType.quests && lastQuestsInterstitial + 120 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
 
     lastInterstitialAd = DateTime.now().millisecondsSinceEpoch;
     if(type == InterstitialType.match) lastMatchInterstitial = DateTime.now().millisecondsSinceEpoch;
