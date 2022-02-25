@@ -209,7 +209,6 @@ class _AppCoreState extends State<AppCore> {
 
   @override
   void initState() {
-    FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(0), screenClassOverride: "MainActivity");
     screenList = [
       MyHomePage(
         switchPage: switchPage,
