@@ -6,6 +6,7 @@ import 'package:winhalla_app/utils/ffa_match_class.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/timer_widget.dart';
 import 'package:winhalla_app/utils/user_class.dart';
+import 'package:winhalla_app/widgets/ad_launch_button.dart';
 import 'package:winhalla_app/widgets/coin.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_no_refresh.dart';
@@ -212,8 +213,8 @@ class _SoloMatchState extends State<SoloMatch> {
                       decoration: BoxDecoration(
                           color: kBackgroundVariant,
                           borderRadius: BorderRadius.circular(20)),
-                    ),*/
-
+                    ),
+                    SizedBox(height: 2.h,),*/
                     Container(
                       padding: EdgeInsets.fromLTRB(6.w, 3.h, 6.w, 3.h),
                       child: Row(

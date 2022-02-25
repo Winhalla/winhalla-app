@@ -97,6 +97,8 @@ void showApplovinInterstitial(String adUnitName) async {
       } catch(e){
         timer?.cancel();
       }
+    } else if(times >= 10) {
+      await FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
     }
   }
   timerCallback(null);
