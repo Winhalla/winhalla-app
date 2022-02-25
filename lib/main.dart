@@ -219,8 +219,6 @@ class _AppCoreState extends State<AppCore> {
       const Shop()
     ];
     super.initState();
-    FirebaseAnalytics.instance
-        .setCurrentScreen(screenName: "Home", screenClassOverride: "MainActivity");
   }
 
   bool hasSummonedTutorial = false;
