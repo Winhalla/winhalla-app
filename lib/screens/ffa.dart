@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:provider/provider.dart';
@@ -38,7 +39,6 @@ class _SoloMatchState extends State<SoloMatch> {
 
   @override
   Widget build(BuildContext context) {
-
     return Center(
       child: FutureBuilder(
         future: context.read<User>().callApi.get("/getMatch/${widget.matchId}"),

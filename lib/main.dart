@@ -134,6 +134,11 @@ class MyApp extends StatelessWidget {
                               'joinDate': currentMatch[0]["joinDate"]
                             };
                           }
+                          FlutterApplovinMax.initSDK();
+                          Future.delayed(const Duration(seconds: 5),(){
+                            FlutterApplovinMax.showMediationDebugger();
+                          });
+
                           return ChangeNotifierProvider<User>(
                               create: (_) => User(newData, callApi, keys,
                                   inGame, res.data["oldDailyChallengeData"]),
