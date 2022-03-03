@@ -22,6 +22,7 @@ import 'package:provider/provider.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_leave_match.dart';
+import 'package:winhalla_app/widgets/popup_link.dart';
 import 'package:winhalla_app/widgets/popups/popup_ad.dart';
 import 'config/themes/dark_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -463,6 +464,14 @@ class _AppCoreState extends State<AppCore> {
           if (!hasSummonedTutorial) {
             hasSummonedTutorial = true;
             User user = context.read<User>();
+            if(user.value["user"]["needsLinkAlertPopup"] == true){
+              user.callApi.post("/deactivateLinkPopup","{}");
+              Future.delayed(const Duration(milliseconds: 2500), (){
+                late OverlayEntry overlayEntry;
+                overlayEntry = OverlayEntry(builder: (_) => LinkActivatedWidget(overlayEntry));
+                Overlay.of(context)!.insert(overlayEntry);
+              });
+            }
             user.setKeyFx(switchPage, "switchPage");
             Future.delayed(const Duration(milliseconds: 100), () async {
               try {
