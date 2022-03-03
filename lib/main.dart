@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -134,10 +135,9 @@ class MyApp extends StatelessWidget {
                               'joinDate': currentMatch[0]["joinDate"]
                             };
                           }
-                          FlutterApplovinMax.initSDK();
-                          Future.delayed(const Duration(seconds: 5),(){
+                          /*Future.delayed(const Duration(seconds: 5),(){
                             FlutterApplovinMax.showMediationDebugger();
-                          });
+                          });*/
 
                           return ChangeNotifierProvider<User>(
                               create: (_) => User(newData, callApi, keys,
@@ -209,6 +209,13 @@ class _AppCoreState extends State<AppCore> {
         child: Stack(
           children: [
             Scaffold(
+              /*floatingActionButton: kDebugMode ? FloatingActionButton(
+                onPressed: ()=>FlutterApplovinMax.showMediationDebugger(),
+                child: Image.asset(
+                  "assets/images/video_ad.png",
+                  width: 20,
+                ),
+              ) : null,*/
             backgroundColor: kBackground,
             appBar: !widget.isUserDataLoaded
                 ? null
