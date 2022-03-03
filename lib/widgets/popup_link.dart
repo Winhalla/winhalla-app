@@ -7,7 +7,7 @@ import 'package:share/share.dart';
 
 import 'inherited_text_style.dart';
 
-Widget LinkActivatedWidget(){
+Widget LinkActivatedWidget(OverlayEntry overlayEntry){
   return Builder(
     builder: (context) {
       return AlertDialog(
@@ -29,7 +29,7 @@ Widget LinkActivatedWidget(){
               ),
               GestureDetector(
                 onTap: () async {
-                  Navigator.pop(context);
+                  overlayEntry.remove();
                 },
                 behavior: HitTestBehavior.translucent,
                 child: const Padding(
@@ -60,7 +60,7 @@ Widget LinkActivatedWidget(){
         actions: [
           GestureDetector(
             onTap: (){
-              Navigator.pop(context);
+              overlayEntry.remove();
             },
             child: Padding(
               padding: const EdgeInsets.fromLTRB(0,0,19,14),

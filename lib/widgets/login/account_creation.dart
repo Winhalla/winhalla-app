@@ -325,13 +325,7 @@ class _AccountCreationState extends State<AccountCreation> {
                     } else {
                       Navigator.pushReplacementNamed(context, "/");
                     }
-                    try {
-                      if (accountData["data"]["isLinkDetected"] == true) {
-                        showDialog(
-                            context: context,
-                            builder: (_) => LinkActivatedWidget());
-                      }
-                    } catch (e) {}
+
                   },
                   child: Container(
                     padding: const EdgeInsets.fromLTRB(20, 10, 20, 10),
