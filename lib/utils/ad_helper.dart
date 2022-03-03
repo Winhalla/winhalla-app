@@ -69,7 +69,7 @@ void loadApplovinRewarded(Function(Timer?) callback, {Function? errorCallback}) 
     }
   }
   timerCallback(null);
-  Timer.periodic(const Duration(milliseconds: 333), timerCallback);
+  Timer.periodic(const Duration(milliseconds: 600), timerCallback);
 }
 
 void showApplovinInterstitial(String adUnitName) async {
@@ -97,11 +97,11 @@ void showApplovinInterstitial(String adUnitName) async {
       } catch(e){
         timer?.cancel();
       }
-    } else if(times >= 10) {
+    } else if(times == 10) {
       await FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
     }
   }
   timerCallback(null);
   //! convert to a function to call it before the first timer call
-  Timer.periodic(const Duration(milliseconds: 333), timerCallback);
+  Timer.periodic(const Duration(milliseconds: 600), timerCallback);
 }

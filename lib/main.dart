@@ -4,6 +4,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -152,7 +153,9 @@ class MyApp extends StatelessWidget {
                           inGame = {'id': currentMatch[0]["id"], 'joinDate': currentMatch[0]["joinDate"]};
                         }
 
-                        return ChangeNotifierProvider<User>(
+                        /*Future.delayed(const Duration(seconds: 5),(){
+                            FlutterApplovinMax.showMediationDebugger();
+                          });*/return ChangeNotifierProvider<User>(
                             create: (_) => User(newData, callApi, keys, inGame, res.data["oldDailyChallengeData"]),
                             child: AppCore(
                               isUserDataLoaded: true,
@@ -234,6 +237,13 @@ class _AppCoreState extends State<AppCore> {
         child: Stack(
           children: [
             Scaffold(
+              /*floatingActionButton: kDebugMode ? FloatingActionButton(
+                onPressed: ()=>FlutterApplovinMax.showMediationDebugger(),
+                child: Image.asset(
+                  "assets/images/video_ad.png",
+                  width: 20,
+                ),
+              ) : null,*/
             backgroundColor: kBackground,
             appBar: !widget.isUserDataLoaded
                 ? null
