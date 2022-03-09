@@ -317,7 +317,7 @@ class _AccountCreationState extends State<AccountCreation> {
                         return;
                       }
                     } catch (e) {}
-
+                    FirebaseAnalytics.instance.logEvent(name: "CreateAccount");
                     await secureStorage.write(key: 'link', value: null);
                     if (ModalRoute.of(context)?.settings.name == "/") {
                       Navigator.pop(context, "/");
