@@ -72,9 +72,7 @@ class _AdButtonState extends State<AdButton> {
     if (widget.goal == "earnMoreSoloMatch") {
       match = context.read<FfaMatch>();
     }
-    if (!kDebugMode || true) {
-      _initAds();
-    }
+
     super.initState();
   }
 
