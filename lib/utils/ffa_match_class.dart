@@ -45,9 +45,9 @@ class FfaMatch extends ChangeNotifier {
       return false;
     }
 
-    if(lastAdPopup + 180 * 1000 < DateTime.now().millisecondsSinceEpoch && !isTutorial){
+    /*if(lastAdPopup + 180 * 1000 < DateTime.now().millisecon<dsSinceEpoch && !isTutorial){
       showAdPopupWidget(context, this);
-    }
+    }*/
     if (match["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < match["updatedPlatforms"].length; i++) {
