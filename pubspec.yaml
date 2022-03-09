@@ -41,7 +41,6 @@ dependencies:
   steam_login: ^1.1.0
   google_sign_in: ^5.2.1 #"^4.5.1"
   rive: ^0.7.31
-  google_mobile_ads: ^1.0.1
   share: ^2.0.4
   flutter_secure_storage: ^4.2.1
   url_launcher: ^6.0.15

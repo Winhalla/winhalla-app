@@ -5,7 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
@@ -37,7 +36,6 @@ class User extends ChangeNotifier {
   var oldDailyChallengeData;
 
   int lastInterstitialAd = 0;
-  InterstitialAd? interstitialAd;
 
   Future<void> refresh({notify = true}) async {
     var accountData = await callApi.get("/account");
@@ -385,67 +383,11 @@ class User extends ChangeNotifier {
     if (kDebugMode) return;
     if(lastInterstitialAd + 90 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
     lastInterstitialAd = DateTime.now().millisecondsSinceEpoch;
-    if (interstitialAd != null) {
-      interstitialAd?.show();
-      InterstitialAd.load(
-        adUnitId: AdHelper.interstitialAdUnitId,
-        request: const AdRequest(),
-        adLoadCallback: InterstitialAdLoadCallback(
-          onAdLoaded: (ad) {
-            interstitialAd = ad;
-          },
-          onAdFailedToLoad: (err) {
-            showApplovinInterstitial();
-            print('Failed to load an interstitial ad: ${err.message}');
-          },
-        ),
-      );
-    } else {
-      InterstitialAd.load(
-        adUnitId: AdHelper.interstitialAdUnitId,
-        request: const AdRequest(),
-        adLoadCallback: InterstitialAdLoadCallback(
-          onAdLoaded: (ad) {
-            ad.show();
-            /*InterstitialAd.load(
-              adUnitId: AdHelper.interstitialAdUnitId,
-              request: const AdRequest(),
-              adLoadCallback: InterstitialAdLoadCallback(
-                onAdLoaded: (ad) {
-                  interstitialAd = ad;
-                },
-                onAdFailedToLoad: (err) {
-                  // interstitialAd = null;
-                  print('Failed to load an interstitial ad: ${err.message}');
-                },
-              ),
-            );*/
-          },
-          onAdFailedToLoad: (err) async {
-            print('Failed to load an interstitial ad: ${err.message}');
-            showApplovinInterstitial();
-          },
-        ),
-      );
-      /*InterstitialAd.load(
-        adUnitId: AdHelper.interstitialAdUnitId,
-        request: const AdRequest(),
-        adLoadCallback: InterstitialAdLoadCallback(
-          onAdLoaded: (ad) {
-            interstitialAd = ad;
-          },
-          onAdFailedToLoad: (err) {
-            interstitialAd = null;
-            print('Failed to load an interstitial ad: ${err.message}');
-          },
-        ),
-      );*/
-    }
+    showApplovinInterstitial();
   }
 }
 
 Future<dynamic> initUser(context) async {
-  await MobileAds.instance.initialize();
   await Firebase.initializeApp();
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
