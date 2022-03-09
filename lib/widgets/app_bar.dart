@@ -260,7 +260,7 @@ class _MyAppBarState extends State<MyAppBar> {
                                           context: context,
                                           builder: (BuildContext context) =>
                                               LinkInfoWidget(linkId, false));
-                                      FirebaseAnalytics.instance.logEvent(name: "ShownReferralLinkPopup");
+                                      FirebaseAnalytics.instance.logEvent(name: "ShownReferralLinkPopup",parameters: {"isForcedPopupShow": false});
                                       await Future.delayed(
                                           const Duration(milliseconds: 100));
                                       overlayEntry.remove();
