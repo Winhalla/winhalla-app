@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
@@ -388,8 +389,11 @@ class User extends ChangeNotifier {
 }
 
 Future<dynamic> initUser(context) async {
-  await Firebase.initializeApp();
+  Future<bool> frc = FirebaseRemoteConfig.instance.fetchAndActivate();
+  // speed up by doing these 2 concurrently
   var storageKey = await secureStorage.read(key: "authKey");
+  await frc;
+
   if (storageKey == null) return "no data";
   CallApi caller = CallApi(authKey: storageKey, context: context);
   var data = await caller.get("/account?apple=${Platform.isIOS}");

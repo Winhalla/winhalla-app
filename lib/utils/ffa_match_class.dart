@@ -1,3 +1,4 @@
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/user_class.dart';
@@ -29,9 +30,9 @@ class FfaMatch extends ChangeNotifier {
     value = match;
     user.gamesPlayedInMatch = match["userPlayer"]["gamesPlayed"];
 
-    /*if(isTutorialRefresh){
+    if(isTutorialRefresh && FirebaseRemoteConfig.instance.getBool("isAdButtonActivated") == false){
       user.inGame["isMatchFinished"] = match["finished"] ? true : match["fastFinish"];
-    }*/
+    }
 
     if (match["userPlayer"]["gamesPlayed"] >= 7) {
       user.inGame["isFinished"] = true;

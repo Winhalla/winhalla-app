@@ -51,6 +51,10 @@ dependencies:
   app_tracking_transparency: ^2.0.2+1
   intl: ^0.17.0
   flutter_applovin_max: ^2.1.1
+  firebase_remote_config: ^2.0.2
+
+#dependency_overrides:
+#  firebase_remote_config_platform_interface: 1.0.5
 
 dev_dependencies:
   flutter_test:

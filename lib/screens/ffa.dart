@@ -1,3 +1,4 @@
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -306,34 +307,37 @@ class _SoloMatchState extends State<SoloMatch> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Consumer<FfaMatch>(
-                                            builder: (context, match, _) {
-                                          if (match.value["finished"] == true) {
-                                            return Text(
-                                                "x${(match.value["userPlayer"]["multiplier"]).round()}",
-                                                style: InheritedTextStyle.of(
-                                                        context)
-                                                    .kBodyText1Roboto
-                                                    .apply(
-                                                        color: kGreen,
-                                                        fontSizeFactor: 0.825));
-                                          }
-                                          return Text(
-                                              "x${(match.value["userPlayer"]["multiplier"] / 100).round()}",
-                                              style:
-                                                  InheritedTextStyle.of(context)
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(0, 11.5, 0, 8.5),
+                                          child: Consumer<FfaMatch>(
+                                              builder: (context, match, _) {
+                                            if (match.value["finished"] == true) {
+                                              return Text(
+                                                  "x${(match.value["userPlayer"]["multiplier"]).round()}",
+                                                  style: InheritedTextStyle.of(
+                                                          context)
                                                       .kBodyText1Roboto
                                                       .apply(
                                                           color: kGreen,
-                                                          fontSizeFactor:
-                                                              0.825));
-                                        }),
+                                                          fontSizeFactor: 0.825));
+                                            }
+                                            return Text(
+                                                "x${(match.value["userPlayer"]["multiplier"] / 100).round()}",
+                                                style:
+                                                    InheritedTextStyle.of(context)
+                                                        .kBodyText1Roboto
+                                                        .apply(
+                                                            color: kGreen,
+                                                            fontSizeFactor:
+                                                                0.825));
+                                          }),
+                                        ),
                                         SizedBox(
                                           width: 1.175.w,
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsets.only(bottom: 0.178.h),
+                                              EdgeInsets.only(bottom: 0.178.h+8.5),
                                           child: Text(
                                             "reward",
                                             style:
@@ -347,7 +351,7 @@ class _SoloMatchState extends State<SoloMatch> {
                                       ],
                                     ),
                                   ),
-                                  Consumer<FfaMatch>(
+                                  if(FirebaseRemoteConfig.instance.getBool("isAdButtonActivated") == true) Consumer<FfaMatch>(
                                       builder: (context, match, _) {
                                     if (match.value["userPlayer"]
                                             ["adsWatched"] >=

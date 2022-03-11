@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
@@ -29,6 +31,16 @@ import 'package:intl/date_symbol_data_local.dart';
 void main() async {
   runApp(const MyApp());
   initializeDateFormatting(Platform.localeName);
+  Firebase.initializeApp().then((value) {
+    FirebaseRemoteConfig frc = FirebaseRemoteConfig.instance;
+    frc.setDefaults(<String, dynamic>{
+      'isAdButtonActivated': false,
+    });
+    frc.setConfigSettings(RemoteConfigSettings(
+      fetchTimeout: const Duration(seconds: 60),
+      minimumFetchInterval: const Duration(minutes: 15),
+    ));
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -209,13 +221,14 @@ class _AppCoreState extends State<AppCore> {
         child: Stack(
           children: [
             Scaffold(
-              /*floatingActionButton: kDebugMode ? FloatingActionButton(
+              floatingActionButton: kDebugMode ? FloatingActionButton(
                 onPressed: ()=>FlutterApplovinMax.showMediationDebugger(),
                 child: Image.asset(
                   "assets/images/video_ad.png",
+                  color: kText,
                   width: 20,
                 ),
-              ) : null,*/
+              ) : null,
             backgroundColor: kBackground,
             appBar: !widget.isUserDataLoaded
                 ? null
