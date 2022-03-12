@@ -57,6 +57,8 @@ dependencies:
 #  firebase_remote_config_platform_interface: 1.0.5
 
 dev_dependencies:
+  integration_test:
+    sdk: flutter
   flutter_test:
     sdk: flutter
 
