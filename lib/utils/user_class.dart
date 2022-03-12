@@ -389,11 +389,8 @@ class User extends ChangeNotifier {
 }
 
 Future<dynamic> initUser(context) async {
-  Future<bool> frc = FirebaseRemoteConfig.instance.fetchAndActivate();
-  // speed up by doing these 2 concurrently
+  FirebaseRemoteConfig.instance.fetchAndActivate();
   var storageKey = await secureStorage.read(key: "authKey");
-  await frc;
-
   if (storageKey == null) return "no data";
   CallApi caller = CallApi(authKey: storageKey, context: context);
   var data = await caller.get("/account?apple=${Platform.isIOS}");

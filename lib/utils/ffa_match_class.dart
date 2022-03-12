@@ -30,9 +30,9 @@ class FfaMatch extends ChangeNotifier {
     value = match;
     user.gamesPlayedInMatch = match["userPlayer"]["gamesPlayed"];
 
-    if(isTutorialRefresh && FirebaseRemoteConfig.instance.getBool("isAdButtonActivated") == false){
+    /*if(isTutorialRefresh){
       user.inGame["isMatchFinished"] = match["finished"] ? true : match["fastFinish"];
-    }
+    }*/
 
     if (match["userPlayer"]["gamesPlayed"] >= 7) {
       user.inGame["isFinished"] = true;
@@ -46,9 +46,13 @@ class FfaMatch extends ChangeNotifier {
       return false;
     }
 
-    /*if(lastAdPopup + 180 * 1000 < DateTime.now().millisecon<dsSinceEpoch && !isTutorial){
+    if(FirebaseRemoteConfig.instance.getBool("isAdButtonActivated") == false &&
+        lastAdPopup + 180 * 1000 < DateTime.now().millisecondsSinceEpoch &&
+        !isTutorial){
+      print("test");
       showAdPopupWidget(context, this);
-    }*/
+    }
+
     if (match["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < match["updatedPlatforms"].length; i++) {

@@ -221,7 +221,7 @@ class _AppCoreState extends State<AppCore> {
         child: Stack(
           children: [
             Scaffold(
-              floatingActionButton: kDebugMode ? FloatingActionButton(
+              floatingActionButton: kDebugMode && widget.isUserDataLoaded ? FloatingActionButton(
                 onPressed: ()=>FlutterApplovinMax.showMediationDebugger(),
                 child: Image.asset(
                   "assets/images/video_ad.png",

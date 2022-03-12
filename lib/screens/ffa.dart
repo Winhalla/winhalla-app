@@ -288,10 +288,10 @@ class _SoloMatchState extends State<SoloMatch> {
                               })
                             ],
                           ),
-                          SizedBox(
+                          if(FirebaseRemoteConfig.instance.getBool("isAdButtonActivated") == true) SizedBox(
                             height: 2.2.h,
                           ),
-                          Padding(
+                          if(FirebaseRemoteConfig.instance.getBool("isAdButtonActivated") == true) Padding(
                             padding: EdgeInsets.fromLTRB(.5.w, 0, .9.w, 0),
                             child: Container(
                               //padding: EdgeInsets.fromLTRB(1.w, 0, 1.w, 0),
@@ -307,37 +307,34 @@ class _SoloMatchState extends State<SoloMatch> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
                                       children: [
-                                        Padding(
-                                          padding: const EdgeInsets.fromLTRB(0, 11.5, 0, 8.5),
-                                          child: Consumer<FfaMatch>(
-                                              builder: (context, match, _) {
-                                            if (match.value["finished"] == true) {
-                                              return Text(
-                                                  "x${(match.value["userPlayer"]["multiplier"]).round()}",
-                                                  style: InheritedTextStyle.of(
-                                                          context)
+                                        Consumer<FfaMatch>(
+                                            builder: (context, match, _) {
+                                          if (match.value["finished"] == true) {
+                                            return Text(
+                                                "x${(match.value["userPlayer"]["multiplier"]).round()}",
+                                                style: InheritedTextStyle.of(
+                                                        context)
+                                                    .kBodyText1Roboto
+                                                    .apply(
+                                                        color: kGreen,
+                                                        fontSizeFactor: 0.825));
+                                          }
+                                          return Text(
+                                              "x${(match.value["userPlayer"]["multiplier"] / 100).round()}",
+                                              style:
+                                                  InheritedTextStyle.of(context)
                                                       .kBodyText1Roboto
                                                       .apply(
                                                           color: kGreen,
-                                                          fontSizeFactor: 0.825));
-                                            }
-                                            return Text(
-                                                "x${(match.value["userPlayer"]["multiplier"] / 100).round()}",
-                                                style:
-                                                    InheritedTextStyle.of(context)
-                                                        .kBodyText1Roboto
-                                                        .apply(
-                                                            color: kGreen,
-                                                            fontSizeFactor:
-                                                                0.825));
-                                          }),
-                                        ),
+                                                          fontSizeFactor:
+                                                              0.825));
+                                        }),
                                         SizedBox(
                                           width: 1.175.w,
                                         ),
                                         Padding(
                                           padding:
-                                              EdgeInsets.only(bottom: 0.178.h+8.5),
+                                              EdgeInsets.only(bottom: 0.178.h),
                                           child: Text(
                                             "reward",
                                             style:
@@ -351,7 +348,7 @@ class _SoloMatchState extends State<SoloMatch> {
                                       ],
                                     ),
                                   ),
-                                  if(FirebaseRemoteConfig.instance.getBool("isAdButtonActivated") == true) Consumer<FfaMatch>(
+                                  Consumer<FfaMatch>(
                                       builder: (context, match, _) {
                                     if (match.value["userPlayer"]
                                             ["adsWatched"] >=
