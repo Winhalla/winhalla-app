@@ -40,6 +40,7 @@ void main() async {
       fetchTimeout: const Duration(seconds: 60),
       minimumFetchInterval: const Duration(minutes: 15),
     ));
+    frc.fetchAndActivate();
   });
 }
 

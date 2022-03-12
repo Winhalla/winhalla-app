@@ -389,7 +389,6 @@ class User extends ChangeNotifier {
 }
 
 Future<dynamic> initUser(context) async {
-  FirebaseRemoteConfig.instance.fetchAndActivate();
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
   CallApi caller = CallApi(authKey: storageKey, context: context);
