@@ -1,7 +1,6 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/src/provider.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
@@ -36,73 +35,25 @@ class AdButton extends StatefulWidget {
 class _AdButtonState extends State<AdButton> {
   bool _lastAdError = false;
   bool isAdReady = false;
-  late RewardedAd _rewardedAd;
   late User user;
   FfaMatch? match;
 
   bool isMAXRewardedVideoAvailable = false;
 
-  Future<void> _initGoogleMobileAds() async {
-    await RewardedAd.load(
-      serverSideVerificationOptions: ServerSideVerificationOptions(
-          userId: user.value["steam"]["id"],
-          customData: widget.goal == "earnMoreSoloMatch"
-              ? match?.value["_id"]
-              : widget.goal),
-      adUnitId: AdHelper.rewardedAdUnitId,
-      request: const AdRequest(),
-      rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (ad) {
-          _rewardedAd = ad;
-          setState(() {
-            isAdReady = true;
-          });
-          if (_lastAdError == true) {
-            _lastAdError = false;
-            ad.show(onUserEarnedReward: (_, __) {});
-          }
-          ad.fullScreenContentCallback = FullScreenContentCallback(
-            onAdDismissedFullScreenContent: (ad) async {
-              _initGoogleMobileAds();
-              setState(() {
-                isAdReady = false;
-              });
-              if (match != null) {
-                Future.delayed(const Duration(milliseconds: 500), () async {
-                  await match?.refresh(context, user);
-                });
-              } else {
-                await user.refresh();
-                user.keyFx["rebuildHomePage"]();
-              }
-              await FirebaseAnalytics.instance.logEvent(
-                  name: "AdWatched",
-                  parameters:{
-                    "goal":widget.goal,
-                  }
-              );
-            },
-          );
-        },
-        onAdFailedToLoad: (err) async {
-          print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
-          loadApplovinRewarded((_){
-            if (mounted) {
-              setState(() {
-              isMAXRewardedVideoAvailable = true;
-            });
-            }
-          }, errorCallback:(){
-            if (mounted) {
-              setState(() {
-              _lastAdError = true;
-            });
-            }
-          });
-
-        },
-      ),
-    );
+  Future<void> _initAds() async {
+    loadApplovinRewarded((_){
+      if (mounted) {
+        setState(() {
+        isMAXRewardedVideoAvailable = true;
+      });
+      }
+    }, errorCallback:(){
+      if (mounted) {
+        setState(() {
+        _lastAdError = true;
+      });
+      }
+    });
   }
 
   Future<void> playAd() async {
@@ -110,9 +61,7 @@ class _AdButtonState extends State<AdButton> {
     if (isMAXRewardedVideoAvailable) {
       FlutterApplovinMax.showRewardVideo((AppLovinAdListener? event) => maxEventListner(event));
     } else if (_lastAdError) {
-      _initGoogleMobileAds();
-    } else if (isAdReady) {
-      _rewardedAd.show(onUserEarnedReward: (rewardedAd, rewardItem) {});
+      _initAds();
     }
   }
 
@@ -124,8 +73,8 @@ class _AdButtonState extends State<AdButton> {
     if (widget.goal == "earnMoreSoloMatch") {
       match = context.read<FfaMatch>();
     }
-    if (!kDebugMode || true) {
-      _initGoogleMobileAds();
+    if (!kDebugMode) {
+      _initAds();
     }
     super.initState();
   }

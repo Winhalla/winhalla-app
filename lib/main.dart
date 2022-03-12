@@ -4,10 +4,11 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'dart:io';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:rive/rive.dart' as Rive;
@@ -47,6 +48,14 @@ void main() {
   runZonedGuarded<Future<void>>(() async {
       WidgetsFlutterBinding.ensureInitialized();
       await Firebase.initializeApp();
+      FirebaseRemoteConfig frc = FirebaseRemoteConfig.instance;
+      frc.setDefaults(<String, dynamic>{
+        'isAdButtonActivated': false,
+      });
+      frc.setConfigSettings(RemoteConfigSettings(
+        fetchTimeout: const Duration(seconds: 60),
+        minimumFetchInterval: const Duration(minutes: 15),
+      ));
       FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
       if (kDebugMode) {
@@ -238,13 +247,14 @@ class _AppCoreState extends State<AppCore> {
         child: Stack(
           children: [
             Scaffold(
-              /*floatingActionButton: kDebugMode ? FloatingActionButton(
+              floatingActionButton: kDebugMode && widget.isUserDataLoaded ? FloatingActionButton(
                 onPressed: ()=>FlutterApplovinMax.showMediationDebugger(),
                 child: Image.asset(
                   "assets/images/video_ad.png",
+                  color: kText,
                   width: 20,
                 ),
-              ) : null,*/
+              ) : null,
             backgroundColor: kBackground,
             appBar: !widget.isUserDataLoaded
                 ? null

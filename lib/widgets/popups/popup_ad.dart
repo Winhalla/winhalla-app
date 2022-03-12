@@ -5,7 +5,6 @@ import 'dart:async';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -24,62 +23,29 @@ void adCallback(FfaMatch match, BuildContext context, User user) async {
 }
 // Must be called in a place where an FfaMatch ChangeNotifierProvider is present
 Future<void> showAdPopupWidget(BuildContext context, FfaMatch match, ) async {
-
-  await RewardedAd.load(
-    serverSideVerificationOptions: ServerSideVerificationOptions(
-        userId: match.value["userPlayer"]["steamId"],
-        customData: "earnMoreSoloMatch",
-    ),
-    adUnitId: AdHelper.rewardedAdUnitId,
-    request: const AdRequest(),
-    rewardedAdLoadCallback: RewardedAdLoadCallback(
-      onAdLoaded: (RewardedAd ad) {
-        FirebaseAnalytics.instance.logEvent(
-          name: "AdPopupDisplayed",
-        );
-        showDialog(
-            context: context,
-            builder: (_) =>
-            AdPopupWidget(
-                match.value["estimatedReward"]["reward"],
-                match.value["estimatedReward"]["rewardNextAd"],
-                true,
-                match,
-                context,
-                admobAd: ad
-            )
-        );
-      },
-      onAdFailedToLoad: (err) async {
-        print('Failed to load a rewarded ad: ${err.code} : ${err.message}');
-        loadApplovinRewarded((Timer? timer){
-          try{
-            FirebaseAnalytics.instance.logEvent(
-              name: "AdPopupDisplayed",
-            );
-            showDialog(
-                context: context,
-                builder: (_) =>
-                    AdPopupWidget(
-                        match.value["estimatedReward"]["reward"],
-                        match.value["estimatedReward"]["rewardNextAd"],
-                        false,
-                        match,
-                        context
-                    )
-            );
-          } catch(e){
-            timer?.cancel();
-          }
-        });
-
-      },
-    ),
-  );
-
+  loadApplovinRewarded((Timer? timer){
+    try{
+      FirebaseAnalytics.instance.logEvent(
+        name: "AdPopupDisplayed",
+      );
+      showDialog(
+          context: context,
+          builder: (_) =>
+              AdPopupWidget(
+                  match.value["estimatedReward"]["reward"],
+                  match.value["estimatedReward"]["rewardNextAd"],
+                  false,
+                  match,
+                  context
+              )
+      );
+    } catch(e){
+      timer?.cancel();
+    }
+  });
 }
 
-Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match, BuildContext context, {RewardedAd? admobAd}){
+Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match, BuildContext context){
   User user = context.read<User>();
   return Builder(
       builder: (context) {
@@ -141,21 +107,19 @@ Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match,
                           name: "AdPopupAccepted",
                       );
                       Navigator.pop(context);
-                      if(isAdmobAd && admobAd == null) return;
                       match.setAdPopupDate();
 
-                      if(isAdmobAd && admobAd != null) {
-                        admobAd.show(onUserEarnedReward: (RewardedAd ad, RewardItem reward) => adCallback(match, context, user));
-                      } else {
+
                         FlutterApplovinMax.showRewardVideo((event) {
                           if(event == AppLovinAdListener.adDisplayed){
                             FirebaseAnalytics.instance.logAdImpression(adFormat: "Rewarded", adPlatform: "AppLovin", adUnitName: "adPopupFfa");
                           }
                           if (event == AppLovinAdListener.onUserRewarded) {
+                            adCallback(match, context, user);
                             FirebaseAnalytics.instance.logEvent(name: "RewardedAdMatchShown");adCallback(match, context, user);
-                          }
-                        },);
-                      }
+                        }
+                      },);
+
                     },
                     child: Coin(
                       nb: nextReward.toString(),

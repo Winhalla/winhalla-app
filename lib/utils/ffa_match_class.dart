@@ -1,4 +1,5 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/user_class.dart';
@@ -61,9 +62,13 @@ class FfaMatch extends ChangeNotifier {
       return false;
     }
 
-    if(lastAdPopup + 180 * 1000 < DateTime.now().millisecondsSinceEpoch && !isTutorial && showInfo){
+    if(FirebaseRemoteConfig.instance.getBool("isAdButtonActivated") == false &&
+        lastAdPopup + 180 * 1000 < DateTime.now().millisecondsSinceEpoch &&
+        !isTutorial && showInfo){
+      print("test");
       showAdPopupWidget(context, this);
     }
+
     if (match["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < match["updatedPlatforms"].length; i++) {

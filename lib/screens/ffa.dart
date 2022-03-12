@@ -1,3 +1,4 @@
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -24,15 +25,13 @@ class SoloMatch extends StatefulWidget {
 class _SoloMatchState extends State<SoloMatch> {
   bool isAdReady = false;
 
-
-
   @override
   void initState() {
     User user = context.read<User>();
     if (widget.matchId != "tutorial" &&
         user.value["user"]["lastGames"].length >= 2 &&
         user.inGame["isFromMatchHistory"] != true) {
-        user.showInterstitialAd(InterstitialType.match);
+      user.showInterstitialAd(InterstitialType.match);
     }
     super.initState();
   }
@@ -43,7 +42,6 @@ class _SoloMatchState extends State<SoloMatch> {
       child: FutureBuilder(
         future: context.read<User>().callApi.get("/getMatch/${widget.matchId}"),
         builder: (BuildContext context, AsyncSnapshot res) {
-
           User user = context.read<User>();
           if (user.inGame["showActivity"] == false) {
             user.toggleShowMatch(false);
@@ -62,7 +60,6 @@ class _SoloMatchState extends State<SoloMatch> {
             create: (context) =>
                 FfaMatch(res.data["data"], user.value["steam"]["id"]),
             child: Builder(builder: (BuildContext context) {
-
               return RefreshIndicator(
                 onRefresh: () async {
                   var user = context.read<User>();
@@ -72,7 +69,10 @@ class _SoloMatchState extends State<SoloMatch> {
                   if (hasNotChanged &&
                       await getNonNullSSData("hideNoRefreshMatch") != "true") {
                     if (user.appBarKey.currentContext != null) {
-                      showDialog(context: user.appBarKey.currentContext as BuildContext, builder: (_) => NoRefreshPopup("match"));
+                      showDialog(
+                          context:
+                              user.appBarKey.currentContext as BuildContext,
+                          builder: (_) => NoRefreshPopup("match"));
                     }
                   }
                   return;
@@ -83,7 +83,8 @@ class _SoloMatchState extends State<SoloMatch> {
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 5),
-                          child: Text('Solo Match', style: InheritedTextStyle.of(context).kHeadline1),
+                          child: Text('Solo Match',
+                              style: InheritedTextStyle.of(context).kHeadline1),
                         ),
                         Container(
                             decoration: BoxDecoration(
@@ -216,74 +217,262 @@ class _SoloMatchState extends State<SoloMatch> {
                     ),
                     SizedBox(height: 2.h,),*/
                     Container(
-                      padding: EdgeInsets.fromLTRB(6.w, 3.h, 6.w, 3.h),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                      padding: EdgeInsets.fromLTRB(6.w, 3.h, 6.w, 2.5.h),
+                      child: Column(
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Padding(
-                                padding: const EdgeInsets.only(top: 1.45),
-                                child: Text("Estimated reward:", style: InheritedTextStyle.of(context).kBodyText2.apply(fontSizeFactor: 0.95, color: kText90)),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 1.45),
+                                    child: Text("Estimated reward:",
+                                        style: InheritedTextStyle.of(context)
+                                            .kBodyText2
+                                            .apply(
+                                                fontSizeFactor: 0.95,
+                                                color: kText90)),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 1.95),
+                                    child: Text("Based on current stats",
+                                        style: InheritedTextStyle.of(context)
+                                            .kBodyText3
+                                            .apply(
+                                                fontStyle: FontStyle.italic,
+                                                fontSizeFactor: 0.8,
+                                                color: kGray)),
+                                  ),
+                                ],
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 1.95),
-                                child: Text("Based on current stats",
-                                    style: InheritedTextStyle.of(context)
-                                        .kBodyText3
-                                        .apply(
-                                            fontStyle: FontStyle.italic,
-                                            fontSizeFactor: 0.8,
-                                            color: kGray)),
+                              SizedBox(
+                                width: 3.65.w,
                               ),
-                            ],
-                          ),
-
-                          SizedBox(width: 3.65.w,),
-                          Consumer<FfaMatch>(builder: (context, match, _) {
-                            context
-                                .read<User>()
-                                .setKeyFx(match.refresh, "refreshMatch");
-                            Future.delayed(const Duration(milliseconds: 1),
+                              Consumer<FfaMatch>(builder: (context, match, _) {
+                                context
+                                    .read<User>()
+                                    .setKeyFx(match.refresh, "refreshMatch");
+                                Future.delayed(const Duration(milliseconds: 1),
                                     () {
                                   bool hasExpiredTime =
                                       match.value["userPlayer"]["joinDate"] +
-                                          3600 * 1000 <
+                                              3600 * 1000 <
                                           DateTime.now().millisecondsSinceEpoch;
 
                                   if (hasExpiredTime) {
                                     user.setGames(7);
                                   } else {
                                     user.setGames(match.value["userPlayer"]
-                                    ["gamesPlayed"]);
+                                        ["gamesPlayed"]);
                                   }
 
                                   if (user.inGame["showActivity"] == false &&
                                       (match.value["userPlayer"]
-                                      ["gamesPlayed"] <
-                                          7 &&
+                                                  ["gamesPlayed"] <
+                                              7 &&
                                           !hasExpiredTime)) {
                                     user.setMatchInProgress();
                                   }
                                 });
-                            return Coin(
-                              nb: match.value["estimatedReward"]["reward"].toString(),
-                              color: kText,
-                              bgColor: kBlack,
-                              padding:
-                                  const EdgeInsets.fromLTRB(18.5, 10.5, 18.5, 7.5),
-                              fontSize: 28,
-                            );
-                          })
+                                return Coin(
+                                  nb: match.value["estimatedReward"]["reward"]
+                                      .toString(),
+                                  color: kText,
+                                  bgColor: kBlack,
+                                  padding: EdgeInsets.fromLTRB(
+                                      4.9.w, 1.3.h, 4.9.w, 0.85.h),
+                                  fontSize: 28,
+                                );
+                              })
+                            ],
+                          ),
+                          if(FirebaseRemoteConfig.instance.getBool("isAdButtonActivated") == true) SizedBox(
+                            height: 2.2.h,
+                          ),
+                          if(FirebaseRemoteConfig.instance.getBool("isAdButtonActivated") == true) Padding(
+                            padding: EdgeInsets.fromLTRB(.5.w, 0, .9.w, 0),
+                            child: Container(
+                              //padding: EdgeInsets.fromLTRB(1.w, 0, 1.w, 0),
+                              decoration: BoxDecoration(
+                                  color: kBlack,
+                                  borderRadius: BorderRadius.circular(12)),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.end,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Consumer<FfaMatch>(
+                                            builder: (context, match, _) {
+                                          if (match.value["finished"] == true) {
+                                            return Text(
+                                                "x${(match.value["userPlayer"]["multiplier"]).round()}",
+                                                style: InheritedTextStyle.of(
+                                                        context)
+                                                    .kBodyText1Roboto
+                                                    .apply(
+                                                        color: kGreen,
+                                                        fontSizeFactor: 0.825));
+                                          }
+                                          return Text(
+                                              "x${(match.value["userPlayer"]["multiplier"] / 100).round()}",
+                                              style:
+                                                  InheritedTextStyle.of(context)
+                                                      .kBodyText1Roboto
+                                                      .apply(
+                                                          color: kGreen,
+                                                          fontSizeFactor:
+                                                              0.825));
+                                        }),
+                                        SizedBox(
+                                          width: 1.175.w,
+                                        ),
+                                        Padding(
+                                          padding:
+                                              EdgeInsets.only(bottom: 0.178.h),
+                                          child: Text(
+                                            "reward",
+                                            style:
+                                                InheritedTextStyle.of(context)
+                                                    .kBodyText2
+                                                    .apply(
+                                                        fontSizeFactor: 0.8,
+                                                        color: kText90),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Consumer<FfaMatch>(
+                                      builder: (context, match, _) {
+                                    if (match.value["userPlayer"]
+                                            ["adsWatched"] >=
+                                        16) {
+                                      return Container(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            19, 11.5, 19, 8.5),
+                                        decoration: BoxDecoration(
+                                            color: kText60,
+                                            borderRadius:
+                                                BorderRadius.circular(12)),
+                                        child: Text(
+                                          "Max ads reached",
+                                          style: InheritedTextStyle.of(context)
+                                              .kBodyText4
+                                              .apply(color: kText),
+                                        ),
+                                      );
+                                    }
+                                    return AdButton(
+                                      goal: 'earnMoreSoloMatch',
+                                      adNotReadyChild: Container(
+                                          padding: EdgeInsets.fromLTRB(
+                                              4.6.w, 1.55.h, 4.6.w, 1.25.h),
+                                          child: Row(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 2.0),
+                                                child: Image.asset(
+                                                  "assets/images/video_ad.png",
+                                                  width: 20,
+                                                  color: kText95,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 1.9.w,
+                                              ),
+                                              Text(
+                                                "Loading...",
+                                                style: InheritedTextStyle.of(
+                                                        context)
+                                                    .kBodyText4
+                                                    .apply(color: kText95),
+                                              ),
+                                            ],
+                                          ),
+                                          decoration: BoxDecoration(
+                                              color: kText60,
+                                              borderRadius:
+                                                  BorderRadius.circular(12))),
+                                      adErrorChild: Container(
+                                          padding: EdgeInsets.fromLTRB(
+                                              4.6.w, 1.55.h, 4.6.w, 1.25.h),
+                                          child: Row(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 2.0),
+                                                child: Image.asset(
+                                                  "assets/images/video_ad.png",
+                                                  width: 20,
+                                                  color: kText95,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 1.9.w,
+                                              ),
+                                              Text(
+                                                "Error",
+                                                style: InheritedTextStyle.of(
+                                                        context)
+                                                    .kBodyText4
+                                                    .apply(color: kText95),
+                                              ),
+                                            ],
+                                          ),
+                                          decoration: BoxDecoration(
+                                              color: kText60,
+                                              borderRadius:
+                                                  BorderRadius.circular(12))),
+                                      child: Container(
+                                          padding: EdgeInsets.fromLTRB(
+                                              4.6.w, 1.55.h, 4.6.w, 1.25.h),
+                                          child: Row(
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.only(
+                                                    bottom: 2.0),
+                                                child: Image.asset(
+                                                  "assets/images/video_ad.png",
+                                                  width: 20,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                width: 1.9.w,
+                                              ),
+                                              Text(
+                                                "Boost it",
+                                                style: InheritedTextStyle.of(
+                                                        context)
+                                                    .kBodyText4
+                                                    .apply(color: kBackground),
+                                              ),
+                                            ],
+                                          ),
+                                          decoration: BoxDecoration(
+                                              color: kGreen,
+                                              borderRadius:
+                                                  BorderRadius.circular(12))),
+                                    );
+                                  })
+                                ],
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                       decoration: BoxDecoration(
                           color: kBackgroundVariant,
                           borderRadius: BorderRadius.circular(20)),
                     ),
-
-
                     SizedBox(
                       height: 7.25.h,
                     ),
@@ -309,7 +498,9 @@ class _SoloMatchState extends State<SoloMatch> {
                         children: [
                           Text(
                             "${match.value["players"].length}",
-                            style: InheritedTextStyle.of(context).kBodyText3.apply(color: kPrimary),
+                            style: InheritedTextStyle.of(context)
+                                .kBodyText3
+                                .apply(color: kPrimary),
                           ),
                           const SizedBox(
                             width: 5,
@@ -324,8 +515,10 @@ class _SoloMatchState extends State<SoloMatch> {
                           GestureDetector(
                             child: Text(
                               match.areOtherPlayersShown ? "HIDE" : "SHOW",
-                              style: InheritedTextStyle.of(context).kBodyText2.apply(
-                                  fontFamily: "Bebas Neue", color: kText80),
+                              style: InheritedTextStyle.of(context)
+                                  .kBodyText2
+                                  .apply(
+                                      fontFamily: "Bebas Neue", color: kText80),
                             ),
                             onTap: () {
                               match.togglePlayerShown();
@@ -380,10 +573,10 @@ class _SoloMatchState extends State<SoloMatch> {
                             children: [
                               Padding(
                                 padding: const EdgeInsets.only(top: 3.0),
-                                child: Text(
-                                  "You can",
-                                  style: InheritedTextStyle.of(context).kBodyText2bis.apply(color: kText80)
-                                ),
+                                child: Text("You can",
+                                    style: InheritedTextStyle.of(context)
+                                        .kBodyText2bis
+                                        .apply(color: kText80)),
                               ),
                               Padding(
                                 padding: const EdgeInsets.only(right: 20),
@@ -392,10 +585,10 @@ class _SoloMatchState extends State<SoloMatch> {
                                   children: [
                                     Padding(
                                       padding: const EdgeInsets.only(top: 3.0),
-                                      child: Text(
-                                        "TIP",
-                                        style: InheritedTextStyle.of(context).kBodyText2bis.apply(color: kGreen)
-                                      ),
+                                      child: Text("TIP",
+                                          style: InheritedTextStyle.of(context)
+                                              .kBodyText2bis
+                                              .apply(color: kGreen)),
                                     ),
                                     const SizedBox(
                                       width: 5,
@@ -420,53 +613,57 @@ class _SoloMatchState extends State<SoloMatch> {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(top: 18.0),
-                                child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        SizedBox(
-                                              width: 28.h,
-                                              child: RichText(
-                                                text: TextSpan(
-                                                    style: InheritedTextStyle.of(context).kBodyText3,
-                                                    children: const [
-                                                      TextSpan(text: "Start "),
-                                                      TextSpan(
-                                                          text: "playing ",
-                                                          style: TextStyle(
-                                                              color: kPrimary)),
-                                                      TextSpan(
-                                                          text:
-                                                              "Brawlhalla! (only ranked games)")
-                                                    ]),
-                                              ),
-                                            ),
-                                        const SizedBox(
-                                          height: 25,
+                                  padding: const EdgeInsets.only(top: 18.0),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      SizedBox(
+                                        width: 28.h,
+                                        child: RichText(
+                                          text: TextSpan(
+                                              style:
+                                                  InheritedTextStyle.of(context)
+                                                      .kBodyText3,
+                                              children: const [
+                                                TextSpan(text: "Start "),
+                                                TextSpan(
+                                                    text: "playing ",
+                                                    style: TextStyle(
+                                                        color: kPrimary)),
+                                                TextSpan(
+                                                    text:
+                                                        "Brawlhalla! (only ranked games)")
+                                              ]),
                                         ),
-                                        SizedBox(
-                                          width: 28.h,
-                                          child: RichText(
-                                            softWrap: true,
-                                            text: TextSpan(
-                                                style: InheritedTextStyle.of(context).kBodyText3,
-                                                children: const [
-                                                  TextSpan(
-                                                      text: "Drag down ",
-                                                      style: TextStyle(
-                                                          color: kPrimary)),
-                                                  TextSpan(text: "to "),
-                                                  TextSpan(
-                                                      text: "sync ",
-                                                      style: TextStyle(
-                                                          color: kPrimary)),
-                                                  TextSpan(text: "your stats"),
-                                                ]),
-                                          ),
+                                      ),
+                                      const SizedBox(
+                                        height: 25,
+                                      ),
+                                      SizedBox(
+                                        width: 28.h,
+                                        child: RichText(
+                                          softWrap: true,
+                                          text: TextSpan(
+                                              style:
+                                                  InheritedTextStyle.of(context)
+                                                      .kBodyText3,
+                                              children: const [
+                                                TextSpan(
+                                                    text: "Drag down ",
+                                                    style: TextStyle(
+                                                        color: kPrimary)),
+                                                TextSpan(text: "to "),
+                                                TextSpan(
+                                                    text: "sync ",
+                                                    style: TextStyle(
+                                                        color: kPrimary)),
+                                                TextSpan(text: "your stats"),
+                                              ]),
                                         ),
-                                      ],
-                                    )
-                              )
+                                      ),
+                                    ],
+                                  ))
                             ],
                           ),
                         ],
@@ -491,7 +688,7 @@ class PlayerWidget extends StatelessWidget {
     required this.games,
     this.wins,
     required this.name,
-  }) : super(key:key);
+  }) : super(key: key);
 
   final bool isUser;
   final String avatarUrl;
@@ -523,7 +720,9 @@ class PlayerWidget extends StatelessWidget {
                         padding: const EdgeInsets.only(bottom: 1.5),
                         child: Text(
                           "Games played:",
-                          style: InheritedTextStyle.of(context).kBodyText2bis.apply(color: kText),
+                          style: InheritedTextStyle.of(context)
+                              .kBodyText2bis
+                              .apply(color: kText),
                         ),
                       ),
                       const SizedBox(
@@ -531,7 +730,9 @@ class PlayerWidget extends StatelessWidget {
                       ),
                       Text(
                         "$games/7",
-                        style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: isUser ? kEpic : kPrimary),
+                        style: InheritedTextStyle.of(context)
+                            .kBodyText1bis
+                            .apply(color: isUser ? kEpic : kPrimary),
                       )
                     ],
                     crossAxisAlignment: CrossAxisAlignment.end,
@@ -543,17 +744,21 @@ class PlayerWidget extends StatelessWidget {
                     Row(
                       children: [
                         Padding(
-                          padding: const EdgeInsets.only(bottom: 1.5),
-                          child: Text("Games won:",
-                              style: InheritedTextStyle.of(context).kBodyText2bis.apply(color: kText),
-                          )
-                        ),
+                            padding: const EdgeInsets.only(bottom: 1.5),
+                            child: Text(
+                              "Games won:",
+                              style: InheritedTextStyle.of(context)
+                                  .kBodyText2bis
+                                  .apply(color: kText),
+                            )),
                         const SizedBox(
                           width: 10,
                         ),
                         Text(
                           "$wins/7",
-                          style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: kEpic),
+                          style: InheritedTextStyle.of(context)
+                              .kBodyText1bis
+                              .apply(color: kEpic),
                         )
                       ],
                       crossAxisAlignment: CrossAxisAlignment.end,
