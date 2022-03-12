@@ -59,7 +59,6 @@ void loadApplovinRewarded(Function(Timer?) callback, {Function? errorCallback}) 
     if(timer != null) timer1 = timer;
     if(hasPerformedCallback == true) return timer?.cancel();
     times ++;
-    print(times);
 
     // Load unsuccessful after 16 tries (9.6s)
     if(times == 16) {

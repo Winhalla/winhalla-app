@@ -418,20 +418,22 @@ class _AppCoreState extends State<AppCore> {
             if (_selectedIndex == 3) Positioned(
               bottom: 89,
               left: 0,
-              child: Container(
-                decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                        begin: Alignment.bottomCenter,
-                        end: Alignment.topCenter,
-                        stops: const [0,0.7,1],
-                        colors: [
-                          kBackground,
-                          kBackground.withOpacity(0.67),
-                          kBackground.withOpacity(0.0)
-                        ]
-                    )
+              child: IgnorePointer(
+                child: Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          begin: Alignment.bottomCenter,
+                          end: Alignment.topCenter,
+                          stops: const [0,0.7,1],
+                          colors: [
+                            kBackground,
+                            kBackground.withOpacity(0.67),
+                            kBackground.withOpacity(0.0)
+                          ]
+                      )
+                  ),
+                  child: SizedBox(height: 15.h,width: 100.w,),
                 ),
-                child: SizedBox(height: 15.h,width: 100.w,),
               ),
             ),
             if (_selectedIndex == 3) Positioned(
