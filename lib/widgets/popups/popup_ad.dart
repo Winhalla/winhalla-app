@@ -152,7 +152,7 @@ Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match,
                             FirebaseAnalytics.instance.logAdImpression(adFormat: "Rewarded", adPlatform: "AppLovin", adUnitName: "adPopupFfa");
                           }
                           if (event == AppLovinAdListener.onUserRewarded) {
-                            adCallback(match, context, user);
+                            FirebaseAnalytics.instance.logEvent(name: "RewardedAdMatchShown");adCallback(match, context, user);
                           }
                         },);
                       }
