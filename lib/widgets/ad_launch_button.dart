@@ -97,7 +97,7 @@ class _AdButtonState extends State<AdButton> {
           isMAXRewardedVideoAvailable = false;
         });
       }
-      FirebaseAnalytics.instance.logEvent(name: "RewardedAdMatchShown");
+      if(widget.goal == "earnMoreSoloMatch") FirebaseAnalytics.instance.logEvent(name: "RewardedAdMatchShown");
       await user.callApi
           .get(
               "/admob/getReward?user_id=${user.value["steam"]["id"]}&custom_data=${widget.goal == "earnMoreSoloMatch" ? match?.value["_id"] : widget.goal}");

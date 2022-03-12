@@ -14,6 +14,8 @@ import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_no_refresh.dart';
 import 'package:winhalla_app/widgets/tip_painter.dart';
 
+import '../widgets/popups/popup_ad.dart';
+
 class SoloMatch extends StatefulWidget {
   final String matchId;
   const SoloMatch({Key? key, required this.matchId}) : super(key: key);
@@ -418,7 +420,7 @@ class _SoloMatchState extends State<SoloMatch> {
                                                 width: 1.9.w,
                                               ),
                                               Text(
-                                                "Error",
+                                                "Unavailable",
                                                 style: InheritedTextStyle.of(
                                                         context)
                                                     .kBodyText4

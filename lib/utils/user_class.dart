@@ -40,7 +40,6 @@ class User extends ChangeNotifier {
   int lastInterstitialAd = 0;
   int lastMatchInterstitial = 0;
   int lastQuestsInterstitial = 0;
-  InterstitialAd? interstitialAd;
 
   Future<void> refresh({notify = true}) async {
     var accountData = await callApi.get("/account");

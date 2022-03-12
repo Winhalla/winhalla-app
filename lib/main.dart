@@ -18,6 +18,7 @@ import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
+import 'package:winhalla_app/utils/ffa_match_class.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/tutorial_controller.dart';
@@ -163,9 +164,8 @@ class MyApp extends StatelessWidget {
                           inGame = {'id': currentMatch[0]["id"], 'joinDate': currentMatch[0]["joinDate"]};
                         }
 
-                        /*Future.delayed(const Duration(seconds: 5),(){
-                            FlutterApplovinMax.showMediationDebugger();
-                          });*/return ChangeNotifierProvider<User>(
+
+                        return ChangeNotifierProvider<User>(
                             create: (_) => User(newData, callApi, keys, inGame, res.data["oldDailyChallengeData"]),
                             child: AppCore(
                               isUserDataLoaded: true,

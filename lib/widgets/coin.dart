@@ -13,6 +13,7 @@ class Coin extends StatelessWidget {
   final Color bgColor;
   final double fontSize;
   final double borderRadius;
+  final double spacing;
   final EdgeInsetsGeometry padding;
   final GlobalKey? key1;
   const Coin({
@@ -21,6 +22,7 @@ class Coin extends StatelessWidget {
     this.color = kPrimary,
     this.bgColor = kBackgroundVariant,
     this.fontSize = 30,
+    this.spacing = 6.25,
     this.borderRadius = 11,
     this.padding = const EdgeInsets.fromLTRB(21, 10.25, 21, 7.25),
     this.key1
@@ -38,8 +40,8 @@ class Coin extends StatelessWidget {
                 nb,
                 style: InheritedTextStyle.of(context).kBodyText4.apply(fontSizeFactor: fontSize/20,color:color)
               ),
-            const SizedBox(
-              width: 6.25,
+            SizedBox(
+              width: spacing,
             ),
             Padding(
               padding: const EdgeInsets.only(bottom: 3),

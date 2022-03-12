@@ -65,7 +65,6 @@ class FfaMatch extends ChangeNotifier {
     if(FirebaseRemoteConfig.instance.getBool("isAdButtonActivated") == false &&
         lastAdPopup + 180 * 1000 < DateTime.now().millisecondsSinceEpoch &&
         !isTutorial && showInfo){
-      print("test");
       showAdPopupWidget(context, this);
     }
 
