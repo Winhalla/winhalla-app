@@ -57,6 +57,7 @@ void main() {
         fetchTimeout: const Duration(seconds: 60),
         minimumFetchInterval: const Duration(minutes: 15),
       ));
+      frc.fetchAndActivate();
       FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
 
       if (kDebugMode) {
