@@ -44,18 +44,27 @@ class AdHelper {
     }
   }
 }
-
+bool isLoading = false;
+Timer? timer1;
 void loadApplovinRewarded(Function(Timer?) callback, {Function? errorCallback}) async {
+  print(isLoading);
+  if(isLoading = true){
+    timer1?.cancel();
+  }
+  isLoading = true;
   await FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
   int times = 0;
   bool hasPerformedCallback = false;
   void timerCallback(Timer? timer) async {
+    if(timer != null) timer1 = timer;
     if(hasPerformedCallback == true) return timer?.cancel();
     times ++;
+    print(times);
 
-    // Load unsuccessful after 16 tries (5s)
+    // Load unsuccessful after 16 tries (9.6s)
     if(times == 16) {
       if(errorCallback != null) errorCallback();
+      isLoading = false;
       timer?.cancel();
       return;
     }
