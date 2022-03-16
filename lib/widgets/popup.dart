@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:steam_login/steam_login.dart';
@@ -9,6 +8,7 @@ import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/launch_url.dart';
 import 'package:winhalla_app/utils/steam.dart.old';
+import 'package:flutter_custom_tabs/flutter_custom_tabs.dart' as customTabs;
 
 import 'inherited_text_style.dart';
 
@@ -25,15 +25,18 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
     void nextStep() async {
 
       if (_chosenValue == "steam" && step == "platformSelection") {
-        setState((){
-          step = "steamLogin";
-        });
-        Navigator.of(context).pop();
         Navigator.of(context).pop();
         var openId = OpenId.raw(
             apiUrl, apiUrl+"/auth/steamCallback", {"name": "Winhalla"});
-        launchURLBrowser(openId.authUrl().toString(),);
-
+        customTabs.launch(
+            openId.authUrl().toString(),
+            customTabsOption: const customTabs.CustomTabsOption(
+              extraCustomTabs:  [
+                'org.mozilla.firefox',
+                'com.microsoft.emmx'
+              ], // If chrome is not available, default to other providers
+            )
+        );
       } else if (step == "platformSelection") {
         setState(() {
           step = "enterBid";
@@ -166,6 +169,9 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                   padding: const EdgeInsets.fromLTRB(20, 7, 20, 7),
                   child: TextField(
                     keyboardType: TextInputType.phone,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly
+                    ],
                     controller: bidTextController,
                     style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.9,color: kText80),
                     decoration: InputDecoration(
@@ -231,7 +237,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text("We found this account:",style: InheritedTextStyle.of(context).kBodyText3.apply(color: kText80),),
-                  SizedBox(height: 10,),
+                  const SizedBox(height: 10,),
                   Padding(
                     padding: const EdgeInsets.only(left: 16.0),
                     child: Row(
@@ -250,7 +256,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                             ],
                     ),
                   ),
-                  SizedBox(height: 10,),
+                  const SizedBox(height: 10,),
                   Text("Is it yours?",style: InheritedTextStyle.of(context).kBodyText2.apply(color: kPrimary),),
                 ],
               ),

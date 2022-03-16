@@ -54,10 +54,36 @@ class _AccountCreationState extends State<AccountCreation> {
 
   @override
   void initState(){
+    if (widget.accounts != null && alreadyCreatedAccount == false) {
+      accounts = widget.accounts;
+      for (int i = 0; i < accounts.length; i++) {
+        for (int ii = 0; ii < items.length; ii++) {
+          var element = items[ii];
+
+          if (element["platformId"] == accounts[i]["platformId"]) {
+            items.removeAt(ii);
+          }
+        }
+      }
+      alreadyCreatedAccount = true;
+    }
+    // Pop all routes under bc steam login creates another page
     if(widget.steamLoginUri != null) {
-      Future.delayed(const Duration(milliseconds: 1000),() async {
+      Future.delayed(const Duration(milliseconds: 0),(){
+        Navigator.of(context).removeRouteBelow(ModalRoute.of(context) as Route);
+      });
+    }
+
+    if(widget.steamLoginUri != null) {
+      Future.delayed(const Duration(milliseconds: 0),() async {
       String oldAccounts = await getNonNullSSData("accountsSave");
-      if (oldAccounts != "no data") {
+      String isEditingAccount = await getNonNullSSData("isEditingAccount");
+      if(isEditingAccount == "true") {
+        setState((){
+          alreadyCreatedAccount = true;
+        });
+        }
+        if (oldAccounts != "no data") {
         accounts = jsonDecode(oldAccounts);
         for (int i = 0; i< accounts.length; i++){
           listKey.currentState?.insertItem(
@@ -98,19 +124,6 @@ class _AccountCreationState extends State<AccountCreation> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.accounts != null && alreadyCreatedAccount == false) {
-      accounts = widget.accounts;
-      for (int i = 0; i < accounts.length; i++) {
-        for (int ii = 0; ii < items.length; ii++) {
-          var element = items[ii];
-
-          if (element["platformId"] == accounts[i]["platformId"]) {
-            items.removeAt(ii);
-          }
-        }
-      }
-      alreadyCreatedAccount = true;
-    }
     return Padding(
           padding: const EdgeInsets.fromLTRB(32, 50, 32, 0),
           child: SingleChildScrollView(
@@ -239,6 +252,7 @@ class _AccountCreationState extends State<AccountCreation> {
                     ),
                     onTap: () async {
                       secureStorage.write(key: "accountsSave", value: jsonEncode(accounts));
+                      secureStorage.write(key: "isEditingAccount", value: alreadyCreatedAccount.toString());
                       var result = await showDialog(
                           context: context,
                           builder: (context) => PopupWidget(context, items));
@@ -367,12 +381,11 @@ class _AccountCreationState extends State<AccountCreation> {
                         } catch (e) {}
 
                         await secureStorage.write(key: 'link', value: null);
-                        if (ModalRoute.of(context)?.settings.name == "/") {
-                          Navigator.pop(context, "/");
-                          Navigator.pushNamed(context, "/");
-                        } else {
-                          Navigator.pushReplacementNamed(context, "/");
-                        }
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          '/',
+                              (Route<dynamic> route) => false,
+                        );
 
                       },
                       child: Container(

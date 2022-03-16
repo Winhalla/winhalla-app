@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:rive/rive.dart' as Rive;
 import 'package:steam_login/steam_login.dart';
@@ -238,8 +239,8 @@ class _AppCoreState extends State<AppCore> {
             Scaffold(
               floatingActionButton: kDebugMode && widget.isUserDataLoaded ? FloatingActionButton(
                 onPressed: () {
-                  // FlutterApplovinMax.showMediationDebugger();
-                  launchURLBrowser(apiUrl+"/auth/steamCallback");
+                  FlutterApplovinMax.showMediationDebugger();
+                  // launchURLBrowser(apiUrl+"/auth/steamCallback?t=q");
                 },
                 child: Image.asset(
                   "assets/images/video_ad.png",
