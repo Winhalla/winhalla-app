@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:steam_login/steam_login.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/custom_http.dart';
 // import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/get_uri.dart';
-import 'package:winhalla_app/utils/steam.dart';
+import 'package:winhalla_app/utils/launch_url.dart';
+import 'package:winhalla_app/utils/steam.dart.old';
 
 import 'inherited_text_style.dart';
 
@@ -26,6 +28,11 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
         setState((){
           step = "steamLogin";
         });
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+        var openId = OpenId.raw(
+            apiUrl, apiUrl+"/auth/steamCallback", {"name": "Winhalla"});
+        launchURLBrowser(openId.authUrl().toString(),);
 
       } else if (step == "platformSelection") {
         setState(() {
@@ -65,8 +72,6 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
       Navigator.pop(context,
           {"BID": bidTextController.text, "name": accountData["data"]["name"], "platformId": _chosenValue});
     }
-
-    if (step == "steamLogin") return SteamLoginWebView();
 
 
 

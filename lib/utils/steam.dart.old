@@ -1,4 +1,4 @@
-import 'dart:convert';
+/*import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:steam_login/steam_login.dart';
@@ -35,4 +35,4 @@ class SteamLoginWebView extends StatelessWidget {
       url: openId.authUrl().toString(),
     );
   }
-}
+}*/

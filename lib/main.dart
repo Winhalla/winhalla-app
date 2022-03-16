@@ -1,30 +1,27 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_applovin_max/flutter_applovin_max.dart';
-import 'package:intl/intl.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:rive/rive.dart' as Rive;
+import 'package:steam_login/steam_login.dart';
 import 'package:winhalla_app/screens/contact.dart';
 import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
-import 'package:winhalla_app/utils/ad_helper.dart';
+import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
-import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+import 'package:winhalla_app/utils/launch_url.dart';
 import 'package:winhalla_app/utils/tutorial_controller.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:provider/provider.dart';
-import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
-import 'package:winhalla_app/widgets/popup_leave_match.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
-import 'package:winhalla_app/widgets/popups/popup_ad.dart';
 import 'config/themes/dark_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
@@ -93,8 +90,27 @@ class MyApp extends StatelessWidget {
             // Start the app with the "/" named route. In this case, the app starts
             // on the FirstScreen widget.
             initialRoute: '/',
-            routes: {
-              '/': (context) => SafeArea(
+            onGenerateRoute: (RouteSettings settings) {
+              Uri? uri = Uri.tryParse(apiUrl + (settings.name ?? "/"));
+              if(uri != null && uri.path == "/auth/steamCallback" && uri.queryParameters.isNotEmpty){
+                // Navigator.of(context).pop();
+                return MaterialPageRoute(
+                    builder: (_)=> SafeArea(child: LoginPage(stepOverride: 2, steamLoginUri: uri))
+                );
+              }
+              switch (settings.name) {
+                case "/contact":
+                  return MaterialPageRoute(
+                    builder: (context) {
+                      return const SafeArea(child: ContactPage());
+                    }
+                  );
+                case "/login":
+                  return MaterialPageRoute(
+                    builder: (_)=> SafeArea(child: LoginPage())
+                  );
+                case "/":
+                  return MaterialPageRoute(builder: (_)=> SafeArea(
                     child: FutureBuilder(
                         future: initUser(context),
                         builder: (context, AsyncSnapshot<dynamic> res) {
@@ -114,7 +130,7 @@ class MyApp extends StatelessWidget {
 
                           // Do not edit res.data directly otherwise it calls the build function again for some reason
                           Map<String, dynamic> newData =
-                              res.data as Map<String, dynamic>;
+                          res.data as Map<String, dynamic>;
                           var callApi = res.data["callApi"];
 
                           newData["callApi"] = null;
@@ -160,11 +176,9 @@ class MyApp extends StatelessWidget {
                                 tutorial: newData["tutorial"],
                               ));
                         }),
-                  ),
-              '/login': (context) => SafeArea(child: LoginPage()),
-              '/contact': (context) => const SafeArea(child: ContactPage()),
+                  ));
+              }
             },
-          
         ),
       );
     });
@@ -223,7 +237,10 @@ class _AppCoreState extends State<AppCore> {
           children: [
             Scaffold(
               floatingActionButton: kDebugMode && widget.isUserDataLoaded ? FloatingActionButton(
-                onPressed: ()=>FlutterApplovinMax.showMediationDebugger(),
+                onPressed: () {
+                  // FlutterApplovinMax.showMediationDebugger();
+                  launchURLBrowser(apiUrl+"/auth/steamCallback");
+                },
                 child: Image.asset(
                   "assets/images/video_ad.png",
                   color: kText,

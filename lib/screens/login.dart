@@ -8,21 +8,36 @@ import 'package:winhalla_app/widgets/login/google_apple_login.dart';
 class LoginPage extends StatelessWidget {
   final userData;
   final accounts;
-  LoginPage({Key? key, this.userData, this.accounts}) : super(key: key);
+  final int? stepOverride;
+  final Uri? steamLoginUri;
+  LoginPage({Key? key, this.userData, this.accounts, this.stepOverride, this.steamLoginUri}) : super(key: key);
 
   int step = 0;
   @override
   Widget build(BuildContext context) {
+    bool stepOverriden = false;
+    if(stepOverride == null){
+      try{
+        if(userData?["data"]?["steam"] != null) {
+          step = 1;
+          stepOverriden = false;
+        }
+      } catch(e) {}
+      if(accounts != null) {
+        step = 2;
+        stepOverriden = false;
+      }
+    } else {
+      step = stepOverride!;
+      stepOverriden = true;
+    }
+
     List<Widget> screenList = [
       const GoogleAppleLogin(),
       const EnterLink(),
-      AccountCreation(accounts: accounts),
+      AccountCreation(accounts: accounts, stepOverriden: stepOverriden, steamLoginUri:steamLoginUri ),
     ];
 
-    try{
-      if(userData?["data"]?["steam"] != null) step = 1;
-    } catch(e) {}
-    if(accounts != null) step = 2;
 
     return SafeArea(
       child: Scaffold(
