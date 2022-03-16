@@ -51,22 +51,15 @@ class _AccountCreationState extends State<AccountCreation> {
         return "Steam (PC)";
     }
   }
-
+  @override
+  void dispose(){
+    super.dispose();
+    print("test");
+  }
   @override
   void initState(){
-    if (widget.accounts != null && alreadyCreatedAccount == false) {
-      accounts = widget.accounts;
-      for (int i = 0; i < accounts.length; i++) {
-        for (int ii = 0; ii < items.length; ii++) {
-          var element = items[ii];
+    super.initState();
 
-          if (element["platformId"] == accounts[i]["platformId"]) {
-            items.removeAt(ii);
-          }
-        }
-      }
-      alreadyCreatedAccount = true;
-    }
     // Pop all routes under bc steam login creates another page
     if(widget.steamLoginUri != null) {
       Future.delayed(const Duration(milliseconds: 0),(){
@@ -78,6 +71,8 @@ class _AccountCreationState extends State<AccountCreation> {
       Future.delayed(const Duration(milliseconds: 0),() async {
       String oldAccounts = await getNonNullSSData("accountsSave");
       String isEditingAccount = await getNonNullSSData("isEditingAccount");
+      await secureStorage.delete(key: "accountsSave");
+      await secureStorage.delete(key: "isEditingAccount");
       if(isEditingAccount == "true") {
         setState((){
           alreadyCreatedAccount = true;
@@ -119,11 +114,23 @@ class _AccountCreationState extends State<AccountCreation> {
       }
     }).then((value) => print("finished"));
     }
-    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.accounts != null && alreadyCreatedAccount == false) {
+      accounts = widget.accounts;
+      for (int i = 0; i < accounts.length; i++) {
+        for (int ii = 0; ii < items.length; ii++) {
+          var element = items[ii];
+
+          if (element["platformId"] == accounts[i]["platformId"]) {
+            items.removeAt(ii);
+          }
+        }
+      }
+      alreadyCreatedAccount = true;
+    }
     return Padding(
           padding: const EdgeInsets.fromLTRB(32, 50, 32, 0),
           child: SingleChildScrollView(
