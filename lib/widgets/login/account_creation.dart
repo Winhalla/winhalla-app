@@ -87,7 +87,7 @@ class _AccountCreationState extends State<AccountCreation> {
             }
           }
           var openId = OpenId.fromUri(widget.steamLoginUri as Uri);
-          if (openId.mode != 'id_res') throw Exception("OpenID mode is not id_res");
+          if (openId.mode != 'id_res') throw Exception("OpenID mode is not id_res, it is ${openId.mode == "" ? "null" : openId.mode}");
           if (openId.data["openid.claimed_id"] == null) {
             throw Exception("No claimed_id query param in URI");
           }
@@ -100,7 +100,7 @@ class _AccountCreationState extends State<AccountCreation> {
           }
           var apiResponse = await http.get(getUri("/auth/getBIDFromSteamId/$steamId"));
           if (apiResponse.statusCode < 200 || apiResponse.statusCode > 299) {
-            throw Exception("Api responded with error");
+            throw Exception("Api responded with error code : ${apiResponse.statusCode}; message: ${apiResponse.body}");
           }
           var accountData = jsonDecode(apiResponse.body);
           var result = {
@@ -121,7 +121,7 @@ class _AccountCreationState extends State<AccountCreation> {
                     (item) => item["platformId"] == result["platformId"]);
             _err = null;
           });
-        } catch(e){
+        } catch(e,s){
           showInfoDropdown(
             context,
             kRed,
@@ -137,6 +137,7 @@ class _AccountCreationState extends State<AccountCreation> {
             column: true,
             timeShown: 11000
           );
+          FirebaseCrashlytics.instance.recordError(e, s, reason: "AccountCreationState => initState() => steam login handler => try/catch statement, ");
         }
     }).then((value) => print("finished"));
     }
