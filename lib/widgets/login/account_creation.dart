@@ -6,6 +6,7 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+import '../info_dropdown.dart';
 import '../inherited_text_style.dart';
 import '../popup.dart';
 import '../popup_link.dart';
@@ -51,11 +52,7 @@ class _AccountCreationState extends State<AccountCreation> {
         return "Steam (PC)";
     }
   }
-  @override
-  void dispose(){
-    super.dispose();
-    print("test");
-  }
+
   @override
   void initState(){
     super.initState();
@@ -69,49 +66,76 @@ class _AccountCreationState extends State<AccountCreation> {
 
     if(widget.steamLoginUri != null) {
       Future.delayed(const Duration(milliseconds: 0),() async {
-      String oldAccounts = await getNonNullSSData("accountsSave");
-      String isEditingAccount = await getNonNullSSData("isEditingAccount");
-      await secureStorage.delete(key: "accountsSave");
-      await secureStorage.delete(key: "isEditingAccount");
-      if(isEditingAccount == "true") {
-        setState((){
-          alreadyCreatedAccount = true;
-        });
-        }
-        if (oldAccounts != "no data") {
-        accounts = jsonDecode(oldAccounts);
-        for (int i = 0; i< accounts.length; i++){
-          listKey.currentState?.insertItem(
-            i,
-          );
-        }
-      }
-      // print(widget.steamLoginUri);
-      var openId = OpenId.fromUri(widget.steamLoginUri as Uri);
-      if (openId.mode == 'id_res') {
-        String? steamId = Uri.tryParse(openId.data["openid.claimed_id"] as String)?.pathSegments.last; //TODO: handle nullability
-        print(steamId);
-        if(steamId == null) return "no data";
-        var apiResponse = await http.get(getUri("/auth/getBIDFromSteamId/$steamId"));
-        if(apiResponse.statusCode < 200 || apiResponse.statusCode > 299){
-          print("error");
-          return "no data";
-        }
-        var accountData = jsonDecode(apiResponse.body);
-        setState((){
-          var result = {"BID":accountData["brawlhalla_id"].toString(),"name":accountData["name"],"platformId":"steam","steamId":steamId};
-          _err = null;
+        try {
+          String oldAccounts = await getNonNullSSData("accountsSave");
+          String isEditingAccount = await getNonNullSSData("isEditingAccount");
+          await secureStorage.delete(key: "accountsSave");
+          await secureStorage.delete(key: "isEditingAccount");
+          if (isEditingAccount == "true") {
+            setState(() {
+              alreadyCreatedAccount = true;
+            });
+          }
+          if (oldAccounts != "no data") {
+            accounts = jsonDecode(oldAccounts);
+            for (int i = 0; i < accounts.length; i++) {
+              listKey.currentState?.insertItem(
+                i,
+              );
+            }
+          }
+          var openId = OpenId.fromUri(widget.steamLoginUri as Uri);
+          if (openId.mode != 'id_res') throw Exception("OpenID mode is not id_res");
+          if (openId.data["openid.claimed_id"] == null) {
+            throw Exception("No claimed_id query param in URI");
+          }
+          String? steamId = Uri
+              .tryParse(openId.data["openid.claimed_id"] as String)
+              ?.pathSegments
+              .last;
+          if (steamId == null) {
+            throw Exception("No steamID found in query param 'claimed_id'");
+          }
+          var apiResponse = await http.get(getUri("/auth/getBIDFromSteamId/$steamId"));
+          if (apiResponse.statusCode < 200 || apiResponse.statusCode > 299) {
+            throw Exception("Api responded with error");
+          }
+          var accountData = jsonDecode(apiResponse.body);
+          var result = {
+            "BID": accountData["brawlhalla_id"].toString(),
+            "name": accountData["name"],
+            "platformId": "steam",
+            "steamId": steamId
+          };
           listKey.currentState?.insertItem(
             accounts.length,
           );
-          accounts.add(result);
-          if (result["steamId"] != null) {
-            steamId = result["steamId"];
-          }
-          items.removeWhere(
-                  (item) => item["platformId"] == result["platformId"]);
-        });
-      }
+          setState(() {
+            accounts.add(result);
+            if (result["steamId"] != null) {
+              steamId = result["steamId"];
+            }
+            items.removeWhere(
+                    (item) => item["platformId"] == result["platformId"]);
+            _err = null;
+          });
+        } catch(e){
+          showInfoDropdown(
+            context,
+            kRed,
+            "Error:",
+            body: Text(
+              "Error retrieving steam account details, please try again later.  \nIf the error persists, please contact support at contact@winhalla.app",
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText2
+                  ?.merge(InheritedTextStyle.of(context).kBodyText4),
+            ),
+            fontSize: 25,
+            column: true,
+            timeShown: 11000
+          );
+        }
     }).then((value) => print("finished"));
     }
   }
@@ -119,7 +143,7 @@ class _AccountCreationState extends State<AccountCreation> {
   @override
   Widget build(BuildContext context) {
     if (widget.accounts != null && alreadyCreatedAccount == false) {
-      accounts = widget.accounts;
+      accounts = List.from(widget.accounts);
       for (int i = 0; i < accounts.length; i++) {
         for (int ii = 0; ii < items.length; ii++) {
           var element = items[ii];
@@ -298,7 +322,7 @@ class _AccountCreationState extends State<AccountCreation> {
                             child: Text(
                           "Error: " + (_err as String),
                           style: InheritedTextStyle.of(context)
-                              .kBodyText4
+                              .kBodyText3
                               .apply(color: kRed),
                         ))
                       ],
@@ -414,17 +438,17 @@ class _AccountCreationState extends State<AccountCreation> {
                                   alreadyCreatedAccount ? "Save" : "Finish",
                                   style: InheritedTextStyle.of(context)
                                       .kBodyText2
-                                      .apply(color: kGreen),
+                                      .apply(color: accounts.isEmpty ? kGray : kGreen),
                                 ),
                               ),
                               const SizedBox(
                                 width: 6,
                               ),
-                              const Padding(
-                                padding: EdgeInsets.only(bottom: 4.75),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 4.75),
                                 child: Icon(
                                   Icons.check,
-                                  color: kGreen,
+                                  color: accounts.isEmpty ? kGray : kGreen,
                                   size: 30,
                                 ),
                               ),
