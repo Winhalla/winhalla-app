@@ -3,15 +3,16 @@ import 'dart:isolate';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
+import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
-import 'package:intl/intl.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:rive/rive.dart' as Rive;
+import 'package:steam_login/steam_login.dart';
 import 'package:winhalla_app/screens/contact.dart';
 import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
@@ -19,18 +20,16 @@ import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
+import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
-import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+import 'package:winhalla_app/utils/launch_url.dart';
 import 'package:winhalla_app/utils/tutorial_controller.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:provider/provider.dart';
-import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
-import 'package:winhalla_app/widgets/popup_leave_match.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
-import 'package:winhalla_app/widgets/popups/popup_ad.dart';
 import 'config/themes/dark_theme.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -109,22 +108,40 @@ class MyApp extends StatelessWidget {
           fontSize: 18.25.sp > 20 ? 20 : 18.25.sp,
           fontFamily: "Bebas neue",
         ),
-
-        child: MaterialApp(
-          title: 'Winhalla',
-          theme: ThemeData(fontFamily: "Bebas Neue"),
-          debugShowCheckedModeBanner: false,
-          // Start the app with the "/" named route. In this case, the app starts
-          // on the FirstScreen widget.
-          initialRoute: '/',
-          routes: {
-            '/': (context) => SafeArea(
-                  child: FutureBuilder(
-                      future: initUser(context),
-                      builder: (context, AsyncSnapshot<dynamic> res) {
-                        if (!res.hasData) {
-                          return const AppCore(isUserDataLoaded: false);
-                        }
+        child:  MaterialApp(
+            title: 'Winhalla',
+            theme: ThemeData(fontFamily: "Bebas Neue"),
+            debugShowCheckedModeBanner: false,
+            // Start the app with the "/" named route. In this case, the app starts
+            // on the FirstScreen widget.
+            initialRoute: '/',
+            onGenerateRoute: (RouteSettings settings) {
+              Uri? uri = Uri.tryParse(apiUrl + (settings.name ?? "/"));
+              if(uri != null && uri.path == "/auth/steamCallback" && uri.queryParameters.isNotEmpty){
+                // Navigator.of(context).pop();
+                return MaterialPageRoute(
+                    builder: (_)=> SafeArea(child: LoginPage(stepOverride: 2, steamLoginUri: uri))
+                );
+              }
+              switch (settings.name) {
+                case "/contact":
+                  return MaterialPageRoute(
+                    builder: (context) {
+                      return const SafeArea(child: ContactPage());
+                    }
+                  );
+                case "/login":
+                  return MaterialPageRoute(
+                    builder: (_)=> SafeArea(child: LoginPage())
+                  );
+                case "/":
+                  return MaterialPageRoute(builder: (_)=> SafeArea(
+                    child: FutureBuilder(
+                        future: initUser(context),
+                        builder: (context, AsyncSnapshot<dynamic> res) {
+                          if (!res.hasData) {
+                            return const AppCore(isUserDataLoaded: false);
+                          }
 
                         if (res.data == "no data" || res.data["data"] == "" || res.data["data"] == null) {
                           return LoginPage(userData: res.data);
@@ -134,9 +151,10 @@ class MyApp extends StatelessWidget {
                           return LoginPage(userData: res.data);
                         }
 
-                        // Do not edit res.data directly otherwise it calls the build function again for some reason
-                        Map<String, dynamic> newData = res.data as Map<String, dynamic>;
-                        var callApi = res.data["callApi"];
+                          // Do not edit res.data directly otherwise it calls the build function again for some reason
+                          Map<String, dynamic> newData =
+                          res.data as Map<String, dynamic>;
+                          var callApi = res.data["callApi"];
 
                         newData["callApi"] = null;
                         newData["user"] = res.data["data"]["user"];
@@ -166,17 +184,17 @@ class MyApp extends StatelessWidget {
                         }
 
 
-                        return ChangeNotifierProvider<User>(
-                            create: (_) => User(newData, callApi, keys, inGame, res.data["oldDailyChallengeData"]),
-                            child: AppCore(
-                              isUserDataLoaded: true,
-                              tutorial: newData["tutorial"],
-                            ));
-                      }),
-                ),
-            '/login': (context) => SafeArea(child: LoginPage()),
-            '/contact': (context) => const SafeArea(child: ContactPage()),
-          },
+                          return ChangeNotifierProvider<User>(
+                              create: (_) => User(newData, callApi, keys,
+                                  inGame, res.data["oldDailyChallengeData"]),
+                              child: AppCore(
+                                isUserDataLoaded: true,
+                                tutorial: newData["tutorial"],
+                              ));
+                        }),
+                  ));
+              }
+            },
         ),
       );
     });

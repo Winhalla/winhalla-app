@@ -9,7 +9,7 @@ import 'package:winhalla_app/utils/custom_http.dart';
 // import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
-import 'package:winhalla_app/utils/steam.dart';
+import 'package:winhalla_app/utils/steam.dart.old';
 
 import 'inherited_text_style.dart';
 RegExp emailChecker = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");

@@ -37,7 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   provider: ^6.0.0
   http: ^0.13.3
-  flutter_webview_plugin: ^0.4.0
+#  flutter_webview_plugin: ^0.4.0
   steam_login: ^1.1.0
   google_sign_in: ^5.2.1 #"^4.5.1"
   rive: ^0.7.31
@@ -53,6 +53,7 @@ dependencies:
   intl: ^0.17.0
   flutter_applovin_max: ^2.1.1
   firebase_remote_config: ^2.0.2
+  flutter_custom_tabs: ^1.0.4
 
 #dependency_overrides:
 #  firebase_remote_config_platform_interface: 1.0.5
