@@ -282,7 +282,7 @@ Widget PopupWidget(
       actionsPadding: const EdgeInsets.symmetric(horizontal: 13),
       actions: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: step == "confirmSteamRedirect" ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
           children: [
             if (step == "platformSelection")
               TextButton(
@@ -312,17 +312,20 @@ Widget PopupWidget(
                   children: [
                     Text(
                       step == "confirmSteamRedirect" ? "Cancel" : "No",
-                      style: InheritedTextStyle.of(context).kBodyText2.apply(color: step == "confirmSteamRedirect" ? kGray : kRed),
+                      style: InheritedTextStyle.of(context).kBodyText2.apply(
+                        color: step == "confirmSteamRedirect" ? kGray : kRed,
+                        fontSizeFactor: step == "confirmSteamRedirect" ? 0.8 : 1
+                      ),
                     ),
                     const SizedBox(
-                      width: 5,
+                      width: 3,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 3.0),
+                      padding: EdgeInsets.only(bottom: step == "confirmSteamRedirect" ? 0 : 3.0, top: step == "confirmSteamRedirect" ? 1:0),
                       child: Icon(
                         Icons.clear_outlined,
                         color: step == "confirmSteamRedirect" ? kGray : kRed,
-                        size: 30,
+                        size: step == "confirmSteamRedirect" ? 20 : 30,
                       ),
                     ),
                   ],
