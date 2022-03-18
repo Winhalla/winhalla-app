@@ -34,7 +34,6 @@ void main() async {
   await Firebase.initializeApp();
   FirebaseMessaging.onBackgroundMessage(firebaseBackgroundNotifications);
   FirebaseMessaging.onMessage.listen(firebaseForegroundNotifications);
-  print(await FirebaseMessaging.instance.getToken());
   FirebaseRemoteConfig frc = FirebaseRemoteConfig.instance;
   frc.setDefaults(<String, dynamic>{
     'isAdButtonActivated': false,

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -392,7 +393,8 @@ Future<dynamic> initUser(context) async {
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
   CallApi caller = CallApi(authKey: storageKey, context: context);
-  var data = await caller.get("/account?apple=${Platform.isIOS}");
+
+  var data = await caller.get("/account?apple=${Platform.isIOS}&notificationTokenId=${await FirebaseMessaging.instance.getToken()}");
   if (data["successful"] == false) {
     return null;
   }
