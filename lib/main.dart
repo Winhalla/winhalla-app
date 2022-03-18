@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ import 'package:winhalla_app/screens/shop.dart';
 import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/launch_url.dart';
+import 'package:winhalla_app/utils/services/firebase_notifications.dart';
 import 'package:winhalla_app/utils/tutorial_controller.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
@@ -29,17 +31,19 @@ import 'package:intl/date_symbol_data_local.dart';
 void main() async {
   runApp(const MyApp());
   initializeDateFormatting(Platform.localeName);
-  Firebase.initializeApp().then((value) {
-    FirebaseRemoteConfig frc = FirebaseRemoteConfig.instance;
-    frc.setDefaults(<String, dynamic>{
-      'isAdButtonActivated': false,
-    });
-    frc.setConfigSettings(RemoteConfigSettings(
-      fetchTimeout: const Duration(seconds: 60),
-      minimumFetchInterval: const Duration(minutes: 15),
-    ));
-    frc.fetchAndActivate();
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(firebaseBackgroundNotifications);
+  FirebaseMessaging.onMessage.listen(firebaseForegroundNotifications);
+  print(await FirebaseMessaging.instance.getToken());
+  FirebaseRemoteConfig frc = FirebaseRemoteConfig.instance;
+  frc.setDefaults(<String, dynamic>{
+    'isAdButtonActivated': false,
   });
+  frc.setConfigSettings(RemoteConfigSettings(
+    fetchTimeout: const Duration(seconds: 60),
+    minimumFetchInterval: const Duration(minutes: 15),
+  ));
+  frc.fetchAndActivate();
 }
 
 class MyApp extends StatelessWidget {
