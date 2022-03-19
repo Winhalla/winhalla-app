@@ -14,6 +14,7 @@ import 'package:winhalla_app/screens/home.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
+import 'package:winhalla_app/utils/build_app_controller.dart';
 import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/launch_url.dart';
@@ -29,11 +30,27 @@ import 'config/themes/dark_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
-  runApp(const MyApp());
+  GlobalKey<NavigatorState> navKey = GlobalKey();
+  runApp(MyApp(navKey: navKey));
+
   initializeDateFormatting(Platform.localeName);
   await Firebase.initializeApp();
-  FirebaseMessaging.onBackgroundMessage(firebaseBackgroundNotifications);
-  FirebaseMessaging.onMessage.listen(firebaseForegroundNotifications);
+  // -------------- Firebase messaging -------------
+  FirebaseMessaging.onBackgroundMessage(firebaseNotifications);
+  FirebaseMessaging.onMessage.listen(firebaseNotifications);
+  void handleMessage(RemoteMessage message) async {
+    print("onMessageOpenedApp: $message");
+    if(navKey.currentContext != null) {
+      Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(message.data["route"],(route) => false,);
+    }
+  }
+  FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+  RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+  if (initialMessage != null) {
+    handleMessage(initialMessage);
+  }
+
+  // -------------- Firebase Remote config -------------
   FirebaseRemoteConfig frc = FirebaseRemoteConfig.instance;
   frc.setDefaults(<String, dynamic>{
     'isAdButtonActivated': false,
@@ -46,7 +63,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final GlobalKey<NavigatorState> navKey;
+  const MyApp({Key? key, required this.navKey}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -88,6 +106,7 @@ class MyApp extends StatelessWidget {
               fontFamily: "Bebas neue",
         ),
         child:  MaterialApp(
+          navigatorKey: navKey,
             title: 'Winhalla',
             theme: ThemeData(fontFamily: "Bebas Neue"),
             debugShowCheckedModeBanner: false,
@@ -95,12 +114,23 @@ class MyApp extends StatelessWidget {
             // on the FirstScreen widget.
             initialRoute: '/',
             onGenerateRoute: (RouteSettings settings) {
+
               Uri? uri = Uri.tryParse(apiUrl + (settings.name ?? "/"));
               if(uri != null && uri.path == "/auth/steamCallback" && uri.queryParameters.isNotEmpty){
                 // Navigator.of(context).pop();
                 return MaterialPageRoute(
                     builder: (_)=> SafeArea(child: LoginPage(stepOverride: 2, steamLoginUri: uri))
                 );
+              }
+
+
+              print(uri?.queryParameters);
+              if(uri != null && uri.path.contains("/home")){
+                int pageNb = 0;
+                if(uri.queryParameters["page"] != null){
+                  pageNb = int.tryParse(uri.queryParameters["page"] as String) ?? 0;
+                }
+                return buildAppController(pageNb);
               }
               switch (settings.name) {
                 case "/contact":
@@ -114,73 +144,7 @@ class MyApp extends StatelessWidget {
                     builder: (_)=> SafeArea(child: LoginPage())
                   );
                 case "/":
-                  return MaterialPageRoute(builder: (_)=> SafeArea(
-                    child: FutureBuilder(
-                        future: initUser(context),
-                        builder: (context, AsyncSnapshot<dynamic> res) {
-                          if (!res.hasData) {
-                            return const AppCore(isUserDataLoaded: false);
-                          }
-
-                          if (res.data == "no data" ||
-                              res.data["data"] == "" ||
-                              res.data["data"] == null) {
-                            return LoginPage(userData: res.data);
-                          }
-
-                          if (res.data["data"]["user"] == null) {
-                            return LoginPage(userData: res.data);
-                          }
-
-                          // Do not edit res.data directly otherwise it calls the build function again for some reason
-                          Map<String, dynamic> newData =
-                          res.data as Map<String, dynamic>;
-                          var callApi = res.data["callApi"];
-
-                          newData["callApi"] = null;
-                          newData["user"] = res.data["data"]["user"];
-                          newData["steam"] = res.data["data"]["steam"];
-                          newData["informations"] = res.data["data"]["informations"];
-                          newData["tutorial"] = res.data["tutorial"];
-
-                          List<GlobalKey?> keys = [];
-                          for (int i = 0; i < 17; i++) {
-                            if (i == 0 ||
-                                i == 4 ||
-                                i == 5 ||
-                                i == 10 ||
-                                i == 11 ||
-                                i == 16) {
-                              keys.add(null);
-                            } else {
-                              keys.add(GlobalKey());
-                            }
-                          }
-                          var inGameData = newData["user"]["inGame"];
-                          var currentMatch = inGameData
-                              .where((g) => g["isFinished"] == false)
-                              .toList();
-
-                          var inGame = null;
-                          if (currentMatch.length > 0) {
-                            inGame = {
-                              'id': currentMatch[0]["id"],
-                              'joinDate': currentMatch[0]["joinDate"]
-                            };
-                          }
-                          /*Future.delayed(const Duration(seconds: 5),(){
-                            FlutterApplovinMax.showMediationDebugger();
-                          });*/
-
-                          return ChangeNotifierProvider<User>(
-                              create: (_) => User(newData, callApi, keys,
-                                  inGame, res.data["oldDailyChallengeData"]),
-                              child: AppCore(
-                                isUserDataLoaded: true,
-                                tutorial: newData["tutorial"],
-                              ));
-                        }),
-                  ));
+                  return buildAppController(0);
               }
             },
         ),
@@ -192,8 +156,9 @@ class MyApp extends StatelessWidget {
 class AppCore extends StatefulWidget {
   final bool isUserDataLoaded;
   final tutorial;
+  final int startIndex;
 
-  const AppCore({Key? key, required this.isUserDataLoaded, this.tutorial})
+  const AppCore({Key? key, required this.isUserDataLoaded, this.tutorial, this.startIndex = 0})
       : super(key: key);
 
   @override
@@ -215,6 +180,7 @@ class _AppCoreState extends State<AppCore> {
 
   @override
   void initState() {
+    _selectedIndex = widget.startIndex;
     screenList = [
       MyHomePage(
         switchPage: switchPage,

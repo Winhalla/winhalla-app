@@ -15,35 +15,6 @@ import 'package:winhalla_app/widgets/quest_widget.dart';
 class Quests extends StatelessWidget {
   const Quests({Key? key}) : super(key: key);
 
-  Color _getColorFromPrice(price, type) {
-    if (type == "daily") {
-      switch (price) {
-        case 10:
-          return kPrimary;
-        case 20:
-          return kEpic;
-        case 30:
-          return kRed;
-        default:
-          return kPrimary;
-      }
-    } else {
-      switch (price) {
-        case 50:
-          return kPrimary;
-        case 100:
-          return kEpic;
-        case 200:
-          return kRed;
-        default:
-          return kPrimary;
-      }
-    }
-  }
-
-/*
-
-*/
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -74,7 +45,7 @@ class Quests extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Padding(
-                        padding: EdgeInsets.fromLTRB(6.0, 3, 0, 0),
+                        padding: const EdgeInsets.fromLTRB(6.0, 3, 0, 0),
                         child: Text('Daily', style: InheritedTextStyle.of(context).kHeadline1),
                       ),
                       Consumer<User>(builder: (context, user, _) {
@@ -335,5 +306,31 @@ class Quests extends StatelessWidget {
             ),
           );
         });
+  }
+}
+
+Color _getColorFromPrice(price, type) {
+  if (type == "daily") {
+    switch (price) {
+      case 10:
+        return kPrimary;
+      case 20:
+        return kEpic;
+      case 30:
+        return kRed;
+      default:
+        return kPrimary;
+    }
+  } else {
+    switch (price) {
+      case 50:
+        return kPrimary;
+      case 100:
+        return kEpic;
+      case 200:
+        return kRed;
+      default:
+        return kPrimary;
+    }
   }
 }
