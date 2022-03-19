@@ -192,9 +192,9 @@ class _MyAppBarState extends State<MyAppBar> {
                                   GestureDetector(
                                     behavior: HitTestBehavior.translucent,
                                     onTap: () async {
+                                      await GoogleSignInApi.logout();
                                       await secureStorage.write(
                                           key: "authKey", value: null);
-                                      await GoogleSignInApi.logout();
                                       Navigator.pushReplacementNamed(
                                           context, "/login");
                                       overlayEntry.remove();

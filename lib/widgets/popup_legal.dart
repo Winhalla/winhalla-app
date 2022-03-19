@@ -103,8 +103,8 @@ Widget LegalInfoPopup(){
                 onTap: () async {
                   var status = await http.delete(getUri("/auth/deleteAccount"), headers: {"authorization": await getNonNullSSData("authKey")});
                   if(status.statusCode >= 200 && status.statusCode <= 299){
-                    await secureStorage.write(key: "authKey", value: null);
                     await GoogleSignInApi.logout();
+                    await secureStorage.write(key: "authKey", value: null);
                     Navigator.pushReplacementNamed(context, "/login");
                   }
                 },
