@@ -41,7 +41,10 @@ void main() async {
   void handleMessage(RemoteMessage message) async {
     print("onMessageOpenedApp: $message");
     if(navKey.currentContext != null) {
-      Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(message.data["route"],(route) => false,);
+      Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(
+          message.data["route"],
+              (route) => false,
+          arguments: message.data);
     }
   }
   FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
@@ -53,7 +56,7 @@ void main() async {
   // -------------- Firebase Remote config -------------
   FirebaseRemoteConfig frc = FirebaseRemoteConfig.instance;
   frc.setDefaults(<String, dynamic>{
-    'isAdButtonActivated': false,
+    'isAdButtonActivated': true,
   });
   frc.setConfigSettings(RemoteConfigSettings(
     fetchTimeout: const Duration(seconds: 60),
@@ -119,6 +122,7 @@ class MyApp extends StatelessWidget {
               if(uri != null && uri.path == "/auth/steamCallback" && uri.queryParameters.isNotEmpty){
                 // Navigator.of(context).pop();
                 return MaterialPageRoute(
+                    settings: settings,
                     builder: (_)=> SafeArea(child: LoginPage(stepOverride: 2, steamLoginUri: uri))
                 );
               }
@@ -130,21 +134,23 @@ class MyApp extends StatelessWidget {
                 if(uri.queryParameters["page"] != null){
                   pageNb = int.tryParse(uri.queryParameters["page"] as String) ?? 0;
                 }
-                return buildAppController(pageNb);
+                return buildAppController(pageNb, settings);
               }
               switch (settings.name) {
                 case "/contact":
                   return MaterialPageRoute(
+                      settings: settings,
                     builder: (context) {
                       return const SafeArea(child: ContactPage());
                     }
                   );
                 case "/login":
                   return MaterialPageRoute(
+                      settings: settings,
                     builder: (_)=> SafeArea(child: LoginPage())
                   );
                 case "/":
-                  return buildAppController(0);
+                  return buildAppController(0, settings);
               }
             },
         ),
