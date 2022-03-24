@@ -5,8 +5,10 @@ import 'package:winhalla_app/utils/user_class.dart';
 import '../main.dart';
 import '../screens/login.dart';
 
-MaterialPageRoute buildAppController(int startIndex){
-  return MaterialPageRoute(builder: (context)=> SafeArea(
+MaterialPageRoute buildAppController(int startIndex, RouteSettings settings){
+  return MaterialPageRoute(
+      settings: settings,
+      builder: (context)=> SafeArea(
     child: FutureBuilder(
         future: initUser(context),
         builder: (context, AsyncSnapshot<dynamic> res) {
