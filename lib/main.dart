@@ -5,6 +5,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:rive/rive.dart' as Rive;
@@ -29,11 +30,20 @@ import 'package:winhalla_app/widgets/popup_link.dart';
 import 'config/themes/dark_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
+const MethodChannel _channel = MethodChannel('winhalla.app/methodChannel');
 void main() async {
   GlobalKey<NavigatorState> navKey = GlobalKey();
   runApp(MyApp(navKey: navKey));
-
   initializeDateFormatting(Platform.localeName);
+
+
+  for (int i = 0; i < notificationChannelsMaps.length; i++){
+    if(i == notificationChannelsMaps.length - 1){
+      await _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e)=>print(e));
+    } else {
+      _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e)=>print(e));
+    }
+  }
   await Firebase.initializeApp();
   // -------------- Firebase messaging -------------
   FirebaseMessaging.onBackgroundMessage(firebaseNotifications);
@@ -71,6 +81,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return ResponsiveSizer(builder: (context, orientation, screenType) {
       return InheritedTextStyle(
         kHeadline0: TextStyle(color: kText, fontSize: 33.sp > 60 ? 60 : 33.sp),
@@ -549,3 +560,6 @@ Scaffold(
     ),
   ),
 ),*/
+void createNotificationChannel(){
+
+}
