@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
@@ -287,5 +288,10 @@ class GoogleSignInApi {
     return {"account": test, "auth": ggAuth};
   }
 
-  static Future logout() => _googleSignIn.signOut();
+  static Future logout() async {
+    _googleSignIn.signOut();
+    String? notifToken = await FirebaseMessaging.instance.getToken();
+    if(notifToken == null) return;
+    await http.post(Uri.parse(apiUrl+'/deleteNotificationToken/'+notifToken), headers: {"authorization": await getNonNullSSData("authKey")});
+  }
 }

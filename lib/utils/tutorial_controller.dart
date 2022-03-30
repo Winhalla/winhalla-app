@@ -288,6 +288,7 @@ class Tutorial extends ChangeNotifier{
   bool nextButtonEnabled = true;
   int status = 0;
   int? nextStatus;
+  bool _isLoadingNextStep = false;
 
   void calculateNextValues(){
     currentTextWidget = tutorials[status]["widget"];
@@ -297,6 +298,13 @@ class Tutorial extends ChangeNotifier{
   }
 
   void next(){
+    if(_isLoadingNextStep == true){
+      print("test");
+      return;
+    }
+
+    _isLoadingNextStep = true;
+
     status ++;
     if(nextStatus != null){
       status = nextStatus as int;
@@ -309,6 +317,11 @@ class Tutorial extends ChangeNotifier{
     }
     calculateNextValues();
     notifyListeners();
+
+    Future.delayed(const Duration(milliseconds: 250), (){
+      _isLoadingNextStep = false;
+      print("setFalse");
+    });
   }
 
   void previous(){
@@ -676,7 +689,7 @@ class Tutorial extends ChangeNotifier{
           ),
         ),
         "controlButtonsEnabled":{
-          "back":true,
+          "back":false,
           "next":true
         },
       }, {

@@ -45,7 +45,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
 
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 3000),
+      duration: const Duration(milliseconds: 3000),
     );
 
     double beginValue = 0;
@@ -61,7 +61,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
   @override
   void didUpdateWidget(QuestWidget oldWidget) {
     _animationController.reset();
-    _animationController.forward();
+    if(mounted) _animationController.forward();
 
     double beginValue = 0;
     if (widget.oldProgress == widget.progress) beginValue = 1;
@@ -83,7 +83,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance?.addPostFrameCallback((_){
-      _animationController.forward();
+      if(mounted) _animationController.forward();
     });
     return Container(
       decoration: BoxDecoration(

@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:steam_login/steam_login.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/custom_http.dart';
+
 // import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/launch_url.dart';
@@ -12,38 +13,30 @@ import 'package:flutter_custom_tabs/flutter_custom_tabs.dart' as customTabs;
 
 import 'inherited_text_style.dart';
 
-Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
+Widget PopupWidget(
+  BuildContext context,
+  List<Map<String, String>> items,
+) {
   final bidTextController = TextEditingController();
   String _chosenValue = items[0]["platformId"] as String;
   String step = "platformSelection";
   bool _loading = false;
   String? _error;
-  dynamic accountData = {"data":{"level":2}};
-
+  dynamic accountData = {
+    "data": {"level": 2}
+  };
 
   return StatefulBuilder(builder: (context, setState) {
     void nextStep() async {
-
       if (_chosenValue == "steam" && step == "platformSelection") {
-        Navigator.of(context).pop();
-        var openId = OpenId.raw(
-            apiUrl, apiUrl+"/auth/steamCallback", {"name": "Winhalla"});
-        customTabs.launch(
-            openId.authUrl().toString(),
-            customTabsOption: const customTabs.CustomTabsOption(
-              extraCustomTabs:  [
-                'org.mozilla.firefox',
-                'com.microsoft.emmx'
-              ], // If chrome is not available, default to other providers
-            )
-        );
+        setState((){
+          step = "confirmSteamRedirect";
+        });
       } else if (step == "platformSelection") {
         setState(() {
           step = "enterBid";
         });
-      }
-
-      else if(step == "enterBid") {
+      } else if (step == "enterBid") {
         if (_loading == true) return;
         setState(() {
           _loading = true;
@@ -55,8 +48,7 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
           });
           return;
         }
-        accountData =
-            (await http.get(getUri("/auth/isBIDValid/${bidTextController.text.replaceAll(' ', '')}"))).body;
+        accountData = (await http.get(getUri("/auth/isBIDValid/${bidTextController.text.replaceAll(' ', '')}"))).body;
         accountData = jsonDecode(accountData);
         if (accountData["isValid"] == false) {
           _loading = false;
@@ -68,24 +60,30 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
         setState(() {
           step = "confirmAccount";
         });
+      } else if (step == "confirmSteamRedirect"){
+        Navigator.of(context).pop();
+        var openId = OpenId.raw(apiUrl, apiUrl + "/auth/steamCallback", {"name": "Winhalla"});
+        customTabs.launch(openId.authUrl().toString(),
+            customTabsOption: const customTabs.CustomTabsOption(
+              extraCustomTabs: [
+                'org.mozilla.firefox',
+                'com.microsoft.emmx'
+              ], // If chrome is not available, default to other providers
+            ));
       }
     }
 
     void createAccount() async {
-      Navigator.pop(context,
-          {"BID": bidTextController.text, "name": accountData["data"]["name"], "platformId": _chosenValue});
+      Navigator.pop(
+          context, {"BID": bidTextController.text, "name": accountData["data"]["name"], "platformId": _chosenValue});
     }
 
-
-
     return AlertDialog(
-
       titlePadding: const EdgeInsets.only(top: 26, left: 30),
       title: Text(
-        step == "platformSelection" ? 'Select a platform' : "Brawlhalla Id",
+        step == "platformSelection" ? 'Select a platform' : step == "confirmSteamRedirect" ? "Redirecting..." : "Brawlhalla Id",
         style: InheritedTextStyle.of(context).kBodyText1,
       ),
-
       contentPadding: const EdgeInsets.fromLTRB(28, 16, 28, 8),
       content: step == "platformSelection"
           ? Container(
@@ -109,7 +107,6 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                   elevation: 0,
                   value: _chosenValue,
 
-
                   items: items.map<DropdownMenuItem<String>>((
                     Map<String, String> value,
                   ) {
@@ -120,7 +117,6 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                         padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
                         decoration: BoxDecoration(
                             color: kBackground,
-
                             borderRadius: value["platformId"] == items[0]["platformId"]
                                 ? const BorderRadius.only(topLeft: Radius.circular(15), topRight: Radius.circular(15))
                                 : value["platformId"] == items[items.length - 1]["platformId"]
@@ -158,115 +154,137 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                     );
                   }).toList(),
                   underline: Container(), // Empty widget to remove underline
-              ),
-          ))
-          : step == "enterBid"? Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), color: kBackground),
-                  padding: const EdgeInsets.fromLTRB(20, 7, 20, 7),
-                  child: TextField(
-                    keyboardType: TextInputType.phone,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly
-                    ],
-                    controller: bidTextController,
-                    style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.9,color: kText80),
-                    decoration: InputDecoration(
-                        suffixIconConstraints: const BoxConstraints(maxHeight: 37, maxWidth: 35),
-                        suffixIcon: _loading
-                            ? const Padding(
-                                padding: EdgeInsets.fromLTRB(10, 6, 0, 6),
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 3,
-                                ),
-                              )
-                            : _error != null
+                ),
+              ))
+          : step == "enterBid"
+              ? Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(12), color: kBackground),
+                      padding: const EdgeInsets.fromLTRB(20, 7, 20, 7),
+                      child: TextField(
+                        keyboardType: TextInputType.phone,
+                        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                        controller: bidTextController,
+                        style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.9, color: kText80),
+                        decoration: InputDecoration(
+                            suffixIconConstraints: const BoxConstraints(maxHeight: 37, maxWidth: 35),
+                            suffixIcon: _loading
                                 ? const Padding(
-                                    padding: EdgeInsets.only(left: 4.0),
-                                    child: Icon(
-                                      Icons.clear_outlined,
-                                      color: kRed,
-                                      size: 34,
+                                    padding: EdgeInsets.fromLTRB(10, 6, 0, 6),
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 3,
                                     ),
                                   )
-                                : null,
-                        border: InputBorder.none,
-                        hintText: 'Type your Brawlhalla ID here',
-                        hintStyle: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.85,color: kText80)
+                                : _error != null
+                                    ? const Padding(
+                                        padding: EdgeInsets.only(left: 4.0),
+                                        child: Icon(
+                                          Icons.clear_outlined,
+                                          color: kRed,
+                                          size: 34,
+                                        ),
+                                      )
+                                    : null,
+                            border: InputBorder.none,
+                            hintText: 'Type your Brawlhalla ID here',
+                            hintStyle:
+                                InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.85, color: kText80)),
+                      ),
                     ),
-                  ),
-                ),
-                if (_error != null)
-                  const SizedBox(
-                    height: 7,
-                  ),
-                if (_error != null)
-                  Padding(
-                    padding: const EdgeInsets.only(left: 20),
-                    child: Text(
-                      _error as String,
-                      style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.8,color: kRed),
+                    if (_error != null)
+                      const SizedBox(
+                        height: 7,
+                      ),
+                    if (_error != null)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 20),
+                        child: Text(
+                          _error as String,
+                          style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.8, color: kRed),
+                        ),
+                      ),
+                    SizedBox(
+                      height: _error == null ? 34 : 20,
                     ),
-                  ),
-                SizedBox(
-                  height: _error == null ? 34 : 20,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 10, left: 0),
-                  child: Text(
-                    "Find your Brawlhalla ID in the top right corner of your inventory:",
-                    style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.75,color: kText80),
-                  ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                Flexible(
-                  child: ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.asset(
-                        "assets/images/bidHelper.png",
-                      )),
-                ),
-              ],
-          ):  Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("We found this account:",style: InheritedTextStyle.of(context).kBodyText3.apply(color: kText80),),
-                  const SizedBox(height: 10,),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: Row(
+                    Padding(
+                      padding: const EdgeInsets.only(right: 10, left: 0),
+                      child: Text(
+                        "Find your Brawlhalla ID in the top right corner of your inventory:",
+                        style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.75, color: kText80),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Flexible(
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(15),
+                          child: Image.asset(
+                            "assets/images/bidHelper.png",
+                          )),
+                    ),
+                  ],
+                )
+              : step == "confirmAccount"
+                  ? Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "We found this account:",
+                          style: InheritedTextStyle.of(context).kBodyText3.apply(color: kText80),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: Row(
                             children: [
-                              Text("Name: ",style: InheritedTextStyle.of(context).kBodyText3,),
-                              Text(accountData["data"]["name"].toString(), style: InheritedTextStyle.of(context).kBodyText3.apply(color: kPrimary))
+                              Text(
+                                "Name: ",
+                                style: InheritedTextStyle.of(context).kBodyText3,
+                              ),
+                              Text(accountData["data"]["name"].toString(),
+                                  style: InheritedTextStyle.of(context).kBodyText3.apply(color: kPrimary))
                             ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(left: 16.0),
-                    child: Row(
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 16.0),
+                          child: Row(
                             children: [
-                              Text("Level: ",style: InheritedTextStyle.of(context).kBodyText3,),
-                              Text(accountData["data"]["level"].toString(), style: InheritedTextStyle.of(context).kBodyText3.apply(color: kPrimary))
+                              Text(
+                                "Level: ",
+                                style: InheritedTextStyle.of(context).kBodyText3,
+                              ),
+                              Text(accountData["data"]["level"].toString(),
+                                  style: InheritedTextStyle.of(context).kBodyText3.apply(color: kPrimary))
                             ],
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                        Text(
+                          "Is it yours?",
+                          style: InheritedTextStyle.of(context).kBodyText2.apply(color: kPrimary),
+                        ),
+                      ],
+                    )
+                  : Text(
+                      "To link your Brawlhalla Steam account, you will be redirected to Steam's website for login.",
+                      style: InheritedTextStyle.of(context).kBodyText3.apply(color: kText80),
                     ),
-                  ),
-                  const SizedBox(height: 10,),
-                  Text("Is it yours?",style: InheritedTextStyle.of(context).kBodyText2.apply(color: kPrimary),),
-                ],
-              ),
-
-
       actionsPadding: const EdgeInsets.symmetric(horizontal: 13),
-      actions: [Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              if (step == "platformSelection")
+      actions: [
+        Row(
+          mainAxisAlignment: step == "confirmSteamRedirect" ? MainAxisAlignment.spaceBetween : MainAxisAlignment.end,
+          children: [
+            if (step == "platformSelection")
               TextButton(
                 onPressed: () {
                   nextStep();
@@ -276,67 +294,75 @@ Widget PopupWidget(BuildContext context, List<Map<String, String>> items,) {
                   style: InheritedTextStyle.of(context).kBodyText2.apply(color: kPrimary),
                 ),
               ),
-              if (step == "enterBid" || step == "confirmAccount")
-                TextButton(
-                  onPressed: () {
-                    if(step == "enterBid") nextStep();
-                    if(step == "confirmAccount") createAccount();
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        step == "confirmAccount"?"Yes":"Next",
-                        style: InheritedTextStyle.of(context).kBodyText2.apply(color: kGreen),
-                      ),
-                      const SizedBox(
-                        width: 5,
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 5.0),
-                        child: Icon(
-                          Icons.check,
-                          color: kGreen,
-                          size: 30,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              if(step == "confirmAccount") TextButton(
+            if (step == "confirmAccount" || step == "confirmSteamRedirect")
+              TextButton(
                 onPressed: () {
-                  setState((){
-                    bidTextController.text = "";
-                    step = "enterBid";
-                  });
+                  if(step == "confirmAccount"){
+                    setState(() {
+                      bidTextController.text = "";
+                      step = "enterBid";
+                    });
+                  } else {
+                    Navigator.pop(context);
+                  }
                 },
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      "No",
-                      style: InheritedTextStyle.of(context).kBodyText2.apply(color: kRed),
+                      step == "confirmSteamRedirect" ? "Cancel" : "No",
+                      style: InheritedTextStyle.of(context).kBodyText2.apply(
+                        color: step == "confirmSteamRedirect" ? kGray : kRed,
+                        fontSizeFactor: step == "confirmSteamRedirect" ? 0.8 : 1
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 3,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: step == "confirmSteamRedirect" ? 0 : 3.0, top: step == "confirmSteamRedirect" ? 1:0),
+                      child: Icon(
+                        Icons.clear_outlined,
+                        color: step == "confirmSteamRedirect" ? kGray : kRed,
+                        size: step == "confirmSteamRedirect" ? 20 : 30,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (step == "enterBid" || step == "confirmAccount" || step == "confirmSteamRedirect")
+              TextButton(
+                onPressed: () {
+                  if (step == "enterBid" || step == "confirmSteamRedirect") nextStep();
+                  if (step == "confirmAccount") createAccount();
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      step == "confirmAccount" ? "Yes" : step == "confirmSteamRedirect" ? "Ok" : "Next",
+                      style: InheritedTextStyle.of(context).kBodyText2.apply(color: kGreen),
                     ),
                     const SizedBox(
                       width: 5,
                     ),
                     const Padding(
-                      padding: EdgeInsets.only(bottom: 3.0),
+                      padding: EdgeInsets.only(bottom: 5.0),
                       child: Icon(
-                        Icons.clear_outlined,
-                        color: kRed,
+                        Icons.check,
+                        color: kGreen,
                         size: 30,
                       ),
                     ),
                   ],
                 ),
               ),
-            ],
+
+          ],
         ),
       ],
-
       backgroundColor: kBackgroundVariant,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(20.0),

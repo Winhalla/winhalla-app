@@ -6,9 +6,11 @@ import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:rive/rive.dart' as Rive;
@@ -20,9 +22,11 @@ import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
+import 'package:winhalla_app/utils/build_app_controller.dart';
 import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/launch_url.dart';
+import 'package:winhalla_app/utils/services/firebase_notifications.dart';
 import 'package:winhalla_app/utils/tutorial_controller.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
@@ -34,7 +38,8 @@ import 'config/themes/dark_theme.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-void main() {
+const MethodChannel _channel = MethodChannel('winhalla.app/methodChannel');
+void main() async {
   // Non-flutter errors catching
   Isolate.current.addErrorListener(RawReceivePort((pair) async {
     final List<dynamic> errorAndStacktrace = pair;
@@ -43,42 +48,62 @@ void main() {
       errorAndStacktrace.last,
     );
   }).sendPort);
-  initializeDateFormatting(Platform.localeName);
+
   // Flutter errors catching
   runZonedGuarded<Future<void>>(() async {
-      WidgetsFlutterBinding.ensureInitialized();
-      await Firebase.initializeApp();
-      FirebaseRemoteConfig frc = FirebaseRemoteConfig.instance;
-      frc.setDefaults(<String, dynamic>{
-        'isAdButtonActivated': false,
-      });
-      frc.setConfigSettings(RemoteConfigSettings(
-        fetchTimeout: const Duration(seconds: 60),
-        minimumFetchInterval: const Duration(minutes: 15),
-      ));
-      frc.fetchAndActivate();
-      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    WidgetsFlutterBinding.ensureInitialized();
+    GlobalKey<NavigatorState> navKey = GlobalKey();
+    runApp(MyApp(navKey: navKey));
+    initializeDateFormatting(Platform.localeName);
 
-      if (kDebugMode) {
-        // Force disable Crashlytics collection while doing every day development.
-        await FirebaseCrashlytics.instance
-            .setCrashlyticsCollectionEnabled(false);
+
+    for (int i = 0; i < notificationChannelsMaps.length; i++){
+      if(i == notificationChannelsMaps.length - 1){
+        await _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e)=>print(e));
       } else {
-        await FirebaseCrashlytics.instance
-            .setCrashlyticsCollectionEnabled(true);
+        _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e)=>print(e));
       }
+    }
+    await Firebase.initializeApp();
+    // -------------- Firebase messaging -------------
+    FirebaseMessaging.onBackgroundMessage(firebaseNotifications);
+    FirebaseMessaging.onMessage.listen(firebaseNotifications);
+    void handleMessage(RemoteMessage message) async {
+      print("onMessageOpenedApp: $message");
+      if(navKey.currentContext != null) {
+        Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(
+            message.data["route"],
+                (route) => false,
+            arguments: message.data);
+      }
+    }
+    FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      handleMessage(initialMessage);
+    }
 
-      runApp(const MyApp());
-      FirebaseAnalytics.instance.logAppOpen();
-    }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack)
+    // -------------- Firebase Remote config -------------
+    FirebaseRemoteConfig frc = FirebaseRemoteConfig.instance;
+    frc.setDefaults(<String, dynamic>{
+      'isAdButtonActivated': false,
+    });
+    frc.setConfigSettings(RemoteConfigSettings(
+      fetchTimeout: const Duration(seconds: 60),
+      minimumFetchInterval: const Duration(minutes: 15),
+    ));
+    frc.fetchAndActivate();
+  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack)
   );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  final GlobalKey<NavigatorState> navKey;
+  const MyApp({Key? key, required this.navKey}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+
     return ResponsiveSizer(builder: (context, orientation, screenType) {
       return InheritedTextStyle(
         kHeadline0: TextStyle(color: kText, fontSize: 33.sp > 60 ? 60 : 33.sp),
@@ -109,6 +134,7 @@ class MyApp extends StatelessWidget {
           fontFamily: "Bebas neue",
         ),
         child:  MaterialApp(
+          navigatorKey: navKey,
             title: 'Winhalla',
             theme: ThemeData(fontFamily: "Bebas Neue"),
             debugShowCheckedModeBanner: false,
@@ -116,83 +142,40 @@ class MyApp extends StatelessWidget {
             // on the FirstScreen widget.
             initialRoute: '/',
             onGenerateRoute: (RouteSettings settings) {
+
               Uri? uri = Uri.tryParse(apiUrl + (settings.name ?? "/"));
               if(uri != null && uri.path == "/auth/steamCallback" && uri.queryParameters.isNotEmpty){
                 // Navigator.of(context).pop();
                 return MaterialPageRoute(
+                    settings: settings,
                     builder: (_)=> SafeArea(child: LoginPage(stepOverride: 2, steamLoginUri: uri))
                 );
+              }
+
+
+              print(uri?.queryParameters);
+              if(uri != null && uri.path.contains("/home")){
+                int pageNb = 0;
+                if(uri.queryParameters["page"] != null){
+                  pageNb = int.tryParse(uri.queryParameters["page"] as String) ?? 0;
+                }
+                return buildAppController(pageNb, settings);
               }
               switch (settings.name) {
                 case "/contact":
                   return MaterialPageRoute(
+                      settings: settings,
                     builder: (context) {
                       return const SafeArea(child: ContactPage());
                     }
                   );
                 case "/login":
                   return MaterialPageRoute(
+                      settings: settings,
                     builder: (_)=> SafeArea(child: LoginPage())
                   );
                 case "/":
-                  return MaterialPageRoute(builder: (_)=> SafeArea(
-                    child: FutureBuilder(
-                        future: initUser(context),
-                        builder: (context, AsyncSnapshot<dynamic> res) {
-                          if (!res.hasData) {
-                            return const AppCore(isUserDataLoaded: false);
-                          }
-
-                        if (res.data == "no data" || res.data["data"] == "" || res.data["data"] == null) {
-                          return LoginPage(userData: res.data);
-                        }
-
-                        if (res.data["data"]["user"] == null) {
-                          return LoginPage(userData: res.data);
-                        }
-
-                          // Do not edit res.data directly otherwise it calls the build function again for some reason
-                          Map<String, dynamic> newData =
-                          res.data as Map<String, dynamic>;
-                          var callApi = res.data["callApi"];
-
-                        newData["callApi"] = null;
-                        newData["user"] = res.data["data"]["user"];
-                        newData["steam"] = res.data["data"]["steam"];
-                        newData["informations"] = res.data["data"]["informations"];
-                        newData["tutorial"] = res.data["tutorial"];
-
-                        List<GlobalKey?> keys = [];
-                        for (int i = 0; i < 17; i++) {
-                          if (i == 0 || i == 4 || i == 5 || i == 10 || i == 11 || i == 16) {
-                            keys.add(null);
-                          } else {
-                            keys.add(GlobalKey());
-                          }
-                        }
-                        var inGameData = newData["user"]["inGame"];
-                        var currentMatch = inGameData.where((g) => g["isFinished"] == false).toList();
-
-                        try {
-                          FirebaseCrashlytics.instance.setUserIdentifier(newData["steam"]["id"]);
-                          FirebaseAnalytics.instance.setUserId(id: newData["steam"]["id"]);
-                        } catch (e) {}
-
-                        var inGame;
-                        if (currentMatch.length > 0) {
-                          inGame = {'id': currentMatch[0]["id"], 'joinDate': currentMatch[0]["joinDate"]};
-                        }
-
-
-                          return ChangeNotifierProvider<User>(
-                              create: (_) => User(newData, callApi, keys,
-                                  inGame, res.data["oldDailyChallengeData"]),
-                              child: AppCore(
-                                isUserDataLoaded: true,
-                                tutorial: newData["tutorial"],
-                              ));
-                        }),
-                  ));
+                  return buildAppController(0, settings);
               }
             },
         ),
@@ -204,8 +187,9 @@ class MyApp extends StatelessWidget {
 class AppCore extends StatefulWidget {
   final bool isUserDataLoaded;
   final tutorial;
+  final int startIndex;
 
-  const AppCore({Key? key, required this.isUserDataLoaded, this.tutorial})
+  const AppCore({Key? key, required this.isUserDataLoaded, this.tutorial, this.startIndex = 0})
       : super(key: key);
 
   @override
@@ -241,6 +225,7 @@ class _AppCoreState extends State<AppCore> {
 
   @override
   void initState() {
+    _selectedIndex = widget.startIndex;
     screenList = [
       MyHomePage(
         switchPage: switchPage,
@@ -266,14 +251,17 @@ class _AppCoreState extends State<AppCore> {
         child: Stack(
           children: [
             Scaffold(
-              /*floatingActionButton: kDebugMode && widget.isUserDataLoaded ? FloatingActionButton(
-                onPressed: ()=>FlutterApplovinMax.showMediationDebugger(),
-                child: Image.asset(
-                  "assets/images/video_ad.png",
-                  color: kText,
-                  width: 20,
-                ),
-              ) : null,*/
+              floatingActionButton: kDebugMode && widget.isUserDataLoaded ? FloatingActionButton(
+                onPressed: () {
+                  context.read<User>().refresh();
+                  setState(() {
+                    _selectedIndex = 0;
+                  });
+                  // FlutterApplovinMax.showMediationDebugger();
+                  // launchURLBrowser(apiUrl+"/auth/steamCallback?t=q");
+                },
+                child: const Icon(Icons.refresh)
+              ) : null,
             backgroundColor: kBackground,
             appBar: !widget.isUserDataLoaded
                 ? null
@@ -605,3 +593,6 @@ Scaffold(
     ),
   ),
 ),*/
+void createNotificationChannel(){
+
+}
