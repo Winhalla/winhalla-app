@@ -65,6 +65,10 @@ MaterialPageRoute buildAppController(int startIndex, RouteSettings settings){
           /*Future.delayed(const Duration(seconds: 5),(){
                             FlutterApplovinMax.showMediationDebugger();
                           });*/
+          try {
+            FirebaseCrashlytics.instance.setUserIdentifier(newData["steam"]["id"]);
+            FirebaseAnalytics.instance.setUserId(id: newData["steam"]["id"]);
+          } catch (e) {}
 
           return ChangeNotifierProvider<User>(
               create: (_) => User(newData, callApi, keys,
