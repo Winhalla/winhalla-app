@@ -76,9 +76,9 @@ class _PlayPageState extends State<PlayPage> {
 
                       Map? routeParams = ModalRoute.of(context)?.settings.arguments as Map?;
                       if(user.animateMatchHistory && user.value["user"]["lastGames"].isNotEmpty) {
-                        lastMatchHistory = lastGames.last;
+                        lastMatchHistory = lastGames.first;
                         animatedMatchId = lastMatchHistory["_id"];
-                        lastGames.removeLast();
+                        lastGames.removeAt(0);
                       } else if (routeParams != null && routeParams["matchId"] != null){
 
                         int gameIndex = lastGames.indexWhere((e)=>e["id"] == routeParams["matchId"]);

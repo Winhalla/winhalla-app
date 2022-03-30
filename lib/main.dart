@@ -66,7 +66,7 @@ void main() async {
   // -------------- Firebase Remote config -------------
   FirebaseRemoteConfig frc = FirebaseRemoteConfig.instance;
   frc.setDefaults(<String, dynamic>{
-    'isAdButtonActivated': true,
+    'isAdButtonActivated': false,
   });
   frc.setConfigSettings(RemoteConfigSettings(
     fetchTimeout: const Duration(seconds: 60),
@@ -225,14 +225,14 @@ class _AppCoreState extends State<AppCore> {
             Scaffold(
               floatingActionButton: kDebugMode && widget.isUserDataLoaded ? FloatingActionButton(
                 onPressed: () {
-                  FlutterApplovinMax.showMediationDebugger();
+                  context.read<User>().refresh();
+                  setState(() {
+                    _selectedIndex = 0;
+                  });
+                  // FlutterApplovinMax.showMediationDebugger();
                   // launchURLBrowser(apiUrl+"/auth/steamCallback?t=q");
                 },
-                child: Image.asset(
-                  "assets/images/video_ad.png",
-                  color: kText,
-                  width: 20,
-                ),
+                child: const Icon(Icons.refresh)
               ) : null,
             backgroundColor: kBackground,
             appBar: !widget.isUserDataLoaded
