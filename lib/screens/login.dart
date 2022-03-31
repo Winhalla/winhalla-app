@@ -64,13 +64,22 @@ class LoginPageManager extends ChangeNotifier {
     notifyListeners();
   }
 
-  void next() {
-    if(page >= 2){
-      page = 2;
-      notifyListeners();
-      return;
+  void next({goBack = false}) {
+    if (!goBack) {
+      if (page >= 2) {
+        page = 2;
+        notifyListeners();
+        return;
+      }
+      page++;
+    } else {
+      if (page <= 0) {
+        page = 0;
+        notifyListeners();
+        return;
+      }
+      page--;
     }
-    page++;
     notifyListeners();
   }
 

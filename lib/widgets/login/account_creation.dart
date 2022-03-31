@@ -1,15 +1,19 @@
 import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:steam_login/steam_login.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+import '../../screens/login.dart';
 import '../info_dropdown.dart';
 import '../inherited_text_style.dart';
 import '../popup.dart';
 import '../popup_link.dart';
+import 'google_apple_login.dart';
 
 class AccountCreation extends StatefulWidget {
   final accounts;
@@ -84,6 +88,7 @@ class _AccountCreationState extends State<AccountCreation> {
               );
             }
           }
+          loadItemsList(true);
           var openId = OpenId.fromUri(widget.steamLoginUri as Uri);
           if (openId.mode != 'id_res') throw Exception("OpenID mode is not id_res");
           if (openId.data["openid.claimed_id"] == null) {
@@ -119,7 +124,7 @@ class _AccountCreationState extends State<AccountCreation> {
                     (item) => item["platformId"] == result["platformId"]);
             _err = null;
           });
-        } catch(e){
+        } catch(e,s){
           showInfoDropdown(
             context,
             kRed,
@@ -135,31 +140,59 @@ class _AccountCreationState extends State<AccountCreation> {
             column: true,
             timeShown: 11000
           );
+          print(e);
+          print(s);
         }
     }).then((value) => print("finished"));
     }
   }
 
+  void loadItemsList(bool isFromSteamLogin){
+    if (!isFromSteamLogin) accounts = List.from(widget.accounts);
+    print(accounts);
+    for (int i = 0; i < accounts.length; i++) {
+      for (int ii = 0; ii < items.length; ii++) {
+        var element = items[ii];
+
+        if (element["platformId"] == accounts[i]["platformId"]) {
+          items.removeAt(ii);
+        }
+      }
+    }
+    if (!isFromSteamLogin) alreadyCreatedAccount = true;
+  }
+
   @override
   Widget build(BuildContext context) {
     if (widget.accounts != null && alreadyCreatedAccount == false) {
-      accounts = List.from(widget.accounts);
-      for (int i = 0; i < accounts.length; i++) {
-        for (int ii = 0; ii < items.length; ii++) {
-          var element = items[ii];
-
-          if (element["platformId"] == accounts[i]["platformId"]) {
-            items.removeAt(ii);
-          }
-        }
-      }
-      alreadyCreatedAccount = true;
+      loadItemsList(false);
     }
     return Padding(
-          padding: const EdgeInsets.fromLTRB(32, 50, 32, 0),
+          padding: const EdgeInsets.fromLTRB(42.5, 40, 42.5, 0),
           child: SingleChildScrollView(
             child: Column(
               children: [
+                Align(
+                  alignment: Alignment.topLeft,
+                  child: GestureDetector(
+                    onTap: () {
+                      context.read<LoginPageManager>().next(goBack: true);
+                    },
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Transform.rotate(
+                            angle: 180 * pi / 180,
+                            child:
+                            Icon(Icons.arrow_forward, color:kRed.withOpacity(0.8))
+                        ),
+                        const SizedBox(width: 7,),
+                        Text("Back", style: InheritedTextStyle.of(context).kBodyText2.apply(color:kRed.withOpacity(0.8)),)
+                      ],
+                    ),
+                  ),
+                ),
+                SizedBox(height: 2.h,),
                 Text("Link a Brawlhalla account",
                     style: InheritedTextStyle.of(context)
                         .kHeadline1
