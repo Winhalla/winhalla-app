@@ -173,7 +173,7 @@ class _AccountCreationState extends State<AccountCreation> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                Align(
+                if (!alreadyCreatedAccount) Align(
                   alignment: Alignment.topLeft,
                   child: GestureDetector(
                     onTap: () {
@@ -193,7 +193,7 @@ class _AccountCreationState extends State<AccountCreation> {
                     ),
                   ),
                 ),
-                SizedBox(height: 2.h,),
+                if (!alreadyCreatedAccount) SizedBox(height: 2.h,),
                 Text("Link a Brawlhalla account",
                     style: InheritedTextStyle.of(context)
                         .kHeadline1
