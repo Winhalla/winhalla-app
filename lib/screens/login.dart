@@ -60,14 +60,29 @@ class LoginPage extends StatelessWidget {
 class LoginPageManager extends ChangeNotifier {
   int page = 0;
 
-  void next() {
-    if(page >= 2){
-      page = 2;
-      notifyListeners();
-      FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(page), screenClassOverride: "MainActivity");
-      return;
+  void changePage(number) {
+    page = number;
+    notifyListeners();
+  }
+
+  void next({goBack = false}) {
+    if (!goBack) {
+      if (page >= 2) {
+        page = 2;
+        notifyListeners();
+        FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(page), screenClassOverride: "MainActivity");
+        return;
+      }
+      page++;
+    } else {
+      if (page <= 0) {
+        page = 0;
+        notifyListeners();
+        FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(page), screenClassOverride: "MainActivity");
+        return;
+      }
+      page--;
     }
-    page++;
     FirebaseAnalytics.instance.setCurrentScreen(screenName: indexToScreenName(page), screenClassOverride: "MainActivity");
     notifyListeners();
   }

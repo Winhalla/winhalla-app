@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:math';
 // import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/screens/login.dart';
 import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+import 'package:winhalla_app/widgets/login/google_apple_login.dart';
 
 import '../inherited_text_style.dart';
 
@@ -35,6 +38,28 @@ class _EnterLinkState extends State<EnterLink> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Align(
+            alignment: Alignment.topLeft,
+            child: GestureDetector(
+              onTap: () {
+                GoogleSignInApi.logout();
+                context.read<LoginPageManager>().next(goBack: true);
+              },
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Transform.rotate(
+                      angle: 180 * pi / 180,
+                      child:
+                      Icon(Icons.arrow_forward, color:kRed.withOpacity(0.8))
+                  ),
+                  const SizedBox(width: 7,),
+                  Text("Back", style: InheritedTextStyle.of(context).kBodyText2.apply(color:kRed.withOpacity(0.8)),)
+                ],
+              ),
+            ),
+          ),
+          SizedBox(height: 2.h,),
           Text(
             "Referral link",
             style: InheritedTextStyle.of(context).kHeadline0

@@ -495,7 +495,7 @@ Future<dynamic> initUser(context) async {
       } else {
         int timesOpenInt = int.parse(timesOpened);
         String linkId = data["data"]["user"]["linkId"];
-        int neededAppOpensToDisplayLinkAlert = notFirstTime == "true" ? 15 : 3;
+        int neededAppOpensToDisplayLinkAlert = notFirstTime == "true" ? 20 : 3;
 
         if(timesOpenInt >= neededAppOpensToDisplayLinkAlert) {
           showDialog(context: context, builder: (_)=> LinkInfoWidget(linkId, true));
