@@ -71,6 +71,7 @@ class _ShopState extends State<Shop> {
           children: [
             Row(
               children: [
+
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
@@ -88,9 +89,46 @@ class _ShopState extends State<Shop> {
                 )
               ],
             ),
-            const SizedBox(
-              height: 50,
+
+            SizedBox(
+              height: 2.5.h,
             ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 5.w, vertical: 2.h),
+              decoration: BoxDecoration(
+                  color: kBackgroundVariant,
+                  borderRadius: BorderRadius.circular(20)
+              ),
+              child: Column(
+                children: [
+                  Row(children: [
+                    Icon(Icons.warning_rounded, color: kOrange, size: InheritedTextStyle.of(context).kHeadline1.fontSize),
+                    SizedBox(width: 2.w,),
+                    Text("CONSOLE/MOBILE PLAYER", style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.9),),
+                    SizedBox(width: 1.w,),
+                    Transform.rotate(
+                      angle: 180 * pi / 180,
+                      child: Icon(Icons.keyboard_arrow_down, color: kText90, size: InheritedTextStyle.of(context).kHeadline1.fontSize,)
+                    )
+
+                  ],),
+                  SizedBox(
+                    width: 73.5.w, // has to be the remaining space exactly
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            "As we are still not able to provide reward codes for console and mobile players, we recommend you to redeem some Paypal Credits, which you can use to redeem any reward directly on your platform.",
+                            style: InheritedTextStyle.of(context).kBodyText3.apply(color: kText80),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 5.h,),
             FutureBuilder(
                 future: getShopData(context),
                 builder: (context, AsyncSnapshot<dynamic> res) {
