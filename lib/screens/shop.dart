@@ -15,6 +15,7 @@ import 'package:winhalla_app/widgets/coin.dart';
 import 'package:winhalla_app/widgets/custom_expansion_tile.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
+import 'package:winhalla_app/widgets/paypal_warning.dart';
 import 'package:winhalla_app/widgets/popup_shop.dart';
 
 // This is bc we can't use context.read<User>() in the future field of FutureBuilder
@@ -74,6 +75,7 @@ class _ShopState extends State<Shop> {
           children: [
             Row(
               children: [
+
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
@@ -91,9 +93,11 @@ class _ShopState extends State<Shop> {
                 )
               ],
             ),
-            const SizedBox(
-              height: 50,
-            ),
+
+            SizedBox(height: 2.5.h,),
+            PaypalWarning(user: context.read<User>()),
+            SizedBox(height: 5.h,),
+
             FutureBuilder(
                 future: getShopData(context),
                 builder: (context, AsyncSnapshot<dynamic> res) {
