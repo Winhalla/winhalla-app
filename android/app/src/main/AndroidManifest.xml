@@ -13,7 +13,7 @@
             android:resource="@drawable/winhalla_icon" />
         <meta-data android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/primary" />
-        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="com.winhalla.app.other" />
+        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="other" />
         <activity
             android:name="com.aboutyou.dart_packages.sign_in_with_apple.SignInWithAppleCallback"
             android:exported="true">
