@@ -32,7 +32,7 @@ class _PaypalWarningState extends State<PaypalWarning> {
   Widget build(BuildContext context) {
     if (visible) {
       return MaterialButton(
-        padding: EdgeInsets.fromLTRB(6.w, 2.h, 6.w, isOpened ? 3.h : 2.h),
+        padding: EdgeInsets.fromLTRB(6.w, 2.h, 6.w, isOpened ? 3.h : 2.h+4),
         color: kBackgroundVariant,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20.0),
@@ -45,11 +45,12 @@ class _PaypalWarningState extends State<PaypalWarning> {
         child: Column(
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Icon(Icons.warning_rounded, color: kOrange, size: InheritedTextStyle.of(context).kHeadline2.fontSize),
-                SizedBox(
+                /*SizedBox(
                   width: 2.w,
-                ),
+                ),*/
                 Padding(
                   padding: const EdgeInsets.only(top: 4.0),
                   child: Text(
@@ -57,16 +58,19 @@ class _PaypalWarningState extends State<PaypalWarning> {
                     style: InheritedTextStyle.of(context).kBodyText3.apply(fontSizeFactor: 0.9),
                   ),
                 ),
-                SizedBox(
-                  width: 0.5.w,
-                ),
-                Transform.rotate(
-                    angle: isOpened ? 180 * pi / 180 : 0,
-                    child: Icon(
-                      Icons.keyboard_arrow_down,
-                      color: kText90,
-                      size: InheritedTextStyle.of(context).kHeadline2.fontSize,
-                    ))
+                /*SizedBox(
+                  width: 3.w,
+                ),*/
+                Padding(
+                  padding: const EdgeInsets.only(top: 2.0),
+                  child: Transform.rotate(
+                      angle: isOpened ? 180 * pi / 180 : 0,
+                      child: Icon(
+                        Icons.keyboard_arrow_down,
+                        color: kText90,
+                        size: InheritedTextStyle.of(context).kBodyText1.fontSize,
+                      )),
+                )
               ],
             ),
             if (isOpened)
