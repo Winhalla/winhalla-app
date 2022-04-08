@@ -442,7 +442,8 @@ Future<dynamic> initUser(context) async {
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
   CallApi caller = CallApi(authKey: storageKey, context: context);
-  var data = await caller.get("/account?apple=${Platform.isIOS}&notificationTokenId=${await FirebaseMessaging.instance.getToken()}");
+  String notifToken = await FirebaseMessaging.instance.getToken().timeout(const Duration(milliseconds: 1500), onTimeout: ()=>null) ?? "";
+  var data = await caller.get("/account?apple=${Platform.isIOS}&notificationTokenId=$notifToken");
   if (data["successful"] == false) {
     return null;
   }
