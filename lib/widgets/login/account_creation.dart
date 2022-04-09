@@ -133,7 +133,7 @@ class _AccountCreationState extends State<AccountCreation> {
             kRed,
             "Error:",
             body: Text(
-              "Error retrieving steam account details, please try again later.  \nIf the error persists, please contact support at contact@winhalla.app",
+              "Error retrieving steam account details, please try again later. \nIf the error persists, please contact support at contact@winhalla.app. \nError details (forward them to support): $e",
               style: Theme.of(context)
                   .textTheme
                   .bodyText2
