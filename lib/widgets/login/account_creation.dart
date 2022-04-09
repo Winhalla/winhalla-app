@@ -127,6 +127,7 @@ class _AccountCreationState extends State<AccountCreation> {
             _err = null;
           });
         } catch(e,s){
+          FirebaseCrashlytics.instance.recordError(e, s, reason: "AccountCreationState => initState() => steam login handler => try/catch statement, ");
           showInfoDropdown(
             context,
             kRed,
@@ -142,7 +143,6 @@ class _AccountCreationState extends State<AccountCreation> {
             column: true,
             timeShown: 11000
           );
-          FirebaseCrashlytics.instance.recordError(e, s, reason: "AccountCreationState => initState() => steam login handler => try/catch statement, ");
         }
     }).then((value) => print("finished"));
     }
