@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/user_class.dart';
+import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 
 class FadeInPositioned extends StatefulWidget {
@@ -343,6 +344,7 @@ class Tutorial extends ChangeNotifier{
       Future.delayed(const Duration(milliseconds: 4000), () async {
         User user = ctxt.read<User>();
         await user.exitMatch(isOnlyLayout: true);
+        showCoinDropdown(ctxt, 0, 400);
         Timer.periodic(const Duration(milliseconds: 100),(timer){
           if(user.keys[status+1]?.currentContext != null){
             next();
@@ -533,7 +535,7 @@ class Tutorial extends ChangeNotifier{
                   children: [
                     Expanded(
                       child: Text(
-                          "Let’s pretend you just played some Brawlhalla games.",
+                          "Let’s pretend you just played some Brawlhalla ranked games.",
                           style: InheritedTextStyle.of(context).kBodyText1Roboto
                       ),
                     ),
