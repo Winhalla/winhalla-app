@@ -696,6 +696,7 @@ class Price extends StatelessWidget {
               context,
               kRed,
               "Not enough coins",
+              timeShown: 5000
             );
             return;
           } else if (int.parse(cost) == 0) {
@@ -703,6 +704,7 @@ class Price extends StatelessWidget {
               context,
               kRed,
               "Select at least 1\$",
+              timeShown: 5000
             );
             return;
           }

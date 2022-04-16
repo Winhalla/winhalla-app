@@ -41,6 +41,7 @@ class CallApi {
           ),
           fontSize: 25,
           column: true,
+          isError: true,
         );
       }
       return {
@@ -65,6 +66,7 @@ class CallApi {
           ),
           fontSize: 25,
           column: true,
+          isError: true,
         );
       }
       return {
@@ -105,6 +107,7 @@ class CallApi {
           ),
           fontSize: 25,
           column: true,
+          isError: true,
         );
       }
       return {
@@ -130,6 +133,7 @@ class CallApi {
           ),
           fontSize: 25,
           column: true,
+          isError: true,
         );
       }
       return {
