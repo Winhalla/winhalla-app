@@ -13,6 +13,7 @@ import 'package:winhalla_app/utils/ffa_match_class.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/coin.dart';
 
+import '../../main.dart';
 import '../inherited_text_style.dart';
 
 void adCallback(FfaMatch match, BuildContext context, User user) async {
@@ -113,6 +114,7 @@ Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match,
                         FlutterApplovinMax.showRewardVideo((event) {
                           if(event == AppLovinAdListener.adDisplayed){
                             FirebaseAnalytics.instance.logAdImpression(adFormat: "Rewarded", adPlatform: "AppLovin", adUnitName: "adPopupFfa");
+                            facebookAppEvents.logAdImpression(adType: "adPopupFfa");
                           }
                           if (event == AppLovinAdListener.onUserRewarded) {
                             adCallback(match, context, user);

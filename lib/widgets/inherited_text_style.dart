@@ -34,5 +34,5 @@ class InheritedTextStyle extends InheritedWidget{
   }
 
   @override
-  bool updateShouldNotify(InheritedTextStyle old) => false;
+  bool updateShouldNotify(InheritedTextStyle oldWidget) => false;
 }

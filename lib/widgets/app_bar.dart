@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
-import 'package:winhalla_app/widgets/login/google_apple_login.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/account_edit_warning.dart';
+import 'package:winhalla_app/widgets/login/google_apple_login.dart';
 import 'package:winhalla_app/widgets/popup_leave_match.dart';
 import 'package:winhalla_app/widgets/popup_legal.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
@@ -18,7 +18,7 @@ class MyAppBar extends StatefulWidget {
   final bool isUserDataLoaded;
   final int currentPage;
 
-  const MyAppBar(this.isUserDataLoaded, this.currentPage);
+  const MyAppBar(this.isUserDataLoaded, this.currentPage, {Key? key}) : super(key: key);
 
   @override
   State<MyAppBar> createState() => _MyAppBarState();
@@ -47,7 +47,7 @@ class _MyAppBarState extends State<MyAppBar> {
                   return Consumer<User>(
                       builder: (context, user, _) {
                         var info = List.from(user.value["informations"]);
-                        if(info.length == 0) return Container();
+                        if(info.isEmpty) return Container();
                         info.sort((a, b) {
                           if(b["severity"] == null) b["severity"] = 0;
                           if(a["severity"] == null) a["severity"] = 0;
@@ -138,7 +138,7 @@ class _MyAppBarState extends State<MyAppBar> {
               Consumer<User>(
                 builder: (context, user, _) {
                   var info = List.from(user.value["informations"]);
-                  if(info.length == 0) return Container();
+                  if(info.isEmpty) return Container();
                   info.sort((a, b) {
                     if(b["severity"] == null) b["severity"] = 0;
                     if(a["severity"] == null) a["severity"] = 0;
@@ -383,12 +383,10 @@ class _MyAppBarState extends State<MyAppBar> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              Container(
-                                child: ClipRRect(
-                                  borderRadius:BorderRadius.circular(8),
-                                  child: Image.network(
-                                    user.value["steam"]["picture"],
-                                  ),
+                              ClipRRect(
+                                borderRadius:BorderRadius.circular(8),
+                                child: Image.network(
+                                  user.value["steam"]["picture"],
                                 ),
                               ),
                               Padding(

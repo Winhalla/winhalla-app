@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
-import 'package:winhalla_app/widgets/quest_widget.dart';
 
 storeQuestsData(questsData) {
   //store quests data (progress and name) in secure storage

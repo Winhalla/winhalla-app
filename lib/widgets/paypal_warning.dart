@@ -20,6 +20,7 @@ class _PaypalWarningState extends State<PaypalWarning> {
   bool isOpened = false;
   bool visible = false;
 
+  @override
   void initState() {
     super.initState();
     if (widget.user.value["user"]["brawlhallaAccounts"][0]["platformId"] != "steam" ||

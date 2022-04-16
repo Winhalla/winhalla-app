@@ -1,11 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/custom_http.dart';
-import 'package:winhalla_app/widgets/login/google_apple_login.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/launch_url.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+import 'package:winhalla_app/widgets/login/google_apple_login.dart';
 
 import 'inherited_text_style.dart';
 // import 'package:http/http.dart' as http;

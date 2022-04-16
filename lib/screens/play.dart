@@ -1,14 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:flutter/foundation.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/screens/ffa.dart';
-import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
@@ -332,7 +328,7 @@ class _PlayPageState extends State<PlayPage> {
                           setState(() {
                             _isLoadingMatch = true;
                           });
-                          var matchId = await context
+                          await context
                               .read<User>()
                               .enterMatch();
                           _isLoadingMatch = false;

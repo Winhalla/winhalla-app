@@ -44,7 +44,7 @@ void showInfoDropdown(
     BuildContext context,
     Color color,
     String head,
-    {Widget? body, int timeShown:5000, double fontSize:32, bool column:false}
+    {Widget? body, int timeShown =5000, double fontSize =32, bool column =false}
     ) {
   showTopSnackBar(
       context,
@@ -66,8 +66,8 @@ class InfoDropdown extends StatefulWidget {
     required this.color,
     required this.head,
     required this.column,
-    this.body:const Text(""),
-    this.displayDuration:3000
+    this.body =const Text(""),
+    this.displayDuration =3000
   }) : super(key: key);
 
   @override
@@ -93,7 +93,7 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
     topPosition = -200;
     topBgPosition = -230;
 
-    await Future.delayed(Duration(milliseconds: 1));
+    await Future.delayed(const Duration(milliseconds: 1));
     setState(() {
       topPosition = 80;
       topBgPosition = 0;
@@ -113,7 +113,7 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
         children: [
           AnimatedPositioned(
             child: Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                   gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
@@ -125,16 +125,16 @@ class _InfoDropdownState extends State<InfoDropdown> with SingleTickerProviderSt
                       ]
                   )
               ),
-              child: SizedBox(height: 230,),
+              child: const SizedBox(height: 230,),
             ),
-            duration: Duration(milliseconds: 350),
+            duration: const Duration(milliseconds: 350),
             curve: Curves.linearToEaseOut,
             top: topBgPosition,
             left: 0,
             right: 0,
           ),
           AnimatedPositioned(
-            duration: Duration(milliseconds: 450),
+            duration: const Duration(milliseconds: 450),
             curve: Curves.linearToEaseOut,
             top: topPosition,
             left: 25,

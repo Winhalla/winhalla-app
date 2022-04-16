@@ -1,15 +1,13 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_custom_tabs/flutter_custom_tabs.dart' as custom_tabs;
 import 'package:steam_login/steam_login.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/custom_http.dart';
-
 // import 'package:http/http.dart' as http;
 import 'package:winhalla_app/utils/get_uri.dart';
-import 'package:winhalla_app/utils/launch_url.dart';
-import 'package:winhalla_app/utils/steam.dart.old';
-import 'package:flutter_custom_tabs/flutter_custom_tabs.dart' as customTabs;
 
 import 'inherited_text_style.dart';
 
@@ -63,8 +61,8 @@ Widget PopupWidget(
       } else if (step == "confirmSteamRedirect"){
         Navigator.of(context).pop();
         var openId = OpenId.raw(apiUrl, apiUrl + "/auth/steamCallback", {"name": "Winhalla"});
-        customTabs.launch(openId.authUrl().toString(),
-            customTabsOption: const customTabs.CustomTabsOption(
+        custom_tabs.launch(openId.authUrl().toString(),
+            customTabsOption: const custom_tabs.CustomTabsOption(
               extraCustomTabs: [
                 'org.mozilla.firefox',
                 'com.microsoft.emmx'

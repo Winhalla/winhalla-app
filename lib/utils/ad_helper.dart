@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 
+import '../main.dart';
+
 class AdHelper {
 
   static String get rewardedAdUnitId {
@@ -97,6 +99,7 @@ void showApplovinInterstitial(String adUnitName) async {
           print("--------------------------$event-----------------------------");
           if(event == AppLovinAdListener.adDisplayed){
             FirebaseAnalytics.instance.logAdImpression(adFormat: "Interstitial", adPlatform: "AppLovin", adUnitName: adUnitName);
+            facebookAppEvents.logAdImpression(adType: adUnitName);
           }
           if(event == AppLovinAdListener.adHidden){
             FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);

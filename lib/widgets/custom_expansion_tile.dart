@@ -231,8 +231,9 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> with SingleTi
     _backgroundColor = _controller.drive(_backgroundColorTween.chain(_easeOutTween));
 
     _isExpanded = PageStorage.of(context)?.readState(context) as bool? ?? widget.initiallyExpanded;
-    if (_isExpanded)
+    if (_isExpanded) {
       _controller.value = 1.0;
+    }
   }
 
   @override
@@ -248,8 +249,9 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> with SingleTi
         _controller.forward();
       } else {
         _controller.reverse().then<void>((void value) {
-          if (!mounted)
+          if (!mounted) {
             return;
+          }
           setState(() {
             // Rebuild without widget.children.
           });
@@ -279,14 +281,16 @@ class _CustomExpansionTileState extends State<CustomExpansionTile> with SingleTi
   }
 
   Widget? _buildLeadingIcon(BuildContext context) {
-    if (_effectiveAffinity(widget.controlAffinity) != ListTileControlAffinity.leading)
+    if (_effectiveAffinity(widget.controlAffinity) != ListTileControlAffinity.leading) {
       return null;
+    }
     return _buildIcon(context);
   }
 
   Widget? _buildTrailingIcon(BuildContext context) {
-    if (_effectiveAffinity(widget.controlAffinity) != ListTileControlAffinity.trailing)
+    if (_effectiveAffinity(widget.controlAffinity) != ListTileControlAffinity.trailing) {
       return null;
+    }
     return _buildIcon(context);
   }
 

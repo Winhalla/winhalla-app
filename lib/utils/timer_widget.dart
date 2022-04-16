@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
@@ -20,6 +21,7 @@ class _TimerWidgetState extends State<TimerWidget> {
   Color color = kPrimary;
   Timer? _timer;
 
+  @override
   void dispose() {
     if (_timer != null) _timer?.cancel();
     super.dispose();
@@ -77,19 +79,23 @@ class _TimerWidgetState extends State<TimerWidget> {
       timer = "";
       if (days < 10 && widget.showHours == "days") timer += "$days:";
 
-      if (hours < 10 && (widget.showHours == "hours" || widget.showHours == "days"))
+      if (hours < 10 && (widget.showHours == "hours" || widget.showHours == "days")) {
         timer += "0$hours:";
-      else if (widget.showHours == "hours" || widget.showHours == "days") timer += "$hours:";
+      } else if (widget.showHours == "hours" || widget.showHours == "days") {
+        timer += "$hours:";
+      }
 
-      if (minutes < 10)
+      if (minutes < 10) {
         timer += "0$minutes:";
-      else
+      } else {
         timer += "$minutes:";
+      }
 
-      if (seconds < 10)
+      if (seconds < 10) {
         timer += "0$seconds";
-      else
+      } else {
         timer += "$seconds";
+      }
 
       // Do not set state for the initial call of the function (to avoid setState() or markNeedsBuild() called during build.)
       if (cancel != null) {
@@ -100,7 +106,7 @@ class _TimerWidgetState extends State<TimerWidget> {
     }
 
     timerFx(null);
-    _timer = new Timer.periodic(oneSec, timerFx);
+    _timer = Timer.periodic(oneSec, timerFx);
   }
 
   @override

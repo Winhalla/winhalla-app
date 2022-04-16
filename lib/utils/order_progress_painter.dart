@@ -6,7 +6,6 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/screens/shop.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
-import 'package:winhalla_app/widgets/tip_painter.dart';
 
 class OrderProgressPainter extends CustomPainter {
   OrderProgressPainter(this.context, this.status, this.type);

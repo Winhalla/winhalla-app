@@ -1,13 +1,10 @@
-import 'dart:convert';
-
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
-import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
-import 'package:winhalla_app/widgets/quest_widget.dart';
+
 import '../coin.dart';
 import '../inherited_text_style.dart';
 import 'daily_challenge_item.dart';

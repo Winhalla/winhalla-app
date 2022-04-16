@@ -1,21 +1,21 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'dart:io';
+
+import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_applovin_max/flutter_applovin_max.dart';
-import 'package:http/http.dart' as http;
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/main.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/store_quests_data.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
-import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
 
 import 'ad_helper.dart';
@@ -189,7 +189,7 @@ class User extends ChangeNotifier {
       if (matchId["successful"] == false) return "err";
       matchId = matchId["data"];
     }
-
+    facebookAppEvents.logEvent(name: "JoinSoloMatch");
     FirebaseAnalytics.instance.logEvent(
       name: "JoinSoloMatch",
     );

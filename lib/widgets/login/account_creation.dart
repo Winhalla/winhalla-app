@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -7,15 +8,15 @@ import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:steam_login/steam_login.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/main.dart';
 import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
+
 import '../../screens/login.dart';
 import '../info_dropdown.dart';
 import '../inherited_text_style.dart';
 import '../popup.dart';
-import '../popup_link.dart';
-import 'google_apple_login.dart';
 
 class AccountCreation extends StatefulWidget {
   final accounts;
@@ -446,6 +447,7 @@ class _AccountCreationState extends State<AccountCreation> {
                         } catch (e) {}
 
                         FirebaseAnalytics.instance.logEvent(name: "CreateAccount");
+                        facebookAppEvents.logCompletedRegistration();
                         await secureStorage.write(key: 'link', value: null);
                         Navigator.pushNamedAndRemoveUntil(
                           context,

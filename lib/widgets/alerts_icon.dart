@@ -10,9 +10,11 @@ class AlertsIcon extends StatelessWidget {
   const AlertsIcon({Key? key, required this.severity, required this.infosList}) : super(key: key);
 
   Color severityToColor(severity){
-    if(severity < 1 || severity == null) return kPrimary;
-    else if(severity == 1) return kOrange;
-    else {
+    if(severity < 1 || severity == null) {
+      return kPrimary;
+    } else if(severity == 1) {
+      return kOrange;
+    } else {
       return kRed;
     }
   }

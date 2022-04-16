@@ -1,43 +1,38 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:isolate';
+
+import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
-import 'dart:convert';
-import 'dart:io';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_applovin_max/flutter_applovin_max.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:rive/rive.dart' as Rive;
-import 'package:steam_login/steam_login.dart';
+import 'package:rive/rive.dart' as rive;
 import 'package:winhalla_app/screens/contact.dart';
 import 'package:winhalla_app/screens/home.dart';
+import 'package:winhalla_app/screens/login.dart';
 import 'package:winhalla_app/screens/play.dart';
 import 'package:winhalla_app/screens/quests.dart';
 import 'package:winhalla_app/screens/shop.dart';
-import 'package:winhalla_app/utils/ad_helper.dart';
-import 'package:winhalla_app/utils/ffa_match_class.dart';
 import 'package:winhalla_app/utils/build_app_controller.dart';
-import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
-import 'package:winhalla_app/utils/launch_url.dart';
 import 'package:winhalla_app/utils/services/firebase_notifications.dart';
 import 'package:winhalla_app/utils/tutorial_controller.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
-import 'package:winhalla_app/screens/login.dart';
-import 'package:provider/provider.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
-import 'config/themes/dark_theme.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
+import 'config/themes/dark_theme.dart';
+
+final facebookAppEvents = FacebookAppEvents();
 const MethodChannel _channel = MethodChannel('winhalla.app/methodChannel');
 void main() async {
   // Non-flutter errors catching
@@ -64,6 +59,7 @@ void main() async {
         _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e)=>print(e));
       }
     }
+    facebookAppEvents.setAutoLogAppEventsEnabled(true);
     await Firebase.initializeApp();
     // -------------- Firebase messaging -------------
     FirebaseMessaging.onBackgroundMessage(firebaseNotifications);
@@ -103,7 +99,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
+    facebookAppEvents.logViewContent(content: {"page": "main"});
     return ResponsiveSizer(builder: (context, orientation, screenType) {
       return InheritedTextStyle(
         kHeadline0: TextStyle(color: kText, fontSize: 33.sp > 60 ? 60 : 33.sp),
@@ -152,7 +148,6 @@ class MyApp extends StatelessWidget {
                 );
               }
 
-
               print(uri?.queryParameters);
               if(uri != null && uri.path.contains("/home")){
                 int pageNb = 0;
@@ -175,6 +170,8 @@ class MyApp extends StatelessWidget {
                     builder: (_)=> SafeArea(child: LoginPage())
                   );
                 case "/":
+                  return buildAppController(0, settings);
+                default:
                   return buildAppController(0, settings);
               }
             },
@@ -289,7 +286,7 @@ class _AppCoreState extends State<AppCore> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Expanded(
-                              child: Rive.RiveAnimation.asset(
+                              child: rive.RiveAnimation.asset(
                                 "assets/animated/loading.riv",
                               ),
                             ),

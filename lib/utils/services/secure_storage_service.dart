@@ -1,7 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 // Create storage
-final secureStorage = new FlutterSecureStorage();
+const secureStorage = FlutterSecureStorage();
 
 /// If the key doesn't exist, returns "no data" as String type instead of null.
 /// Useful for FutureBuilders & functions that require String and not String? type

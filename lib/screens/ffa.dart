@@ -1,6 +1,5 @@
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:provider/provider.dart';
@@ -13,8 +12,6 @@ import 'package:winhalla_app/widgets/coin.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_no_refresh.dart';
 import 'package:winhalla_app/widgets/tip_painter.dart';
-
-import '../widgets/popups/popup_ad.dart';
 
 class SoloMatch extends StatefulWidget {
   final String matchId;

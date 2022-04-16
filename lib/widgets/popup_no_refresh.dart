@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
@@ -54,7 +53,7 @@ Widget NoRefreshPopup(String type){
                 const TextSpan(text: "doesn't refresh ", style: TextStyle(color: kPrimary,height: 1.3)),
                 const TextSpan(text: "instantly. This is due to the ", style: TextStyle(height: 1.3)),
                 const TextSpan(text: "Brawlhalla API ", style: TextStyle(color: kPrimary,height: 1.3)),
-                TextSpan(text: type == "quests" ? "latency. It can take up to 3 hours." : "latency. It usually takes a few minutes, but it can take up to 30.", style: TextStyle(height: 1.3)),
+                TextSpan(text: type == "quests" ? "latency. It can take up to 3 hours." : "latency. It usually takes a few minutes, but it can take up to 30.", style: const TextStyle(height: 1.3)),
               ]),
             ),
           ),

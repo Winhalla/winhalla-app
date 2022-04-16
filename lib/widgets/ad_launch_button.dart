@@ -1,13 +1,12 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:provider/src/provider.dart';
+import 'package:flutter_applovin_max/flutter_applovin_max.dart';
+import 'package:provider/provider.dart';
+import 'package:winhalla_app/main.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
-import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/user_class.dart';
-
-import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 
 class AdButton extends StatefulWidget {
   final Widget child;
@@ -90,6 +89,7 @@ class _AdButtonState extends State<AdButton> {
     }
     if(event == AppLovinAdListener.adDisplayed){
       FirebaseAnalytics.instance.logAdImpression(adFormat: "Rewarded", adPlatform: "AppLovin", adUnitName: "adLaunchButton_"+widget.goal);
+      facebookAppEvents.logAdImpression(adType: "adLaunchButton_"+widget.goal);
     }
     if (event == AppLovinAdListener.onUserRewarded) {
       if(mounted) {

@@ -55,6 +55,7 @@ dependencies:
   firebase_remote_config: ^2.0.2
   flutter_custom_tabs: ^1.0.4
   firebase_messaging: ^11.2.11
+  facebook_app_events: ^0.16.0
 
 #dependency_overrides:
 #  firebase_remote_config_platform_interface: 1.0.5
