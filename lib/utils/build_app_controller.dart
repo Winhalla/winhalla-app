@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/utils/user_class.dart';
+import 'package:winhalla_app/widgets/info_dropdown.dart';
+import 'package:winhalla_app/widgets/inherited_text_style.dart';
 
+import '../config/themes/dark_theme.dart';
 import '../main.dart';
 import '../screens/login.dart';
 
@@ -15,7 +18,6 @@ MaterialPageRoute buildAppController(int startIndex, RouteSettings settings){
           if (!res.hasData) {
             return const AppCore(isUserDataLoaded: false);
           }
-
           if (res.data == "no data" ||
               res.data["data"] == "" ||
               res.data["data"] == null) {

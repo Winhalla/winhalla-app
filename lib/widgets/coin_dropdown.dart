@@ -8,7 +8,7 @@ import 'coin.dart';
 import 'inherited_text_style.dart';
 
 OverlayEntry? _previousEntry;
-
+Timer? t;
 void showTopSnackBar(
     BuildContext context,
     Widget child, {
@@ -33,10 +33,11 @@ void showTopSnackBar(
   if (_previousEntry != null) {
     _previousEntry?.remove();
     _previousEntry = null;
+    t?.cancel();
   }
 
   _previousEntry = overlayEntry;
-  Future.delayed(displayDuration, () {
+  t = Timer(displayDuration, () {
     // Remove the popup after given time (after animation is finished)
     if (_previousEntry != null) {
       _previousEntry?.remove();

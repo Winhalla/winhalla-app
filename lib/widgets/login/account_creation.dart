@@ -138,7 +138,7 @@ class _AccountCreationState extends State<AccountCreation> {
             ),
             fontSize: 25,
             column: true,
-            timeShown: 11000
+            isError:true
           );
           print(e);
           print(s);
