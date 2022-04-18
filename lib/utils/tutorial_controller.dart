@@ -6,7 +6,7 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
-
+const List<int> clickableStatuses = [1,2,8,12,13];
 class FadeInPositioned extends StatefulWidget {
   final double? top;
   final double? right;
@@ -120,7 +120,10 @@ class _TutorialStackState extends State<TutorialStack> {
           rect: tutorial.currentWidgetPosition[4],
           child: GestureDetector(
             onTap: () async {
+              if(!clickableStatuses.contains(tutorial.status)) return;
+
               User user = tutorial.ctxt.read<User>();
+              //! edit clickableStatuses accordingly if you change the code below
               if (tutorial.status == 1) {
                 user.keyFx["switchPage"](2);
 
@@ -143,13 +146,16 @@ class _TutorialStackState extends State<TutorialStack> {
                 var questData = user.quests["finished"]["daily"][0];
                 await user.collectQuest(questData["id"], "daily", questData["reward"], isTutorial:true);
 
-              } else if (tutorial.status == 16) {
+              }/*else if (tutorial.status == 16) {
                 user.keyFx["playAd"]();
                 Future.delayed(const Duration(seconds: 1), () => tutorial.next());
                 return;
-              }
+              }*/
+              // End of clickableStatuses reign
 
-              if(tutorial.status <= 17) {
+
+
+              if(tutorial.status <= 16) {
                 Timer.periodic(const Duration(milliseconds: 100), (timer) {
                   if (user.keys[tutorial.status + 1]?.currentContext != null) {
                     tutorial.next();
@@ -192,14 +198,14 @@ class _TutorialStackState extends State<TutorialStack> {
                 child: Row(
                   children: [
                     Text(
-                      tutorial.status == 17 ? "Finish" : "Next",
-                      style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: tutorial.status == 17 ? kGreen : kOrange),
+                      tutorial.status == 16 ? "Finish" : "Next",
+                      style: InheritedTextStyle.of(context).kBodyText1Roboto.apply(color: tutorial.status == 16 ? kGreen : kOrange),
                     ),
-                    if (tutorial.status == 17)
+                    if (tutorial.status == 16)
                       const SizedBox(
                         width: 6,
                       ),
-                    if (tutorial.status == 17)
+                    if (tutorial.status == 16)
                       const Padding(
                         padding: EdgeInsets.only(bottom: 3),
                         child: Icon(
@@ -211,8 +217,7 @@ class _TutorialStackState extends State<TutorialStack> {
                   ],
                 ),
               )
-            else
-              Container(),
+            else Container(),
           ]),
         )
       ]),
