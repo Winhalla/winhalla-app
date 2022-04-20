@@ -20,6 +20,7 @@ import 'package:winhalla_app/utils/custom_http.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
 import 'package:winhalla_app/utils/launch_url.dart';
 import 'package:winhalla_app/utils/services/firebase_notifications.dart';
+import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/tutorial_controller.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
@@ -140,13 +141,24 @@ class MyApp extends StatelessWidget {
 
 
               print(uri?.queryParameters);
-              if(uri != null && uri.path.contains("/home")){
-                int pageNb = 0;
-                if(uri.queryParameters["page"] != null){
-                  pageNb = int.tryParse(uri.queryParameters["page"] as String) ?? 0;
+              if(uri != null){
+                if(uri.path.contains("/home")){
+                  int pageNb = 0;
+                  if(uri.queryParameters["page"] != null){
+                    pageNb = int.tryParse(uri.queryParameters["page"] as String) ?? 0;
+                  }
+                  return buildAppController(pageNb, settings);
                 }
-                return buildAppController(pageNb, settings);
+                if(uri.path.startsWith("/sponsorship/")){
+                  secureStorage.read(key: "authKey").then((value) {
+                    if(value == null) {
+                      secureStorage.write(key: "sponsorshipReferral", value: uri.path.substring("/sponsorship/".length));
+                      print("test");
+                    }
+                  });
+                }
               }
+
               switch (settings.name) {
                 case "/contact":
                   return MaterialPageRoute(
@@ -161,6 +173,8 @@ class MyApp extends StatelessWidget {
                     builder: (_)=> SafeArea(child: LoginPage())
                   );
                 case "/":
+                  return buildAppController(0, settings);
+                default:
                   return buildAppController(0, settings);
               }
             },

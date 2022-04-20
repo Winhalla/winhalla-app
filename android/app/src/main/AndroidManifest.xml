@@ -52,6 +52,13 @@
                     android:scheme="winhalladeeplinks"
                     android:host="deep.winhalla.app" />
             </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" android:host="winhalla.app" android:pathPrefix="/sponsorship" />
+                <data android:scheme="https" />
+            </intent-filter>
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
                 android:resource="@style/NormalTheme" />
