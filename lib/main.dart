@@ -29,8 +29,6 @@ import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/tutorial_controller.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
-import 'package:winhalla_app/screens/login.dart';
-import 'package:provider/provider.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
