@@ -442,7 +442,6 @@ Future<dynamic> initUser(context) async {
     if(!kDebugMode){
       String? timesOpened = await secureStorage.read(key: "timesOpened");
       String? notFirstTime = await secureStorage.read(key: "hasShownLinkPopup");
-      print(timesOpened);
       if(timesOpened == null){
         await secureStorage.write(key: "timesOpened",value: "1");
       } else {

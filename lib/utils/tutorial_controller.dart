@@ -304,7 +304,6 @@ class Tutorial extends ChangeNotifier{
 
   void next(){
     if(_isLoadingNextStep == true){
-      print("test");
       return;
     }
 
@@ -324,7 +323,6 @@ class Tutorial extends ChangeNotifier{
 
     Future.delayed(const Duration(milliseconds: 250), (){
       _isLoadingNextStep = false;
-      print("setFalse");
     });
   }
 
