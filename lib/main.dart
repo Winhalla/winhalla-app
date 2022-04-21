@@ -59,6 +59,14 @@ void main() async {
           arguments: message.data);
     }
   }
+  void handleLink(PendingDynamicLinkData link) async {
+    if(navKey.currentContext != null) {
+      Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(
+        link.link.toString(),
+            (route) => false,
+      );
+    }
+  }
   FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
   RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
   if (initialMessage != null) {
@@ -66,22 +74,10 @@ void main() async {
   }
 
   // -------------- Firebase Dynamic Links -------------
-  FirebaseDynamicLinks.instance.onLink.listen((PendingDynamicLinkData dynamicLinkData) {
-    print("sentToLink ${dynamicLinkData.link.toString()}");
-    Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(
-      dynamicLinkData.link.toString(),
-          (route) => false,
-    );
-  });
 
   final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
-  if(initialLink != null){
-    print("sentToLink ${initialLink.link.toString()}");
-    Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(
-      initialLink.link.toString(),
-          (route) => false,
-    );
-  }
+  if(initialLink != null) handleLink(initialLink);
+  FirebaseDynamicLinks.instance.onLink.listen(handleLink);
 
 
   // -------------- Firebase Remote config -------------
@@ -174,21 +170,7 @@ class MyApp extends StatelessWidget {
                   secureStorage.read(key: "authKey").then((value) {
                     if(value == null) {
                       secureStorage.write(key: "sponsorshipReferral", value: uri.path.substring("/sponsorship/".length));
-                      print("test");
-                      showInfoDropdown(
-                        context,
-                        kPrimary,
-                        "Note",
-                        body: Text(
-                          "Has wrote referral link",
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyText2
-                              ?.merge(InheritedTextStyle.of(context).kBodyText1bis),
-                        ),
-                        // fontSize: 25,
-                        column: true,
-                      );
+                      print("Wrote sponsorship: ${uri.path.substring("/sponsorship/".length)}");
                     }
                   });
                 }
