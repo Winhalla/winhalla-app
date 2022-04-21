@@ -18,7 +18,6 @@ HttpClient customHttpClient({String? cert}) {
     if (cert != null) {
       List<int> bytes = utf8.encode(cert);
       context.setTrustedCertificatesBytes(bytes);
-      print('createHttpClient() - cert added!');
     }
   } on TlsException catch (e) {
     if (e.osError?.message != null &&

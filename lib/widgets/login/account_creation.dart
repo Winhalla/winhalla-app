@@ -136,13 +136,12 @@ class _AccountCreationState extends State<AccountCreation> {
               column: true,
               isError: true);
         }
-      }).then((value) => print("finished"));
+      }).then((value) => null);
     }
   }
 
   void loadItemsList(bool isFromSteamLogin) {
     if (!isFromSteamLogin) accounts = List.from(widget.accounts);
-    print(accounts);
     for (int i = 0; i < accounts.length; i++) {
       for (int ii = 0; ii < items.length; ii++) {
         var element = items[ii];

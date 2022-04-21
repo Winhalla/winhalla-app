@@ -6,6 +6,7 @@ import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
@@ -28,6 +29,9 @@ import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/tutorial_controller.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/app_bar.dart';
+import 'package:winhalla_app/screens/login.dart';
+import 'package:provider/provider.dart';
+import 'package:winhalla_app/widgets/info_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
 
@@ -55,9 +59,9 @@ void main() async {
 
     for (int i = 0; i < notificationChannelsMaps.length; i++){
       if(i == notificationChannelsMaps.length - 1){
-        await _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e)=>print(e));
+        await _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e)=>null);
       } else {
-        _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e)=>print(e));
+        _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e)=>null);
       }
     }
     facebookAppEvents.setAutoLogAppEventsEnabled(true);
@@ -66,7 +70,7 @@ void main() async {
     FirebaseMessaging.onBackgroundMessage(firebaseNotifications);
     FirebaseMessaging.onMessage.listen(firebaseNotifications);
     void handleMessage(RemoteMessage message) async {
-      print("onMessageOpenedApp: $message");
+
       if(navKey.currentContext != null) {
         Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(
             message.data["route"],
@@ -80,7 +84,26 @@ void main() async {
       handleMessage(initialMessage);
     }
 
-    // -------------- Firebase Remote config -------------
+    // -------------- Firebase Dynamic Links -------------
+  FirebaseDynamicLinks.instance.onLink.listen((PendingDynamicLinkData dynamicLinkData) {
+    print("sentToLink ${dynamicLinkData.link.toString()}");
+    Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(
+      dynamicLinkData.link.toString(),
+          (route) => false,
+    );
+  });
+
+  final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
+  if(initialLink != null){
+    print("sentToLink ${initialLink.link.toString()}");
+    Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(
+      initialLink.link.toString(),
+          (route) => false,
+    );
+  }
+
+
+  // -------------- Firebase Remote config -------------
     FirebaseRemoteConfig frc = FirebaseRemoteConfig.instance;
     frc.setDefaults(<String, dynamic>{
       'isAdButtonActivated': false,
@@ -149,6 +172,8 @@ class MyApp extends StatelessWidget {
                 );
               }
 
+
+
               print(uri?.queryParameters);
               if(uri != null){
                 if(uri.path.contains("/home")){
@@ -163,6 +188,20 @@ class MyApp extends StatelessWidget {
                     if(value == null) {
                       secureStorage.write(key: "sponsorshipReferral", value: uri.path.substring("/sponsorship/".length));
                       print("test");
+                      showInfoDropdown(
+                        context,
+                        kPrimary,
+                        "Note",
+                        body: Text(
+                          "Has wrote referral link",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText2
+                              ?.merge(InheritedTextStyle.of(context).kBodyText1bis),
+                        ),
+                        // fontSize: 25,
+                        column: true,
+                      );
                     }
                   });
                 }

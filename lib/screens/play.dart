@@ -155,7 +155,6 @@ class _PlayPageState extends State<PlayPage> {
                                     shrinkWrap: true,
                                     initialItemCount: lastGames.length + filteredInGameList.length as int,
                                     itemBuilder: (BuildContext context, int index, Animation<double> animation) {
-                                      print(index);
                                       // print(lastGames.length + filteredInGameList.length as int);
 
                                       var currentMatch = mergedArray[index];
