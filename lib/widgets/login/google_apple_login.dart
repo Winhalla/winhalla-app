@@ -97,7 +97,7 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
       }
     } catch(e){}
     var skipReferralLink = await http.get(getUri("/auth/checkDetectedLink"));
-    if(skipReferralLink.body == "true") {
+    if(skipReferralLink.body == "true" || await secureStorage.read(key: "sponsorshipReferral") != null) {
       context.read<LoginPageManager>().next();
     }
     context.read<LoginPageManager>().next();
