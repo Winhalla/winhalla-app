@@ -82,10 +82,7 @@ void main() async {
 
     // -------------- Firebase Dynamic Links -------------
     void handleLink(PendingDynamicLinkData link) async {
-      print("reachHandleLink");
       if (navKey.currentContext != null) {
-        print("passContext");
-        print("link: ${link.link.toString()}");
         Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(
           link.link.toString(),
           (route) => false,
@@ -169,9 +166,7 @@ class MyApp extends StatelessWidget {
 
 
 
-              print("Uri: $uri");
               if(uri != null){
-                print("passedUriNullCheck");
                 if(uri.path.contains("/home")){
                   int pageNb = 0;
                   if(uri.queryParameters["page"] != null){
@@ -179,15 +174,11 @@ class MyApp extends StatelessWidget {
                   }
                   return buildAppController(pageNb, settings);
                 }
-                print("uriPath: ${uri.path}");
-                if(uri.path.startsWith("/sponsorship/")){
-                  print("passedStartsWithCheck");
+                if(uri.path.startsWith("/sponsorship/") || uri.path.startsWith("/sponsorshipredirect/")){
+                  String substring = uri.path.startsWith("/sponsorship/") ? "/sponsorship/" : "/sponsorshipredirect/";
                   secureStorage.read(key: "authKey").then((value) {
-                    print("authKeySuccessfullyGot, value: $value");
                     if(value == null) {
-                      print("passedAuthKeyNullCheck");
-                      secureStorage.write(key: "sponsorshipReferral", value: uri?.path.substring("/sponsorship/".length));
-                      print("Wrote sponsorship: ${uri?.path.substring("/sponsorship/".length)}");
+                      secureStorage.write(key: "sponsorshipReferral", value: uri?.path.substring(substring.length));
                     }
                   });
                 }
