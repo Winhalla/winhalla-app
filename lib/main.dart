@@ -156,7 +156,9 @@ class MyApp extends StatelessWidget {
             initialRoute: '/',
             onGenerateRoute: (RouteSettings settings) {
 
-              Uri? uri = Uri.tryParse(apiUrl + (settings.name ?? "/"));
+              Uri? uri = Uri.tryParse(settings.name ?? "/");
+              uri ??= Uri.tryParse(apiUrl + (settings.name ?? "/"));
+
               if(uri != null && uri.path == "/auth/steamCallback" && uri.queryParameters.isNotEmpty){
                 // Navigator.of(context).pop();
                 return MaterialPageRoute(
