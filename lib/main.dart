@@ -186,8 +186,8 @@ class MyApp extends StatelessWidget {
                     print("authKeySuccessfullyGot, value: $value");
                     if(value == null) {
                       print("passedAuthKeyNullCheck");
-                      secureStorage.write(key: "sponsorshipReferral", value: uri.path.substring("/sponsorship/".length));
-                      print("Wrote sponsorship: ${uri.path.substring("/sponsorship/".length)}");
+                      secureStorage.write(key: "sponsorshipReferral", value: uri?.path.substring("/sponsorship/".length));
+                      print("Wrote sponsorship: ${uri?.path.substring("/sponsorship/".length)}");
                     }
                   });
                 }
