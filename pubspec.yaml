@@ -47,7 +47,7 @@ dependencies:
   firebase_analytics: ^9.1.0
   firebase_core: ^1.10.0
   firebase_crashlytics: "^2.3.0"
-  responsive_sizer: ^3.0.4+4
+  responsive_sizer: 3.0.4+4 # NEVER UPDATE THIS, with this update it wants a MediaQuery ancestor in context, which is not suitable at all for our use
   sign_in_with_apple: ^3.3.0
   app_tracking_transparency: ^2.0.2+1
   intl: ^0.17.0
