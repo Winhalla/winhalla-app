@@ -37,6 +37,7 @@ import 'config/themes/dark_theme.dart';
 
 final facebookAppEvents = FacebookAppEvents();
 const MethodChannel _channel = MethodChannel('winhalla.app/methodChannel');
+
 void main() async {
   // Non-flutter errors catching
   Isolate.current.addErrorListener(RawReceivePort((pair) async {
@@ -54,12 +55,11 @@ void main() async {
     runApp(MyApp(navKey: navKey));
     initializeDateFormatting(Platform.localeName);
 
-
-    for (int i = 0; i < notificationChannelsMaps.length; i++){
-      if(i == notificationChannelsMaps.length - 1){
-        await _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e)=>null);
+    for (int i = 0; i < notificationChannelsMaps.length; i++) {
+      if (i == notificationChannelsMaps.length - 1) {
+        await _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e) => null);
       } else {
-        _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e)=>null);
+        _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e) => null);
       }
     }
     facebookAppEvents.setAutoLogAppEventsEnabled(true);
@@ -68,35 +68,36 @@ void main() async {
     FirebaseMessaging.onBackgroundMessage(firebaseNotifications);
     FirebaseMessaging.onMessage.listen(firebaseNotifications);
     void handleMessage(RemoteMessage message) async {
-
-      if(navKey.currentContext != null) {
-        Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(
-            message.data["route"],
-                (route) => false,
-            arguments: message.data);
+      if (navKey.currentContext != null) {
+        Navigator.of(navKey.currentContext as BuildContext)
+            .pushNamedAndRemoveUntil(message.data["route"], (route) => false, arguments: message.data);
       }
     }
-    void handleLink(PendingDynamicLinkData link) async {
-    if(navKey.currentContext != null) {
-      Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(
-        link.link.toString(),
-            (route) => false,
-      );
-    }
-  }FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
+
+    FirebaseMessaging.onMessageOpenedApp.listen(handleMessage);
     RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
     if (initialMessage != null) {
       handleMessage(initialMessage);
     }
 
     // -------------- Firebase Dynamic Links -------------
+    void handleLink(PendingDynamicLinkData link) async {
+      print("reachHandleLink");
+      if (navKey.currentContext != null) {
+        print("passContext");
+        print("link: ${link.link.toString()}");
+        Navigator.of(navKey.currentContext as BuildContext).pushNamedAndRemoveUntil(
+          link.link.toString(),
+          (route) => false,
+        );
+      }
+    }
 
-  final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
-  if(initialLink != null) handleLink(initialLink);
-  FirebaseDynamicLinks.instance.onLink.listen(handleLink);
+    final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
+    if (initialLink != null) handleLink(initialLink);
+    FirebaseDynamicLinks.instance.onLink.listen(handleLink);
 
-
-  // -------------- Firebase Remote config -------------
+    // -------------- Firebase Remote config -------------
     FirebaseRemoteConfig frc = FirebaseRemoteConfig.instance;
     frc.setDefaults(<String, dynamic>{
       'isAdButtonActivated': false,
@@ -106,8 +107,7 @@ void main() async {
       minimumFetchInterval: const Duration(minutes: 15),
     ));
     frc.fetchAndActivate();
-  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack)
-  );
+  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
 }
 
 class MyApp extends StatelessWidget {
@@ -167,8 +167,9 @@ class MyApp extends StatelessWidget {
 
 
 
-              print(uri?.queryParameters);
+              print("Uri: $uri");
               if(uri != null){
+                print("passedUriNullCheck");
                 if(uri.path.contains("/home")){
                   int pageNb = 0;
                   if(uri.queryParameters["page"] != null){
@@ -176,9 +177,13 @@ class MyApp extends StatelessWidget {
                   }
                   return buildAppController(pageNb, settings);
                 }
+                print("uriPath: ${uri.path}");
                 if(uri.path.startsWith("/sponsorship/")){
+                  print("passedStartsWithCheck");
                   secureStorage.read(key: "authKey").then((value) {
+                    print("authKeySuccessfullyGot, value: $value");
                     if(value == null) {
+                      print("passedAuthKeyNullCheck");
                       secureStorage.write(key: "sponsorshipReferral", value: uri.path.substring("/sponsorship/".length));
                       print("Wrote sponsorship: ${uri.path.substring("/sponsorship/".length)}");
                     }
