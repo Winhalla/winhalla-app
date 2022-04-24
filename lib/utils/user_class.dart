@@ -441,91 +441,146 @@ enum InterstitialType {
 
 Future<dynamic> initUser(context) async {
   await Firebase.initializeApp();
+  print('line:0');
   var storageKey = await secureStorage.read(key: "authKey");
+  print('line:1');
   if (storageKey == null) return "no data";
+  print('line:2');
   CallApi caller = CallApi(authKey: storageKey, context: context);
-  String notifToken = await FirebaseMessaging.instance.getToken().timeout(const Duration(milliseconds: 1500), onTimeout: ()=>null) ?? "";
+  print('line:3');
+  String notifToken =
+      await FirebaseMessaging.instance.getToken().timeout(const Duration(milliseconds: 1500), onTimeout: () => null) ??
+          "";
+  print('line:4');
   var data = await caller.get("/account?apple=${Platform.isIOS}&notificationTokenId=$notifToken");
+  print('line:5');
   if (data["successful"] == false) {
+    print('line:6');
     return null;
   }
+  print('line:8');
   // Tutorial
   dynamic tutorialFinished;
+  print('line:10');
   dynamic tutorialStep;
+  print('line:11');
   try {
-    tutorialFinished =
-        data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true
-            ? false
-            : true;
+    print('line:12');
+    tutorialFinished = data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true ? false : true;
+    print('line:16');
 
     if (data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true) {
+      print('line:18');
       tutorialStep = 17;
-    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] ==
-        true) {
+      print('line:19');
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] == true) {
+      print('line:21');
       tutorialStep = 13;
-    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] ==
-        true) {
+      print('line:22');
+    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] == true) {
+      print('line:24');
       tutorialStep = 8;
+      print('line:25');
     } else {
+      print('line:26');
       tutorialStep = 0;
+      print('line:27');
     }
+    print('line:28');
   } catch (e) {}
+  print('line:29');
   // Daily challenge
+  print('line:30');
   dynamic oldDailyChallengeData;
+  print('line:31');
   try {
-    var newDailyChallengeData =
-        data["data"]["user"]["dailyChallenge"]["challenges"];
+    print('line:32');
+    var newDailyChallengeData = data["data"]["user"]["dailyChallenge"]["challenges"];
+    print('line:34');
     var ssOldDailyChallengeData = await getNonNullSSData("dailyChallengeData");
+    print('line:35');
 
-    oldDailyChallengeData = ssOldDailyChallengeData != "no data"
-        ? jsonDecode(ssOldDailyChallengeData)
-        : newDailyChallengeData;
+    print('line:36');
+    oldDailyChallengeData =
+        ssOldDailyChallengeData != "no data" ? jsonDecode(ssOldDailyChallengeData) : newDailyChallengeData;
+    print('line:39');
   } catch (e) {}
+  print('line:40');
   // App tracking transparency IOS
-  if (Platform.isIOS &&
-      await AppTrackingTransparency.trackingAuthorizationStatus ==
-          TrackingStatus.notDetermined) {
+  print('line:41');
+  if (Platform.isIOS && await AppTrackingTransparency.trackingAuthorizationStatus == TrackingStatus.notDetermined) {
+    print('line:44');
     await AppTrackingTransparency.requestTrackingAuthorization();
+    print('line:45');
   }
+  print('line:46');
   // Referral link
-  try{
-    if(!kDebugMode){
+  print('line:47');
+  try {
+    print('line:48');
+    if (!kDebugMode) {
+      print('line:49');
       String? timesOpened = await secureStorage.read(key: "timesOpened");
+      print('line:50');
       String? notFirstTime = await secureStorage.read(key: "hasShownLinkPopup");
-      if(timesOpened == null){
-        await secureStorage.write(key: "timesOpened",value: "1");
+      print('line:51');
+      if (timesOpened == null) {
+        print('line:52');
+        await secureStorage.write(key: "timesOpened", value: "1");
+        print('line:53');
       } else {
+        print('line:54');
         int timesOpenInt = int.parse(timesOpened);
+        print('line:55');
         String linkId = data["data"]["user"]["linkId"];
+        print('line:56');
         int neededAppOpensToDisplayLinkAlert = notFirstTime == "true" ? 20 : 3;
+        print('line:57');
 
-        if(timesOpenInt >= neededAppOpensToDisplayLinkAlert) {
-          showDialog(context: context, builder: (_)=> LinkInfoWidget(linkId, true));
-          FirebaseAnalytics.instance.logEvent(name: "ShownReferralLinkPopup",parameters: {"isForcedPopupShow": false});
-          await secureStorage.write(key: "timesOpened",value: "0");
-          if(notFirstTime == null) await secureStorage.write(key: "hasShownLinkPopup", value:"true");
+        print('line:58');
+        if (timesOpenInt >= neededAppOpensToDisplayLinkAlert) {
+          print('line:59');
+          showDialog(context: context, builder: (_) => LinkInfoWidget(linkId, true));
+          print('line:60');
+          FirebaseAnalytics.instance.logEvent(name: "ShownReferralLinkPopup", parameters: {"isForcedPopupShow": false});
+          print('line:61');
+          await secureStorage.write(key: "timesOpened", value: "0");
+          print('line:62');
+          if (notFirstTime == null) await secureStorage.write(key: "hasShownLinkPopup", value: "true");
+          print('line:63');
 
+          print('line:64');
         } else {
-          await secureStorage.write(key: "timesOpened",value: "${timesOpenInt+1}");
+          print('line:65');
+          await secureStorage.write(key: "timesOpened", value: "${timesOpenInt + 1}");
+          print('line:66');
         }
+        print('line:67');
       }
+      print('line:68');
     }
-  }catch(e){}
+    print('line:69');
+  } catch (e) {}
+  print('line:70');
   // Pre-load ads
-  if(!kDebugMode) {
-    try{
+  print('line:71');
+  if (!kDebugMode) {
+    print('line:72');
+    try {
+      print('line:73');
       FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
+      print('line:74');
       FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
-    }catch(e){}
+      print('line:75');
+    } catch (e) {}
+    print('line:76');
   }
+  print('line:77');
   return {
     "data": data["data"],
     "authKey": storageKey,
     "callApi": caller,
     "oldDailyChallengeData": oldDailyChallengeData,
-    "tutorial": {
-      "needed": tutorialFinished ?? false,
-      "tutorialStep": tutorialStep ?? 0
-    }
+    "tutorial": {"needed": tutorialFinished ?? false, "tutorialStep": tutorialStep ?? 0}
   };
 }
