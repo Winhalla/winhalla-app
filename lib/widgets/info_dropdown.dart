@@ -40,7 +40,7 @@ void showTopSnackBar(
   timer = Timer(displayDuration, () {
     // Remove the popup after given time (after animation is finished)
     if(_previousEntry != null) {
-      _previousEntry?.remove();
+      if(_previousEntry?.mounted == true) _previousEntry?.remove();
       _previousEntry = null;
     }
   });
