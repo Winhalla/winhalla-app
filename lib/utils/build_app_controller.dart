@@ -72,7 +72,9 @@ MaterialPageRoute buildAppController(int startIndex, RouteSettings settings){
           try {
             FirebaseCrashlytics.instance.setUserIdentifier(newData["steam"]["id"]);
             FirebaseAnalytics.instance.setUserId(id: newData["steam"]["id"]);
-          } catch (e) {}
+          } catch (e,s) {
+            FirebaseCrashlytics.instance.recordError(e, s, reason: 'Firebase id setter');
+          }
 
           return ChangeNotifierProvider<User>(
               create: (_) => User(newData, callApi, keys,

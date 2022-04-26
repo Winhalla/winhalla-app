@@ -553,7 +553,9 @@ class _AppCoreState extends State<AppCore> {
                     user.value["user"]["solo"]["lastDaily"] != null) {
                   await user.callApi.get("/newDailyQuestsTutorial");
                 }
-              } catch (e) {}
+              } catch (e,s) {
+                FirebaseCrashlytics.instance.recordError(e, s, reason: 'QuestsSetter tutorial AppCore.build');
+              }
 
               if (user.inGame != null) {
                 user.exitMatch(isOnlyLayout: true);

@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +17,6 @@ import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/store_quests_data.dart';
 import 'package:winhalla_app/widgets/coin_dropdown.dart';
 import 'package:winhalla_app/widgets/info_dropdown.dart';
-import 'package:app_tracking_transparency/app_tracking_transparency.dart';
-import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_link.dart';
 
 import 'ad_helper.dart';
@@ -74,7 +73,10 @@ class User extends ChangeNotifier {
         inGame = null;
         gamesPlayedInMatch = 0;
       }
-    } catch (e) {}
+    } catch (e,s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'inGame setter');
+
+    }
     if (notify) notifyListeners();
   }
 
@@ -285,26 +287,24 @@ class User extends ChangeNotifier {
     if (shop == null ||
         lastShopRefresh + 86400 * 2 * 1000 <
             DateTime.now().millisecondsSinceEpoch) {
-      try {
-        dynamic shopData = await callApi.get("/shop");
-        if (shopData["successful"] == false) return;
-        shopData = shopData["data"];
-        var featuredItem = shopData.firstWhere((e) => e["state"] == 0);
-        var paypalItem = shopData.firstWhere((e) => e["type"] == "paypal");
-        List<dynamic> items = shopData
-            .where((e) => (e["type"] != "paypal") && (e["state"] != 0))
-            .toList();
+      dynamic shopData = await callApi.get("/shop");
+      if (shopData["successful"] == false) return;
+      shopData = shopData["data"];
+      var featuredItem = shopData.firstWhere((e) => e["state"] == 0);
+      var paypalItem = shopData.firstWhere((e) => e["type"] == "paypal");
+      List<dynamic> items = shopData
+          .where((e) => (e["type"] != "paypal") && (e["state"] != 0))
+          .toList();
 
-        items.sort((a, b) => a["state"].compareTo(b["state"]) as int);
-        var shopDataProcessed = {
-          "items": items,
-          "featuredItem": featuredItem,
-          "paypalData": paypalItem
-        };
-        shop = shopDataProcessed;
-        lastShopRefresh = DateTime.now().millisecondsSinceEpoch;
-        return shopDataProcessed;
-      } catch (e) {}
+      items.sort((a, b) => a["state"].compareTo(b["state"]) as int);
+      var shopDataProcessed = {
+        "items": items,
+        "featuredItem": featuredItem,
+        "paypalData": paypalItem
+      };
+      shop = shopDataProcessed;
+      lastShopRefresh = DateTime.now().millisecondsSinceEpoch;
+      return shopDataProcessed;
     } else {
       return shop;
     }
@@ -332,7 +332,9 @@ class User extends ChangeNotifier {
       if (dailyChallenge != null) {
         refresh();
       }
-    } catch (e) {}
+    } catch (e,s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'quest collect => daily challenge refresh');
+    }
 
     var quest = quests["${type}Quests"]
         .firstWhere((e) => e["id"] == questId, orElse: () => null);
@@ -469,7 +471,9 @@ Future<dynamic> initUser(context) async {
     } else {
       tutorialStep = 0;
     }
-  } catch (e) {}
+  } catch (e,s) {
+    FirebaseCrashlytics.instance.recordError(e, s, reason: 'Tutorial try/catch initUser');
+  }
   // Daily challenge
   dynamic oldDailyChallengeData;
   try {
@@ -480,7 +484,9 @@ Future<dynamic> initUser(context) async {
     oldDailyChallengeData = ssOldDailyChallengeData != "no data"
         ? jsonDecode(ssOldDailyChallengeData)
         : newDailyChallengeData;
-  } catch (e) {}
+  } catch (e,s) {
+    FirebaseCrashlytics.instance.recordError(e, s, reason: 'daily challenge try/catch initUser');
+  }
   // App tracking transparency IOS
   if (Platform.isIOS &&
       await AppTrackingTransparency.trackingAuthorizationStatus ==
@@ -510,13 +516,18 @@ Future<dynamic> initUser(context) async {
         }
       }
     }
-  }catch(e){}
+  }catch(e,s){
+    FirebaseCrashlytics.instance.recordError(e, s, reason: 'link popup try/catch');
+
+  }
   // Pre-load ads
   if(!kDebugMode) {
     try{
       FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
       FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
-    }catch(e){}
+    }catch(e,s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'initUser Ads init');
+    }
   }
   return {
     "data": data["data"],

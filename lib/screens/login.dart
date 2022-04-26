@@ -1,4 +1,5 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -23,7 +24,10 @@ class LoginPage extends StatelessWidget {
           step = 1;
           stepOverriden = false;
         }
-      } catch(e) {}
+      } catch(e, s) {
+        FirebaseCrashlytics.instance.recordError(e, s, reason: 'Login userData-step setter');
+
+      }
       if(accounts != null) {
         step = 2;
         stepOverriden = false;

@@ -49,10 +49,18 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
       );
     }
     try{
-      if (isGoogleLogin && credential["auth"] == null) return;
-    } catch(e){}
+      if (isGoogleLogin && credential["auth"] == null) {
+        FirebaseCrashlytics.instance.recordError("credential['auth'] is null", null, reason: "google login (if (isGoogleLogin && credential['auth'] == null))");
+        return;
+      }
+    } catch(e,s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: "google login (if (isGoogleLogin && credential['auth'] == null))");
+    }
     
-    if (isGoogleLogin ? credential["auth"].accessToken == null : credential.authorizationCode == null) return;
+    if (isGoogleLogin ? credential["auth"].accessToken == null : credential.authorizationCode == null) {
+      FirebaseCrashlytics.instance.recordError("credential['auth'].accessToken is null", null, reason: "google login, if statement before API call");
+      return;
+    }
 
     dynamic idToken;
     try {
@@ -72,10 +80,12 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
         setState((){
           _err = idToken.body;
         });
+        FirebaseCrashlytics.instance.recordError("API responded with error code ${idToken.statusCode}, text: ${idToken.body}",null, reason: 'google/apple login | await http.post(getUri("/auth/createToken")');
         return;
       }
       idToken = jsonDecode(idToken.body)["_id"];
-    } catch (e) {
+    } catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'google/apple login | await http.post(getUri("/auth/createToken")');
       if(mounted) {
         setState(() {
           _err = e.toString();
@@ -95,7 +105,9 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
         Navigator.pushNamed(context, "/");
         return;
       }
-    } catch(e){}
+    } catch(e,s){
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'AccoundtData decode try/catch');
+    }
     var skipReferralLink = await http.get(getUri("/auth/checkDetectedLink"));
     if(skipReferralLink.body == "true" || await secureStorage.read(key: "sponsorshipReferral") != null) {
       context.read<LoginPageManager>().next();

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -36,7 +37,9 @@ class _PlayPageState extends State<PlayPage> {
         if(user.value["user"]["inGame"].firstWhere((e) => e["isFinished"] == false, orElse: () => null) != null){
           hasMatchInProgress = true;
         }
-      }catch(e){}
+      }catch(e,s){
+        FirebaseCrashlytics.instance.recordError(e, s, reason: 'IsMatchInProgressSetter');
+      }
 
       return (user.inGame == null ||
               user.inGame["showMatch"] == false ||
