@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -26,6 +27,7 @@ class User extends ChangeNotifier {
   dynamic shop;
   dynamic quests;
   dynamic inGame;
+  bool isDebug;
   int gamesPlayedInMatch = 0;
   bool animateMatchHistory = false;
   GlobalKey appBarKey = GlobalKey();
@@ -407,7 +409,7 @@ class User extends ChangeNotifier {
   }
 
   User(this.value, this.callApi, this.keys, this.inGame,
-      this.oldDailyChallengeData);
+      this.oldDailyChallengeData, this.isDebug);
 
   void setAnimateMatchHistory(bool setTo) {
     animateMatchHistory = setTo;
@@ -529,6 +531,20 @@ Future<dynamic> initUser(context) async {
       FirebaseCrashlytics.instance.recordError(e, s, reason: 'initUser Ads init');
     }
   }
+  bool isDebug = false;
+  try{
+    bool hasBeenValidated = await getNonNullSSData("isDebug") == "true";
+    if(hasBeenValidated) {
+      isDebug = true;
+    } else {
+      if(data['data']["user"]["brawlhallaName"] == "Philtrom" || data['data']["user"]["brawlhallaName"] == "TheLittlePoro"){
+        isDebug = true;
+        secureStorage.write(key: "isDebug", value: "true");
+      }
+    }
+  }catch(e,s){
+    FirebaseCrashlytics.instance.recordError(e, s, reason: 'isDebug init');
+  }
   return {
     "data": data["data"],
     "authKey": storageKey,
@@ -537,6 +553,7 @@ Future<dynamic> initUser(context) async {
     "tutorial": {
       "needed": tutorialFinished ?? false,
       "tutorialStep": tutorialStep ?? 0
-    }
+    },
+    "isDebug": isDebug
   };
 }

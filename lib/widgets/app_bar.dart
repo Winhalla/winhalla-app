@@ -6,6 +6,7 @@ import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/account_edit_warning.dart';
+import 'package:winhalla_app/widgets/debug_popup.dart';
 import 'package:winhalla_app/widgets/login/google_apple_login.dart';
 import 'package:winhalla_app/widgets/popup_leave_match.dart';
 import 'package:winhalla_app/widgets/popup_legal.dart';
@@ -151,9 +152,9 @@ class _MyAppBarState extends State<MyAppBar> {
             // const Text(""),
             GestureDetector(
               onTap: () {
-                var user = context.read<User>().value;
-                var linkId = user["user"]["linkId"];
-                var accounts = user["user"]["brawlhallaAccounts"];
+                var user = context.read<User>();
+                var linkId = user.value["user"]["linkId"];
+                var accounts = user.value["user"]["brawlhallaAccounts"];
                 late OverlayEntry overlayEntry;
                 overlayEntry = OverlayEntry(
                   builder: (context) {
@@ -348,6 +349,36 @@ class _MyAppBarState extends State<MyAppBar> {
                                           ),
                                           Text(
                                             "Legal",
+                                            style: InheritedTextStyle.of(context).kBodyText3.apply(
+                                                fontFamily: "Bebas Neue",
+                                                color: kText80),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  if(user.isDebug) GestureDetector(
+                                    behavior: HitTestBehavior.translucent,
+                                    onTap: () async {
+                                      showDialog(context: context, builder: (_)=> RuntimeDebugPopup(user));
+                                      secureStorage.write(key: "isDebug", value: "true");
+                                      overlayEntry.remove();
+                                    },
+                                    child: Container(
+                                      margin: const EdgeInsets.fromLTRB(
+                                          28, 10, 24, 22),
+                                      child: Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.bug_report_outlined,
+                                            color: kText80,
+                                            size: 24,
+                                          ),
+                                          const SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            "Debug",
                                             style: InheritedTextStyle.of(context).kBodyText3.apply(
                                                 fontFamily: "Bebas Neue",
                                                 color: kText80),

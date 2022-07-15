@@ -75,10 +75,10 @@ MaterialPageRoute buildAppController(int startIndex, RouteSettings settings){
           } catch (e,s) {
             FirebaseCrashlytics.instance.recordError(e, s, reason: 'Firebase id setter');
           }
-
+          print(res.data["isDebug"]);
           return ChangeNotifierProvider<User>(
               create: (_) => User(newData, callApi, keys,
-                  inGame, res.data["oldDailyChallengeData"]),
+                  inGame, res.data["oldDailyChallengeData"], res.data["isDebug"]),
               child: AppCore(
                 startIndex: startIndex,
                 isUserDataLoaded: true,
