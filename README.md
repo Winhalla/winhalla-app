@@ -1,16 +1,12 @@
-# winhalla_app
+# Winhalla APP
+Download available [here](https://play.google.com/store/apps/details?id=com.winhalla.app)
 
-Official Winhalla mobile app flutter project
+First ever flutter project for me, many things went weird or wrong, but I now know what mistakes not to make.
+Most of the code here relatively makes sense, so it should be understandable. Especially since dart is an easy language to browse code in, in my opinion.
 
-## Getting Started
+Please use branch master to avoid sending crashlytics or analytics reports by mistake.
 
-This project is a starting point for a Flutter application.
+If anybody wants to change the Applovin plugin to the newly released one, well thanks.
 
-A few resources to get you started if this is your first Flutter project:
+I don't plan in editing this repo anymore, this project has shown by data that it was financially unsustainable.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
