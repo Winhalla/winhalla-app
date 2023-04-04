@@ -10,7 +10,7 @@ If anybody wants to change the Applovin plugin to the newly released one, well t
 
 I don't plan in editing this repo anymore, this project has shown by data that it was financially unsustainable.
 
-### Branch map
+## Branch map
 master : main dev branch  
 debug : an abandonned project of a debug version of the app  
 deployement : clone of master with additions such as crashlytics, analytics and changes such as server IP, ect.  
