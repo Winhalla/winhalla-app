@@ -97,6 +97,8 @@ class _DailyChallengeItemState extends State<DailyChallengeItem> {
                           "assets/images/CoinText90.png",
                           height: 25,
                           width: 25,
+                          cacheWidth: 80,
+                          cacheHeight: 80,
                         )
                       ],
                     ),

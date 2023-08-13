@@ -602,6 +602,8 @@ class _PaypalCreditState extends State<PaypalCredit> {
                             "assets/images/icons/paypal_logo_big.png",
                             height: 35,
                             width: 35,
+                            cacheHeight: 120,
+                            cacheWidth: 120,
                           ),
                         ),
                         const SizedBox(

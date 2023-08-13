@@ -1,9 +1,8 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_applovin_max/flutter_applovin_max.dart';
+import 'package:applovin_max/applovin_max.dart';
 import 'package:provider/provider.dart';
-import 'package:winhalla_app/main.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
 import 'package:winhalla_app/utils/user_class.dart';
@@ -13,6 +12,7 @@ class AdButton extends StatefulWidget {
   final Widget adNotReadyChild;
   final Widget adErrorChild;
   final String goal;
+
   const AdButton(
       {Key? key,
       required this.child,
@@ -40,17 +40,17 @@ class _AdButtonState extends State<AdButton> {
   bool isMAXRewardedVideoAvailable = false;
 
   Future<void> _initAds() async {
-    loadApplovinRewarded((_){
+    loadApplovinRewarded(() {
       if (mounted) {
         setState(() {
-        isMAXRewardedVideoAvailable = true;
-      });
+          isMAXRewardedVideoAvailable = true;
+        });
       }
-    }, errorCallback:(){
+    }, errorCallback: () {
       if (mounted) {
         setState(() {
-        _lastAdError = true;
-      });
+          _lastAdError = true;
+        });
       }
     });
   }
@@ -58,7 +58,8 @@ class _AdButtonState extends State<AdButton> {
   Future<void> playAd() async {
     if (user.inGame?["showActivity"] == false) user.toggleShowMatch(true);
     if (isMAXRewardedVideoAvailable) {
-      FlutterApplovinMax.showRewardVideo((AppLovinAdListener? event) => maxEventListner(event));
+      // FlutterApplovinMax.showRewardVideo((AppLovinAdListener? event) => maxEventListner(event));
+      AppLovinMAX.showRewardedAd(AdHelper.rewardedApplovinUnitId);
     } else if (_lastAdError) {
       _initAds();
     }
@@ -66,40 +67,36 @@ class _AdButtonState extends State<AdButton> {
 
   @override
   void initState() {
-
     user = context.read<User>();
     user.setKeyFx(playAd, "playAd");
     if (widget.goal == "earnMoreSoloMatch") {
       match = context.read<FfaMatch>();
     }
-    if (!kDebugMode) {
+    if (!kDebugMode || true) {
       _initAds();
     }
-    super.initState();
-  }
-
-  void maxEventListner(AppLovinAdListener? event) async {
-    // print("--------------------------$event-----------------------------");
-    if (event == AppLovinAdListener.adLoaded) {
+    AppLovinMAX.setRewardedAdListener(RewardedAdListener(onAdLoadedCallback: (ad) {
       if (mounted) {
         setState(() {
-        isMAXRewardedVideoAvailable = true;
-      });
+          isMAXRewardedVideoAvailable = true;
+        });
       }
-    }
-    if(event == AppLovinAdListener.adDisplayed){
-      FirebaseAnalytics.instance.logAdImpression(adFormat: "Rewarded", adPlatform: "AppLovin", adUnitName: "adLaunchButton_"+widget.goal);
-    }
-    if (event == AppLovinAdListener.onUserRewarded) {
-      if(mounted) {
+    }, onAdLoadFailedCallback: (reason, error) {
+      return setState(() {
+        _lastAdError = true;
+      });
+    }, onAdDisplayedCallback: (ad) {
+      FirebaseAnalytics.instance
+          .logAdImpression(adFormat: "Rewarded", adPlatform: ad.networkName, adUnitName: "adLaunchButton_" + widget.goal, value: ad.revenue, currency: 'USD');
+    }, onAdReceivedRewardCallback: (ad, reward) async {
+      if (mounted) {
         setState(() {
           isMAXRewardedVideoAvailable = false;
         });
       }
-      if(widget.goal == "earnMoreSoloMatch") FirebaseAnalytics.instance.logEvent(name: "RewardedAdMatchShown");
-      await user.callApi
-          .get(
-              "/admob/getReward?user_id=${user.value["steam"]["id"]}&custom_data=${widget.goal == "earnMoreSoloMatch" ? match?.value["_id"] : widget.goal}");
+      if (widget.goal == "earnMoreSoloMatch") FirebaseAnalytics.instance.logEvent(name: "RewardedAdMatchShown");
+      await user.callApi.get(
+          "/admob/getReward?user_id=${user.value["steam"]["id"]}&custom_data=${widget.goal == "earnMoreSoloMatch" ? match?.value["_id"] : widget.goal}");
 
       //refresh UI
       if (match != null) {
@@ -110,13 +107,15 @@ class _AdButtonState extends State<AdButton> {
         await user.refresh();
         user.keyFx["rebuildHomePage"]();
       }
-    }
-
-    if (event == AppLovinAdListener.adLoadFailed) {
+    }, onAdDisplayFailedCallback: (MaxAd ad, MaxError error) {
       return setState(() {
         _lastAdError = true;
       });
-    }
+    }, onAdClickedCallback: (MaxAd ad) {
+
+    }, onAdHiddenCallback: (MaxAd ad) {
+      AppLovinMAX.loadRewardedAd(AdHelper.rewardedApplovinUnitId); }));
+    super.initState();
   }
 
   @override

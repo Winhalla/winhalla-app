@@ -4,13 +4,13 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:applovin_max/applovin_max.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/main.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
@@ -303,7 +303,8 @@ class User extends ChangeNotifier {
     value["user"]["coins"] += price;
 
     if (!isTutorial) {
-      Future.delayed(const Duration(milliseconds: 1400), () => showInterstitialAd(InterstitialType.quests));
+      print("HEYYYYY");
+      Future.delayed(const Duration(milliseconds: 600), () => showInterstitialAd(InterstitialType.quests));
     }
     refreshOldQuestsData();
     notifyListeners();
@@ -364,7 +365,7 @@ class User extends ChangeNotifier {
   }
 
   Future<void> showInterstitialAd(InterstitialType type) async {
-    if (kDebugMode) return;
+    if (kDebugMode && false) return;
     /*try{
       if(value["steam"]["id"] == "google100943440915784958511" || value["steam"]["id"] == "google102386642559331245430") return;
     }catch(e){}*/
@@ -467,10 +468,11 @@ Future<dynamic> initUser(context) async {
     }
 
 // Pre-load ads
-    if (!kDebugMode) {
+    if (!kDebugMode || true) {
       try {
-        FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
-        FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
+        Map? sdkConfiguration = await AppLovinMAX.initialize("seN8k_vH1lOOkrUm4k_qQQruK0XbypmqiZE1yweS0q52rOUHT3AyhDTprxse1JhqLi31fBigBGDeQRGTBS3Xgv");
+        AppLovinMAX.showMediationDebugger();
+
       } catch (e, s) {
         FirebaseCrashlytics.instance.recordError(e, s, reason: 'initUser Ads init');
       }

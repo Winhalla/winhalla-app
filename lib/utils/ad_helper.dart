@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:applovin_max/applovin_max.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter_applovin_max/flutter_applovin_max.dart';
 
 import '../main.dart';
 
 class AdHelper {
-
   static String get rewardedAdUnitId {
     if (Platform.isAndroid) {
       return "ca-app-pub-7852842965403016/1142933036";
@@ -27,6 +26,7 @@ class AdHelper {
       throw UnsupportedError("Unsupported platform");
     }
   }
+
   static String get rewardedApplovinUnitId {
     if (Platform.isAndroid) {
       return "e4781c6fa48968ce";
@@ -36,6 +36,7 @@ class AdHelper {
       throw UnsupportedError("Unsupported platform");
     }
   }
+
   static String get interstitialApplovinUnitId {
     if (Platform.isAndroid) {
       return "3170fb7b5c6632f3";
@@ -46,72 +47,50 @@ class AdHelper {
     }
   }
 }
+
 bool isLoading = false;
 Timer? timer1;
-void loadApplovinRewarded(Function(Timer?) callback, {Function? errorCallback}) async {
+
+void loadApplovinRewarded(Function() callback, {Function? errorCallback}) async {
   print(isLoading);
-  if(isLoading = true){
+  if (isLoading = true) {
     timer1?.cancel();
   }
   isLoading = true;
-  await FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
-  int times = 0;
-  bool hasPerformedCallback = false;
-  void timerCallback(Timer? timer) async {
-    if(timer != null) timer1 = timer;
-    if(hasPerformedCallback == true) return timer?.cancel();
-    times ++;
-
-    // Load unsuccessful after 16 tries (9.6s)
-    if(times == 16) {
-      if(errorCallback != null) errorCallback();
-      isLoading = false;
-      timer?.cancel();
-      return;
-    }
-
-    bool? isRewardedAdReady = await FlutterApplovinMax.isRewardLoaded((_)=>null);
-    // Load successful
-    if(isRewardedAdReady == true){
-      hasPerformedCallback = true;
-      timer?.cancel();
-      callback(timer);
-    }
-  }
-  timerCallback(null);
-  Timer.periodic(const Duration(milliseconds: 600), timerCallback);
+  AppLovinMAX.loadRewardedAd(AdHelper.rewardedApplovinUnitId);
+  AppLovinMAX.setRewardedAdListener(RewardedAdListener(
+      onAdLoadedCallback: (ad) {
+        callback();
+        isLoading = false;
+      },
+      onAdLoadFailedCallback: (reason, error) {
+        if (errorCallback != null) errorCallback();
+        isLoading = false;
+      },
+      onAdDisplayedCallback: (ad) {},
+      onAdDisplayFailedCallback: (reason, error) {},
+      onAdClickedCallback: (ad) {},
+      onAdHiddenCallback: (ad) {},
+      onAdReceivedRewardCallback: (ad, reward) {}));
 }
 
 void showApplovinInterstitial(String adUnitName) async {
-  await FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
-  int times = 0;
-  bool hasShownPopup = false;
-  void timerCallback(Timer? timer) async {
-    if(hasShownPopup == true) return timer?.cancel();
-    times ++;
-    if(times == 16) return timer?.cancel();
-    bool? isRewardedAdReady = await FlutterApplovinMax.isInterstitialLoaded((_)=>null);
-    if(isRewardedAdReady == true){
-      hasShownPopup = true;
-      timer?.cancel();
-      try{
-        await FlutterApplovinMax.showInterstitialVideo((AppLovinAdListener? event) {
-          print("--------------------------$event-----------------------------");
-          if(event == AppLovinAdListener.adDisplayed){
-            FirebaseAnalytics.instance.logAdImpression(adFormat: "Interstitial", adPlatform: "AppLovin", adUnitName: adUnitName);
-          }
-          if(event == AppLovinAdListener.adHidden){
-            FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
-          }
-        });
-      } catch(e){
-        timer?.cancel();
-      }
-    } else if(times == 10) {
-      await FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
-    }
-  }
-  timerCallback(null);
-  //! convert to a function to call it before the first timer call
-  Timer.periodic(const Duration(milliseconds: 600), timerCallback);
+  AppLovinMAX.loadInterstitial(AdHelper.interstitialApplovinUnitId);
+  AppLovinMAX.setInterstitialListener(InterstitialListener(
+      onAdLoadedCallback: (ad) {
+        AppLovinMAX.showInterstitial(AdHelper.interstitialApplovinUnitId);
+      },
+      onAdLoadFailedCallback: (_, __) {print(__);},
+      onAdDisplayedCallback: (ad) {
+        FirebaseAnalytics.instance.logAdImpression(
+            adFormat: "Interstitial",
+            adPlatform: ad.networkName,
+            adUnitName: adUnitName,
+            value: ad.revenue,
+            currency: "USD");
+      },
+      onAdDisplayFailedCallback: (_, __) {print(__);},
+      onAdClickedCallback: (_) {},
+      onAdHiddenCallback: (ad) {
+      }));
 }
