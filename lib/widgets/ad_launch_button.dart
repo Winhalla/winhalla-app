@@ -89,7 +89,6 @@ class _AdButtonState extends State<AdButton> {
     }
     if(event == AppLovinAdListener.adDisplayed){
       FirebaseAnalytics.instance.logAdImpression(adFormat: "Rewarded", adPlatform: "AppLovin", adUnitName: "adLaunchButton_"+widget.goal);
-      facebookAppEvents.logAdImpression(adType: "adLaunchButton_"+widget.goal);
     }
     if (event == AppLovinAdListener.onUserRewarded) {
       if(mounted) {

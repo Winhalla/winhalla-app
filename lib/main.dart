@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:facebook_app_events/facebook_app_events.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -35,10 +34,11 @@ import 'package:winhalla_app/widgets/popup_link.dart';
 
 import 'config/themes/dark_theme.dart';
 
-final facebookAppEvents = FacebookAppEvents();
 const MethodChannel _channel = MethodChannel('winhalla.app/methodChannel');
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   // Non-flutter errors catching
   Isolate.current.addErrorListener(RawReceivePort((pair) async {
     final List<dynamic> errorAndStacktrace = pair;
@@ -50,7 +50,6 @@ void main() async {
 
   // Flutter errors catching
   runZonedGuarded<Future<void>>(() async {
-    WidgetsFlutterBinding.ensureInitialized();
     GlobalKey<NavigatorState> navKey = GlobalKey();
     runApp(MyApp(navKey: navKey));
     initializeDateFormatting(Platform.localeName);
@@ -62,8 +61,6 @@ void main() async {
         _channel.invokeMethod('createNotificationChannel', notificationChannelsMaps[i]).then((e) => null);
       }
     }
-    facebookAppEvents.setAutoLogAppEventsEnabled(true);
-    await Firebase.initializeApp();
     // -------------- Firebase messaging -------------
     FirebaseMessaging.onBackgroundMessage(firebaseNotifications);
     FirebaseMessaging.onMessage.listen(firebaseNotifications);
@@ -104,105 +101,50 @@ void main() async {
       minimumFetchInterval: const Duration(minutes: 15),
     ));
     frc.fetchAndActivate();
-  }, (error, stack) => FirebaseCrashlytics.instance.recordError(error, stack));
+  }, (error, stack) async {
+    await Firebase.initializeApp();
+    FirebaseCrashlytics.instance.recordError(error, stack);
+  });
 }
 
 class MyApp extends StatelessWidget {
   final GlobalKey<NavigatorState> navKey;
+
   const MyApp({Key? key, required this.navKey}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    facebookAppEvents.logViewContent(content: {"page": "main"});
     return ResponsiveSizer(builder: (context, orientation, screenType) {
       return InheritedTextStyle(
         kHeadline0: TextStyle(color: kText, fontSize: 33.sp > 60 ? 60 : 33.sp),
-
         kHeadline1: TextStyle(color: kText, fontSize: 28.sp > 40 ? 40 : 28.sp),
-
         kHeadline2: TextStyle(color: kText, fontSize: 24.5.sp > 35 ? 35 : 24.5.sp),
-
         kBodyText1: TextStyle(
           color: kText95,
           fontSize: 22.35.sp > 30 ? 30 : 22.35.sp,
           fontFamily: "Bebas neue",
         ),
-
-        kBodyText1Roboto: TextStyle(color: kText95, fontSize: 22.35.sp > 30 ? 30 : 22.35.sp, fontFamily: "Roboto Condensed"),
-
+        kBodyText1Roboto:
+            TextStyle(color: kText95, fontSize: 22.35.sp > 30 ? 30 : 22.35.sp, fontFamily: "Roboto Condensed"),
         kBodyText1bis: TextStyle(color: kText95, fontSize: 21.35.sp > 26 ? 26 : 21.35.sp),
-
         kBodyText2: TextStyle(color: kText95, fontSize: 20.sp > 24 ? 24 : 20.sp, fontFamily: "Roboto Condensed"),
-
         kBodyText2bis: TextStyle(color: kText95, fontSize: 19.sp > 22 ? 22 : 19.sp),
-
         kBodyText3: TextStyle(color: kText90, fontSize: 18.25.sp > 20 ? 20 : 18.25.sp, fontFamily: "Roboto Condensed"),
-
         kBodyText4: TextStyle(
           color: kText,
           fontSize: 18.25.sp > 20 ? 20 : 18.25.sp,
           fontFamily: "Bebas neue",
         ),
-        child:  MaterialApp(
+        child: MaterialApp(
           navigatorKey: navKey,
-            title: 'Winhalla',
-            theme: ThemeData(fontFamily: "Bebas Neue"),
-            debugShowCheckedModeBanner: false,
-            // Start the app with the "/" named route. In this case, the app starts
-            // on the FirstScreen widget.
-            initialRoute: '/',
-            onGenerateRoute: (RouteSettings settings) {
-
-              Uri? uri = Uri.tryParse(settings.name ?? "/");
-              uri ??= Uri.tryParse(apiUrl + (settings.name ?? "/"));
-
-              if(uri != null && uri.path == "/auth/steamCallback" && uri.queryParameters.isNotEmpty){
-                // Navigator.of(context).pop();
-                return MaterialPageRoute(
-                    settings: settings,
-                    builder: (_)=> SafeArea(child: LoginPage(stepOverride: 2, steamLoginUri: uri))
-                );
-              }
-
-
-
-              if(uri != null){
-                if(uri.path.contains("/home")){
-                  int pageNb = 0;
-                  if(uri.queryParameters["page"] != null){
-                    pageNb = int.tryParse(uri.queryParameters["page"] as String) ?? 0;
-                  }
-                  return buildAppController(pageNb, settings);
-                }
-                if(uri.path.startsWith("/sponsorship/") || uri.path.startsWith("/sponsorshipredirect/")){
-                  String substring = uri.path.startsWith("/sponsorship/") ? "/sponsorship/" : "/sponsorshipredirect/";
-                  secureStorage.read(key: "authKey").then((value) {
-                    if(value == null) {
-                      secureStorage.write(key: "sponsorshipReferral", value: uri?.path.substring(substring.length));
-                    }
-                  });
-                }
-              }
-
-              switch (settings.name) {
-                case "/contact":
-                  return MaterialPageRoute(
-                      settings: settings,
-                    builder: (context) {
-                      return const SafeArea(child: ContactPage());
-                    }
-                  );
-                case "/login":
-                  return MaterialPageRoute(
-                      settings: settings,
-                    builder: (_)=> SafeArea(child: LoginPage())
-                  );
-                case "/":
-                  return buildAppController(0, settings);
-                default:
-                  return buildAppController(0, settings);
-              }
-            },
+          title: 'Winhalla',
+          theme: ThemeData(fontFamily: "Bebas Neue"),
+          debugShowCheckedModeBanner: false,
+          // Start the app with the "/" named route. In this case, the app starts
+          // on the FirstScreen widget.
+          initialRoute: '/',
+            onGenerateInitialRoutes: (initialRoute)=>[onGenerateRoute(RouteSettings(name:initialRoute))],
+          onGenerateRoute: onGenerateRoute,
         ),
       );
     });
@@ -214,8 +156,7 @@ class AppCore extends StatefulWidget {
   final tutorial;
   final int startIndex;
 
-  const AppCore({Key? key, required this.isUserDataLoaded, this.tutorial, this.startIndex = 0})
-      : super(key: key);
+  const AppCore({Key? key, required this.isUserDataLoaded, this.tutorial, this.startIndex = 0}) : super(key: key);
 
   @override
   _AppCoreState createState() => _AppCoreState();
@@ -224,7 +165,8 @@ class AppCore extends StatefulWidget {
 class _AppCoreState extends State<AppCore> {
   int _selectedIndex = 0;
   List<Widget> screenList = [];
-  String indexToScreenName(int index){
+
+  String indexToScreenName(int index) {
     switch (index) {
       case 0:
         return "Home";
@@ -238,6 +180,7 @@ class _AppCoreState extends State<AppCore> {
         return "Unknown page";
     }
   }
+
   void switchPage(index) {
     if (context.read<User>().inGame?["showMatch"] == false) {
       context.read<User>().resetInGame();
@@ -264,6 +207,7 @@ class _AppCoreState extends State<AppCore> {
 
   bool hasSummonedTutorial = false;
   String selectedShopTab = "shop";
+
   @override
   Widget build(BuildContext context) {
     Widget child = GestureDetector(
@@ -276,25 +220,25 @@ class _AppCoreState extends State<AppCore> {
         child: Stack(
           children: [
             Scaffold(
-              floatingActionButton: kDebugMode && widget.isUserDataLoaded ? FloatingActionButton(
-                onPressed: () {
-                  context.read<User>().refresh();
-                  setState(() {
-                    _selectedIndex = 0;
-                  });
-                  // FlutterApplovinMax.showMediationDebugger();
-                  // launchURLBrowser(apiUrl+"/auth/steamCallback?t=q");
-                },
-                child: const Icon(Icons.refresh)
-              ) : null,
-            backgroundColor: kBackground,
-            appBar: !widget.isUserDataLoaded
-                ? null
-                : PreferredSize(
-                    preferredSize: Size.fromHeight(14.5.h),
-                    child: MyAppBar(widget.isUserDataLoaded, _selectedIndex)),
-            body:
-                widget.isUserDataLoaded
+                floatingActionButton: kDebugMode && widget.isUserDataLoaded
+                    ? FloatingActionButton(
+                        onPressed: () {
+                          context.read<User>().refresh();
+                          setState(() {
+                            _selectedIndex = 0;
+                          });
+                          // FlutterApplovinMax.showMediationDebugger();
+                          // launchURLBrowser(apiUrl+"/auth/steamCallback?t=q");
+                        },
+                        child: const Icon(Icons.refresh))
+                    : null,
+                backgroundColor: kBackground,
+                appBar: !widget.isUserDataLoaded
+                    ? null
+                    : PreferredSize(
+                        preferredSize: Size.fromHeight(14.5.h),
+                        child: MyAppBar(widget.isUserDataLoaded, _selectedIndex)),
+                body: widget.isUserDataLoaded
                     ? _selectedIndex == 2 ||
                             _selectedIndex ==
                                 1 // If the page is a solo match or quest, do not make it scrollable by default, because it's already a ListView
@@ -332,215 +276,212 @@ class _AppCoreState extends State<AppCore> {
                           ],
                         ),
                       ),
-            bottomNavigationBar: !widget.isUserDataLoaded
-                ? null
-                : StatefulBuilder(builder: (context, setState) {
-                    void rebuildBottomNavbar() {
-                      setState(() {});
-                    }
+                bottomNavigationBar: !widget.isUserDataLoaded
+                    ? null
+                    : StatefulBuilder(builder: (context, setState) {
+                        void rebuildBottomNavbar() {
+                          setState(() {});
+                        }
 
-                    context
-                        .read<User>()
-                        .setKeyFx(rebuildBottomNavbar, "rebuildBottomNavbar");
-                    return Container(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
-                      decoration: const BoxDecoration(
-                        color: kBackground,
-                        /*boxShadow: [
+                        context.read<User>().setKeyFx(rebuildBottomNavbar, "rebuildBottomNavbar");
+                        return Container(
+                          padding: const EdgeInsets.fromLTRB(0, 0, 0, 0),
+                          decoration: const BoxDecoration(
+                            color: kBackground,
+                            /*boxShadow: [
                                         BoxShadow(
                                           offset: Offset(0, -8),
                                           blurRadius: 8,
                                           color: Colors.black.withOpacity(0.20)
                                         )
                                       ]*/
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.translucent,
-                              onTap: () {
-                                switchPage(0);
-                              },
-                              child: SizedBox(
-                                height: 90,
-                                child: Icon(
-                                  Icons.home_outlined,
-                                  key: context.read<User>().keys[13],
-                                  color: _selectedIndex == 0 ? kPrimary : kText95,
-                                  size: 34,
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            // mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.translucent,
+                                  onTap: () {
+                                    switchPage(0);
+                                  },
+                                  child: SizedBox(
+                                    height: 90,
+                                    child: Icon(
+                                      Icons.home_outlined,
+                                      key: context.read<User>().keys[13],
+                                      color: _selectedIndex == 0 ? kPrimary : kText95,
+                                      size: 34,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          Expanded(
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.translucent,
-                              onTap: () {
-                                switchPage(1);
-                              },
-                              child: SizedBox(
-                                height: 90,
-                                child: Icon(
-                                  Icons.check_box_outlined,
-                                  key: context.read<User>().keys[8],
-                                  color: _selectedIndex == 1 ? kPrimary : kText95,
-                                  size: 34,
+                              Expanded(
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.translucent,
+                                  onTap: () {
+                                    switchPage(1);
+                                  },
+                                  child: SizedBox(
+                                    height: 90,
+                                    child: Icon(
+                                      Icons.check_box_outlined,
+                                      key: context.read<User>().keys[8],
+                                      color: _selectedIndex == 1 ? kPrimary : kText95,
+                                      size: 34,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                          Expanded(
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.translucent,
-                              onTap: () {
-                                switchPage(2);
-                              },
-                              child: SizedBox(
-                                height: 90,
-                                child: Consumer<User>(builder: (context, user, _) {
-                                  /*if (user.inGame == false) {
+                              Expanded(
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.translucent,
+                                  onTap: () {
+                                    switchPage(2);
+                                  },
+                                  child: SizedBox(
+                                    height: 90,
+                                    child: Consumer<User>(builder: (context, user, _) {
+                                      /*if (user.inGame == false) {
                                         Future.delayed(Duration(milliseconds: 1), () {
                                           switchPage(0);
                                         });
                                       }*/
-                                  return Icon(
-                                    Icons.play_circle_outline_outlined,
-                                    key: user.keys[1],
-                                    color: _selectedIndex == 2
-                                        ? kPrimary
-                                        : user.inGame != null &&
-                                                user.inGame["showActivity"] !=
-                                                    false &&
-                                                user.inGame != false &&
-                                                user.inGame["joinDate"] +
-                                                        3600 * 1000 >
-                                                    DateTime.now()
-                                                        .millisecondsSinceEpoch
-                                            ? kOrange
-                                            : kText95,
-                                    size: 34,
-                                  );
-                                }),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.translucent,
-                              onTap: () {
-                                switchPage(3);
-                              },
-                              child: SizedBox(
-                                height: 90,
-                                child: Icon(
-                                  Icons.card_giftcard,
-                                  color: _selectedIndex == 3 ? kPrimary : kText95,
-                                  size: 34,
+                                      return Icon(
+                                        Icons.play_circle_outline_outlined,
+                                        key: user.keys[1],
+                                        color: _selectedIndex == 2
+                                            ? kPrimary
+                                            : user.inGame != null &&
+                                                    user.inGame["showActivity"] != false &&
+                                                    user.inGame != false &&
+                                                    user.inGame["joinDate"] + 3600 * 1000 >
+                                                        DateTime.now().millisecondsSinceEpoch
+                                                ? kOrange
+                                                : kText95,
+                                        size: 34,
+                                      );
+                                    }),
+                                  ),
                                 ),
                               ),
-                            ),
+                              Expanded(
+                                child: GestureDetector(
+                                  behavior: HitTestBehavior.translucent,
+                                  onTap: () {
+                                    switchPage(3);
+                                  },
+                                  child: SizedBox(
+                                    height: 90,
+                                    child: Icon(
+                                      Icons.card_giftcard,
+                                      color: _selectedIndex == 3 ? kPrimary : kText95,
+                                      size: 34,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    );
-                  })),
-            if (_selectedIndex == 3) Positioned(
-              bottom: 89,
-              left: 0,
-              child: IgnorePointer(
-                child: Container(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                          begin: Alignment.bottomCenter,
-                          end: Alignment.topCenter,
-                          stops: const [0,0.7,1],
-                          colors: [
-                            kBackground,
-                            kBackground.withOpacity(0.67),
-                            kBackground.withOpacity(0.0)
-                          ]
-                      )
+                        );
+                      })),
+            if (_selectedIndex == 3)
+              Positioned(
+                bottom: 89,
+                left: 0,
+                child: IgnorePointer(
+                  child: Container(
+                    decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            stops: const [0, 0.7, 1],
+                            colors: [kBackground, kBackground.withOpacity(0.67), kBackground.withOpacity(0.0)])),
+                    child: SizedBox(
+                      height: 15.h,
+                      width: 100.w,
+                    ),
                   ),
-                  child: SizedBox(height: 15.h,width: 100.w,),
                 ),
               ),
-            ),
-            if (_selectedIndex == 3) Positioned(
-              left: 18.w,
-              right: 18.w,
-              bottom: 2.5.h+89,
-              child: Container(
-                padding: EdgeInsets.symmetric(horizontal: 2.5.w, vertical: 3),
-                decoration: BoxDecoration(
-                    border: Border.all(color: kBlack, width: 1),
-                    borderRadius: BorderRadius.circular(14),
-                    color: kBackgroundVariant
-                ),
-                child: StatefulBuilder(
-                    builder: (BuildContext context, StateSetter setState) {
-                      return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            MaterialButton(
-                              minWidth: 27.5.w,
-                              elevation: 0,
-                              color: kBackgroundVariant,
-                              disabledColor: kBackground,
-                              onPressed: selectedShopTab != "shop" ? () {
+            if (_selectedIndex == 3)
+              Positioned(
+                left: 18.w,
+                right: 18.w,
+                bottom: 2.5.h + 89,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 2.5.w, vertical: 3),
+                  decoration: BoxDecoration(
+                      border: Border.all(color: kBlack, width: 1),
+                      borderRadius: BorderRadius.circular(14),
+                      color: kBackgroundVariant),
+                  child: StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
+                    return Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                      MaterialButton(
+                        minWidth: 27.5.w,
+                        elevation: 0,
+                        color: kBackgroundVariant,
+                        disabledColor: kBackground,
+                        onPressed: selectedShopTab != "shop"
+                            ? () {
                                 context.read<User>().keyFx["switchShopTab"]("shop");
-                                FirebaseAnalytics.instance.setCurrentScreen(screenName: "Shop", screenClassOverride: "MainActivity");
+                                FirebaseAnalytics.instance
+                                    .setCurrentScreen(screenName: "Shop", screenClassOverride: "MainActivity");
                                 setState(() => selectedShopTab = "shop");
-                              } : null,
-                              padding: EdgeInsets.fromLTRB(6.w, 0.75.h, 6.w, 0.5.h),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14.0),
-                              ),
-                              child: Text(
-                                  "Shop",
-                                  style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: selectedShopTab != "shop"? kGray : null)
-                              ),
-                            ),
-                            SizedBox(width: 2.5.w),
-                            MaterialButton(
-                              minWidth: 27.5.w,
-                              elevation: 0,
-                              color: kBackgroundVariant,
-                              disabledColor: kBackground,
-                              onPressed: selectedShopTab == "shop" ? () {
+                              }
+                            : null,
+                        padding: EdgeInsets.fromLTRB(6.w, 0.75.h, 6.w, 0.5.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14.0),
+                        ),
+                        child: Text("Shop",
+                            style: InheritedTextStyle.of(context)
+                                .kBodyText1bis
+                                .apply(color: selectedShopTab != "shop" ? kGray : null)),
+                      ),
+                      SizedBox(width: 2.5.w),
+                      MaterialButton(
+                        minWidth: 27.5.w,
+                        elevation: 0,
+                        color: kBackgroundVariant,
+                        disabledColor: kBackground,
+                        onPressed: selectedShopTab == "shop"
+                            ? () {
                                 context.read<User>().keyFx["switchShopTab"]("orders");
-                                FirebaseAnalytics.instance.setCurrentScreen(screenName: "Orders", screenClassOverride: "MainActivity");
+                                FirebaseAnalytics.instance
+                                    .setCurrentScreen(screenName: "Orders", screenClassOverride: "MainActivity");
                                 setState(() => selectedShopTab = "orders");
-                              } : null,
-                              padding: EdgeInsets.fromLTRB(6.w, 0.75.h, 6.w, 0.5.h),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14.0),
-                              ),
-                              child: Text("Orders", style: InheritedTextStyle.of(context).kBodyText1bis.apply(color: selectedShopTab == "shop"? kGray : null)),
-                            ),
-                          ]
-                      );
-                    }
+                              }
+                            : null,
+                        padding: EdgeInsets.fromLTRB(6.w, 0.75.h, 6.w, 0.5.h),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14.0),
+                        ),
+                        child: Text("Orders",
+                            style: InheritedTextStyle.of(context)
+                                .kBodyText1bis
+                                .apply(color: selectedShopTab == "shop" ? kGray : null)),
+                      ),
+                    ]);
+                  }),
                 ),
-              ),
-            )
+              )
           ],
         ));
     if (widget.tutorial?["needed"] == true) {
       double screenH = MediaQuery.of(context).size.height;
       double screenW = MediaQuery.of(context).size.width;
       return ChangeNotifierProvider<TutorialController>(
-        create: (context) => TutorialController(widget.tutorial["tutorialStep"],
-            context.read<User>().keys, screenW, screenH, context),
+        create: (context) =>
+            TutorialController(widget.tutorial["tutorialStep"], context.read<User>().keys, screenW, screenH, context),
         child: Builder(builder: (context) {
           if (!hasSummonedTutorial) {
             hasSummonedTutorial = true;
             User user = context.read<User>();
-            if(user.value["user"]["needsLinkAlertPopup"] == true){
-              user.callApi.post("/deactivateLinkPopup","{}");
-              Future.delayed(const Duration(milliseconds: 2500), (){
+            if (user.value["user"]["needsLinkAlertPopup"] == true) {
+              user.callApi.post("/deactivateLinkPopup", "{}");
+              Future.delayed(const Duration(milliseconds: 2500), () {
                 late OverlayEntry overlayEntry;
                 overlayEntry = OverlayEntry(builder: (_) => LinkActivatedWidget(overlayEntry));
                 Overlay.of(context)!.insert(overlayEntry);
@@ -553,7 +494,7 @@ class _AppCoreState extends State<AppCore> {
                     user.value["user"]["solo"]["lastDaily"] != null) {
                   await user.callApi.get("/newDailyQuestsTutorial");
                 }
-              } catch (e,s) {
+              } catch (e, s) {
                 FirebaseCrashlytics.instance.recordError(e, s, reason: 'QuestsSetter tutorial AppCore.build');
               }
 
@@ -572,6 +513,7 @@ class _AppCoreState extends State<AppCore> {
     }
   }
 }
+
 /*
 /// Text size tester
 Scaffold(
@@ -620,6 +562,49 @@ Scaffold(
     ),
   ),
 ),*/
-void createNotificationChannel(){
+void createNotificationChannel() {}
+MaterialPageRoute onGenerateRoute
+      (RouteSettings settings) {
+    Uri? uri = Uri.tryParse(settings.name ?? "/");
+    uri ??= Uri.tryParse(apiUrl + (settings.name ?? "/"));
+
+    if (uri != null && uri.path == "/auth/steamCallback" && uri.queryParameters.isNotEmpty) {
+      // Navigator.of(context).pop();
+      return MaterialPageRoute(
+          settings: settings, builder: (_) => SafeArea(child: LoginPage(stepOverride: 2, steamLoginUri: uri)));
+    }
+
+    if (uri != null) {
+      if (uri.path.contains("/home")) {
+        int pageNb = 0;
+        if (uri.queryParameters["page"] != null) {
+          pageNb = int.tryParse(uri.queryParameters["page"] as String) ?? 0;
+        }
+        return buildAppController(pageNb, settings);
+      }
+      if (uri.path.startsWith("/sponsorship/") || uri.path.startsWith("/sponsorshipredirect/")) {
+        String substring = uri.path.startsWith("/sponsorship/") ? "/sponsorship/" : "/sponsorshipredirect/";
+        secureStorage.read(key: "authKey").then((value) {
+          if (value == null) {
+            secureStorage.write(key: "sponsorshipReferral", value: uri?.path.substring(substring.length));
+          }
+        });
+      }
+    }
+
+    switch (settings.name) {
+      case "/contact":
+        return MaterialPageRoute(
+            settings: settings,
+            builder: (context) {
+              return const SafeArea(child: ContactPage());
+            });
+      case "/login":
+        return MaterialPageRoute(settings: settings, builder: (_) => SafeArea(child: LoginPage()));
+      case "/":
+        return buildAppController(0, settings);
+      default:
+        return buildAppController(0, settings);
+    }
 
 }

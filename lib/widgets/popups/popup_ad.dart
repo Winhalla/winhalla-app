@@ -114,7 +114,6 @@ Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match,
                         FlutterApplovinMax.showRewardVideo((event) {
                           if(event == AppLovinAdListener.adDisplayed){
                             FirebaseAnalytics.instance.logAdImpression(adFormat: "Rewarded", adPlatform: "AppLovin", adUnitName: "adPopupFfa");
-                            facebookAppEvents.logAdImpression(adType: "adPopupFfa");
                           }
                           if (event == AppLovinAdListener.onUserRewarded) {
                             adCallback(match, context, user);

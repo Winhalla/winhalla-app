@@ -66,11 +66,16 @@ class _AccountCreationState extends State<AccountCreation> {
   void initState() {
     super.initState();
 
+    print("-----------BUILT----------");
     // Pop all routes under bc steam login creates another page
     if (widget.steamLoginUri != null) {
-      Future.delayed(const Duration(milliseconds: 0), () {
-        Navigator.of(context).removeRouteBelow(ModalRoute.of(context) as Route);
-      });
+        Future.delayed(const Duration(milliseconds: 0), () {
+          final ModalRoute<dynamic>? parentRoute = ModalRoute.of(context);
+          final bool canPop = parentRoute?.canPop ?? false;
+          if(canPop) {
+            Navigator.of(context).removeRouteBelow(ModalRoute.of(context) as Route);
+          }
+        });
     }
 
     if (widget.steamLoginUri != null) {
@@ -93,7 +98,6 @@ class _AccountCreationState extends State<AccountCreation> {
               );
             }
           }
-          loadItemsList(true);
           var openId = OpenId.fromUri(widget.steamLoginUri as Uri);
           if (openId.mode != 'id_res') throw Exception("OpenID mode is not id_res, it is ${openId.mode == "" ? "null" : openId.mode}");
           if (openId.data["openid.claimed_id"] == null) {
@@ -103,6 +107,7 @@ class _AccountCreationState extends State<AccountCreation> {
           if (steamId == null) {
             throw Exception("No steamID found in query param 'claimed_id'");
           }
+          print(steamId);
           var apiResponse = await http.get(getUri("/auth/getBIDFromSteamId/$steamId"));
           if (apiResponse.statusCode < 200 || apiResponse.statusCode > 299) {
             throw Exception("Api responded with error code : ${apiResponse.statusCode}; message: ${apiResponse.body}");
@@ -417,7 +422,6 @@ class _AccountCreationState extends State<AccountCreation> {
                     } catch (e) {}
 
                     FirebaseAnalytics.instance.logEvent(name: "CreateAccount");
-                        facebookAppEvents.logCompletedRegistration();
                         await secureStorage.write(key: 'link', value: null);
                     await secureStorage.write(key: 'sponsorshipReferral', value: null);
                     Navigator.pushNamedAndRemoveUntil(

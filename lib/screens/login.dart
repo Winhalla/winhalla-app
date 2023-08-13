@@ -20,7 +20,7 @@ class LoginPage extends StatelessWidget {
     bool stepOverriden = false;
     if(stepOverride == null){
       try{
-        if(userData?["data"]?["steam"] != null) {
+        if(userData != "no data" && userData?["data"]?["steam"] != null) {
           step = 1;
           stepOverriden = false;
         }
@@ -42,7 +42,6 @@ class LoginPage extends StatelessWidget {
       const EnterLink(),
       AccountCreation(accounts: accounts, stepOverriden: stepOverriden, steamLoginUri:steamLoginUri ),
     ];
-
 
     return SafeArea(
       child: Scaffold(

@@ -17,17 +17,21 @@ MaterialPageRoute buildAppController(int startIndex, RouteSettings settings){
     child: FutureBuilder(
         future: initUser(context),
         builder: (context, AsyncSnapshot<dynamic> res) {
+
           if (!res.hasData) {
             return const AppCore(isUserDataLoaded: false);
           }
           if (res.data == "no data" ||
               res.data["data"] == "" ||
               res.data["data"] == null) {
-            return LoginPage(userData: res.data);
+            return Center(child: LoginPage(userData: res.data));
           }
 
           if (res.data["data"]["user"] == null) {
-            return LoginPage(userData: res.data);
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: LoginPage(userData: res.data),
+            );
           }
 
           // Do not edit res.data directly otherwise it calls the build function again for some reason

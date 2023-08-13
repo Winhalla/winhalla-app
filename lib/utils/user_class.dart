@@ -51,15 +51,13 @@ class User extends ChangeNotifier {
     value = accountData["data"];
 
     var inGameData = value["user"]["inGame"];
-    var currentMatch =
-        inGameData.where((g) => g["isFinished"] == false).toList();
+    var currentMatch = inGameData.where((g) => g["isFinished"] == false).toList();
 
     var newDailyChallengeData = value["user"]["dailyChallenge"]["challenges"];
     var ssOldDailyChallengeData = await getNonNullSSData("dailyChallengeData");
 
-    oldDailyChallengeData = ssOldDailyChallengeData != "no data"
-        ? jsonDecode(ssOldDailyChallengeData)
-        : newDailyChallengeData;
+    oldDailyChallengeData =
+        ssOldDailyChallengeData != "no data" ? jsonDecode(ssOldDailyChallengeData) : newDailyChallengeData;
 
     /*await secureStorage.write(
         key: "dailyChallengeData", value: jsonEncode(newDailyChallengeData));*/
@@ -75,17 +73,14 @@ class User extends ChangeNotifier {
         inGame = null;
         gamesPlayedInMatch = 0;
       }
-    } catch (e,s) {
+    } catch (e, s) {
       FirebaseCrashlytics.instance.recordError(e, s, reason: 'inGame setter');
-
     }
     if (notify) notifyListeners();
   }
 
-  Future<bool> refreshQuests(BuildContext context,
-      {bool showInfo = false, isTutorial = false}) async {
-    var accountData = await callApi
-        .get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
+  Future<bool> refreshQuests(BuildContext context, {bool showInfo = false, isTutorial = false}) async {
+    var accountData = await callApi.get("/solo" + (isTutorial == true ? "?tutorial=true" : ""));
 
     if (accountData["successful"] == false) return true;
     var accountDataDecoded = accountData["data"]["solo"];
@@ -104,7 +99,6 @@ class User extends ChangeNotifier {
     notifyListeners();
 
     if (accountData["data"]["newQuests"] == true) {
-
       if (showInfo) {
         showInfoDropdown(
           context,
@@ -116,12 +110,7 @@ class User extends ChangeNotifier {
           ),*/
         );
       }
-      FirebaseAnalytics.instance.logEvent(
-          name: "QuestsRefresh",
-          parameters:{
-            "updated":true
-          }
-      );
+      FirebaseAnalytics.instance.logEvent(name: "QuestsRefresh", parameters: {"updated": true});
       return false;
     }
     if (accountData["data"]["updatedPlatforms"] == null) {
@@ -149,25 +138,14 @@ class User extends ChangeNotifier {
               children: icons,
             ));
       }
-      FirebaseAnalytics.instance.logEvent(
-          name: "QuestsRefresh",
-          parameters:{
-            "updated":true
-          }
-      );
+      FirebaseAnalytics.instance.logEvent(name: "QuestsRefresh", parameters: {"updated": true});
       return false;
     }
-    FirebaseAnalytics.instance.logEvent(
-        name: "QuestsRefresh",
-        parameters:{
-          "updated":false
-        }
-    );
+    FirebaseAnalytics.instance.logEvent(name: "QuestsRefresh", parameters: {"updated": false});
     return true;
   }
 
-  Future<String> enterMatch(
-      {bool isTutorial = false, String? targetedMatchId, bool isFromMatchHistory = false}) async {
+  Future<String> enterMatch({bool isTutorial = false, String? targetedMatchId, bool isFromMatchHistory = false}) async {
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "SoloMatch", screenClassOverride: "MainActivity");
     if (isTutorial) {
       inGame = {
@@ -178,7 +156,6 @@ class User extends ChangeNotifier {
       notifyListeners();
       return "tutorial";
     }
-
 
     if (inGame != null) {
       inGame = null;
@@ -195,7 +172,6 @@ class User extends ChangeNotifier {
       if (matchId["successful"] == false) return "err";
       matchId = matchId["data"];
     }
-    facebookAppEvents.logEvent(name: "JoinSoloMatch");
     FirebaseAnalytics.instance.logEvent(
       name: "JoinSoloMatch",
     );
@@ -211,8 +187,7 @@ class User extends ChangeNotifier {
       'id': matchId,
       'joinDate': DateTime.now().millisecondsSinceEpoch,
       'isFinished': false,
-      'showActivity':
-          targetedMatchId != null && isFromMatchHistory ? false : null,
+      'showActivity': targetedMatchId != null && isFromMatchHistory ? false : null,
       'showMatch': true,
       'isFromMatchHistory': isFromMatchHistory
     };
@@ -222,10 +197,7 @@ class User extends ChangeNotifier {
   }
 
   Future<void> exitMatch(
-      {isOnlyLayout = false,
-      isBackButton = false,
-      isFromMatchHistory = false,
-      matchHistoryAnimated = false}) async {
+      {isOnlyLayout = false, isBackButton = false, isFromMatchHistory = false, matchHistoryAnimated = false}) async {
     FirebaseAnalytics.instance.setCurrentScreen(screenName: "Play", screenClassOverride: "MainActivity");
     if (isBackButton) {
       inGame["isShown"] = false;
@@ -252,9 +224,7 @@ class User extends ChangeNotifier {
   }
 
   Future initQuestsData() async {
-    if (lastQuestsRefresh + 900 * 1000 >
-            DateTime.now().millisecondsSinceEpoch &&
-        quests != null) {
+    if (lastQuestsRefresh + 900 * 1000 > DateTime.now().millisecondsSinceEpoch && quests != null) {
       return true;
     }
     dynamic questsData = await callApi.get("/solo");
@@ -262,15 +232,9 @@ class User extends ChangeNotifier {
     if (questsData["successful"] == false) return;
     questsData = questsData["data"]["solo"];
     //Add finished quests before the other ones
-    questsData["dailyQuests"] = [
-      ...questsData["finished"]["daily"],
-      ...questsData["dailyQuests"]
-    ];
+    questsData["dailyQuests"] = [...questsData["finished"]["daily"], ...questsData["dailyQuests"]];
 
-    questsData["weeklyQuests"] = [
-      ...questsData["finished"]["weekly"],
-      ...questsData["weeklyQuests"]
-    ];
+    questsData["weeklyQuests"] = [...questsData["finished"]["weekly"], ...questsData["weeklyQuests"]];
     quests = questsData;
     lastQuestsRefresh = DateTime.now().millisecondsSinceEpoch;
 
@@ -286,24 +250,16 @@ class User extends ChangeNotifier {
   }
 
   Future initShopData() async {
-    if (shop == null ||
-        lastShopRefresh + 86400 * 2 * 1000 <
-            DateTime.now().millisecondsSinceEpoch) {
+    if (shop == null || lastShopRefresh + 86400 * 2 * 1000 < DateTime.now().millisecondsSinceEpoch) {
       dynamic shopData = await callApi.get("/shop");
       if (shopData["successful"] == false) return;
       shopData = shopData["data"];
       var featuredItem = shopData.firstWhere((e) => e["state"] == 0);
       var paypalItem = shopData.firstWhere((e) => e["type"] == "paypal");
-      List<dynamic> items = shopData
-          .where((e) => (e["type"] != "paypal") && (e["state"] != 0))
-          .toList();
+      List<dynamic> items = shopData.where((e) => (e["type"] != "paypal") && (e["state"] != 0)).toList();
 
       items.sort((a, b) => a["state"].compareTo(b["state"]) as int);
-      var shopDataProcessed = {
-        "items": items,
-        "featuredItem": featuredItem,
-        "paypalData": paypalItem
-      };
+      var shopDataProcessed = {"items": items, "featuredItem": featuredItem, "paypalData": paypalItem};
       shop = shopDataProcessed;
       lastShopRefresh = DateTime.now().millisecondsSinceEpoch;
       return shopDataProcessed;
@@ -321,29 +277,23 @@ class User extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> collectQuest(int questId, String type, int price,
-      {isTutorial = false}) async {
-    var result =
-        await callApi.post("/solo/collect?id=$questId&type=$type", "{}");
+  Future<void> collectQuest(int questId, String type, int price, {isTutorial = false}) async {
+    var result = await callApi.post("/solo/collect?id=$questId&type=$type", "{}");
     if (result["successful"] == false) return;
     try {
       var dailyChallenge = value["user"]["dailyChallenge"]["challenges"]
-          .firstWhere(
-              (e) => e["goal"] == "winhallaQuest" && e["active"] == true,
-              orElse: () => null);
+          .firstWhere((e) => e["goal"] == "winhallaQuest" && e["active"] == true, orElse: () => null);
       if (dailyChallenge != null) {
         refresh();
       }
-    } catch (e,s) {
+    } catch (e, s) {
       FirebaseCrashlytics.instance.recordError(e, s, reason: 'quest collect => daily challenge refresh');
     }
 
-    var quest = quests["${type}Quests"]
-        .firstWhere((e) => e["id"] == questId, orElse: () => null);
+    var quest = quests["${type}Quests"].firstWhere((e) => e["id"] == questId, orElse: () => null);
 
     if (quest != null) {
-      showCoinDropdown(appBarKey.currentContext as BuildContext,
-          value["user"]["coins"], quest["reward"]);
+      showCoinDropdown(appBarKey.currentContext as BuildContext, value["user"]["coins"], quest["reward"]);
     }
     FirebaseAnalytics.instance.logEvent(
       name: "CollectQuest",
@@ -404,51 +354,50 @@ class User extends ChangeNotifier {
   void refreshOldDailyChallengeData() async {
     oldDailyChallengeData = value["user"]["dailyChallenge"]["challenges"];
     await secureStorage.write(
-        key: "dailyChallengeData",
-        value: jsonEncode(value["user"]["dailyChallenge"]["challenges"]));
+        key: "dailyChallengeData", value: jsonEncode(value["user"]["dailyChallenge"]["challenges"]));
   }
 
-  User(this.value, this.callApi, this.keys, this.inGame,
-      this.oldDailyChallengeData, this.isDebug);
+  User(this.value, this.callApi, this.keys, this.inGame, this.oldDailyChallengeData, this.isDebug);
 
   void setAnimateMatchHistory(bool setTo) {
     animateMatchHistory = setTo;
   }
-  Future<void> showInterstitialAd(InterstitialType type) async {
 
+  Future<void> showInterstitialAd(InterstitialType type) async {
     if (kDebugMode) return;
     /*try{
       if(value["steam"]["id"] == "google100943440915784958511" || value["steam"]["id"] == "google102386642559331245430") return;
     }catch(e){}*/
 
     // Not more than an inter per minute and one for each type each 3 minutes
-    if(lastInterstitialAd + 60 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
-    if(type == InterstitialType.match && lastMatchInterstitial + 120 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
-    if(type == InterstitialType.quests && lastQuestsInterstitial + 120 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
+    if (lastInterstitialAd + 60 * 1000 > DateTime.now().millisecondsSinceEpoch) return;
+    if (type == InterstitialType.match && lastMatchInterstitial + 120 * 1000 > DateTime.now().millisecondsSinceEpoch)
+      return;
+    if (type == InterstitialType.quests && lastQuestsInterstitial + 120 * 1000 > DateTime.now().millisecondsSinceEpoch)
+      return;
 
     lastInterstitialAd = DateTime.now().millisecondsSinceEpoch;
-    if(type == InterstitialType.match) lastMatchInterstitial = DateTime.now().millisecondsSinceEpoch;
-    if(type == InterstitialType.quests) lastQuestsInterstitial = DateTime.now().millisecondsSinceEpoch;
+    if (type == InterstitialType.match) lastMatchInterstitial = DateTime.now().millisecondsSinceEpoch;
+    if (type == InterstitialType.quests) lastQuestsInterstitial = DateTime.now().millisecondsSinceEpoch;
 
     showApplovinInterstitial(type == InterstitialType.match
         ? "pre-match"
         : type == InterstitialType.quests
-        ? "after-quests"
-        : "other");
+            ? "after-quests"
+            : "other");
   }
 }
 
-enum InterstitialType {
-  match,
-  quests
-}
+enum InterstitialType { match, quests }
 
 Future<dynamic> initUser(context) async {
   await Firebase.initializeApp();
   var storageKey = await secureStorage.read(key: "authKey");
   if (storageKey == null) return "no data";
   CallApi caller = CallApi(authKey: storageKey, context: context);
-  String notifToken = await FirebaseMessaging.instance.getToken().timeout(const Duration(milliseconds: 1500), onTimeout: ()=>null) ?? "";
+  String notifToken =
+      await FirebaseMessaging.instance.getToken().timeout(const Duration(milliseconds: 1500), onTimeout: () => null) ??
+          "";
   var data = await caller.get("/account?apple=${Platform.isIOS}&notificationTokenId=$notifToken");
   if (data["successful"] == false) {
     return null;
@@ -456,104 +405,97 @@ Future<dynamic> initUser(context) async {
   // Tutorial
   dynamic tutorialFinished;
   dynamic tutorialStep;
-  try {
-    tutorialFinished =
-        data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true
-            ? false
-            : true;
-
-    if (data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true) {
-      tutorialStep = 17;
-    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] ==
-        true) {
-      tutorialStep = 13;
-    } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] ==
-        true) {
-      tutorialStep = 8;
-    } else {
-      tutorialStep = 0;
-    }
-  } catch (e,s) {
-    FirebaseCrashlytics.instance.recordError(e, s, reason: 'Tutorial try/catch initUser');
-  }
-  // Daily challenge
   dynamic oldDailyChallengeData;
-  try {
-    var newDailyChallengeData =
-        data["data"]["user"]["dailyChallenge"]["challenges"];
-    var ssOldDailyChallengeData = await getNonNullSSData("dailyChallengeData");
+  bool isDebug = false;
+  if (data["data"]["user"] != null) {
+    try {
+      tutorialFinished = data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true ? false : true;
 
-    oldDailyChallengeData = ssOldDailyChallengeData != "no data"
-        ? jsonDecode(ssOldDailyChallengeData)
-        : newDailyChallengeData;
-  } catch (e,s) {
-    FirebaseCrashlytics.instance.recordError(e, s, reason: 'daily challenge try/catch initUser');
-  }
-  // App tracking transparency IOS
-  if (Platform.isIOS &&
-      await AppTrackingTransparency.trackingAuthorizationStatus ==
-          TrackingStatus.notDetermined) {
-    await AppTrackingTransparency.requestTrackingAuthorization();
-  }
-  // Referral link
-  try{
-    if(!kDebugMode){
-      String? timesOpened = await secureStorage.read(key: "timesOpened");
-      String? notFirstTime = await secureStorage.read(key: "hasShownLinkPopup");
-      if(timesOpened == null){
-        await secureStorage.write(key: "timesOpened",value: "1");
+      if (data["data"]["user"]["tutorialStep"]["hasFinishedTutorial"] == true) {
+        tutorialStep = 17;
+      } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialQuest"] == true) {
+        tutorialStep = 13;
+      } else if (data["data"]["user"]["tutorialStep"]["hasDoneTutorialMatch"] == true) {
+        tutorialStep = 8;
       } else {
-        int timesOpenInt = int.parse(timesOpened);
-        String linkId = data["data"]["user"]["linkId"];
-        int neededAppOpensToDisplayLinkAlert = notFirstTime == "true" ? 20 : 3;
+        tutorialStep = 0;
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'Tutorial try/catch initUser');
+    }
 
-        if(timesOpenInt >= neededAppOpensToDisplayLinkAlert) {
-          showDialog(context: context, builder: (_)=> LinkInfoWidget(linkId, true));
-          FirebaseAnalytics.instance.logEvent(name: "ShownReferralLinkPopup",parameters: {"isForcedPopupShow": false});
-          await secureStorage.write(key: "timesOpened",value: "0");
-          if(notFirstTime == null) await secureStorage.write(key: "hasShownLinkPopup", value:"true");
+    // Daily challenge
+    try {
+      var newDailyChallengeData = data["data"]["user"]["dailyChallenge"]["challenges"];
+      var ssOldDailyChallengeData = await getNonNullSSData("dailyChallengeData");
 
+      oldDailyChallengeData =
+      ssOldDailyChallengeData != "no data" ? jsonDecode(ssOldDailyChallengeData) : newDailyChallengeData;
+    } catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'daily challenge try/catch initUser');
+    }
+
+    // App tracking transparency IOS
+    if (Platform.isIOS && await AppTrackingTransparency.trackingAuthorizationStatus == TrackingStatus.notDetermined) {
+      await AppTrackingTransparency.requestTrackingAuthorization();
+    }
+    // Referral link
+    try {
+      if (!kDebugMode) {
+        String? timesOpened = await secureStorage.read(key: "timesOpened");
+        String? notFirstTime = await secureStorage.read(key: "hasShownLinkPopup");
+        if (timesOpened == null) {
+          await secureStorage.write(key: "timesOpened", value: "1");
         } else {
-          await secureStorage.write(key: "timesOpened",value: "${timesOpenInt+1}");
+          int timesOpenInt = int.parse(timesOpened);
+          String linkId = data["data"]["user"]["linkId"];
+          int neededAppOpensToDisplayLinkAlert = notFirstTime == "true" ? 20 : 3;
+
+          if (timesOpenInt >= neededAppOpensToDisplayLinkAlert) {
+            showDialog(context: context, builder: (_) => LinkInfoWidget(linkId, true));
+            FirebaseAnalytics.instance
+                .logEvent(name: "ShownReferralLinkPopup", parameters: {"isForcedPopupShow": false});
+            await secureStorage.write(key: "timesOpened", value: "0");
+            if (notFirstTime == null) await secureStorage.write(key: "hasShownLinkPopup", value: "true");
+          } else {
+            await secureStorage.write(key: "timesOpened", value: "${timesOpenInt + 1}");
+          }
         }
       }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'link popup try/catch');
     }
-  }catch(e,s){
-    FirebaseCrashlytics.instance.recordError(e, s, reason: 'link popup try/catch');
 
-  }
-  // Pre-load ads
-  if(!kDebugMode) {
-    try{
-      FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
-      FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
-    }catch(e,s){
-      FirebaseCrashlytics.instance.recordError(e, s, reason: 'initUser Ads init');
-    }
-  }
-  bool isDebug = false;
-  try{
-    bool hasBeenValidated = await getNonNullSSData("isDebug") == "true";
-    if(hasBeenValidated) {
-      isDebug = true;
-    } else {
-      if(data['data']["user"]["brawlhallaName"] == "Philtrom" || data['data']["user"]["brawlhallaName"] == "TheLittlePoro"){
-        isDebug = true;
-        secureStorage.write(key: "isDebug", value: "true");
+// Pre-load ads
+    if (!kDebugMode) {
+      try {
+        FlutterApplovinMax.initRewardAd(AdHelper.rewardedApplovinUnitId);
+        FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
+      } catch (e, s) {
+        FirebaseCrashlytics.instance.recordError(e, s, reason: 'initUser Ads init');
       }
     }
-  }catch(e,s){
-    FirebaseCrashlytics.instance.recordError(e, s, reason: 'isDebug init');
+    try {
+      bool hasBeenValidated = await getNonNullSSData("isDebug") == "true";
+      if (hasBeenValidated) {
+        isDebug = true;
+      } else {
+        if (data['data']["user"]["brawlhallaName"] == "Philtrom" ||
+            data['data']["user"]["brawlhallaName"] == "TheLittlePoro") {
+          isDebug = true;
+          secureStorage.write(key: "isDebug", value: "true");
+        }
+      }
+    } catch (e, s) {
+      FirebaseCrashlytics.instance.recordError(e, s, reason: 'isDebug init');
+    }
   }
   return {
     "data": data["data"],
     "authKey": storageKey,
     "callApi": caller,
     "oldDailyChallengeData": oldDailyChallengeData,
-    "tutorial": {
-      "needed": tutorialFinished ?? false,
-      "tutorialStep": tutorialStep ?? 0
-    },
+    "tutorial": {"needed": tutorialFinished ?? false, "tutorialStep": tutorialStep ?? 0},
     "isDebug": isDebug
   };
 }

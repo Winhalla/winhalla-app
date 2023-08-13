@@ -99,7 +99,6 @@ void showApplovinInterstitial(String adUnitName) async {
           print("--------------------------$event-----------------------------");
           if(event == AppLovinAdListener.adDisplayed){
             FirebaseAnalytics.instance.logAdImpression(adFormat: "Interstitial", adPlatform: "AppLovin", adUnitName: adUnitName);
-            facebookAppEvents.logAdImpression(adType: adUnitName);
           }
           if(event == AppLovinAdListener.adHidden){
             FlutterApplovinMax.initInterstitialAd(AdHelper.interstitialApplovinUnitId);
