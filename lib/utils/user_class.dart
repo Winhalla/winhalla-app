@@ -366,7 +366,7 @@ class User extends ChangeNotifier {
   }
 
   Future<void> showInterstitialAd(InterstitialType type) async {
-    if (kDebugMode && false) return;
+    if (kDebugMode) return;
     /*try{
       if(value["steam"]["id"] == "google100943440915784958511" || value["steam"]["id"] == "google102386642559331245430") return;
     }catch(e){}*/
@@ -473,7 +473,7 @@ Future<dynamic> initUser(context) async {
     }
 
 // Pre-load ads
-    if (!kDebugMode) {
+    if (!kDebugMode || true) {
       try {
         Map? sdkConfiguration = await AppLovinMAX.initialize("seN8k_vH1lOOkrUm4k_qQQruK0XbypmqiZE1yweS0q52rOUHT3AyhDTprxse1JhqLi31fBigBGDeQRGTBS3Xgv");
       } catch (e, s) {

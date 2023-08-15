@@ -15,7 +15,7 @@ class QuickEarnAdPrompt extends StatefulWidget {
 }
 
 class _QuickEarnAdPromptState extends State<QuickEarnAdPrompt> {
-  static const double luck = 25;
+  static const double luck = 9;
   bool show = false;
   int amount = 30;
 
@@ -25,7 +25,8 @@ class _QuickEarnAdPromptState extends State<QuickEarnAdPrompt> {
     int nb = Random().nextInt(100);
     User user = context.read<User>();
     int now = DateTime.now().millisecondsSinceEpoch;
-    if (nb < luck && user.lastAdPrompt + 600 * 1000 < now) {
+    print(user.value["user"]["tutorialStep"]);
+    if (nb < luck && user.lastAdPrompt + 600 * 1000 < now && user.value["user"]["tutorialStep"]["hasFinishedTutorial"]) {
       nb = Random().nextInt(100);
       show = true;
       if (nb > 66) amount = 60;

@@ -73,7 +73,7 @@ class _AdButtonState extends State<AdButton> {
     if (widget.goal == "earnMoreSoloMatch") {
       match = context.read<FfaMatch>();
     }
-    if (!kDebugMode) {
+    if (!kDebugMode|| true) {
       _initAds();
     }
     AppLovinMAX.setRewardedAdListener(RewardedAdListener(onAdLoadedCallback: (ad) {
@@ -108,7 +108,7 @@ class _AdButtonState extends State<AdButton> {
         });
       } else {
         await user.refresh();
-        user.keyFx["rebuildHomePage"]();
+        if (widget.goal == "dailyChallenge") user.keyFx["rebuildHomePage"]();
       }
       if(widget.hideItself != null) widget.hideItself!();
     }, onAdDisplayFailedCallback: (MaxAd ad, MaxError error) {
