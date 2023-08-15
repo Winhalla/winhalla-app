@@ -33,6 +33,7 @@ class User extends ChangeNotifier {
   GlobalKey appBarKey = GlobalKey();
   int lastQuestsRefresh = 0;
   int lastShopRefresh = 0;
+  int lastAdPrompt = 0;
   List<GlobalKey?> keys;
   Map<String, dynamic> keyFx = {};
   late CallApi callApi;
@@ -69,7 +70,7 @@ class User extends ChangeNotifier {
           'joinDate': currentMatch[0]["joinDate"],
           'isFinished': false,
         };
-      } else if (inGame["isMatchFinished"] == true) {
+      } else if (inGame?["isFinished"] == true) {
         inGame = null;
         gamesPlayedInMatch = 0;
       }
@@ -387,6 +388,10 @@ class User extends ChangeNotifier {
             ? "after-quests"
             : "other");
   }
+
+  void setLastAdPrompt(int now) {
+    lastAdPrompt = now;
+  }
 }
 
 enum InterstitialType { match, quests }
@@ -468,11 +473,9 @@ Future<dynamic> initUser(context) async {
     }
 
 // Pre-load ads
-    if (!kDebugMode || true) {
+    if (!kDebugMode) {
       try {
         Map? sdkConfiguration = await AppLovinMAX.initialize("seN8k_vH1lOOkrUm4k_qQQruK0XbypmqiZE1yweS0q52rOUHT3AyhDTprxse1JhqLi31fBigBGDeQRGTBS3Xgv");
-        AppLovinMAX.showMediationDebugger();
-
       } catch (e, s) {
         FirebaseCrashlytics.instance.recordError(e, s, reason: 'initUser Ads init');
       }

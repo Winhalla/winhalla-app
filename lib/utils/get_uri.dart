@@ -7,7 +7,7 @@ import 'package:winhalla_app/widgets/info_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 
 import 'custom_http.dart';
-const String apiUrl = "https://api.winhalla.app";
+const String apiUrl = "http://192.168.1.83:4000";
 
 Uri getUri(
   String path,

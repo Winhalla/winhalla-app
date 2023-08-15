@@ -67,6 +67,7 @@ MaterialPageRoute buildAppController(int startIndex, RouteSettings settings){
           if (currentMatch.length > 0) {
             inGame = {
               'id': currentMatch[0]["id"],
+              'isFinished': currentMatch[0]["isFinished"],
               'joinDate': currentMatch[0]["joinDate"]
             };
           }

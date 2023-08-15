@@ -7,6 +7,7 @@ import 'package:winhalla_app/utils/user_class.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/popup_no_refresh.dart';
 import 'package:winhalla_app/widgets/quest_widget.dart';
+import 'package:winhalla_app/widgets/quick_earn_ad_prompt.dart';
 
 class Quests extends StatelessWidget {
   const Quests({Key? key}) : super(key: key);
@@ -69,6 +70,7 @@ class Quests extends StatelessWidget {
                 const SizedBox(
                   height: 32,
                 ),
+                const QuickEarnAdPrompt(),
                 Consumer<User>(builder: (context, user, _) {
                   WidgetsBinding.instance?.addPostFrameCallback((_){
                     user.refreshOldQuestsData();

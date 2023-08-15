@@ -6,13 +6,14 @@ import 'package:provider/provider.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
 import 'package:winhalla_app/utils/user_class.dart';
+import 'package:winhalla_app/widgets/coin_dropdown.dart';
 
 class AdButton extends StatefulWidget {
   final Widget child;
   final Widget adNotReadyChild;
   final Widget adErrorChild;
   final String goal;
-
+  final void Function()? hideItself;
   const AdButton(
       {Key? key,
       required this.child,
@@ -24,7 +25,7 @@ class AdButton extends StatefulWidget {
       this.adErrorChild = const SizedBox(
         height: 0,
         width: 0,
-      )})
+      ), this.hideItself})
       : super(key: key);
 
   @override
@@ -72,7 +73,7 @@ class _AdButtonState extends State<AdButton> {
     if (widget.goal == "earnMoreSoloMatch") {
       match = context.read<FfaMatch>();
     }
-    if (!kDebugMode || true) {
+    if (!kDebugMode) {
       _initAds();
     }
     AppLovinMAX.setRewardedAdListener(RewardedAdListener(onAdLoadedCallback: (ad) {
@@ -97,7 +98,9 @@ class _AdButtonState extends State<AdButton> {
       if (widget.goal == "earnMoreSoloMatch") FirebaseAnalytics.instance.logEvent(name: "RewardedAdMatchShown");
       await user.callApi.get(
           "/admob/getReward?user_id=${user.value["steam"]["id"]}&custom_data=${widget.goal == "earnMoreSoloMatch" ? match?.value["_id"] : widget.goal}");
-
+      if(widget.goal.startsWith("earnQuick")) {
+        showCoinDropdown(context, user.value['user']["coins"], int.tryParse(widget.goal.substring(9)) ?? 60);
+      }
       //refresh UI
       if (match != null) {
         Future.delayed(const Duration(milliseconds: 500), () async {
@@ -107,6 +110,7 @@ class _AdButtonState extends State<AdButton> {
         await user.refresh();
         user.keyFx["rebuildHomePage"]();
       }
+      if(widget.hideItself != null) widget.hideItself!();
     }, onAdDisplayFailedCallback: (MaxAd ad, MaxError error) {
       return setState(() {
         _lastAdError = true;

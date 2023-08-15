@@ -13,6 +13,7 @@ import 'package:winhalla_app/widgets/info_dropdown.dart';
 import 'package:winhalla_app/widgets/inherited_text_style.dart';
 import 'package:winhalla_app/widgets/paypal_warning.dart';
 import 'package:winhalla_app/widgets/popup_shop.dart';
+import 'package:winhalla_app/widgets/quick_earn_ad_prompt.dart';
 
 // This is bc we can't use context.read<User>() in the future field of FutureBuilder
 const List<String> kOrdersStatuses = [
@@ -89,8 +90,8 @@ class _ShopState extends State<Shop> {
                 )
               ],
             ),
-
             SizedBox(height: 2.5.h,),
+            const QuickEarnAdPrompt(),
             PaypalWarning(user: context.read<User>()),
             SizedBox(height: 5.h,),
 
@@ -168,6 +169,7 @@ class _ShopState extends State<Shop> {
             ),
           SizedBox(height: 4.h,),
           FutureBuilder(future: context.read<User>().callApi.get("/commands"), builder: (BuildContext context, AsyncSnapshot res){
+            print(res.data);
             if(!res.hasData || res.data["successful"] == false) {
               return Column(
                 children: [
