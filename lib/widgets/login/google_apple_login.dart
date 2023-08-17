@@ -101,7 +101,7 @@ class _GoogleAppleLoginState extends State<GoogleAppleLogin> {
           id: accountData["steam"]["id"]
       );
       if (accountData["user"] != null) {
-        Navigator.pop(context);
+        if(ModalRoute.of(context)?.canPop ?? false) Navigator.pop(context);
         Navigator.pushNamed(context, "/");
         return;
       }
