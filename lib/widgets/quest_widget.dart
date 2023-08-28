@@ -205,7 +205,7 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                     SizedBox(height: 2.h,),
                     if(widget.isAdReady == true)GestureDetector(
                       onTap: (){
-                        loadApplovinRewarded(() => null, rewardCallback: ()async {
+                        loadApplovinRewarded(() => null, rewardCallback: (ad)async {
 
                           User user =  context.read<User>();
                           await user.callApi.get(
@@ -214,6 +214,8 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                           FirebaseAnalytics.instance.logEvent(
                             name: "AcceptedQuestReroll",
                           );
+                          FirebaseAnalytics.instance
+                              .logAdImpression(adFormat: "Rewarded", adPlatform: ad.networkName, adUnitName: "rerollQuest", value: ad.revenue, currency: 'USD');
                           if(widget.reloadAd != null) widget.reloadAd!();
                         });
                         showAdPopupWidget(context, widget.questId);

@@ -78,7 +78,7 @@ class _SoloMatchState extends State<SoloMatch> {
                   }
                   if (widget.matchId != "tutorial" &&
                       user.value["user"]["lastGames"].length >= 2 &&
-                      user.inGame["isFromMatchHistory"] != true && FirebaseRemoteConfig.instance.getBool("showInterstitialAfterRefresh") ) {
+                      user.inGame?["isFromMatchHistory"] != true && FirebaseRemoteConfig.instance.getBool("showInterstitialAfterRefresh") ) {
                     user.showInterstitialAd(InterstitialType.match);
                   }
                   return;
@@ -639,7 +639,7 @@ class _SoloMatchState extends State<SoloMatch> {
                                                         color: kPrimary)),
                                                 TextSpan(
                                                     text:
-                                                        "Brawlhalla! (only ranked games)")
+                                                        "Brawlhalla! (only ranked games, but includes rotating and 2v2)")
                                               ]),
                                         ),
                                       ),

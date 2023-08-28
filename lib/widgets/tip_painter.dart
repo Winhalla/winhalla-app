@@ -40,13 +40,13 @@ class TipPainter extends CustomPainter {
     path.arcTo(
         Rect.fromLTWH(
             0,
-            58.5+height,
+            85.0+height,
             rectSize, // -0.15 just for pixel perfect
             rectSize),
         degToRad(180),
         degToRad(-90),
         false);
-    path.lineTo(23, 88.5+height);
+    path.lineTo(23, 115.0+height);
     canvas.drawPath(path, paint);
   }
 

@@ -474,7 +474,7 @@ class Tutorial extends ChangeNotifier{
                         children: [
                           Expanded(
                             child: Text(
-                                "Matches are the fastest way to earn Coins, you just have to start one when you start a Brawlhalla ranked games session, refresh after 7 games and you will earn coins!",
+                                "Matches are the fastest way to earn Coins, you just have to start one when you start a Brawlhalla ranked games session (all ranked, including rotating and 2v2). Refresh after 7 games and you will earn coins!",
                                 textAlign: TextAlign.left,
                                 style: InheritedTextStyle.of(context).kBodyText3.apply(color: kText80)
                             ),
