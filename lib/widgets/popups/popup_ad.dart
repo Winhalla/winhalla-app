@@ -16,31 +16,17 @@ import 'package:winhalla_app/widgets/coin.dart';
 import '../../main.dart';
 import '../inherited_text_style.dart';
 
-void adCallback(FfaMatch match, BuildContext context, User user) async {
-  await user.callApi.get("/admob/getReward?user_id=${user.value["steam"]["id"]}&custom_data=${match.value["_id"]}");
-  Future.delayed(const Duration(milliseconds: 500), () async {
-    await match.refresh(context, user);
-  });
-}
 
 // Must be called in a place where an FfaMatch ChangeNotifierProvider is present
-Future<void> showAdPopupWidget(
-  BuildContext context,
-  FfaMatch match,
-) async {
-  loadApplovinRewarded(() {
-    FirebaseAnalytics.instance.logEvent(
-      name: "AdPopupDisplayed",
-    );
-    showDialog(
-        context: context,
-        builder: (_) => AdPopupWidget(match.value["estimatedReward"]["reward"],
-            match.value["estimatedReward"]["rewardNextAd"], false, match, context));
-  });
+Future showAdPopupWidget(
+  BuildContext context1,
+    String questId
+)  {
+
+  return showDialog(context: context1, builder: (_) => AdPopupWidget(context1, questId));
 }
 
-Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match, BuildContext context) {
-  User user = context.read<User>();
+Widget AdPopupWidget(BuildContext context1, String questId) {
   return Builder(builder: (context) {
     return AlertDialog(
       elevation: 10,
@@ -50,7 +36,7 @@ Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match,
       ),
       titlePadding: EdgeInsets.fromLTRB(7.w, 3.5.h, 7.w, 0),
       title: Text(
-        "Double your reward",
+        "Reroll this quest",
         style: InheritedTextStyle.of(context).kHeadline2,
       ),
       contentPadding: EdgeInsets.fromLTRB(7.w, 2.75.h, 7.w, 2.5.h),
@@ -58,41 +44,11 @@ Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match,
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Text("Estimated reward:",
-                  style: InheritedTextStyle.of(context).kBodyText2.apply(fontSizeFactor: 0.95, color: kText90)),
-              SizedBox(
-                width: 2.w,
-              ),
-              Coin(
-                nb: reward.toString(),
-                color: kText,
-                bgColor: kBlack,
-                padding: const EdgeInsets.fromLTRB(15, 8.25, 15, 5.25),
-                fontSize: 25,
-              )
-            ],
-          ),
-          SizedBox(
-            height: 0.5.h,
-          ),
-          Text("Based on performance, can vary until the end of the match.",
-              style: InheritedTextStyle.of(context)
-                  .kBodyText3
-                  .apply(fontSizeFactor: 0.75, color: kText70, fontStyle: FontStyle.italic)),
-          SizedBox(
-            height: 2.5.h,
-          ),
           RichText(
             text: TextSpan(style: InheritedTextStyle.of(context).kBodyText3, children: const [
               TextSpan(text: "To ", style: TextStyle(height: 1.3)),
-              TextSpan(text: "BOOST ", style: TextStyle(color: kPrimary, height: 1.3)),
-              TextSpan(
-                  text: "your reward, tap the red button below! (will launch an ad)", style: TextStyle(height: 1.3))
+              TextSpan(text: "REROLL ", style: TextStyle(color: kPrimary, height: 1.3)),
+              TextSpan(text: "your quest, tap the red button below! (will launch an ad)", style: TextStyle(height: 1.3))
             ]),
           ),
         ],
@@ -103,32 +59,27 @@ Widget AdPopupWidget(num reward, num nextReward, bool isAdmobAd, FfaMatch match,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             GestureDetector(
-                onTap: () {
+                onTap: ()async  {
                   FirebaseAnalytics.instance.logEvent(
                     name: "AdPopupAccepted",
                   );
                   Navigator.pop(context);
-                  match.setAdPopupDate();
                   AppLovinMAX.showRewardedAd(AdHelper.rewardedApplovinUnitId);
                 },
-                child: Coin(
-                  nb: nextReward.toString(),
-                  color: kText,
-                  bgColor: kRed,
-                  padding: const EdgeInsets.fromLTRB(18, 8, 18, 5),
-                  fontSize: 28,
-                )),
+                child: Container(
+                    decoration: BoxDecoration(
+                      color: kPrimary,
+                        borderRadius: BorderRadius.circular(15)),
+                    padding: EdgeInsets.fromLTRB(4.w, 1.h, 4.w, 1.h),
+                    child: Text("Reroll", style: InheritedTextStyle.of(context).kBodyText1bis))),
             GestureDetector(
                 onTap: () {
                   Navigator.pop(context);
                 },
-                child: Coin(
-                  nb: reward.toString(),
-                  color: kText,
-                  bgColor: kBlack,
-                  padding: const EdgeInsets.fromLTRB(18, 8, 18, 5),
-                  fontSize: 28,
-                )),
+                child: Container(
+                    decoration: BoxDecoration(border: Border.all(color: kPrimary), borderRadius: BorderRadius.circular(15)),
+                    padding: EdgeInsets.fromLTRB(3.w, .75.h, 3.w, .75.h),
+                    child: Text("Keep", style: InheritedTextStyle.of(context).kBodyText2bis))),
           ],
         ),
       ],

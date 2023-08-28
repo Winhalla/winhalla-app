@@ -90,8 +90,6 @@ class _ShopState extends State<Shop> {
                 )
               ],
             ),
-            SizedBox(height: 2.5.h,),
-            const QuickEarnAdPrompt(),
             PaypalWarning(user: context.read<User>()),
             SizedBox(height: 5.h,),
 

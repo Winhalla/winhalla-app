@@ -26,13 +26,15 @@ class _SoloMatchState extends State<SoloMatch> {
 
   @override
   void initState() {
-    User user = context.read<User>();
-    if (widget.matchId != "tutorial" &&
-        user.value["user"]["lastGames"].length >= 2 &&
-        user.inGame["isFromMatchHistory"] != true) {
-      user.showInterstitialAd(InterstitialType.match);
-    }
     super.initState();
+    if(FirebaseRemoteConfig.instance.getBool("showInterstitialBeforeMatch")) {
+      User user = context.read<User>();
+      if (widget.matchId != "tutorial" &&
+          user.value["user"]["lastGames"].length >= 2 &&
+          user.inGame["isFromMatchHistory"] != true) {
+        user.showInterstitialAd(InterstitialType.match);
+      }
+    }
   }
 
   @override
@@ -61,18 +63,23 @@ class _SoloMatchState extends State<SoloMatch> {
             child: Builder(builder: (BuildContext context) {
               return RefreshIndicator(
                 onRefresh: () async {
-                  var user = context.read<User>();
+                  User user = context.read<User>();
                   bool hasNotChanged = await context
                       .read<FfaMatch>()
                       .refresh(context, user, showInfo: true);
                   if (hasNotChanged &&
                       await getNonNullSSData("hideNoRefreshMatch") != "true") {
                     if (user.appBarKey.currentContext != null) {
-                      showDialog(
+                      await showDialog(
                           context:
                               user.appBarKey.currentContext as BuildContext,
                           builder: (_) => NoRefreshPopup("match"));
                     }
+                  }
+                  if (widget.matchId != "tutorial" &&
+                      user.value["user"]["lastGames"].length >= 2 &&
+                      user.inGame["isFromMatchHistory"] != true && FirebaseRemoteConfig.instance.getBool("showInterstitialAfterRefresh") ) {
+                    user.showInterstitialAd(InterstitialType.match);
                   }
                   return;
                 },
@@ -446,7 +453,7 @@ class _SoloMatchState extends State<SoloMatch> {
                                                 width: 1.9.w,
                                               ),
                                               Text(
-                                                "Boost it",
+                                                "Double it",
                                                 style: InheritedTextStyle.of(
                                                         context)
                                                     .kBodyText4

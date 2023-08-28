@@ -73,7 +73,7 @@ class _AdButtonState extends State<AdButton> {
     if (widget.goal == "earnMoreSoloMatch") {
       match = context.read<FfaMatch>();
     }
-    if (!kDebugMode|| true) {
+    if (!kDebugMode || true) {
       _initAds();
     }
     AppLovinMAX.setRewardedAdListener(RewardedAdListener(onAdLoadedCallback: (ad) {
@@ -96,6 +96,7 @@ class _AdButtonState extends State<AdButton> {
         });
       }
       if (widget.goal == "earnMoreSoloMatch") FirebaseAnalytics.instance.logEvent(name: "RewardedAdMatchShown");
+      if (widget.goal.startsWith("earnQuick")) FirebaseAnalytics.instance.logEvent(name: "QuickEarnShown");
       await user.callApi.get(
           "/admob/getReward?user_id=${user.value["steam"]["id"]}&custom_data=${widget.goal == "earnMoreSoloMatch" ? match?.value["_id"] : widget.goal}");
       if(widget.goal.startsWith("earnQuick")) {

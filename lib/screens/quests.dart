@@ -1,6 +1,8 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
+import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/services/secure_storage_service.dart';
 import 'package:winhalla_app/utils/timer_widget.dart';
 import 'package:winhalla_app/utils/user_class.dart';
@@ -9,9 +11,31 @@ import 'package:winhalla_app/widgets/popup_no_refresh.dart';
 import 'package:winhalla_app/widgets/quest_widget.dart';
 import 'package:winhalla_app/widgets/quick_earn_ad_prompt.dart';
 
-class Quests extends StatelessWidget {
+class Quests extends StatefulWidget {
   const Quests({Key? key}) : super(key: key);
 
+  @override
+  State<Quests> createState() => _QuestsState();
+}
+
+class _QuestsState extends State<Quests> {
+  bool isAdReady = false;
+  @override
+  void initState() {
+    super.initState();
+    reloadAd();
+  }
+  void reloadAd(){
+    isAdReady = false;
+    loadApplovinRewarded(() {
+      setState(() {
+        isAdReady = true;
+      });
+      FirebaseAnalytics.instance.logEvent(
+        name: "ShowQuestReroll",
+      );
+    },);
+  }
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -70,7 +94,6 @@ class Quests extends StatelessWidget {
                 const SizedBox(
                   height: 32,
                 ),
-                const QuickEarnAdPrompt(),
                 Consumer<User>(builder: (context, user, _) {
                   WidgetsBinding.instance?.addPostFrameCallback((_){
                     user.refreshOldQuestsData();
@@ -167,7 +190,11 @@ class Quests extends StatelessWidget {
                                                   user.quests["dailyQuests"]
                                                       [index]["name"],
                                               orElse:()=>{"progress":0}
-                                            )["progress"]
+                                            )["progress"],
+                                questId: user.quests["dailyQuests"][index]["_id"],
+                                isAdReady:isAdReady,
+                                reloadAd:reloadAd
+
                               ),
                             ));
                       },
@@ -291,7 +318,10 @@ class Quests extends StatelessWidget {
                               goal: user.quests["weeklyQuests"][index]["goal"],
                               oldProgress: user.oldQuestsData["weeklyQuests"].firstWhere(
                                     (q) => q["name"] == user.quests["weeklyQuests"][index]["name"],
-                                    orElse: () => {"progress": 0}) ["progress"]
+                                    orElse: () => {"progress": 0}) ["progress"],
+                                questId: user.quests["weeklyQuests"][index]["_id"],
+                                isAdReady:isAdReady,
+                              reloadAd:reloadAd
                             ),
                           ));
                     },

@@ -96,6 +96,9 @@ void main() async {
     FirebaseRemoteConfig frc = FirebaseRemoteConfig.instance;
     frc.setDefaults(<String, dynamic>{
       'isAdButtonActivated': false,
+      "showInterstitialBeforeMatch": false,
+      "showInterstitialAfterRefresh":true,
+      "AdButtonLuck":100
     });
     frc.setConfigSettings(RemoteConfigSettings(
       fetchTimeout: const Duration(seconds: 60),

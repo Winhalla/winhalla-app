@@ -62,12 +62,6 @@ class FfaMatch extends ChangeNotifier {
       return false;
     }
 
-    if(FirebaseRemoteConfig.instance.getBool("isAdButtonActivated") == false &&
-        lastAdPopup + 180 * 1000 < DateTime.now().millisecondsSinceEpoch &&
-        !isTutorial && showInfo){
-      showAdPopupWidget(context, this);
-    }
-
     if (match["updatedPlatforms"] != null) {
       List<Widget> icons = [];
       for (int i = 0; i < match["updatedPlatforms"].length; i++) {

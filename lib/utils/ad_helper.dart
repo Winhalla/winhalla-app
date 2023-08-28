@@ -51,7 +51,7 @@ class AdHelper {
 bool isLoading = false;
 Timer? timer1;
 
-void loadApplovinRewarded(Function() callback, {Function? errorCallback}) async {
+void loadApplovinRewarded(Function() callback, {Function? errorCallback, Function? rewardCallback}) async {
   print(isLoading);
   if (isLoading = true) {
     timer1?.cancel();
@@ -71,7 +71,9 @@ void loadApplovinRewarded(Function() callback, {Function? errorCallback}) async 
       onAdDisplayFailedCallback: (reason, error) {},
       onAdClickedCallback: (ad) {},
       onAdHiddenCallback: (ad) {},
-      onAdReceivedRewardCallback: (ad, reward) {}));
+      onAdReceivedRewardCallback: (ad, reward) {
+        if(rewardCallback !=null) rewardCallback();
+      }));
 }
 
 void showApplovinInterstitial(String adUnitName) async {

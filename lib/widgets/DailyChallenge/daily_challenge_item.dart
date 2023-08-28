@@ -74,7 +74,8 @@ class _DailyChallengeItemState extends State<DailyChallengeItem> {
           progress: widget.progress ,
           showAdButton: widget.showAdButton,
           oldProgress: widget.oldProgress,
-          showClickToCollect: false
+          showClickToCollect: false,
+          questId: "none",
         ),
         secondChild: widget.completed == false && isActive == false
             ? Row(
