@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -24,29 +25,32 @@ class QuestWidget extends StatefulWidget {
   final oldProgress;
   final showClickToCollect;
   final String questId;
-  final bool? isAdReady;
   final void Function()? reloadAd;
 
-  QuestWidget({
-    Key? key,
-    required this.name,
-    required this.color,
-    required this.progress,
-    required this.goal,
-    required this.reward,
-    required this.oldProgress,
-    this.showAdButton = false,
-    this.isActive = true,
-    this.showClickToCollect = true, required this.questId, this.isAdReady,this.reloadAd
-  }) : super(key: key);
+  QuestWidget(
+      {Key? key,
+      required this.name,
+      required this.color,
+      required this.progress,
+      required this.goal,
+      required this.reward,
+      required this.oldProgress,
+      this.showAdButton = false,
+      this.isActive = true,
+      this.showClickToCollect = true,
+      required this.questId,
+      this.reloadAd})
+      : super(key: key);
 
   @override
   State<QuestWidget> createState() => _QuestWidgetState();
 }
 
-class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin {
+class _QuestWidgetState extends State<QuestWidget>
+    with TickerProviderStateMixin {
   late final AnimationController _animationController;
   var curvedAnimation;
+
   @override
   void initState() {
     super.initState();
@@ -62,10 +66,8 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
     curvedAnimation = Tween(
       begin: beginValue,
       end: 1,
-    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuint));
-
-
-
+    ).animate(CurvedAnimation(
+        parent: _animationController, curve: Curves.easeOutQuint));
   }
 
   @override
@@ -79,7 +81,8 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
     curvedAnimation = Tween(
       begin: beginValue,
       end: 1,
-    ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeOutQuint));
+    ).animate(CurvedAnimation(
+        parent: _animationController, curve: Curves.easeOutQuint));
     super.didUpdateWidget(oldWidget);
   }
 
@@ -95,161 +98,205 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
       if (mounted) _animationController.forward();
     });
     return Container(
-      decoration: BoxDecoration(color: kBackgroundVariant, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+          color: kBackgroundVariant, borderRadius: BorderRadius.circular(16)),
       padding: EdgeInsets.fromLTRB(7.75.w, 3.h, 5.75.w, 3.h),
       child: AnimatedBuilder(
           animation: curvedAnimation,
           builder: (BuildContext context, Widget? child) {
             bool isQuestFinished =
-                (widget.goal * curvedAnimation.value).round() == widget.goal && widget.progress >= widget.goal;
+                (widget.goal * curvedAnimation.value).round() == widget.goal &&
+                    widget.progress >= widget.goal;
             if (isQuestFinished) widget.color = kGreen;
 
             return Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(left:4.0),
-                      child: SizedBox(
-                        width: 36.w,
-                        child: AnimatedDefaultTextStyle(
-                          duration: const Duration(milliseconds: 200),
-                          style: isQuestFinished
-                              ? TextStyle(
-                                  color: kGray,
-                                  fontSize: 20.sp > 24 ? 24 : 20.sp,
-                                  fontFamily: "Roboto Condensed",
-                                  decoration: TextDecoration.lineThrough,
-                                  decorationThickness: 2,
-                                )
-                              : InheritedTextStyle.of(context).kBodyText2,
-                          child: Text(
-                            widget.name,
+                Consumer<User>(
+                  builder: (context, user, _) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0),
+                          child: SizedBox(
+                            width: 36.w,
+                            child: AnimatedDefaultTextStyle(
+                              duration: const Duration(milliseconds: 200),
+                              style: isQuestFinished
+                                  ? TextStyle(
+                                      color: kGray,
+                                      fontSize: 20.sp > 24 ? 24 : 20.sp,
+                                      fontFamily: "Roboto Condensed",
+                                      decoration: TextDecoration.lineThrough,
+                                      decorationThickness: 2,
+                                    )
+                                  : InheritedTextStyle.of(context).kBodyText2,
+                              child: Text(
+                                widget.name,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left:4.0),
-
-                      child: Row(
-                        children: [
-                          AnimatedCrossFade(
-                            firstChild: Text(
-                                "${(widget.oldProgress + ((widget.progress - widget.oldProgress) * curvedAnimation.value).round())}/${widget.goal}",
-                                style: InheritedTextStyle.of(context).kBodyText4.apply(color: widget.color)),
-                            secondChild: Text("Click to collect",
-                                style: InheritedTextStyle.of(context).kBodyText4.apply(color: widget.color)),
-                            crossFadeState: !isQuestFinished
-                                ? CrossFadeState.showFirst
-                                : widget.showClickToCollect == false
+                        const SizedBox(
+                          height: 5,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 4.0),
+                          child: Row(
+                            children: [
+                              AnimatedCrossFade(
+                                firstChild: Text(
+                                    "${(widget.oldProgress + ((widget.progress - widget.oldProgress) * curvedAnimation.value).round())}/${widget.goal}",
+                                    style: InheritedTextStyle.of(context)
+                                        .kBodyText4
+                                        .apply(color: widget.color)),
+                                secondChild: Text("Click to collect",
+                                    style: InheritedTextStyle.of(context)
+                                        .kBodyText4
+                                        .apply(color: widget.color)),
+                                crossFadeState: !isQuestFinished
                                     ? CrossFadeState.showFirst
-                                    : CrossFadeState.showSecond,
-                            alignment: Alignment.centerLeft,
-                            duration: const Duration(milliseconds: 200),
+                                    : widget.showClickToCollect == false
+                                        ? CrossFadeState.showFirst
+                                        : CrossFadeState.showSecond,
+                                alignment: Alignment.centerLeft,
+                                duration: const Duration(milliseconds: 200),
+                              ),
+                              if (widget.showAdButton &&
+                                  widget.isActive &&
+                                  widget.color != kGreen)
+                                const SizedBox(
+                                  width: 10,
+                                ),
+                              if (widget.showAdButton &&
+                                  widget.isActive &&
+                                  widget.color != kGreen)
+                                AdButton(
+                                  goal: 'dailyChallenge',
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(13),
+                                        color: kOrange),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(19, 7, 19, 7),
+                                    child: Row(
+                                      children: [
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(bottom: 1.5),
+                                          child: Image.asset(
+                                            "assets/images/video_ad.png",
+                                            width: 20,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          width: 7,
+                                        ),
+                                        Text(
+                                          "Watch",
+                                          style: InheritedTextStyle.of(context)
+                                              .kBodyText4
+                                              .apply(color: kBlack),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  adErrorChild: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        color: kText80),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                                    child: Text(
+                                      "Not available.",
+                                      style: InheritedTextStyle.of(context)
+                                          .kBodyText4
+                                          .apply(color: kBlack),
+                                    ),
+                                  ),
+                                  adNotReadyChild: Container(
+                                    decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        color: kText80),
+                                    padding:
+                                        const EdgeInsets.fromLTRB(15, 10, 15, 10),
+                                    child: Text(
+                                      "Loading...",
+                                      style: InheritedTextStyle.of(context)
+                                          .kBodyText4
+                                          .apply(color: kBlack),
+                                    ),
+                                  ),
+                                )
+                            ],
                           ),
-                          if (widget.showAdButton && widget.isActive && widget.color != kGreen)
-                            const SizedBox(
-                              width: 10,
-                            ),
-                          if (widget.showAdButton && widget.isActive && widget.color != kGreen)
-                            AdButton(
-                              goal: 'dailyChallenge',
-                              child: Container(
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(13), color: kOrange),
-                                padding: const EdgeInsets.fromLTRB(19, 7, 19, 7),
-                                child: Row(
-                                  children: [
-                                    Padding(
-                                      padding: const EdgeInsets.only(bottom: 1.5),
-                                      child: Image.asset(
-                                        "assets/images/video_ad.png",
-                                        width: 20,
-                                      ),
-                                    ),
-                                    const SizedBox(
-                                      width: 7,
-                                    ),
-                                    Text(
-                                      "Watch",
-                                      style: InheritedTextStyle.of(context).kBodyText4.apply(color: kBlack),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              adErrorChild: Container(
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: kText80),
-                                padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                                child: Text(
-                                  "Not available.",
-                                  style: InheritedTextStyle.of(context).kBodyText4.apply(color: kBlack),
-                                ),
-                              ),
-                              adNotReadyChild: Container(
-                                decoration: BoxDecoration(borderRadius: BorderRadius.circular(15), color: kText80),
-                                padding: const EdgeInsets.fromLTRB(15, 10, 15, 10),
-                                child: Text(
-                                  "Loading...",
-                                  style: InheritedTextStyle.of(context).kBodyText4.apply(color: kBlack),
-                                ),
-                              ),
-                            )
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 2.h,),
-                    if(widget.isAdReady == true)GestureDetector(
-                      onTap: (){
-                        loadApplovinRewarded(() => null, rewardCallback: (ad)async {
-
-                          User user =  context.read<User>();
-                          await user.callApi.get(
-                              "/admob/getReward?user_id=${user.value["steam"]["id"]}&custom_data=refreshQuest${widget.questId}");
-                          await user.refreshQuests(context);
-                          FirebaseAnalytics.instance.logEvent(
-                            name: "AcceptedQuestReroll",
-                          );
-                          FirebaseAnalytics.instance
-                              .logAdImpression(adFormat: "Rewarded", adPlatform: ad.networkName, adUnitName: "rerollQuest", value: ad.revenue, currency: 'USD');
-                          if(widget.reloadAd != null) widget.reloadAd!();
-                        });
-                        showAdPopupWidget(context, widget.questId);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: widget.color,
-
                         ),
-                        padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 1.h),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.refresh,
-                              size: 25,
-                              color: kText,
-                            ),
-                            SizedBox(width: 3,),
-                            Image.asset(
-                              "assets/images/video_ad.png",
-                              width: 16,
-                              color: kText,
-                            ),
-                          ],
+                        SizedBox(
+                          height: 2.h,
                         ),
-                      ),
-                    ),
-                  ],
+                        if (user.nextAdQuests != null)
+                          GestureDetector(
+                            onTap: () {
+
+                                  showAdPopupWidget(context, widget.questId, user.nextAdQuests!,
+                                      (ad, rewardItem) async {
+                                    User user = context.read<User>();
+
+                                    await user.callApi.get(
+                                        "/admob/getReward?user_id=${user.value["steam"]["id"]}&custom_data=refreshQuest${widget.questId}");
+                                    await user.refreshQuests(context);
+                                    FirebaseAnalytics.instance.logEvent(
+                                      name: "AcceptedQuestReroll",
+                                    );
+                                    ad.onPaidEvent = (ad, value, precision, currencyCode){
+                                      FirebaseAnalytics.instance.logAdImpression(
+                                          adFormat: "Rewarded",
+                                          adPlatform: "AdMob",
+                                          adUnitName: "rerollQuest",
+                                          value: value,
+                                          currency: currencyCode);
+                                    };
+                                    if (widget.reloadAd != null) widget.reloadAd!();
+                                  });
+
+
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: widget.color,
+                              ),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 2.w, vertical: 1.h),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    Icons.refresh,
+                                    size: 25,
+                                    color: kText,
+                                  ),
+                                  SizedBox(
+                                    width: 3,
+                                  ),
+                                  Image.asset(
+                                    "assets/images/video_ad.png",
+                                    width: 16,
+                                    color: kText,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    );
+                  }
                 ),
                 Container(
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: kBlack),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16), color: kBlack),
                   padding: EdgeInsets.fromLTRB(4.w, 2.h, 4.w, 1.5.h),
                   child: Column(
                     children: [
@@ -264,7 +311,8 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                                   percentage: curvedAnimation.value < 0.1
                                       ? 0.6
                                       : (widget.oldProgress / widget.goal +
-                                                  ((widget.progress - widget.oldProgress) /
+                                                  ((widget.progress -
+                                                          widget.oldProgress) /
                                                       widget.goal *
                                                       curvedAnimation.value)) *
                                               100 -
@@ -276,18 +324,22 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                             child: Align(
                               alignment: Alignment.center,
                               child: Padding(
-                                padding: const EdgeInsets.only(
-                                    top: 2), //add padding to center the font that has default bottom spacing
+                                padding: const EdgeInsets.only(top: 2),
+                                //add padding to center the font that has default bottom spacing
                                 child: Builder(builder: (context) {
-                                  var text = ((widget.oldProgress / widget.goal +
-                                              ((widget.progress - widget.oldProgress) /
-                                                  widget.goal *
-                                                  curvedAnimation.value)) *
-                                          100)
-                                      .ceil();
+                                  var text =
+                                      ((widget.oldProgress / widget.goal +
+                                                  ((widget.progress -
+                                                          widget.oldProgress) /
+                                                      widget.goal *
+                                                      curvedAnimation.value)) *
+                                              100)
+                                          .ceil();
                                   if (text > 100) text = 100;
                                   return Text("$text%",
-                                      style: InheritedTextStyle.of(context).kBodyText4.apply(color: widget.color));
+                                      style: InheritedTextStyle.of(context)
+                                          .kBodyText4
+                                          .apply(color: widget.color));
                                 }),
                               ),
                             ),
@@ -305,7 +357,9 @@ class _QuestWidgetState extends State<QuestWidget> with TickerProviderStateMixin
                               padding: const EdgeInsets.only(top: 1),
                               child: Text(
                                 widget.reward.toString(),
-                                style: InheritedTextStyle.of(context).kBodyText4.apply(color: widget.color),
+                                style: InheritedTextStyle.of(context)
+                                    .kBodyText4
+                                    .apply(color: widget.color),
                               ),
                             ),
                             const SizedBox(
@@ -338,7 +392,10 @@ class ProgressPainter extends CustomPainter {
   double percentage;
   double width;
 
-  ProgressPainter({required this.progressColor, required this.percentage, required this.width});
+  ProgressPainter(
+      {required this.progressColor,
+      required this.percentage,
+      required this.width});
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -360,7 +417,8 @@ class ProgressPainter extends CustomPainter {
     //canvas.drawCircle(center, radius, line);
 
     double arcAngle = 2 * pi * (percentage / 100);
-    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -pi / 2, arcAngle, false, progress);
+    canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -pi / 2,
+        arcAngle, false, progress);
   }
 
   @override

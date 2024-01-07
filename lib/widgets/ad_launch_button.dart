@@ -1,7 +1,7 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:applovin_max/applovin_max.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
 import 'package:winhalla_app/utils/ffa_match_class.dart';
@@ -14,6 +14,7 @@ class AdButton extends StatefulWidget {
   final Widget adErrorChild;
   final String goal;
   final void Function()? hideItself;
+
   const AdButton(
       {Key? key,
       required this.child,
@@ -25,7 +26,8 @@ class AdButton extends StatefulWidget {
       this.adErrorChild = const SizedBox(
         height: 0,
         width: 0,
-      ), this.hideItself})
+      ),
+      this.hideItself})
       : super(key: key);
 
   @override
@@ -34,17 +36,25 @@ class AdButton extends StatefulWidget {
 
 class _AdButtonState extends State<AdButton> {
   bool _lastAdError = false;
-  bool isAdReady = false;
+
   late User user;
   FfaMatch? match;
 
-  bool isMAXRewardedVideoAvailable = false;
+  RewardedAd? nextAd;
 
   Future<void> _initAds() async {
-    loadApplovinRewarded(() {
+    loadApplovinRewarded((ad) {
+      ad.onPaidEvent = (ad, value, precision, currencyCode) {
+        FirebaseAnalytics.instance.logAdImpression(
+            adFormat: "Rewarded",
+            adPlatform: "AdMob",
+            adUnitName: "adLaunchButton_" + widget.goal,
+            value: value,
+            currency: currencyCode);
+      };
       if (mounted) {
         setState(() {
-          isMAXRewardedVideoAvailable = true;
+          nextAd = ad;
         });
       }
     }, errorCallback: () {
@@ -58,9 +68,39 @@ class _AdButtonState extends State<AdButton> {
 
   Future<void> playAd() async {
     if (user.inGame?["showActivity"] == false) user.toggleShowMatch(true);
-    if (isMAXRewardedVideoAvailable) {
-      // FlutterApplovinMax.showRewardVideo((AppLovinAdListener? event) => maxEventListner(event));
-      AppLovinMAX.showRewardedAd(AdHelper.rewardedApplovinUnitId);
+    if (nextAd != null) {
+      nextAd!.show(
+          onUserEarnedReward: (AdWithoutView ad, RewardItem rewardItem) async {
+        if (mounted) {
+          setState(() {
+            nextAd = null;
+          });
+        }
+        if (widget.goal == "earnMoreSoloMatch") {
+          FirebaseAnalytics.instance.logEvent(name: "RewardedAdMatchShown");
+        }
+        if (widget.goal.startsWith("earnQuick")) {
+          FirebaseAnalytics.instance.logEvent(name: "QuickEarnShown");
+        }
+        await user.callApi.get(
+            "/admob/getReward?user_id=${user.value["steam"]["id"]}&custom_data=${widget.goal == "earnMoreSoloMatch" ? match?.value["_id"] : widget.goal}");
+        if (widget.goal.startsWith("earnQuick")) {
+          showCoinDropdown(context, user.value['user']["coins"],
+              int.tryParse(widget.goal.substring(9)) ?? 60);
+        }
+        //refresh UI
+        if (match != null) {
+          Future.delayed(const Duration(milliseconds: 500), () async {
+            await match?.refresh(context, user);
+          });
+        } else {
+          await user.refresh();
+          if (widget.goal == "dailyChallenge") {
+            user.keyFx["rebuildHomePage"]();
+          }
+        }
+        if (widget.hideItself != null) widget.hideItself!();
+      });
     } else if (_lastAdError) {
       _initAds();
     }
@@ -76,50 +116,7 @@ class _AdButtonState extends State<AdButton> {
     if (!kDebugMode || true) {
       _initAds();
     }
-    AppLovinMAX.setRewardedAdListener(RewardedAdListener(onAdLoadedCallback: (ad) {
-      if (mounted) {
-        setState(() {
-          isMAXRewardedVideoAvailable = true;
-        });
-      }
-    }, onAdLoadFailedCallback: (reason, error) {
-      return setState(() {
-        _lastAdError = true;
-      });
-    }, onAdDisplayedCallback: (ad) {
-      FirebaseAnalytics.instance
-          .logAdImpression(adFormat: "Rewarded", adPlatform: ad.networkName, adUnitName: "adLaunchButton_" + widget.goal, value: ad.revenue, currency: 'USD');
-    }, onAdReceivedRewardCallback: (ad, reward) async {
-      if (mounted) {
-        setState(() {
-          isMAXRewardedVideoAvailable = false;
-        });
-      }
-      if (widget.goal == "earnMoreSoloMatch") FirebaseAnalytics.instance.logEvent(name: "RewardedAdMatchShown");
-      if (widget.goal.startsWith("earnQuick")) FirebaseAnalytics.instance.logEvent(name: "QuickEarnShown");
-      await user.callApi.get(
-          "/admob/getReward?user_id=${user.value["steam"]["id"]}&custom_data=${widget.goal == "earnMoreSoloMatch" ? match?.value["_id"] : widget.goal}");
-      if(widget.goal.startsWith("earnQuick")) {
-        showCoinDropdown(context, user.value['user']["coins"], int.tryParse(widget.goal.substring(9)) ?? 60);
-      }
-      //refresh UI
-      if (match != null) {
-        Future.delayed(const Duration(milliseconds: 500), () async {
-          await match?.refresh(context, user);
-        });
-      } else {
-        await user.refresh();
-        if (widget.goal == "dailyChallenge") user.keyFx["rebuildHomePage"]();
-      }
-      if(widget.hideItself != null) widget.hideItself!();
-    }, onAdDisplayFailedCallback: (MaxAd ad, MaxError error) {
-      return setState(() {
-        _lastAdError = true;
-      });
-    }, onAdClickedCallback: (MaxAd ad) {
 
-    }, onAdHiddenCallback: (MaxAd ad) {
-      AppLovinMAX.loadRewardedAd(AdHelper.rewardedApplovinUnitId); }));
     super.initState();
   }
 
@@ -127,7 +124,7 @@ class _AdButtonState extends State<AdButton> {
   Widget build(BuildContext context) {
     return GestureDetector(
         behavior: HitTestBehavior.translucent,
-        child: isAdReady || isMAXRewardedVideoAvailable
+        child: nextAd != null
             ? widget.child
             : _lastAdError
                 ? widget.adErrorChild

@@ -1,5 +1,6 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/utils/ad_helper.dart';
@@ -19,18 +20,15 @@ class Quests extends StatefulWidget {
 }
 
 class _QuestsState extends State<Quests> {
-  bool isAdReady = false;
+  RewardedAd? nextAd;
   @override
   void initState() {
     super.initState();
     reloadAd();
   }
   void reloadAd(){
-    isAdReady = false;
-    loadApplovinRewarded(() {
-      setState(() {
-        isAdReady = true;
-      });
+    loadApplovinRewarded((ad) {
+      context.read<User>().setNextAdQuests(ad);
       FirebaseAnalytics.instance.logEvent(
         name: "ShowQuestReroll",
       );
@@ -192,7 +190,6 @@ class _QuestsState extends State<Quests> {
                                               orElse:()=>{"progress":0}
                                             )["progress"],
                                 questId: user.quests["dailyQuests"][index]["_id"],
-                                isAdReady:isAdReady,
                                 reloadAd:reloadAd
 
                               ),
@@ -320,7 +317,7 @@ class _QuestsState extends State<Quests> {
                                     (q) => q["name"] == user.quests["weeklyQuests"][index]["name"],
                                     orElse: () => {"progress": 0}) ["progress"],
                                 questId: user.quests["weeklyQuests"][index]["_id"],
-                                isAdReady:isAdReady,
+
                               reloadAd:reloadAd
                             ),
                           ));

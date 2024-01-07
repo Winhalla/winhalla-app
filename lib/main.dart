@@ -12,6 +12,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -40,6 +41,8 @@ const MethodChannel _channel = MethodChannel('winhalla.app/methodChannel');
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  MobileAds.instance.initialize();
+
   // Non-flutter errors catching
   Isolate.current.addErrorListener(RawReceivePort((pair) async {
     final List<dynamic> errorAndStacktrace = pair;
@@ -227,10 +230,11 @@ class _AppCoreState extends State<AppCore> {
                 floatingActionButton: kDebugMode && widget.isUserDataLoaded
                     ? FloatingActionButton(
                         onPressed: () {
-                          context.read<User>().refresh();
+                          ConsentInformation.instance.reset();
+                          /* context.read<User>().refresh();
                           setState(() {
                             _selectedIndex = 0;
-                          });
+                          });*/
                           // FlutterApplovinMax.showMediationDebugger();
                           // launchURLBrowser(apiUrl+"/auth/steamCallback?t=q");
                         },

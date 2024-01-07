@@ -4,13 +4,13 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
-import 'package:applovin_max/applovin_max.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
 import 'package:winhalla_app/main.dart';
 import 'package:winhalla_app/utils/get_uri.dart';
@@ -27,6 +27,7 @@ class User extends ChangeNotifier {
   dynamic shop;
   dynamic quests;
   dynamic inGame;
+  RewardedAd? nextAdQuests;
   bool isDebug;
   int gamesPlayedInMatch = 0;
   bool animateMatchHistory = false;
@@ -366,7 +367,7 @@ class User extends ChangeNotifier {
   }
 
   Future<void> showInterstitialAd(InterstitialType type) async {
-    if (kDebugMode) return;
+    // if (kDebugMode) return;
     /*try{
       if(value["steam"]["id"] == "google100943440915784958511" || value["steam"]["id"] == "google102386642559331245430") return;
     }catch(e){}*/
@@ -391,6 +392,10 @@ class User extends ChangeNotifier {
 
   void setLastAdPrompt(int now) {
     lastAdPrompt = now;
+  }
+  void setNextAdQuests(RewardedAd? ad) {
+    nextAdQuests = ad;
+    notifyListeners();
   }
 }
 
@@ -473,13 +478,20 @@ Future<dynamic> initUser(context) async {
     }
 
 // Pre-load ads
-    if (!kDebugMode || true) {
-      try {
-        Map? sdkConfiguration = await AppLovinMAX.initialize("seN8k_vH1lOOkrUm4k_qQQruK0XbypmqiZE1yweS0q52rOUHT3AyhDTprxse1JhqLi31fBigBGDeQRGTBS3Xgv");
-      } catch (e, s) {
-        FirebaseCrashlytics.instance.recordError(e, s, reason: 'initUser Ads init');
-      }
-    }
+    final params = ConsentRequestParameters();
+    ConsentInformation.instance.requestConsentInfoUpdate(
+      params,
+          () async {
+        if (await ConsentInformation.instance.isConsentFormAvailable()) {
+          loadForm();
+        }
+      },
+          (FormError error) {
+        // Handle the error
+      },
+    );
+
+
     try {
       bool hasBeenValidated = await getNonNullSSData("isDebug") == "true";
       if (hasBeenValidated) {
@@ -503,4 +515,23 @@ Future<dynamic> initUser(context) async {
     "tutorial": {"needed": tutorialFinished ?? false, "tutorialStep": tutorialStep ?? 0},
     "isDebug": isDebug
   };
+}
+void loadForm() {
+  ConsentForm.loadConsentForm(
+        (ConsentForm consentForm) async {
+          var status = await ConsentInformation.instance.getConsentStatus();
+          if (status == ConsentStatus.required) {
+            consentForm.show(
+                  (FormError? formError) {
+                // Handle dismissal by reloading form
+                loadForm();
+              },
+            );
+          }
+
+        },
+        (FormError formError) {
+      // Handle the error
+    },
+  );
 }

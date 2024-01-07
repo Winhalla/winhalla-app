@@ -2,9 +2,9 @@
 
 import 'dart:async';
 
-import 'package:applovin_max/applovin_max.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:winhalla_app/config/themes/dark_theme.dart';
@@ -20,13 +20,15 @@ import '../inherited_text_style.dart';
 // Must be called in a place where an FfaMatch ChangeNotifierProvider is present
 Future showAdPopupWidget(
   BuildContext context1,
-    String questId
+    String questId,
+    RewardedAd ad,
+    Function(AdWithoutView, RewardItem) callback
 )  {
 
-  return showDialog(context: context1, builder: (_) => AdPopupWidget(context1, questId));
+  return showDialog(context: context1, builder: (_) => AdPopupWidget(context1, questId, ad, callback));
 }
 
-Widget AdPopupWidget(BuildContext context1, String questId) {
+Widget AdPopupWidget(BuildContext context1, String questId,RewardedAd ad, Function(AdWithoutView, RewardItem) callback) {
   return Builder(builder: (context) {
     return AlertDialog(
       elevation: 10,
@@ -64,7 +66,9 @@ Widget AdPopupWidget(BuildContext context1, String questId) {
                     name: "AdPopupAccepted",
                   );
                   Navigator.pop(context);
-                  AppLovinMAX.showRewardedAd(AdHelper.rewardedApplovinUnitId);
+                  ad.show(onUserEarnedReward: callback);
+                  context.read<User>().setNextAdQuests(null);
+
                 },
                 child: Container(
                     decoration: BoxDecoration(
